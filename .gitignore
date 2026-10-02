@@ -1,0 +1,29 @@
+# dependências
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js
+.next/
+out/
+build/
+next-env.d.ts
+*.tsbuildinfo
+
+# ambiente (nunca versionar secrets)
+.env
+.env*.local
+
+# Supabase local
+supabase/.branches/
+supabase/.temp/
+
+# Vercel
+.vercel
+
+# logs e sistema
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+coverage/
