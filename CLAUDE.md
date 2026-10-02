@@ -5,8 +5,24 @@
 - Banco: `supabase/migrations/`. A migration inicial é a fonte da verdade do schema. Nunca edite uma migration já aplicada; crie uma nova.
 
 ## Status
-- Fase 0 (especificação + schema) concluída.
-- Próxima: **Fase 1 — Setup**. Ao rodar `create-next-app`, preserve `docs/`, `supabase/`, `CLAUDE.md`, `README.md`, `.env.example` e `.gitignore`.
+- Código do MVP **escrito sem instalar dependências nem compilar** (o ambiente de criação não tinha rede).
+  Já validado: testes dos módulos puros (`npm test`) e uma checagem de tipos interna com stubs das libs.
+- **Primeira tarefa:** `npm install`, depois `npx tsc --noEmit`, `npm run lint` e `npm run build`, corrigindo
+  o que aparecer. Pontos mais prováveis de ajuste:
+  - versões das libs (Next 16, zod 4, recharts 3, @supabase/ssr 0.7): confirme a API de cada uma;
+  - `src/proxy.ts` é a convenção do Next 16. Em Next 15, renomeie para `src/middleware.ts` com função `middleware`;
+  - regras novas do `eslint-plugin-react-hooks` (ex.: setState durante render no `control-room.tsx`);
+  - `src/lib/supabase/database.types.ts` foi escrito à mão: substitua por `npm run db:types` após ligar o projeto.
+- Depois: aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta (seção "Teste manual" do README).
+
+## Mapa do código
+- `src/lib/domain/` regras puras (status, interações, palavras, resultados, métricas). Sem I/O.
+- `src/lib/data/` leituras no servidor. `sessions.ts`/`analytics.ts` usam o cliente do speaker (RLS);
+  `public.ts` usa a secret key e devolve só dados sanitizados.
+- `src/features/*/actions.ts` Server Actions (toda escrita passa por aqui).
+- `src/lib/realtime/` hooks de realtime (trocar Postgres Changes por Broadcast só mexe aqui).
+- `src/lib/ai/` abstração `AIProvider` (Groq/OpenAI/Anthropic via fetch, saída validada com Zod).
+- `src/components/ui/` componentes no estilo shadcn/ui escritos à mão (sem Radix); ícones em `components/icons.tsx`.
 
 ## Regras inegociáveis
 - TypeScript estrito, sem `any`. Zod em toda entrada (formulários, Server Actions, Route Handlers, saída da IA).

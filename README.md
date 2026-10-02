@@ -2,28 +2,74 @@
 
 > Seu público fala. Você entende. Sua próxima palestra fica melhor.
 
-Plataforma de interação em tempo real para palestrantes, professores e facilitadores: enquetes, quizzes, nuvem de palavras e perguntas abertas durante a apresentação, feedback depois dela e insights gerados por IA para melhorar a próxima.
+Interação em tempo real para palestrantes (enquete, escala, nuvem de palavras, pergunta aberta e quiz),
+com tela de projetor, feedback pós-evento, analytics, evolução entre sessões e insights com IA.
 
-## Stack
+**Stack:** Next.js (App Router) · TypeScript estrito · Tailwind v4 · componentes estilo shadcn/ui ·
+Supabase (Auth, Postgres, RLS, Realtime) · Zod · Recharts · Vercel.
 
-Next.js (App Router) · TypeScript · Tailwind CSS · shadcn/ui · Supabase (Postgres, Auth, Realtime) · Zod · Vercel
+> ⚠️ O código foi escrito sem acesso à internet: as dependências ainda não foram instaladas nem o build
+> executado. Rode o passo a passo abaixo e corrija o que o `tsc`/`build` apontar (veja `CLAUDE.md`).
 
-## Estado atual
+## Rodando localmente
 
-| Fase | Status |
-| --- | --- |
-| 0 — Especificação e schema do banco | ✅ concluída |
-| 1 — Setup do projeto Next.js | ⏳ próxima |
-| 2 a 13 | pendentes |
+1. **Dependências:** `npm install`
+2. **Supabase:** crie um projeto em supabase.com (ou use `npx supabase start` com Docker).
+3. **Banco:** aplique as migrations de `supabase/migrations/` em ordem
+   (`npx supabase db push` com o projeto linkado, ou cole no SQL Editor).
+   Opcional: rode `supabase/seed.sql` para dados de demonstração
+   (login `demo@pulsestage.app` / `demo123456`, duas sessões encerradas e um rascunho).
+4. **Variáveis:** copie `.env.example` para `.env.local` e preencha.
+   Gere o segredo do participante com `openssl rand -base64 48`.
+5. **Realtime:** confirme em *Realtime → Settings* que o acesso público a canais está permitido
+   (Presence dos participantes usa a publishable key).
+6. **Auth:** em *Authentication → URL Configuration*, adicione `http://localhost:3000/auth/callback`
+   (e a URL de produção) às Redirect URLs.
+7. `npm run dev` → http://localhost:3000
 
-A especificação completa está em [`docs/PROMPT.md`](docs/PROMPT.md). O schema do banco, com RLS e triggers, está em [`supabase/migrations/`](supabase/migrations/).
+Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arquivo escrito à mão.
 
-## Como continuar o desenvolvimento
+## Teste manual (ponta a ponta)
 
-1. Clone o repositório e abra a pasta no Claude Code.
-2. Crie um projeto no Supabase e copie `.env.example` para `.env.local`, preenchendo as chaves.
-3. Peça ao Claude Code: *"Leia o CLAUDE.md e comece pela Fase 1."*
+1. Crie uma conta, crie uma sessão e adicione uma interação de cada tipo (use o ícone de olho para pré-visualizar).
+2. Clique em **Iniciar sessão** → sala ao vivo. Abra **Tela do projetor** em outra aba.
+3. Num celular (ou janela anônima), acesse o QR/código, entre e responda. Os resultados devem aparecer
+   no projetor e na sala sem recarregar.
+4. Teste: responder duas vezes, quiz com tempo esgotado, pausar/retomar, encerrar a interação.
+5. **Encerrar sessão** → o celular e o projetor mostram o link de avaliação. Envie alguns feedbacks.
+6. Abra o analytics da sessão e, com `AI_PROVIDER`/`AI_API_KEY` configurados, gere os insights.
 
-## Variáveis de ambiente
+## Scripts
 
-Veja [`.env.example`](.env.example). Nunca faça commit de `.env.local`.
+| Comando | O que faz |
+|---|---|
+| `npm run dev` | servidor de desenvolvimento |
+| `npm run build` | build de produção |
+| `npm run lint` | ESLint (flat config do Next) |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm test` | testes unitários dos módulos puros (`node --test`) |
+| `npm run db:types` | gera `database.types.ts` a partir do Supabase linkado |
+
+## Arquitetura em uma página
+
+- **Participantes não têm conta.** Entram por `/join/[código]`; o servidor cria o registro e grava um cookie
+  HTTP-only assinado (HMAC). Toda resposta passa por Server Action, que valida o cookie e calcula acerto,
+  pontos, tempo do quiz e normalização da nuvem de palavras. O papel `anon` não escreve em nada.
+- **Realtime público** lê só `session_live_state` e `interaction_results`, mantidas por triggers.
+  "Conectados agora" vem do Presence e é apenas informativo.
+- **RLS** garante que o speaker só vê as próprias sessões.
+- **LGPD:** contato do participante fica em `participant_contacts`, separado e com consentimento.
+  A IA recebe só dados agregados, sem nomes ou contatos.
+- **Métricas:** “sinal de participação” = respostas ÷ participantes presentes em cada interação.
+  Mede participação, não atenção.
+
+## Status
+
+| Fase | Situação |
+|---|---|
+| Especificação e schema | ✅ |
+| Código do MVP (auth, sessões, builder, ao vivo, projetor, participante, feedback, analytics, evolução, IA) | ✅ escrito, ⏳ falta instalar/compilar |
+| Testes de integração e E2E | ⏳ |
+| Deploy na Vercel | ⏳ |
+
+Especificação completa em `docs/PROMPT.md`.
