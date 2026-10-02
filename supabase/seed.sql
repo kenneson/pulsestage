@@ -49,7 +49,7 @@ begin
   if p_options is not null then
     for i in 1 .. array_length(p_options, 1) loop
       insert into public.interaction_options (interaction_id, label, position, is_correct, points)
-      values (v_id, p_options[i], i - 1, p_correct = i, case when p_correct = i then 100 else 0 end);
+      values (v_id, p_options[i], i - 1, coalesce(p_correct = i, false), case when p_correct = i then 100 else 0 end);
     end loop;
   end if;
   return v_id;

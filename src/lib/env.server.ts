@@ -17,7 +17,8 @@ let cached: ServerEnv | null = null;
 export function serverEnv(): ServerEnv {
   if (cached) return cached;
   const raw = {
-    SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
+    // A integração Supabase ↔ Vercel cria SUPABASE_SERVICE_ROLE_KEY; aceitamos as duas.
+    SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY,
     PARTICIPANT_TOKEN_SECRET: process.env.PARTICIPANT_TOKEN_SECRET,
     AI_PROVIDER: process.env.AI_PROVIDER,
     AI_API_KEY: process.env.AI_API_KEY,

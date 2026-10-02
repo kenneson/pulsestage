@@ -4,8 +4,14 @@
  */
 export const publicEnv = {
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-  supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "",
-  appUrl: (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000").replace(/\/$/, ""),
+  // A integração Supabase ↔ Vercel cria NEXT_PUBLIC_SUPABASE_ANON_KEY; aceitamos as duas.
+  supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+  appUrl: (
+    process.env.NEXT_PUBLIC_APP_URL ??
+    (process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}`
+      : "http://localhost:3000")
+  ).replace(/\/$/, ""),
 };
 
 export function joinUrl(code: string): string {
