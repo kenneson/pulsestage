@@ -112,7 +112,8 @@ export default function GuidePage() {
               </li>
               <li>
                 Para lançar uma pergunta, clique nela na lista ou em <strong>“Próxima”</strong>. Também funciona a seta
-                <Kbd>→</Kbd> do teclado, útil com passador de slides.
+                <Kbd>→</Kbd> do teclado quando a sala ao vivo é a janela em foco. O passador de slides controla a janela
+                que estiver em foco: com os slides abertos, ele avança os slides.
               </li>
               <li>
                 Os resultados aparecem em tempo real no projetor e na sala. Clique em <strong>“Encerrar”</strong> para
@@ -204,6 +205,11 @@ export default function GuidePage() {
               <li>Comece com uma pergunta fácil (enquete ou nuvem de palavras) para quebrar o gelo.</li>
               <li>Uma interação a cada 10 ou 15 minutos mantém o público envolvido sem quebrar o ritmo.</li>
               <li>Deixe o QR Code visível nos primeiros minutos: quem chega atrasado também entra.</li>
+              <li>
+                Com PowerPoint ou Google Slides: clique em <strong>“Baixar QR Code”</strong> (na página da sessão ou na
+                sala ao vivo) e cole a imagem num slide. Na hora de cada pergunta, alterne dos slides para a tela do
+                projetor com <Kbd>Alt</Kbd>+<Kbd>Tab</Kbd>.
+              </li>
               <li>
                 Peça para responderem a pesquisa ainda na sala. A taxa de resposta cai muito depois que o público
                 sai.

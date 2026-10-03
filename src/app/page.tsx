@@ -133,7 +133,7 @@ const FAQ = [
   },
   {
     q: "Funciona junto com meus slides?",
-    a: "Sim. O PulseStage abre em uma aba própria: você alterna entre os slides e a tela de resultados, ou usa uma segunda tela para o projetor. A seta do teclado, ou o passador de slides, avança para a próxima pergunta.",
+    a: "Sim, lado a lado. O PulseStage abre em uma aba própria: deixe os slides no projetor e alterne para a tela de resultados (Alt+Tab) na hora de cada pergunta, ou use uma segunda tela. Baixe o QR Code da sessão para colocar num slide. Ainda não há integração que mostre a pergunta dentro do PowerPoint ou do Google Slides.",
   },
   {
     q: "Quantas pessoas podem participar?",
@@ -263,7 +263,7 @@ export default function Home() {
                     <strong className="font-semibold">
                       Avance com a seta <Kbd>→</Kbd>
                     </strong>{" "}
-                    do teclado ou com o passador de slides.
+                    do teclado, com o painel do PulseStage em foco.
                   </span>
                 </li>
                 <li className="flex items-start gap-2.5">

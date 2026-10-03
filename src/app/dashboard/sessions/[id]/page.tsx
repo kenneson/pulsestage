@@ -14,6 +14,8 @@ import { Tabs } from "@/components/ui/tabs";
 import { StatusBadge } from "@/components/sessions/status-badge";
 import { SessionForm } from "@/components/sessions/session-form";
 import { DeleteSessionButton, StartSessionButton } from "@/components/sessions/session-controls";
+import { QrDownloadButton } from "@/components/sessions/qr-download-button";
+import { joinUrl } from "@/lib/env";
 import { InteractionsEditor, type EditorItem } from "@/components/builder/interactions-editor";
 
 export const metadata: Metadata = { title: "Editar sessão" };
@@ -78,6 +80,7 @@ export default async function SessionBuilderPage({ params }: { params: Promise<{
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <DeleteSessionButton sessionId={id} title={session.title} />
+          {status !== "completed" ? <QrDownloadButton joinUrl={joinUrl(session.join_code)} code={session.join_code} /> : null}
           {status === "draft" ? <StartSessionButton sessionId={id} hasInteractions={items.length > 0} /> : null}
           {status === "live" || status === "paused" ? (
             <Link href={`/dashboard/sessions/${id}/live`} className={buttonVariants()}>

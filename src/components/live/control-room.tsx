@@ -25,6 +25,7 @@ import { ExternalIcon, NextIcon, PauseIcon, PlayIcon, StopIcon, UsersIcon } from
 import { ResultsView } from "@/components/results/results-view";
 import { StatusBadge } from "@/components/sessions/status-badge";
 import { TypeTag } from "@/components/interaction-type-tag";
+import { QrDownloadButton } from "@/components/sessions/qr-download-button";
 
 export type ControlRoomInteraction = PublicInteraction & { correctOptionId: string | null };
 
@@ -230,6 +231,7 @@ export function ControlRoom({ session, interactions, initialLive, initialResults
               <p className="text-sm text-muted-foreground">Código de entrada</p>
               <p className="font-script text-3xl font-bold tracking-widest">{session.joinCode}</p>
               <p className="break-all text-xs text-muted-foreground">{joinUrl}</p>
+              <QrDownloadButton joinUrl={joinUrl} code={session.joinCode} />
             </CardContent>
           </Card>
 
