@@ -80,6 +80,7 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
 | Pesquisas pós-evento por modelo (5 prontos + modelos próprios, pontos fortes/fracos por dimensão) | ✅ |
 | Navegação lateral com ícones, conta e configurações (perfil, preferências, segurança, LGPD) | ✅ |
 | Duplicar sessão e biblioteca de perguntas | ✅ |
+| Exportar relatório (PDF pela impressão do navegador) e CSV das respostas e da pesquisa | ✅ |
 | Testes unitários do domínio (sessão, palavras, datas, resultados, métricas) | ✅ |
 | Testes de integração e E2E | ⏳ |
 | Deploy na Vercel | ✅ |

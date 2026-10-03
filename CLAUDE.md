@@ -30,6 +30,9 @@
   em JSON e exclusão de conta (único uso da secret key fora do fluxo do participante).
 - **Biblioteca** (`/dashboard/biblioteca`): `lib/domain/library.ts` agrupa perguntas iguais de várias sessões;
   `features/library/actions.ts` duplica sessões e copia perguntas (com alternativas, acerto e pontos) via RLS.
+- **Exportação**: relatório em `/dashboard/sessions/[id]/relatorio` (PDF via `window.print`, estilos `@media print`
+  em `globals.css`, sempre claro); CSV em `.../exportar?tipo=interacoes|pesquisa` com `lib/domain/csv.ts`
+  (`;`, BOM UTF-8, proteção contra fórmulas).
 - Navegação do painel: barra lateral com ícones (`components/dashboard/nav-links.tsx`); ícones novos vão em
   `components/icons.tsx`, no mesmo traço. Design aprovado no Claude Design (link no histórico do projeto).
 - Imports de valor entre módulos de `lib/domain/` usam extensão `.ts` (os testes rodam no Node sem compilar).

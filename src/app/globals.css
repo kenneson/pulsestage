@@ -334,3 +334,34 @@ html {
     }
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Impressão (relatório em PDF): A4, sempre claro, cores das barras preservadas.
+   --------------------------------------------------------------------------- */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  html,
+  html.dark {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.2 0.012 260);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.2 0.012 260);
+    --muted: oklch(0.955 0.004 250);
+    --muted-foreground: oklch(0.42 0.012 260);
+    --border: oklch(0.86 0.005 250);
+    --primary: oklch(0.5 0.13 152);
+    --primary-foreground: oklch(0.99 0.004 152);
+    --standby: oklch(0.78 0.15 70);
+    color-scheme: light;
+  }
+
+  body {
+    background: #ffffff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

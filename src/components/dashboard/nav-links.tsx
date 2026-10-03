@@ -54,7 +54,7 @@ export function DashboardSidebar({
   const close = () => setOpen(false);
 
   return (
-    <aside className="border-b bg-background md:sticky md:top-0 md:flex md:h-dvh md:w-72 md:shrink-0 md:flex-col md:border-b-0 md:border-r">
+    <aside className="border-b bg-background print:hidden md:sticky md:top-0 md:flex md:h-dvh md:w-72 md:shrink-0 md:flex-col md:border-b-0 md:border-r">
       <div className="flex items-center justify-between gap-3 px-4 py-3 md:px-5 md:py-5">
         <Logo href="/dashboard" />
         <button

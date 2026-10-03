@@ -194,7 +194,8 @@ export default function GuidePage() {
             </ul>
             <p>
               Na aba <strong>“Evolução”</strong>, compare suas avaliações entre sessões encerradas e veja se as mudanças
-              surtiram efeito.
+              surtiram efeito. Para compartilhar, use <strong>“Exportar”</strong> no analytics: relatório em PDF para o
+              organizador ou cliente, e CSV das respostas e da pesquisa para planilhas.
             </p>
           </Section>
 

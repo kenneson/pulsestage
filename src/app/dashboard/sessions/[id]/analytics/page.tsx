@@ -24,7 +24,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, EmptyState } from "@/components/ui/misc";
 import { StatCard } from "@/components/dashboard/stat-card";
-import { ClipboardIcon, ListIcon, TrendingUpIcon, UsersIcon } from "@/components/icons";
+import { ClipboardIcon, DownloadIcon, FileTextIcon, ListIcon, TableIcon, TrendingUpIcon, UsersIcon } from "@/components/icons";
 import { StatusBadge } from "@/components/sessions/status-badge";
 import { ResultsView } from "@/components/results/results-view";
 import { PulseChart } from "@/components/analytics/pulse-chart";
@@ -82,6 +82,22 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
           <Link href={`/dashboard/sessions/${id}`} className={buttonVariants({ variant: "outline" })}>
             Ver interações
           </Link>
+          <details className="relative">
+            <summary className={buttonVariants({ variant: "outline", className: "cursor-pointer list-none [&::-webkit-details-marker]:hidden" })}>
+              <DownloadIcon /> Exportar
+            </summary>
+            <div className="absolute right-0 z-20 mt-2 flex w-64 flex-col rounded-md border bg-card p-1.5 shadow-lg">
+              <Link href={`/dashboard/sessions/${id}/relatorio`} className="flex items-center gap-2.5 rounded px-3 py-2.5 text-sm hover:bg-muted">
+                <FileTextIcon className="text-muted-foreground" /> Relatório em PDF
+              </Link>
+              <a href={`/dashboard/sessions/${id}/exportar?tipo=interacoes`} download className="flex items-center gap-2.5 rounded px-3 py-2.5 text-sm hover:bg-muted">
+                <TableIcon className="text-muted-foreground" /> Respostas ao vivo (CSV)
+              </a>
+              <a href={`/dashboard/sessions/${id}/exportar?tipo=pesquisa`} download className="flex items-center gap-2.5 rounded px-3 py-2.5 text-sm hover:bg-muted">
+                <TableIcon className="text-muted-foreground" /> Pesquisa (CSV)
+              </a>
+            </div>
+          </details>
           {session.status === "live" || session.status === "paused" ? (
             <Link href={`/dashboard/sessions/${id}/live`} className={buttonVariants()}>
               Sala ao vivo
