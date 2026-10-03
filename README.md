@@ -70,7 +70,9 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
 | Especificação e schema | ✅ |
 | Código do MVP (auth, sessões, builder, ao vivo, projetor, participante, feedback, analytics, evolução, IA) | ✅ compila (tsc, lint, build), ⏳ falta teste ponta a ponta |
 | Tema escuro (toggle claro/escuro, segue o sistema por padrão) | ✅ |
+| Polimento: loading/skeletons, diálogos de confirmação, página `/privacidade` | ✅ |
+| Testes unitários do domínio (sessão, palavras, datas, resultados, métricas) | ✅ |
 | Testes de integração e E2E | ⏳ |
-| Deploy na Vercel | ⏳ |
+| Deploy na Vercel | ✅ |
 
 Especificação completa em `docs/PROMPT.md`.

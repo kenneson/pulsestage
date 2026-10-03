@@ -9,6 +9,9 @@
 - Tema escuro: classe `dark` no `<html>`, aplicada antes da pintura por script no `app/layout.tsx`
   (preferência em `localStorage.theme`, senão a do sistema); toggle e Toaster em `components/theme.tsx`.
   Cores novas devem usar os tokens de `globals.css` (inclui `--chart-1..4`) ou ter variante `dark:`.
+- Confirmações usam `useConfirm()` (`components/ui/confirm-dialog.tsx`, `<dialog>` nativo), nunca `window.confirm`.
+- `/privacidade` descreve cookies, IA e retenção: atualize-a ao mudar o que é coletado ou enviado à IA.
+- Deploy na Vercel feito; `npm test` cobre os módulos puros de `lib/domain/`.
 - **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta
   (seção "Teste manual" do README). `src/lib/supabase/database.types.ts` foi escrito à mão:
   substitua por `npm run db:types` após ligar o projeto.

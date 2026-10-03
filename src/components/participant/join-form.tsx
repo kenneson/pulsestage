@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import Link from "next/link";
 import { joinSessionAction, type JoinFormState } from "@/features/participant/actions";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Label } from "@/components/ui/input";
@@ -32,8 +33,13 @@ export function JoinForm({ code }: { code: string }) {
           </Field>
           <label className="flex items-start gap-2 text-xs text-muted-foreground">
             <input type="checkbox" name="consent" className="mt-0.5 size-4" />
-            Autorizo o palestrante a usar meu contato para enviar materiais e comunicações sobre esta sessão. Meu
-            contato fica separado das minhas respostas.
+            <span>
+              Autorizo o palestrante a usar meu contato para enviar materiais e comunicações sobre esta sessão. Meu
+              contato fica separado das minhas respostas.{" "}
+              <Link href="/privacidade" target="_blank" className="underline hover:text-foreground">
+                Política de privacidade
+              </Link>
+            </span>
           </label>
         </div>
       </details>
@@ -42,6 +48,13 @@ export function JoinForm({ code }: { code: string }) {
       <Button type="submit" size="xl" disabled={pending}>
         {pending ? "Entrando…" : "Participar"}
       </Button>
+      <p className="text-center text-xs text-muted-foreground">
+        Ao participar, você concorda com a{" "}
+        <Link href="/privacidade" target="_blank" className="underline hover:text-foreground">
+          política de privacidade
+        </Link>
+        .
+      </p>
     </form>
   );
 }

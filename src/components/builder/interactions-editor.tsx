@@ -12,6 +12,7 @@ import {
 } from "@/lib/domain/interactions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useConfirm } from "@/components/ui/confirm-dialog";
 import { EmptyState } from "@/components/ui/misc";
 import { ArrowDownIcon, ArrowUpIcon, EditIcon, EyeIcon, PlusIcon, TrashIcon } from "@/components/icons";
 import { AnswerForm } from "@/components/participant/answer-form";
@@ -38,6 +39,7 @@ export function InteractionsEditor({
   const [creating, setCreating] = useState<InteractionType | null>(null);
   const [previewing, setPreviewing] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [confirm, confirmDialog] = useConfirm();
 
   const refresh = () => {
     setEditing(null);
@@ -61,12 +63,14 @@ export function InteractionsEditor({
     });
   }
 
-  function remove(item: EditorItem) {
-    const warning =
-      item.responses > 0
-        ? `Excluir "${item.interaction.title}"? As ${item.responses} respostas também serão apagadas.`
-        : `Excluir "${item.interaction.title}"?`;
-    if (!window.confirm(warning)) return;
+  async function remove(item: EditorItem) {
+    const confirmed = await confirm({
+      title: `Excluir "${item.interaction.title}"?`,
+      description: item.responses > 0 ? `As ${item.responses} respostas também serão apagadas.` : undefined,
+      confirmLabel: "Excluir",
+      destructive: true,
+    });
+    if (!confirmed) return;
     startTransition(async () => {
       const result = await deleteInteractionAction(sessionId, item.interaction.id);
       if (!result.ok) toast.error(result.error);
@@ -77,6 +81,7 @@ export function InteractionsEditor({
 
   return (
     <div className="flex flex-col gap-4">
+      {confirmDialog}
       {items.length === 0 && !creating ? (
         <EmptyState
           title="Nenhuma interação"

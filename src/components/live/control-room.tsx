@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useConfirm } from "@/components/ui/confirm-dialog";
 import { ExternalIcon, NextIcon, PauseIcon, PlayIcon, StopIcon, UsersIcon } from "@/components/icons";
 import { ResultsView } from "@/components/results/results-view";
 import { StatusBadge } from "@/components/sessions/status-badge";
@@ -37,6 +38,7 @@ type Props = {
 export function ControlRoom({ session, interactions, initialLive, initialResults, joinUrl }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [confirm, confirmDialog] = useConfirm();
   const { state: live, connected } = useLiveState(session.id, initialLive, () => router.refresh());
   const results = useInteractionResults(session.id, initialResults);
   const online = usePresence(session.id, "observer");
@@ -90,6 +92,7 @@ export function ControlRoom({ session, interactions, initialLive, initialResults
     function onKey(event: KeyboardEvent) {
       const target = event.target as HTMLElement | null;
       if (target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
+      if (document.querySelector("dialog[open]")) return;
       if (event.key === "ArrowRight") nextRef.current?.();
     }
     window.addEventListener("keydown", onKey);
@@ -100,6 +103,7 @@ export function ControlRoom({ session, interactions, initialLive, initialResults
 
   return (
     <div className="flex flex-col gap-6">
+      {confirmDialog}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
@@ -139,10 +143,14 @@ export function ControlRoom({ session, interactions, initialLive, initialResults
             <Button
               variant="destructive"
               disabled={pending}
-              onClick={() => {
-                if (window.confirm("Encerrar a sessão? Os participantes verão o link de avaliação.")) {
-                  changeStatus("completed");
-                }
+              onClick={async () => {
+                const confirmed = await confirm({
+                  title: "Encerrar a sessão?",
+                  description: "Os participantes verão o link de avaliação. Não dá para reabrir.",
+                  confirmLabel: "Encerrar",
+                  destructive: true,
+                });
+                if (confirmed) changeStatus("completed");
               }}
             >
               Encerrar sessão

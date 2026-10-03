@@ -69,7 +69,10 @@ export default function Home() {
       </main>
 
       <footer className="border-t py-6 text-center text-sm text-muted-foreground">
-        PulseStage · Audience → Interaction → Data → Insight → Improvement
+        PulseStage · Audience → Interaction → Data → Insight → Improvement ·{" "}
+        <Link href="/privacidade" className="underline hover:text-foreground">
+          Privacidade
+        </Link>
       </footer>
     </div>
   );
