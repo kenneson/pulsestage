@@ -10,12 +10,36 @@ const STEPS = [
   { title: "Melhore", text: "Insights baseados em evidências e a evolução das suas avaliações entre palestras." },
 ];
 
+const HOW_IT_WORKS = [
+  {
+    title: "Monte em minutos",
+    text: "Crie a sessão e adicione enquetes, quizzes, escalas, nuvens de palavras e perguntas abertas na ordem da sua apresentação.",
+  },
+  {
+    title: "Mostre o QR Code",
+    text: "A audiência entra pelo celular em segundos. Sem baixar app, sem criar conta, com nome opcional.",
+  },
+  {
+    title: "Apresente ao vivo",
+    text: "Ative cada interação com um clique e veja as respostas chegarem no projetor em tempo real.",
+  },
+  {
+    title: "Melhore a próxima",
+    text: "Ao encerrar, o público avalia a sessão. Analytics e insights com IA mostram o que funcionou e o que ajustar.",
+  },
+];
+
+const INTERACTION_TYPES = ["Enquete", "Quiz com ranking", "Escala de notas", "Nuvem de palavras", "Pergunta aberta"];
+
 export default function Home() {
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
         <Logo />
         <nav className="flex items-center gap-2">
+          <a href="#como-funciona" className={buttonVariants({ variant: "ghost", className: "hidden sm:inline-flex" })}>
+            Como funciona
+          </a>
           <ThemeToggle />
           <Link href="/login" className={buttonVariants({ variant: "ghost" })}>
             Entrar
@@ -65,6 +89,45 @@ export default function Home() {
               <p className="text-sm text-muted-foreground">{step.text}</p>
             </div>
           ))}
+        </section>
+
+        <section id="como-funciona" className="flex scroll-mt-8 flex-col gap-8">
+          <div className="flex max-w-2xl flex-col gap-3">
+            <p className="text-sm font-medium text-primary">Como funciona</p>
+            <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">Da ideia ao palco em quatro passos</h2>
+            <p className="text-muted-foreground">
+              Você cuida do conteúdo. O PulseStage cuida da interação, dos resultados e do que aprender com eles.
+            </p>
+          </div>
+          <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {HOW_IT_WORKS.map((step, index) => (
+              <li key={step.title} className="flex flex-col gap-3 rounded-xl border bg-card p-6 shadow-sm">
+                <span className="grid size-9 place-items-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+                  {index + 1}
+                </span>
+                <h3 className="font-semibold">{step.title}</h3>
+                <p className="text-sm text-muted-foreground">{step.text}</p>
+              </li>
+            ))}
+          </ol>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm text-muted-foreground">Cinco formatos de interação:</span>
+            {INTERACTION_TYPES.map((type) => (
+              <span key={type} className="rounded-full border px-3 py-1 text-sm">
+                {type}
+              </span>
+            ))}
+          </div>
+        </section>
+
+        <section className="flex flex-col items-center gap-4 rounded-2xl border bg-muted/40 px-6 py-12 text-center">
+          <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">Pronto para ouvir sua audiência?</h2>
+          <p className="max-w-lg text-muted-foreground">
+            Crie sua conta e monte a primeira sessão em menos de cinco minutos. Dá para entrar com o Google.
+          </p>
+          <Link href="/signup" className={buttonVariants({ size: "lg" })}>
+            Começar grátis
+          </Link>
         </section>
       </main>
 

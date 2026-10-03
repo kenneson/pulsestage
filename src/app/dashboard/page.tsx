@@ -56,9 +56,14 @@ export default async function DashboardPage() {
             title="Nenhuma sessão ainda"
             description="Crie sua primeira sessão, adicione interações e compartilhe o código com a audiência."
             action={
-              <Link href="/dashboard/sessions/new" className={buttonVariants()}>
-                Criar sessão
-              </Link>
+              <div className="flex flex-wrap justify-center gap-2">
+                <Link href="/dashboard/sessions/new" className={buttonVariants()}>
+                  Criar sessão
+                </Link>
+                <Link href="/dashboard/guia" className={buttonVariants({ variant: "outline" })}>
+                  Ver o guia
+                </Link>
+              </div>
             }
           />
         ) : (
