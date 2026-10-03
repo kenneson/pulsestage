@@ -60,8 +60,9 @@ export default function PrivacyPage() {
 
         <Section title="O que coletamos de palestrantes">
           <p>
-            Nome, e-mail e senha da conta (a senha é guardada pelo serviço de autenticação, nunca em texto puro), além
-            das sessões, interações e resultados que você cria.
+            Nome, e-mail e senha da conta (a senha é guardada pelo serviço de autenticação, nunca em texto puro). Se
+            você entrar com o Google, recebemos dele apenas nome, e-mail e foto do perfil, sem acesso a mais nada da sua
+            conta. Também guardamos as sessões, interações e resultados que você cria.
           </p>
         </Section>
 

@@ -31,6 +31,7 @@ export function isUuid(value: unknown): value is string {
   return typeof value === "string" && UUID_RE.test(value);
 }
 
+/** Só caminhos internos. Barra invertida é recusada: navegadores tratam "/\x.com" como "//x.com". */
 export function safeNextPath(next: string | null | undefined, fallback = "/dashboard"): string {
-  return next && next.startsWith("/") && !next.startsWith("//") ? next : fallback;
+  return next && next.startsWith("/") && !next.startsWith("//") && !next.includes("\\") ? next : fallback;
 }

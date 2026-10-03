@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
@@ -60,6 +61,22 @@ export async function signInAction(_prev: AuthFormState, formData: FormData): Pr
   if (error) return { error: translateAuthError(error.message) };
 
   redirect(safeNextPath(values.next));
+}
+
+export async function signInWithGoogleAction(formData: FormData): Promise<void> {
+  const next = safeNextPath(formValues(formData, ["next"] as const).next);
+  // Origem real da requisição (localhost, preview ou produção). O Supabase só aceita
+  // redirectTo que esteja nas Redirect URLs do projeto.
+  const origin = (await headers()).get("origin") ?? publicEnv.appUrl;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}` },
+  });
+  if (error || !data.url) redirect("/login?error=google");
+
+  redirect(data.url);
 }
 
 export async function signOutAction(): Promise<void> {
