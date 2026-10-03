@@ -23,8 +23,11 @@ Supabase (Auth, Postgres, RLS, Realtime) · Zod · Recharts · Vercel.
    Gere o segredo do participante com `openssl rand -base64 48`.
 5. **Realtime:** confirme em *Realtime → Settings* que o acesso público a canais está permitido
    (Presence dos participantes usa a publishable key).
-6. **Auth:** em *Authentication → URL Configuration*, adicione `http://localhost:3000/auth/callback`
-   (e a URL de produção) às Redirect URLs.
+6. **Auth:** em *Authentication → URL Configuration*, adicione `http://localhost:3000/**`
+   e `https://SEU-APP.vercel.app/**` às Redirect URLs. Sem isso, o retorno do login cai no Site URL e falha.
+   - **Login com Google (opcional):** no Google Cloud, crie um ID do cliente OAuth (Aplicativo da Web) com a URI
+     de redirecionamento `https://<projeto>.supabase.co/auth/v1/callback`. Cole o Client ID e o Client Secret em
+     *Authentication → Sign In / Providers → Google* no Supabase. Nenhuma variável de ambiente é necessária.
 7. `npm run dev` → http://localhost:3000
 
 Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arquivo escrito à mão.
@@ -71,6 +74,7 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
 | Código do MVP (auth, sessões, builder, ao vivo, projetor, participante, feedback, analytics, evolução, IA) | ✅ compila (tsc, lint, build), ⏳ falta teste ponta a ponta |
 | Tema escuro (toggle claro/escuro, segue o sistema por padrão) | ✅ |
 | Polimento: loading/skeletons, diálogos de confirmação, página `/privacidade` | ✅ |
+| Login e cadastro com Google | ✅ |
 | Testes unitários do domínio (sessão, palavras, datas, resultados, métricas) | ✅ |
 | Testes de integração e E2E | ⏳ |
 | Deploy na Vercel | ✅ |
