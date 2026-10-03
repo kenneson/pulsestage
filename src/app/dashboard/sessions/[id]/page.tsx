@@ -14,7 +14,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs } from "@/components/ui/tabs";
 import { StatusBadge } from "@/components/sessions/status-badge";
 import { SessionForm } from "@/components/sessions/session-form";
-import { DeleteSessionButton, StartSessionButton } from "@/components/sessions/session-controls";
+import { DeleteSessionButton, DuplicateSessionButton, StartSessionButton } from "@/components/sessions/session-controls";
+import { loadLibrary } from "@/lib/data/library";
 import { QrDownloadButton } from "@/components/sessions/qr-download-button";
 import { joinUrl } from "@/lib/env";
 import { InteractionsEditor, type EditorItem } from "@/components/builder/interactions-editor";
@@ -37,6 +38,9 @@ export default async function SessionBuilderPage({ params }: { params: Promise<{
     listSurveyTemplates(supabase),
     supabase.from("session_surveys").select("name").eq("session_id", id).maybeSingle(),
   ]);
+  // Biblioteca sem as perguntas que já estão nesta sessão.
+  const ownIds = new Set(interactions.map((i) => i.id));
+  const library = (await loadLibrary(supabase)).filter((item) => !ownIds.has(item.sourceId));
   const surveyOptions = templates.map((t) => ({ id: t.id, name: t.name, isPlatform: t.isPlatform }));
   const surveyTemplateId = session.survey_template_id ?? templates.find((t) => t.slug === "geral")?.id ?? "";
 
@@ -82,6 +86,7 @@ export default async function SessionBuilderPage({ params }: { params: Promise<{
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <DeleteSessionButton sessionId={id} title={session.title} />
+          <DuplicateSessionButton sessionId={id} />
           {status !== "completed" ? <QrDownloadButton joinUrl={joinUrl(session.join_code)} code={session.join_code} /> : null}
           {status === "draft" ? <StartSessionButton sessionId={id} hasInteractions={items.length > 0} /> : null}
           {status === "live" || status === "paused" ? (
@@ -112,7 +117,7 @@ export default async function SessionBuilderPage({ params }: { params: Promise<{
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <InteractionsEditor sessionId={id} items={items} readOnly={status === "completed"} />
+                  <InteractionsEditor sessionId={id} items={items} readOnly={status === "completed"} library={library} />
                 </CardContent>
               </Card>
             ),

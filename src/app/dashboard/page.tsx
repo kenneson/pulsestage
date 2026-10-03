@@ -12,7 +12,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/misc";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { SessionList } from "@/components/sessions/session-list";
-import { StartSessionButton } from "@/components/sessions/session-controls";
+import { DuplicateSessionButton, StartSessionButton } from "@/components/sessions/session-controls";
 import { QrDownloadButton } from "@/components/sessions/qr-download-button";
 import {
   BarChartIcon,
@@ -103,6 +103,7 @@ export default async function DashboardPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             <QrDownloadButton joinUrl={joinUrl(next.join_code)} code={next.join_code} />
+            <DuplicateSessionButton sessionId={next.id} size="sm" />
             {nextStatus === "draft" ? (
               <>
                 <Link href={`/dashboard/sessions/${next.id}`} className={buttonVariants({ variant: "outline", size: "sm" })}>

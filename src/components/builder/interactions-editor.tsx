@@ -18,6 +18,8 @@ import { useConfirm } from "@/components/ui/confirm-dialog";
 import { EmptyState } from "@/components/ui/misc";
 import { ArrowDownIcon, ArrowUpIcon, EditIcon, EyeIcon, PlusIcon, TrashIcon } from "@/components/icons";
 import { AnswerForm } from "@/components/participant/answer-form";
+import { LibraryPicker } from "@/components/library/library-picker";
+import type { LibraryItem } from "@/lib/domain/library";
 import { emptyDraft, InteractionForm, type InteractionDraft } from "./interaction-form";
 
 export type EditorItem = {
@@ -31,10 +33,12 @@ export function InteractionsEditor({
   sessionId,
   items,
   readOnly,
+  library = [],
 }: {
   sessionId: string;
   items: EditorItem[];
   readOnly: boolean;
+  library?: LibraryItem[];
 }) {
   const router = useRouter();
   const [editing, setEditing] = useState<string | null>(null);
@@ -194,6 +198,9 @@ export function InteractionsEditor({
                 {INTERACTION_TYPE_META[type].label}
               </Button>
             ))}
+          </div>
+          <div className="flex flex-wrap gap-2 border-t pt-3">
+            <LibraryPicker sessionId={sessionId} items={library} />
           </div>
         </div>
       ) : null}

@@ -13,6 +13,7 @@ import {
   BookIcon,
   ClipboardIcon,
   HomeIcon,
+  LibraryIcon,
   LogOutIcon,
   MenuIcon,
   PlusIcon,
@@ -26,6 +27,7 @@ const LINKS = [
   { href: "/dashboard", label: "Visão geral", exact: true, icon: HomeIcon },
   { href: "/dashboard/sessions", label: "Sessões", exact: false, icon: PresentationIcon },
   { href: "/dashboard/pesquisas", label: "Pesquisas", exact: false, icon: ClipboardIcon },
+  { href: "/dashboard/biblioteca", label: "Biblioteca", exact: false, icon: LibraryIcon },
   { href: "/dashboard/analytics", label: "Evolução", exact: true, icon: TrendingUpIcon },
   { href: "/dashboard/guia", label: "Guia", exact: true, icon: BookIcon },
 ];

@@ -95,7 +95,9 @@ export default function GuidePage() {
             </ul>
             <p>
               Use o ícone de olho para <strong>pré-visualizar</strong> como o participante verá cada pergunta, as setas
-              para <strong>subir ou descer</strong> na ordem e o lápis para editar.
+              para <strong>subir ou descer</strong> na ordem e o lápis para editar. Para reaproveitar perguntas de outras
+              sessões, clique em <strong>“Da biblioteca”</strong>; para repetir uma palestra inteira, use{" "}
+              <strong>“Duplicar”</strong> no topo da sessão.
             </p>
           </Section>
 

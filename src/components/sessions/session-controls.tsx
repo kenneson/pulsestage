@@ -4,9 +4,10 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { deleteSessionAction, setSessionStatusAction } from "@/features/sessions/actions";
+import { duplicateSessionAction } from "@/features/library/actions";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/components/ui/confirm-dialog";
-import { PlayIcon, TrashIcon } from "@/components/icons";
+import { CopyIcon, PlayIcon, TrashIcon } from "@/components/icons";
 
 export function StartSessionButton({ sessionId, hasInteractions }: { sessionId: string; hasInteractions: boolean }) {
   const router = useRouter();
@@ -77,5 +78,25 @@ export function DeleteSessionButton({ sessionId, title }: { sessionId: string; t
         <TrashIcon /> Excluir
       </Button>
     </>
+  );
+}
+
+export function DuplicateSessionButton({ sessionId, size = "default" }: { sessionId: string; size?: "default" | "sm" }) {
+  const [pending, startTransition] = useTransition();
+  return (
+    <Button
+      variant="outline"
+      size={size}
+      disabled={pending}
+      onClick={() =>
+        startTransition(async () => {
+          // Em caso de sucesso a action redireciona para a cópia.
+          const result = await duplicateSessionAction(sessionId);
+          if (!result.ok) toast.error(result.error);
+        })
+      }
+    >
+      <CopyIcon /> {pending ? "Duplicando…" : "Duplicar"}
+    </Button>
   );
 }

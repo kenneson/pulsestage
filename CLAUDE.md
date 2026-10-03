@@ -28,6 +28,8 @@
   cada usuário só grava na própria pasta) e mini-bio; preferências (fuso, pesquisa e duração padrão) lidas por
   `getSpeakerProfile()` (`lib/data/profile.ts`); datas formatadas e interpretadas no fuso do speaker; exportação
   em JSON e exclusão de conta (único uso da secret key fora do fluxo do participante).
+- **Biblioteca** (`/dashboard/biblioteca`): `lib/domain/library.ts` agrupa perguntas iguais de várias sessões;
+  `features/library/actions.ts` duplica sessões e copia perguntas (com alternativas, acerto e pontos) via RLS.
 - Navegação do painel: barra lateral com ícones (`components/dashboard/nav-links.tsx`); ícones novos vão em
   `components/icons.tsx`, no mesmo traço. Design aprovado no Claude Design (link no histórico do projeto).
 - Imports de valor entre módulos de `lib/domain/` usam extensão `.ts` (os testes rodam no Node sem compilar).
