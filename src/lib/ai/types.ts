@@ -47,6 +47,16 @@ export interface AIProvider {
   generateInsights(input: InsightInput): Promise<InsightOutput>;
 }
 
+/** Mensagem para o speaker a partir do status HTTP do provedor. */
+export function providerErrorMessage(status: number, provider: string, model: string): string {
+  if (status === 404) {
+    return `O modelo "${model}" não está disponível no ${provider}. Defina AI_MODEL com um modelo atual do provedor.`;
+  }
+  if (status === 401 || status === 403) return `A chave de IA foi recusada pelo ${provider}. Confira AI_API_KEY.`;
+  if (status === 429) return "O provedor de IA atingiu o limite de uso. Tente de novo em alguns minutos.";
+  return `O provedor de IA respondeu com erro ${status}.`;
+}
+
 export class AIProviderError extends Error {
   constructor(message: string) {
     super(message);

@@ -4,9 +4,10 @@ import { AnthropicProvider } from "./providers/anthropic";
 import { OpenAICompatibleProvider } from "./providers/openai-compatible";
 import type { AIProvider } from "./types";
 
-// Modelos padrão: sobrescreva com AI_MODEL quando quiser outro.
+// Modelos padrão: sobrescreva com AI_MODEL quando quiser outro. Provedores aposentam modelos:
+// se aparecer "modelo não encontrado", confira a lista atual do provedor (Groq: GET /openai/v1/models).
 const DEFAULT_MODELS = {
-  groq: "llama-3.3-70b-versatile",
+  groq: "openai/gpt-oss-120b",
   openai: "gpt-4.1-mini",
   anthropic: "claude-sonnet-5-5",
 } as const;

@@ -2,7 +2,7 @@ import "server-only";
 import { z } from "zod";
 import { buildUserPrompt, SYSTEM_PROMPT } from "../prompt";
 import { parseInsightOutput } from "../json";
-import { AIProviderError, type AIProvider, type InsightInput } from "../types";
+import { AIProviderError, providerErrorMessage, type AIProvider, type InsightInput } from "../types";
 import type { InsightOutput } from "../schema";
 
 const responseSchema = z.object({
@@ -34,7 +34,7 @@ export class OpenAICompatibleProvider implements AIProvider {
       signal: AbortSignal.timeout(60_000),
     });
 
-    if (!res.ok) throw new AIProviderError(`O provedor de IA respondeu com erro ${res.status}.`);
+    if (!res.ok) throw new AIProviderError(providerErrorMessage(res.status, this.name, this.model));
     const parsed = responseSchema.safeParse(await res.json());
     const content = parsed.success ? parsed.data.choices[0]?.message.content : null;
     if (!content) throw new AIProviderError("Resposta vazia do provedor de IA.");

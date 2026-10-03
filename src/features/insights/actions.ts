@@ -43,7 +43,14 @@ export async function generateInsightsAction(sessionId: string): Promise<ActionR
   }
 
   const generationId = randomUUID();
-  const base = { session_id: sessionId, generation_id: generationId, provider: provider.name, model: provider.model };
+  // evidence vai em todas as linhas: num insert em lote, a coluna ausente vira NULL (não o default) e viola o not null.
+  const base = {
+    session_id: sessionId,
+    generation_id: generationId,
+    provider: provider.name,
+    model: provider.model,
+    evidence: [] as string[],
+  };
   const confidence = output.data_quality.confidence;
 
   const rows: InsightInsert[] = [
