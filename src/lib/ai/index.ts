@@ -2,7 +2,12 @@ import "server-only";
 import { serverEnv } from "@/lib/env.server";
 import { AnthropicProvider } from "./providers/anthropic";
 import { OpenAICompatibleProvider } from "./providers/openai-compatible";
-import type { AIProvider } from "./types";
+import { parseInsightOutput } from "./json";
+import { buildUserPrompt, SYSTEM_PROMPT } from "./prompt";
+import { buildQuestionsPrompt, parseQuestionSuggestions, QUESTIONS_SYSTEM_PROMPT, type QuestionsInput } from "./questions";
+import type { InsightOutput } from "./schema";
+import type { AIProvider, InsightInput } from "./types";
+import type { ParsedInteractionInput } from "@/lib/domain/interactions";
 
 // Modelos padrão: sobrescreva com AI_MODEL quando quiser outro. Provedores aposentam modelos:
 // se aparecer "modelo não encontrado", confira a lista atual do provedor (Groq: GET /openai/v1/models).
@@ -34,4 +39,15 @@ export function isAIConfigured(): boolean {
   } catch {
     return false;
   }
+}
+
+export async function generateInsights(provider: AIProvider, input: InsightInput): Promise<InsightOutput> {
+  return parseInsightOutput(await provider.complete(SYSTEM_PROMPT, buildUserPrompt(input), { temperature: 0.2 }));
+}
+
+/** Perguntas sugeridas para o roteiro, já validadas com o schema do builder. */
+export async function suggestInteractions(provider: AIProvider, input: QuestionsInput): Promise<ParsedInteractionInput[]> {
+  // Temperatura mais alta: "Gerar outras sugestões" precisa de variedade.
+  const raw = await provider.complete(QUESTIONS_SYSTEM_PROMPT, buildQuestionsPrompt(input), { temperature: 0.8 });
+  return parseQuestionSuggestions(raw, [...input.existing, ...input.avoid]);
 }

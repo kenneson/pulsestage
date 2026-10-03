@@ -1,9 +1,6 @@
 import "server-only";
 import { z } from "zod";
-import { buildUserPrompt, SYSTEM_PROMPT } from "../prompt";
-import { parseInsightOutput } from "../json";
-import { AIProviderError, providerErrorMessage, type AIProvider, type InsightInput } from "../types";
-import type { InsightOutput } from "../schema";
+import { AIProviderError, providerErrorMessage, type AIProvider } from "../types";
 
 const responseSchema = z.object({
   content: z.array(z.object({ type: z.string(), text: z.string().optional() })),
@@ -17,7 +14,7 @@ export class AnthropicProvider implements AIProvider {
     private readonly apiKey: string,
   ) {}
 
-  async generateInsights(input: InsightInput): Promise<InsightOutput> {
+  async complete(system: string, user: string, { temperature }: { temperature: number }): Promise<string> {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
@@ -28,9 +25,9 @@ export class AnthropicProvider implements AIProvider {
       body: JSON.stringify({
         model: this.model,
         max_tokens: 2000,
-        temperature: 0.2,
-        system: SYSTEM_PROMPT,
-        messages: [{ role: "user", content: buildUserPrompt(input) }],
+        temperature,
+        system,
+        messages: [{ role: "user", content: user }],
       }),
       signal: AbortSignal.timeout(60_000),
     });
@@ -44,6 +41,6 @@ export class AnthropicProvider implements AIProvider {
           .join("")
       : "";
     if (!text) throw new AIProviderError("Resposta vazia do provedor de IA.");
-    return parseInsightOutput(text);
+    return text;
   }
 }

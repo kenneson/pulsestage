@@ -33,6 +33,8 @@
 - **Exportação**: relatório em `/dashboard/sessions/[id]/relatorio` (PDF via `window.print`, estilos `@media print`
   em `globals.css`, sempre claro); CSV em `.../exportar?tipo=interacoes|pesquisa` com `lib/domain/csv.ts`
   (`;`, BOM UTF-8, proteção contra fórmulas).
+- **IA no roteiro**: “Gerar com IA” (só aparece com IA configurada) sugere 5 perguntas a partir do título,
+  descrição e duração; limite de 8 s por speaker, em memória.
 - Navegação do painel: barra lateral com ícones (`components/dashboard/nav-links.tsx`); ícones novos vão em
   `components/icons.tsx`, no mesmo traço. Design aprovado no Claude Design (link no histórico do projeto).
 - Imports de valor entre módulos de `lib/domain/` usam extensão `.ts` (os testes rodam no Node sem compilar).
@@ -46,7 +48,9 @@
   `public.ts` usa a secret key e devolve só dados sanitizados.
 - `src/features/*/actions.ts` Server Actions (toda escrita passa por aqui).
 - `src/lib/realtime/` hooks de realtime (trocar Postgres Changes por Broadcast só mexe aqui).
-- `src/lib/ai/` abstração `AIProvider` (Groq/OpenAI/Anthropic via fetch, saída validada com Zod).
+- `src/lib/ai/` abstração `AIProvider` (Groq/OpenAI/Anthropic via fetch; `complete()` genérico, saída validada com Zod).
+  Casos de uso em `ai/index.ts`: `generateInsights` e `suggestInteractions` (sugestões passam pelo mesmo
+  `interactionInputSchema` do builder antes de chegar à UI).
 - `src/components/ui/` componentes no estilo shadcn/ui escritos à mão (sem Radix); ícones em `components/icons.tsx`.
 
 ## Regras inegociáveis

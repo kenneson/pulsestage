@@ -96,7 +96,8 @@ export default function PrivacyPage() {
             <li>
               <strong className="text-foreground">Inteligência artificial:</strong> quando o palestrante pede insights,
               enviamos ao provedor de IA configurado apenas resultados agregados e trechos de respostas abertas e
-              comentários de feedback. Nomes, e-mails e telefones nunca são enviados.
+              comentários de feedback. Quando pede sugestões de perguntas, enviamos só o título, a descrição, a duração
+              e as perguntas da sessão, sem nada da plateia. Nomes, e-mails e telefones nunca são enviados.
             </li>
           </ul>
         </Section>

@@ -16,6 +16,7 @@ import { StatusBadge } from "@/components/sessions/status-badge";
 import { SessionForm } from "@/components/sessions/session-form";
 import { DeleteSessionButton, DuplicateSessionButton, StartSessionButton } from "@/components/sessions/session-controls";
 import { loadLibrary } from "@/lib/data/library";
+import { isAIConfigured } from "@/lib/ai";
 import { QrDownloadButton } from "@/components/sessions/qr-download-button";
 import { joinUrl } from "@/lib/env";
 import { InteractionsEditor, type EditorItem } from "@/components/builder/interactions-editor";
@@ -117,7 +118,13 @@ export default async function SessionBuilderPage({ params }: { params: Promise<{
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <InteractionsEditor sessionId={id} items={items} readOnly={status === "completed"} library={library} />
+                  <InteractionsEditor
+                    sessionId={id}
+                    items={items}
+                    readOnly={status === "completed"}
+                    library={library}
+                    aiEnabled={isAIConfigured()}
+                  />
                 </CardContent>
               </Card>
             ),

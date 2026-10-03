@@ -1,5 +1,4 @@
 import type { Confidence } from "@/lib/domain/metrics";
-import type { InsightOutput } from "./schema";
 
 /** Dados agregados enviados à IA. Sem nomes, e-mails ou telefones. */
 export type InsightInput = {
@@ -44,7 +43,8 @@ export type InsightInput = {
 export interface AIProvider {
   readonly name: string;
   readonly model: string;
-  generateInsights(input: InsightInput): Promise<InsightOutput>;
+  /** Envia instruções + dados e devolve o texto da resposta; quem chama valida o JSON. */
+  complete(system: string, user: string, options: { temperature: number }): Promise<string>;
 }
 
 /** Mensagem para o speaker a partir do status HTTP do provedor. */

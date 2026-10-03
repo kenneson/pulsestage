@@ -81,6 +81,7 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
 | Navegação lateral com ícones, conta e configurações (perfil, preferências, segurança, LGPD) | ✅ |
 | Duplicar sessão e biblioteca de perguntas | ✅ |
 | Exportar relatório (PDF pela impressão do navegador) e CSV das respostas e da pesquisa | ✅ |
+| IA sugere perguntas para o roteiro (“Gerar com IA”) | ✅ |
 | Testes unitários do domínio (sessão, palavras, datas, resultados, métricas) | ✅ |
 | Testes de integração e E2E | ⏳ |
 | Deploy na Vercel | ✅ |

@@ -16,11 +16,12 @@ import { TYPE_PAPER, TypeTag } from "@/components/interaction-type-tag";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/components/ui/confirm-dialog";
 import { EmptyState } from "@/components/ui/misc";
-import { ArrowDownIcon, ArrowUpIcon, EditIcon, EyeIcon, PlusIcon, TrashIcon } from "@/components/icons";
+import { ArrowDownIcon, ArrowUpIcon, EditIcon, EyeIcon, PlusIcon, SparklesIcon, TrashIcon } from "@/components/icons";
 import { AnswerForm } from "@/components/participant/answer-form";
 import { LibraryPicker } from "@/components/library/library-picker";
 import type { LibraryItem } from "@/lib/domain/library";
 import { emptyDraft, InteractionForm, type InteractionDraft } from "./interaction-form";
+import { AISuggestionsPanel, useAISuggestions } from "./ai-suggestions";
 
 export type EditorItem = {
   interaction: PublicInteraction;
@@ -34,11 +35,13 @@ export function InteractionsEditor({
   items,
   readOnly,
   library = [],
+  aiEnabled = false,
 }: {
   sessionId: string;
   items: EditorItem[];
   readOnly: boolean;
   library?: LibraryItem[];
+  aiEnabled?: boolean;
 }) {
   const router = useRouter();
   const [editing, setEditing] = useState<string | null>(null);
@@ -46,6 +49,7 @@ export function InteractionsEditor({
   const [previewing, setPreviewing] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [confirm, confirmDialog] = useConfirm();
+  const ai = useAISuggestions(sessionId);
 
   const refresh = () => {
     setEditing(null);
@@ -86,124 +90,138 @@ export function InteractionsEditor({
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      {confirmDialog}
-      {items.length === 0 && !creating ? (
-        <EmptyState
-          title="Nenhuma interação"
-          description="Adicione enquetes, quizzes, escalas, nuvens de palavras ou perguntas abertas."
-        />
-      ) : null}
+    <div className={cn("grid grid-cols-1 items-start gap-6", ai.open && "lg:grid-cols-[minmax(0,1fr)_22rem]")}>
+      <div className="flex flex-col gap-4">
+        {confirmDialog}
+        {items.length === 0 && !creating ? (
+          <EmptyState
+            title="Nenhuma interação"
+            description="Adicione enquetes, quizzes, escalas, nuvens de palavras ou perguntas abertas."
+          />
+        ) : null}
 
-      <ol className="flex flex-col gap-3">
-        {items.map((item, index) => {
-          const { interaction } = item;
-          if (editing === interaction.id) {
+        <ol className="flex flex-col gap-3">
+          {items.map((item, index) => {
+            const { interaction } = item;
+            if (editing === interaction.id) {
+              return (
+                <li key={interaction.id}>
+                  <InteractionForm
+                    sessionId={sessionId}
+                    initial={item.draft}
+                    locked={item.responses > 0}
+                    onDone={refresh}
+                    onCancel={() => setEditing(null)}
+                  />
+                </li>
+              );
+            }
             return (
-              <li key={interaction.id}>
-                <InteractionForm
-                  sessionId={sessionId}
-                  initial={item.draft}
-                  locked={item.responses > 0}
-                  onDone={refresh}
-                  onCancel={() => setEditing(null)}
-                />
-              </li>
-            );
-          }
-          return (
-            <li key={interaction.id} className="rounded-xl border bg-background">
-              <div className="flex items-start gap-3 p-4">
-                <span className="w-7 shrink-0 pt-0.5 font-script text-xl font-bold leading-none tabular-nums" aria-label={`Deixa ${index + 1}`}>
-                  {index + 1}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <TypeTag type={interaction.type} />
-                    {item.isActive ? <Badge variant="live">Ativa</Badge> : null}
-                    {item.responses > 0 ? (
-                      <span className="text-xs text-muted-foreground">{item.responses} respostas</span>
+              <li key={interaction.id} className="rounded-xl border bg-background">
+                <div className="flex items-start gap-3 p-4">
+                  <span className="w-7 shrink-0 pt-0.5 font-script text-xl font-bold leading-none tabular-nums" aria-label={`Deixa ${index + 1}`}>
+                    {index + 1}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <TypeTag type={interaction.type} />
+                      {item.isActive ? <Badge variant="live">Ativa</Badge> : null}
+                      {item.responses > 0 ? (
+                        <span className="text-xs text-muted-foreground">{item.responses} respostas</span>
+                      ) : null}
+                    </div>
+                    <p className="mt-1 font-medium">{interaction.title}</p>
+                    {interaction.options.length > 0 ? (
+                      <p className="mt-1 truncate text-sm text-muted-foreground">
+                        {interaction.options.map((o) => o.label).join(" · ")}
+                      </p>
                     ) : null}
                   </div>
-                  <p className="mt-1 font-medium">{interaction.title}</p>
-                  {interaction.options.length > 0 ? (
-                    <p className="mt-1 truncate text-sm text-muted-foreground">
-                      {interaction.options.map((o) => o.label).join(" · ")}
-                    </p>
-                  ) : null}
-                </div>
-                <div className="flex shrink-0 items-center">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label="Pré-visualizar"
-                    onClick={() => setPreviewing(previewing === interaction.id ? null : interaction.id)}
-                  >
-                    <EyeIcon />
-                  </Button>
-                  {!readOnly ? (
-                    <>
-                      <Button variant="ghost" size="icon" aria-label="Subir" disabled={pending || index === 0} onClick={() => move(index, -1)}>
-                        <ArrowUpIcon />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Descer"
-                        disabled={pending || index === items.length - 1}
-                        onClick={() => move(index, 1)}
-                      >
-                        <ArrowDownIcon />
-                      </Button>
-                      <Button variant="ghost" size="icon" aria-label="Editar" onClick={() => setEditing(interaction.id)}>
-                        <EditIcon />
-                      </Button>
-                      <Button variant="ghost" size="icon" aria-label="Excluir" disabled={pending} onClick={() => remove(item)}>
-                        <TrashIcon />
-                      </Button>
-                    </>
-                  ) : null}
-                </div>
-              </div>
-              {previewing === interaction.id ? (
-                <div className="border-t bg-muted/40 p-4">
-                  <div className="mx-auto max-w-sm rounded-2xl border bg-background p-5 shadow-sm">
-                    <p className="mb-4 text-lg font-semibold">{interaction.title}</p>
-                    <AnswerForm interaction={interaction} onSubmit={() => undefined} preview />
+                  <div className="flex shrink-0 items-center">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Pré-visualizar"
+                      onClick={() => setPreviewing(previewing === interaction.id ? null : interaction.id)}
+                    >
+                      <EyeIcon />
+                    </Button>
+                    {!readOnly ? (
+                      <>
+                        <Button variant="ghost" size="icon" aria-label="Subir" disabled={pending || index === 0} onClick={() => move(index, -1)}>
+                          <ArrowUpIcon />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Descer"
+                          disabled={pending || index === items.length - 1}
+                          onClick={() => move(index, 1)}
+                        >
+                          <ArrowDownIcon />
+                        </Button>
+                        <Button variant="ghost" size="icon" aria-label="Editar" onClick={() => setEditing(interaction.id)}>
+                          <EditIcon />
+                        </Button>
+                        <Button variant="ghost" size="icon" aria-label="Excluir" disabled={pending} onClick={() => remove(item)}>
+                          <TrashIcon />
+                        </Button>
+                      </>
+                    ) : null}
                   </div>
                 </div>
-              ) : null}
-            </li>
-          );
-        })}
-      </ol>
+                {previewing === interaction.id ? (
+                  <div className="border-t bg-muted/40 p-4">
+                    <div className="mx-auto max-w-sm rounded-2xl border bg-background p-5 shadow-sm">
+                      <p className="mb-4 text-lg font-semibold">{interaction.title}</p>
+                      <AnswerForm interaction={interaction} onSubmit={() => undefined} preview />
+                    </div>
+                  </div>
+                ) : null}
+              </li>
+            );
+          })}
+        </ol>
 
-      {creating ? (
-        <InteractionForm
-          key={creating}
-          sessionId={sessionId}
-          initial={emptyDraft(creating)}
-          onDone={refresh}
-          onCancel={() => setCreating(null)}
-        />
-      ) : !readOnly ? (
-        <div className="flex flex-col gap-2 rounded-xl border border-dashed p-4">
-          <p className="flex items-center gap-2 text-sm font-medium">
-            <PlusIcon /> Adicionar interação
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {INTERACTION_TYPES.map((type) => (
-              <Button key={type} variant="outline" size="sm" onClick={() => setCreating(type)} title={INTERACTION_TYPE_META[type].description}>
-                <span aria-hidden className={cn("size-2.5 rounded-sm", TYPE_PAPER[type])} />
-                {INTERACTION_TYPE_META[type].label}
-              </Button>
-            ))}
+        {creating ? (
+          <InteractionForm
+            key={creating}
+            sessionId={sessionId}
+            initial={emptyDraft(creating)}
+            onDone={refresh}
+            onCancel={() => setCreating(null)}
+          />
+        ) : !readOnly ? (
+          <div className="flex flex-col gap-2 rounded-xl border border-dashed p-4">
+            <p className="flex items-center gap-2 text-sm font-medium">
+              <PlusIcon /> Adicionar interação
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {INTERACTION_TYPES.map((type) => (
+                <Button key={type} variant="outline" size="sm" onClick={() => setCreating(type)} title={INTERACTION_TYPE_META[type].description}>
+                  <span aria-hidden className={cn("size-2.5 rounded-sm", TYPE_PAPER[type])} />
+                  {INTERACTION_TYPE_META[type].label}
+                </Button>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-2 border-t pt-3">
+              <LibraryPicker sessionId={sessionId} items={library} />
+              {aiEnabled ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-primary/60 text-primary"
+                  disabled={ai.loading}
+                  onClick={ai.generate}
+                >
+                  <SparklesIcon /> Gerar com IA
+                </Button>
+              ) : null}
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2 border-t pt-3">
-            <LibraryPicker sessionId={sessionId} items={library} />
-          </div>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
+      {ai.open && !readOnly ? <AISuggestionsPanel sessionId={sessionId} ai={ai} onAdded={() => router.refresh()} /> : null}
     </div>
   );
 }

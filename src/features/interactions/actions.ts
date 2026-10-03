@@ -7,6 +7,8 @@ import { createClient, type ServerSupabase } from "@/lib/supabase/server";
 import { getOwnedSession } from "@/lib/data/sessions";
 import { hasDbErrorCode } from "@/lib/supabase/errors";
 import { hasOptions, interactionInputSchema, type ParsedInteractionInput } from "@/lib/domain/interactions";
+import { getAIProvider, suggestInteractions } from "@/lib/ai";
+import { AIProviderError } from "@/lib/ai/types";
 import { fail, firstIssue, isUuid, ok, type ActionResult } from "@/lib/action-result";
 
 function revalidateSession(sessionId: string) {
@@ -136,6 +138,47 @@ export async function saveInteractionAction(
 
   revalidateSession(sessionId);
   return ok({ id: interactionId });
+}
+
+// ponytail: limite em memória, por instância do servidor; mover para o banco se o custo da IA pesar.
+const SUGGEST_INTERVAL_MS = 8_000;
+const lastSuggestion = new Map<string, number>();
+const avoidSchema = z.array(z.string().max(300)).max(40);
+
+export async function suggestInteractionsAction(
+  sessionId: string,
+  rawAvoid: unknown,
+): Promise<ActionResult<{ suggestions: ParsedInteractionInput[] }>> {
+  const avoid = avoidSchema.safeParse(rawAvoid);
+  if (!isUuid(sessionId) || !avoid.success) return fail("Dados inválidos.");
+
+  const provider = getAIProvider();
+  if (!provider) return fail("A IA não está configurada. Defina AI_PROVIDER e AI_API_KEY.", "not_configured");
+
+  const supabase = await createClient();
+  const session = await getOwnedSession(supabase, sessionId);
+  if (!session) return fail("Sessão não encontrada.");
+  if (session.status === "completed") return fail("A sessão já foi encerrada.");
+
+  const last = lastSuggestion.get(session.speaker_id) ?? 0;
+  if (Date.now() - last < SUGGEST_INTERVAL_MS) return fail("Aguarde alguns segundos antes de gerar de novo.");
+  lastSuggestion.set(session.speaker_id, Date.now());
+
+  const { data: existing, error } = await supabase.from("interactions").select("title").eq("session_id", sessionId);
+  if (error) return fail("Não foi possível carregar o roteiro.");
+
+  try {
+    const suggestions = await suggestInteractions(provider, {
+      title: session.title,
+      description: session.description,
+      durationMinutes: session.estimated_duration_minutes,
+      existing: existing.map((i) => i.title),
+      avoid: avoid.data,
+    });
+    return ok({ suggestions });
+  } catch (e) {
+    return fail(e instanceof AIProviderError ? e.message : "Falha ao gerar sugestões.");
+  }
 }
 
 export async function deleteInteractionAction(sessionId: string, interactionId: string): Promise<ActionResult> {

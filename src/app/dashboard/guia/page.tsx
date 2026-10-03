@@ -97,7 +97,8 @@ export default function GuidePage() {
               Use o ícone de olho para <strong>pré-visualizar</strong> como o participante verá cada pergunta, as setas
               para <strong>subir ou descer</strong> na ordem e o lápis para editar. Para reaproveitar perguntas de outras
               sessões, clique em <strong>“Da biblioteca”</strong>; para repetir uma palestra inteira, use{" "}
-              <strong>“Duplicar”</strong> no topo da sessão.
+              <strong>“Duplicar”</strong> no topo da sessão. Sem ideias? <strong>“Gerar com IA”</strong> sugere perguntas
+              a partir do título e da descrição: revise e use <strong>“Adicionar ao roteiro”</strong> nas que servirem.
             </p>
           </Section>
 
