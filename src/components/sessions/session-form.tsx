@@ -1,13 +1,14 @@
 "use client";
 
 import { useActionState } from "react";
+import Link from "next/link";
 import {
   createSessionAction,
   updateSessionAction,
   type SessionFormState,
 } from "@/features/sessions/actions";
 import { Button } from "@/components/ui/button";
-import { Field, Input, Label, Textarea } from "@/components/ui/input";
+import { Field, Input, Label, Select, Textarea } from "@/components/ui/input";
 import { Alert } from "@/components/ui/misc";
 
 type Defaults = {
@@ -17,19 +18,27 @@ type Defaults = {
   time: string;
   duration: string;
   joinCode: string;
+  surveyTemplateId: string;
 };
 
-const EMPTY: Defaults = { title: "", description: "", date: "", time: "", duration: "60", joinCode: "" };
+export type SurveyOption = { id: string; name: string; isPlatform: boolean };
+
+const EMPTY: Defaults = { title: "", description: "", date: "", time: "", duration: "60", joinCode: "", surveyTemplateId: "" };
 const initial: SessionFormState = {};
 
 export function SessionForm({
   sessionId,
   defaults = EMPTY,
   canEditCode = true,
+  surveyOptions,
+  lockedSurveyName,
 }: {
   sessionId?: string;
   defaults?: Defaults;
   canEditCode?: boolean;
+  surveyOptions: SurveyOption[];
+  /** Nome da pesquisa já copiada para a sessão (encerrada): não dá mais para trocar. */
+  lockedSurveyName?: string | null;
 }) {
   const action = sessionId ? updateSessionAction.bind(null, sessionId) : createSessionAction;
   const [state, formAction, pending] = useActionState(action, initial);
@@ -85,6 +94,47 @@ export function SessionForm({
         {!canEditCode ? (
           <p className="text-xs text-muted-foreground">O código não pode mudar depois que a sessão começou.</p>
         ) : null}
+      </Field>
+      <Field>
+        <Label htmlFor="surveyTemplateId">Pesquisa pós-evento</Label>
+        {lockedSurveyName ? (
+          <>
+            <Input id="surveyTemplateId" value={lockedSurveyName} disabled readOnly />
+            <input type="hidden" name="surveyTemplateId" value={defaults.surveyTemplateId} />
+            <p className="text-xs text-muted-foreground">A sessão já foi encerrada com esta pesquisa.</p>
+          </>
+        ) : (
+          <>
+            <Select id="surveyTemplateId" name="surveyTemplateId" defaultValue={defaults.surveyTemplateId}>
+              <optgroup label="Modelos prontos">
+                {surveyOptions
+                  .filter((o) => o.isPlatform)
+                  .map((o) => (
+                    <option key={o.id} value={o.id}>
+                      {o.name}
+                    </option>
+                  ))}
+              </optgroup>
+              {surveyOptions.some((o) => !o.isPlatform) ? (
+                <optgroup label="Meus modelos">
+                  {surveyOptions
+                    .filter((o) => !o.isPlatform)
+                    .map((o) => (
+                      <option key={o.id} value={o.id}>
+                        {o.name}
+                      </option>
+                    ))}
+                </optgroup>
+              ) : null}
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              A plateia responde ao encerrar a sessão.{" "}
+              <Link href="/dashboard/pesquisas" className="text-primary underline-offset-4 hover:underline">
+                Ver ou criar modelos
+              </Link>
+            </p>
+          </>
+        )}
       </Field>
       {state.error ? <Alert>{state.error}</Alert> : null}
       {state.success ? <Alert tone="success">{state.success}</Alert> : null}

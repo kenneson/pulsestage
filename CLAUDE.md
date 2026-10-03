@@ -17,6 +17,14 @@
   papéis de revisão `rev-*` = um por tipo de interação (`components/interaction-type-tag.tsx`), Courier Prime (`font-script`)
   para falas, deixas, códigos e numerais. Não inventar depoimentos, logos ou números na landing.
 - Deploy na Vercel feito; `npm test` cobre os módulos puros de `lib/domain/`.
+- **Pesquisas pós-evento por modelo** (migration `20261003000000_survey_templates.sql`, já aplicada) substituem o
+  formulário fixo das seções 0.5 e 32 do PROMPT.md. Modelos em `survey_templates` (plataforma: `owner_id` null + slug;
+  speaker: dono). A sessão escolhe `survey_template_id`; ao encerrar, um trigger copia as perguntas para
+  `session_surveys`/`session_survey_questions` (editar o modelo não muda relatórios). Respostas em
+  `survey_responses`/`survey_answers`, gravadas pelo servidor. Regras em `lib/domain/survey.ts` (dimensões,
+  validação, NPS, pontos fortes/fracos). A tabela `feedback` é legado: convertida por `convert_legacy_feedback()`.
+- `database.types.ts` agora é gerado do banco (não editar à mão).
+- Imports de valor entre módulos de `lib/domain/` usam extensão `.ts` (os testes rodam no Node sem compilar).
 - **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta
   (seção "Teste manual" do README). `src/lib/supabase/database.types.ts` foi escrito à mão:
   substitua por `npm run db:types` após ligar o projeto.

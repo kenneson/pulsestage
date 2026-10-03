@@ -322,3 +322,6 @@ begin
     '{"min":1,"max":5,"minLabel":"Nada","maxLabel":"Muito"}');
 end;
 $$;
+
+-- O seed grava no formato antigo (tabela feedback); converte para as pesquisas por modelo.
+select public.convert_legacy_feedback();

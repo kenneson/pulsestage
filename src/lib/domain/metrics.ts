@@ -1,11 +1,13 @@
 import { z } from "zod";
-import type {
-  FeedbackRow,
-  InteractionRow,
-  ParticipantRow,
-  ResponseRow,
-  SessionRow,
-} from "@/lib/supabase/types";
+import type { InteractionRow, ParticipantRow, ResponseRow, SessionRow } from "@/lib/supabase/types";
+import {
+  dimensionScores,
+  headlineScore,
+  scaleAverage,
+  type AnswerLike,
+  type DimensionScore,
+  type SurveyQuestion,
+} from "./survey.ts";
 
 // Métricas baseadas em participação. Não medem atenção, aprendizado ou qualidade objetiva.
 
@@ -24,35 +26,44 @@ function ts(iso: string | null | undefined): number | null {
   return Number.isNaN(value) ? null : value;
 }
 
+/** Pesquisa pós-evento de uma sessão: perguntas copiadas do modelo e respostas. */
+export type SessionSurveyData = {
+  name: string | null;
+  questions: SurveyQuestion[];
+  responseCount: number;
+  answers: AnswerLike[];
+};
+
+export const EMPTY_SURVEY: SessionSurveyData = { name: null, questions: [], responseCount: 0, answers: [] };
+
 export type AnalyticsData = {
   session: SessionRow;
   interactions: InteractionRow[];
   participants: ParticipantRow[];
   responses: ResponseRow[];
-  feedback: FeedbackRow[];
+  survey: SessionSurveyData;
 };
 
 // ---------------------------------------------------------------------------
-// Feedback
+// Pesquisa pós-evento
 // ---------------------------------------------------------------------------
 
-export type FeedbackScores = {
+export type SurveySummary = {
   count: number;
-  overall: number | null; // 0–10
-  clarity: number | null; // 1–5
-  engagement: number | null;
-  content: number | null;
-  applicability: number | null;
+  dimensions: DimensionScore[];
+  /** nota geral 0–10 (utilidade/satisfação/recomendação), quando o modelo tiver */
+  headline: number | null;
+  /** média das dimensões em 1–5 */
+  scaleAverage: number | null;
 };
 
-export function feedbackScores(feedback: readonly FeedbackRow[]): FeedbackScores {
+export function summarizeSurvey(survey: SessionSurveyData): SurveySummary {
+  const dimensions = dimensionScores(survey.questions, survey.answers);
   return {
-    count: feedback.length,
-    overall: average(feedback.map((f) => f.overall_rating)),
-    clarity: average(feedback.map((f) => f.clarity_rating)),
-    engagement: average(feedback.map((f) => f.engagement_rating)),
-    content: average(feedback.map((f) => f.content_rating)),
-    applicability: average(feedback.map((f) => f.applicability_rating)),
+    count: survey.responseCount,
+    dimensions,
+    headline: headlineScore(dimensions),
+    scaleAverage: scaleAverage(dimensions),
   };
 }
 
@@ -115,8 +126,9 @@ export type SessionOverview = {
   responseRate: number | null;
   /** participantes que responderam algo / participantes que entraram */
   participationRate: number | null;
-  feedbackResponseRate: number | null;
-  scores: FeedbackScores;
+  /** pesquisas respondidas / participantes que entraram */
+  surveyResponseRate: number | null;
+  survey: SurveySummary;
 };
 
 export function computeOverview(data: AnalyticsData, pulse = computePulse(data)): SessionOverview {
@@ -129,8 +141,8 @@ export function computeOverview(data: AnalyticsData, pulse = computePulse(data))
     responseOpportunities: opportunities,
     responseRate: ratio(data.responses.length, opportunities),
     participationRate: ratio(uniqueResponders, data.participants.length),
-    feedbackResponseRate: ratio(data.feedback.length, data.participants.length),
-    scores: feedbackScores(data.feedback),
+    surveyResponseRate: ratio(data.survey.responseCount, data.participants.length),
+    survey: summarizeSurvey(data.survey),
   };
 }
 
@@ -210,12 +222,12 @@ export type HistoryRow = {
   date: string | null;
   participants: number;
   participationRate: number | null;
-  scores: FeedbackScores;
+  survey: SurveySummary;
 };
 
 export function computeHistory(
   sessions: readonly SessionRow[],
-  feedback: readonly FeedbackRow[],
+  surveys: ReadonlyMap<string, SessionSurveyData>,
   participants: readonly Pick<ParticipantRow, "id" | "session_id">[],
   responders: readonly Pick<ResponseRow, "participant_id" | "session_id">[],
 ): HistoryRow[] {
@@ -231,7 +243,7 @@ export function computeHistory(
         date: s.started_at ?? s.scheduled_at ?? s.created_at,
         participants: sessionParticipants,
         participationRate: ratio(sessionResponders, sessionParticipants),
-        scores: feedbackScores(feedback.filter((f) => f.session_id === s.id)),
+        survey: summarizeSurvey(surveys.get(s.id) ?? EMPTY_SURVEY),
       };
     });
 }

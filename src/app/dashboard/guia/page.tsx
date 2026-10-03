@@ -12,7 +12,7 @@ const SECTIONS = [
   { id: "roteiro", title: "2. Montar o roteiro" },
   { id: "ao-vivo", title: "3. Apresentar ao vivo" },
   { id: "participantes", title: "4. O que a audiência vê" },
-  { id: "encerrar", title: "5. Encerrar e coletar feedback" },
+  { id: "encerrar", title: "5. Encerrar e aplicar a pesquisa" },
   { id: "analytics", title: "6. Analisar os resultados" },
   { id: "dicas", title: "Dicas" },
 ];
@@ -140,14 +140,22 @@ export default function GuidePage() {
             </ul>
           </Section>
 
-          <Section id="encerrar" title="5. Encerrar e coletar feedback">
+          <Section id="encerrar" title="5. Encerrar e aplicar a pesquisa">
             <p>
-              Ao final, clique em <strong>“Encerrar sessão”</strong>. Os celulares mostram o link de avaliação e o
+              Ao final, clique em <strong>“Encerrar sessão”</strong>. Os celulares mostram o link da pesquisa e o
               projetor exibe um QR Code para ela. Deixe essa tela no ar por um minuto.
             </p>
             <p>
-              A avaliação tem uma pergunta obrigatória (utilidade, de 0 a 10) e notas opcionais de 1 a 5 para clareza,
-              engajamento, conteúdo e aplicabilidade, além de comentários. Uma sessão encerrada não pode ser reaberta.
+              A pesquisa é sobre a palestra ou aula como um todo. Escolha o modelo em <strong>“Pesquisa pós-evento”</strong>,
+              no formulário da sessão: <em>Avaliação geral</em> (padrão), <em>Satisfação e NPS</em>,{" "}
+              <em>Atenção e engajamento</em>, <em>Didática (aulas)</em>, <em>Treinamento corporativo</em> ou um modelo
+              seu.
+            </p>
+            <p>
+              Em <strong>“Pesquisas”</strong>, no menu, você cria seus modelos do zero ou duplica um pronto. As perguntas
+              podem ser escala de 1 a 5, nota de 0 a 10, múltipla escolha ou texto livre. Marque cada pergunta de nota
+              com uma dimensão (clareza, atenção, didática etc.) para ela entrar no scorecard e na evolução. Uma sessão
+              encerrada não pode ser reaberta, e editar um modelo depois não altera relatórios antigos.
             </p>
           </Section>
 
@@ -168,7 +176,12 @@ export default function GuidePage() {
                 busca.
               </li>
               <li>
-                <strong>Avaliações:</strong> médias do feedback e os comentários do público.
+                <strong>Scorecard:</strong> seus pontos mais fortes e os pontos para melhorar, segundo a pesquisa, e a
+                média de cada dimensão.
+              </li>
+              <li>
+                <strong>Resultados da pesquisa:</strong> cada pergunta com a distribuição das respostas, o NPS nas notas
+                de 0 a 10 e os comentários, com busca.
               </li>
               <li>
                 <strong>Insights:</strong> clique em <strong>“Gerar insights”</strong> para uma análise com IA (pontos
@@ -192,7 +205,8 @@ export default function GuidePage() {
               <li>Uma interação a cada 10 ou 15 minutos mantém o público envolvido sem quebrar o ritmo.</li>
               <li>Deixe o QR Code visível nos primeiros minutos: quem chega atrasado também entra.</li>
               <li>
-                Peça a avaliação ainda na sala. A taxa de resposta cai muito depois que o público sai.
+                Peça para responderem a pesquisa ainda na sala. A taxa de resposta cai muito depois que o público
+                sai.
               </li>
             </ul>
           </Section>

@@ -25,8 +25,8 @@ export async function generateInsightsAction(sessionId: string): Promise<ActionR
   const data = await loadSessionAnalytics(supabase, sessionId);
   if (!data) return fail("Sessão não encontrada.");
   if (data.session.status !== "completed") return fail("Gere insights depois de encerrar a sessão.");
-  if (data.responses.length === 0 && data.feedback.length === 0) {
-    return fail("Ainda não há respostas nem feedback para analisar.");
+  if (data.responses.length === 0 && data.survey.responseCount === 0) {
+    return fail("Ainda não há respostas nem pesquisas para analisar.");
   }
 
   const last = data.latestInsights[0];

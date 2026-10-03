@@ -8,6 +8,7 @@ import {
 import { isInteractionType, normalizeSettings, toPublicInteraction } from "@/lib/domain/interactions";
 import { optionBars, ratingStats, snapshotFromResponses, wordList } from "@/lib/domain/results";
 import type { InteractionOptionRow } from "@/lib/supabase/types";
+import { questionResults } from "@/lib/domain/survey";
 import type { InsightInput } from "./types";
 
 const MAX_TEXTS = 60;
@@ -28,7 +29,7 @@ function round(value: number | null, digits = 2): number | null {
 export function buildInsightInput(data: AnalyticsData, options: readonly InteractionOptionRow[]): InsightInput {
   const pulse = computePulse(data);
   const overview = computeOverview(data, pulse);
-  const { scores } = overview;
+  const { survey } = overview;
 
   const interactions = [...data.interactions]
     .sort((a, b) => a.position - b.position)
@@ -81,20 +82,13 @@ export function buildInsightInput(data: AnalyticsData, options: readonly Interac
       participants: overview.participants,
       participantsWhoResponded: overview.uniqueResponders,
       totalResponses: overview.totalResponses,
-      feedbackCount: scores.count,
-      confidenceHint: confidenceFromSample(scores.count),
+      surveyResponses: survey.count,
+      confidenceHint: confidenceFromSample(survey.count),
     },
     rates: {
       responseRate: round(overview.responseRate),
       participationRate: round(overview.participationRate),
-      feedbackResponseRate: round(overview.feedbackResponseRate),
-    },
-    feedbackAverages: {
-      overall_0_to_10: round(scores.overall),
-      clarity_1_to_5: round(scores.clarity),
-      engagement_1_to_5: round(scores.engagement),
-      content_1_to_5: round(scores.content),
-      applicability_1_to_5: round(scores.applicability),
+      surveyResponseRate: round(overview.surveyResponseRate),
     },
     participationOverTime: pulse.map((p) => ({
       minute: p.minute,
@@ -103,10 +97,31 @@ export function buildInsightInput(data: AnalyticsData, options: readonly Interac
       responses: p.responses,
     })),
     interactions,
-    feedbackTexts: {
-      mostValuable: texts(data.feedback.map((f) => f.most_valuable_part)),
-      improvement: texts(data.feedback.map((f) => f.improvement)),
-      comments: texts(data.feedback.map((f) => f.comment)),
+    survey: {
+      name: data.survey.name,
+      dimensions: survey.dimensions.map((d) => ({
+        dimension: d.label,
+        scale: d.kind === "scale" ? "1-5" : "0-10",
+        mean: round(d.mean) ?? 0,
+        answers: d.count,
+      })),
+      questions: questionResults(data.survey.questions, data.survey.answers).map((r) => {
+        const base = { question: r.question.label, dimension: r.question.dimension, answers: r.count };
+        switch (r.kind) {
+          case "scale":
+            return { ...base, type: "scale_1_to_5" as const, mean: round(r.mean) };
+          case "nps":
+            return { ...base, type: "score_0_to_10" as const, mean: round(r.mean), nps: r.nps };
+          case "choice":
+            return {
+              ...base,
+              type: "multiple_choice" as const,
+              distribution: r.distribution.map((d) => ({ option: d.label, pct: round(d.pct) })),
+            };
+          case "text":
+            return { ...base, type: "open_text" as const, texts: texts(r.texts) };
+        }
+      }),
     },
   };
 }

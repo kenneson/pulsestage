@@ -331,8 +331,9 @@ export default function Home() {
           <div className="mx-auto grid w-full max-w-6xl gap-12 px-4 py-20 md:px-6 md:py-24 lg:grid-cols-[2fr_3fr] lg:gap-16">
             <div className="flex flex-col gap-6">
               <SectionHeading title="Depois: o relatório da sessão">
-                Ao encerrar, a plateia avalia a apresentação pelo celular. Você vê onde o público mais participou, as notas
-                que deu e sugestões da IA para a próxima vez.
+                Ao encerrar, a plateia responde uma pesquisa pelo celular: satisfação, atenção, didática, treinamento ou
+                um modelo seu. Você vê seus pontos fortes e fracos, onde o público mais participou e sugestões da IA para
+                a próxima vez.
               </SectionHeading>
               <p className="reveal text-sm leading-relaxed text-muted-foreground">
                 Os números medem participação, não atenção. E cada sugestão da IA mostra em quantas respostas se baseia:

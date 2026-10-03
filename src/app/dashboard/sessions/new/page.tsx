@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SessionForm } from "@/components/sessions/session-form";
+import { createClient } from "@/lib/supabase/server";
+import { listSurveyTemplates } from "@/lib/data/surveys";
 
 export const metadata: Metadata = { title: "Nova sessão" };
 
-export default function NewSessionPage() {
+export default async function NewSessionPage() {
+  const templates = await listSurveyTemplates(await createClient());
+  const surveyOptions = templates.map((t) => ({ id: t.id, name: t.name, isPlatform: t.isPlatform }));
+  const defaultSurvey = templates.find((t) => t.slug === "geral")?.id ?? "";
+
   return (
     <div className="mx-auto max-w-2xl">
       <Card>
@@ -13,7 +19,18 @@ export default function NewSessionPage() {
           <CardDescription>Uma palestra, aula, workshop ou treinamento. Depois você adiciona as interações.</CardDescription>
         </CardHeader>
         <CardContent>
-          <SessionForm />
+          <SessionForm
+            surveyOptions={surveyOptions}
+            defaults={{
+              title: "",
+              description: "",
+              date: "",
+              time: "",
+              duration: "60",
+              joinCode: "",
+              surveyTemplateId: defaultSurvey,
+            }}
+          />
         </CardContent>
       </Card>
     </div>

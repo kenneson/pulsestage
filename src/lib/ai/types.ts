@@ -8,20 +8,13 @@ export type InsightInput = {
     participants: number;
     participantsWhoResponded: number;
     totalResponses: number;
-    feedbackCount: number;
+    surveyResponses: number;
     confidenceHint: Confidence;
   };
   rates: {
     responseRate: number | null;
     participationRate: number | null;
-    feedbackResponseRate: number | null;
-  };
-  feedbackAverages: {
-    overall_0_to_10: number | null;
-    clarity_1_to_5: number | null;
-    engagement_1_to_5: number | null;
-    content_1_to_5: number | null;
-    applicability_1_to_5: number | null;
+    surveyResponseRate: number | null;
   };
   participationOverTime: { minute: number | null; interaction: string; rate: number | null; responses: number }[];
   interactions: {
@@ -31,7 +24,21 @@ export type InsightInput = {
     responses: number;
     summary: Record<string, unknown>;
   }[];
-  feedbackTexts: { mostValuable: string[]; improvement: string[]; comments: string[] };
+  /** Pesquisa pós-evento (modelo escolhido pelo speaker) agregada por dimensão e por pergunta. */
+  survey: {
+    name: string | null;
+    dimensions: { dimension: string; scale: "1-5" | "0-10"; mean: number; answers: number }[];
+    questions: {
+      question: string;
+      type: "scale_1_to_5" | "score_0_to_10" | "multiple_choice" | "open_text";
+      dimension: string | null;
+      answers: number;
+      mean?: number | null;
+      nps?: number | null;
+      distribution?: { option: string; pct: number | null }[];
+      texts?: string[];
+    }[];
+  };
 };
 
 export interface AIProvider {

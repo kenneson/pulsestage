@@ -20,7 +20,7 @@ import { fail, firstIssue, formValues, isUuid, ok, type ActionResult } from "@/l
 
 export type SessionFormState = { error?: string; success?: string };
 
-const FIELDS = ["title", "description", "date", "time", "duration", "joinCode"] as const;
+const FIELDS = ["title", "description", "date", "time", "duration", "joinCode", "surveyTemplateId"] as const;
 
 const sessionFormSchema = z.object({
   title: z.string({ error: "Informe o título." }).trim().min(1, "Informe o título.").max(200, "Título muito longo."),
@@ -29,6 +29,7 @@ const sessionFormSchema = z.object({
   time: z.string().optional(),
   duration: z.coerce.number().int().min(1, "Duração inválida.").max(1440, "Duração inválida.").optional(),
   joinCode: z.string().optional(),
+  surveyTemplateId: z.uuid({ error: "Modelo de pesquisa inválido." }).optional(),
 });
 
 type SessionValues = {
@@ -37,12 +38,13 @@ type SessionValues = {
   scheduledAt: string | null;
   duration: number | null;
   joinCode: string | null;
+  surveyTemplateId: string | null;
 };
 
 function parseSessionForm(formData: FormData): { ok: true; values: SessionValues } | { ok: false; error: string } {
   const parsed = sessionFormSchema.safeParse(formValues(formData, FIELDS));
   if (!parsed.success) return { ok: false, error: firstIssue(parsed.error) };
-  const { title, description, date, time, duration, joinCode } = parsed.data;
+  const { title, description, date, time, duration, joinCode, surveyTemplateId } = parsed.data;
 
   let scheduledAt: string | null = null;
   if (date) {
@@ -60,8 +62,22 @@ function parseSessionForm(formData: FormData): { ok: true; values: SessionValues
 
   return {
     ok: true,
-    values: { title, description: description ?? null, scheduledAt, duration: duration ?? null, joinCode: code },
+    values: {
+      title,
+      description: description ?? null,
+      scheduledAt,
+      duration: duration ?? null,
+      joinCode: code,
+      surveyTemplateId: surveyTemplateId ?? null,
+    },
   };
+}
+
+/** O modelo precisa ser visível ao speaker (RLS: da plataforma ou dele). */
+async function isVisibleTemplate(supabase: Awaited<ReturnType<typeof createClient>>, id: string | null) {
+  if (!id) return true;
+  const { data } = await supabase.from("survey_templates").select("id").eq("id", id).maybeSingle();
+  return data !== null;
 }
 
 export async function createSessionAction(_prev: SessionFormState, formData: FormData): Promise<SessionFormState> {
@@ -74,6 +90,7 @@ export async function createSessionAction(_prev: SessionFormState, formData: For
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
+  if (!(await isVisibleTemplate(supabase, values.surveyTemplateId))) return { error: "Modelo de pesquisa inválido." };
 
   let createdId: string | null = null;
   for (let attempt = 0; attempt < 4 && !createdId; attempt++) {
@@ -86,6 +103,7 @@ export async function createSessionAction(_prev: SessionFormState, formData: For
         scheduled_at: values.scheduledAt,
         estimated_duration_minutes: values.duration,
         join_code: values.joinCode ?? generateJoinCode(),
+        survey_template_id: values.surveyTemplateId,
       })
       .select("id")
       .single();
@@ -119,6 +137,10 @@ export async function updateSessionAction(
   const session = await getOwnedSession(supabase, sessionId);
   if (!session) return { error: "Sessão não encontrada." };
 
+  if (!(await isVisibleTemplate(supabase, values.surveyTemplateId))) return { error: "Modelo de pesquisa inválido." };
+  // Depois de encerrada, a sessão já tem a cópia das perguntas: trocar o modelo não teria efeito.
+  const surveyEditable = session.status !== "completed";
+
   const codeChanged = values.joinCode !== null && values.joinCode !== session.join_code;
   if (codeChanged && session.status !== "draft") {
     return { error: "O código só pode ser alterado antes de iniciar a sessão." };
@@ -132,6 +154,7 @@ export async function updateSessionAction(
       scheduled_at: values.scheduledAt,
       estimated_duration_minutes: values.duration,
       ...(codeChanged && values.joinCode ? { join_code: values.joinCode } : {}),
+      ...(surveyEditable ? { survey_template_id: values.surveyTemplateId } : {}),
     })
     .eq("id", sessionId);
 

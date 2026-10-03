@@ -1,7 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import type {
-  FeedbackRow,
   InteractionRow,
   ParticipantRow,
   ResponseRow,
@@ -15,7 +14,9 @@ import {
   confidenceFromSample,
   quizRanking,
   quizStats,
+  EMPTY_SURVEY,
   type AnalyticsData,
+  type SessionSurveyData,
 } from "../src/lib/domain/metrics.ts";
 
 // Fixtures só com os campos que as métricas leem.
@@ -46,7 +47,7 @@ test("pulse: só conta como presente quem entrou antes de a interação fechar",
     ],
     participants: [participant("a", 1), participant("b", 2), participant("c", 20)],
     responses: [response("a", "i1"), response("a", "i2"), response("b", "i2"), response("c", "i2")],
-    feedback: [],
+    survey: EMPTY_SURVEY,
   };
   const pulse = computePulse(data);
   assert.deepEqual(
@@ -64,11 +65,11 @@ test("pulse: só conta como presente quem entrou antes de a interação fechar",
   assert.equal(overview.responseOpportunities, 5);
   assert.equal(overview.responseRate, 4 / 5);
   assert.equal(overview.participationRate, 1);
-  assert.equal(overview.feedbackResponseRate, 0);
+  assert.equal(overview.surveyResponseRate, 0);
 });
 
 test("overview sem participantes devolve taxas nulas, não NaN", () => {
-  const overview = computeOverview({ session, interactions: [], participants: [], responses: [], feedback: [] });
+  const overview = computeOverview({ session, interactions: [], participants: [], responses: [], survey: EMPTY_SURVEY });
   assert.equal(overview.participationRate, null);
   assert.equal(overview.responseRate, null);
 });
@@ -106,7 +107,23 @@ test("histórico em ordem cronológica, com participação e notas por sessão",
   const newer = row<SessionRow>({ id: "new", title: "Nova", started_at: at(50), created_at: at(0) });
   const history = computeHistory(
     [newer, older],
-    [row<FeedbackRow>({ session_id: "new", overall_rating: 8, clarity_rating: 4 })],
+    new Map<string, SessionSurveyData>([
+      [
+        "new",
+        {
+          name: "Avaliação geral",
+          questions: [
+            { id: "q1", position: 1, kind: "nps", label: "Útil?", dimension: "utilidade", required: true, settings: {} },
+            { id: "q2", position: 2, kind: "scale", label: "Clareza", dimension: "clareza", required: false, settings: {} },
+          ],
+          responseCount: 1,
+          answers: [
+            { question_id: "q1", value_int: 8, value_text: null },
+            { question_id: "q2", value_int: 4, value_text: null },
+          ],
+        },
+      ],
+    ]),
     [
       { id: "p1", session_id: "new" },
       { id: "p2", session_id: "new" },
@@ -118,10 +135,10 @@ test("histórico em ordem cronológica, com participação e notas por sessão",
     ],
   );
   assert.deepEqual(
-    history.map((h) => [h.title, h.participants, h.participationRate, h.scores.overall]),
+    history.map((h) => [h.title, h.participants, h.participationRate, h.survey.headline, h.survey.scaleAverage]),
     [
-      ["Antiga", 1, 0, null],
-      ["Nova", 2, 0.5, 8],
+      ["Antiga", 1, 0, null, null],
+      ["Nova", 2, 0.5, 8, 4],
     ],
   );
 });

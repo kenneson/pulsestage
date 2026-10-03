@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { fetchAllRows } from "@/lib/supabase/fetch-all";
 import { getOwnedSession, getSessionInteractions } from "@/lib/data/sessions";
+import { listSurveyTemplates } from "@/lib/data/surveys";
 import { toPublicInteraction } from "@/lib/domain/interactions";
 import { utcToZonedParts, formatDateTime } from "@/lib/datetime";
 import { isUuid } from "@/lib/action-result";
@@ -25,12 +26,16 @@ export default async function SessionBuilderPage({ params }: { params: Promise<{
   const session = await getOwnedSession(supabase, id);
   if (!session) notFound();
 
-  const [interactions, responses] = await Promise.all([
+  const [interactions, responses, templates, snapshot] = await Promise.all([
     getSessionInteractions(supabase, id),
     fetchAllRows<{ interaction_id: string }>((from, to) =>
       supabase.from("responses").select("interaction_id").eq("session_id", id).range(from, to),
     ),
+    listSurveyTemplates(supabase),
+    supabase.from("session_surveys").select("name").eq("session_id", id).maybeSingle(),
   ]);
+  const surveyOptions = templates.map((t) => ({ id: t.id, name: t.name, isPlatform: t.isPlatform }));
+  const surveyTemplateId = session.survey_template_id ?? templates.find((t) => t.slug === "geral")?.id ?? "";
 
   const responseCounts = new Map<string, number>();
   for (const r of responses) responseCounts.set(r.interaction_id, (responseCounts.get(r.interaction_id) ?? 0) + 1);
@@ -116,6 +121,8 @@ export default async function SessionBuilderPage({ params }: { params: Promise<{
                   <SessionForm
                     sessionId={id}
                     canEditCode={status === "draft"}
+                    surveyOptions={surveyOptions}
+                    lockedSurveyName={snapshot.data?.name ?? null}
                     defaults={{
                       title: session.title,
                       description: session.description ?? "",
@@ -123,6 +130,7 @@ export default async function SessionBuilderPage({ params }: { params: Promise<{
                       time: when.time,
                       duration: session.estimated_duration_minutes ? String(session.estimated_duration_minutes) : "",
                       joinCode: session.join_code,
+                      surveyTemplateId,
                     }}
                   />
                 </CardContent>

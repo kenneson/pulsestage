@@ -6,6 +6,7 @@ import {
   type CurrentInteractionResponse,
   type PublicInteraction,
 } from "@/lib/domain/interactions";
+import { toSurveyQuestions, type SurveyQuestion } from "@/lib/domain/survey";
 
 // Leituras públicas feitas no servidor com a secret key.
 // Tudo que sai daqui é sanitizado: sem is_correct, points ou dados pessoais.
@@ -112,4 +113,18 @@ export async function getCurrentForParticipant(
   if (error) throw new Error(error.message);
 
   return { status: state.status, interaction, answered: (count ?? 0) > 0 };
+}
+
+export type PublicSurvey = { name: string; questions: SurveyQuestion[] };
+
+/** Pesquisa pós-evento da sessão (cópia feita ao encerrar). Null antes de encerrar. */
+export async function getSessionSurvey(admin: AdminSupabase, sessionId: string): Promise<PublicSurvey | null> {
+  const [survey, questions] = await Promise.all([
+    admin.from("session_surveys").select("name").eq("session_id", sessionId).maybeSingle(),
+    admin.from("session_survey_questions").select("*").eq("session_id", sessionId).order("position"),
+  ]);
+  if (survey.error) throw new Error(survey.error.message);
+  if (questions.error) throw new Error(questions.error.message);
+  if (!survey.data) return null;
+  return { name: survey.data.name, questions: toSurveyQuestions(questions.data) };
 }

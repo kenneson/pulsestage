@@ -16,13 +16,9 @@ export default async function DashboardPage() {
   const supabase = await createClient();
   const { sessions, history } = await loadSpeakerHistory(supabase);
 
-  const withFeedback = history.filter((h) => h.scores.count > 0);
-  const overall = average(withFeedback.map((h) => h.scores.overall));
-  const dimensions = average(
-    withFeedback.map((h) =>
-      average([h.scores.clarity, h.scores.engagement, h.scores.content, h.scores.applicability]),
-    ),
-  );
+  const withSurvey = history.filter((h) => h.survey.count > 0);
+  const overall = average(withSurvey.map((h) => h.survey.headline));
+  const dimensions = average(withSurvey.map((h) => h.survey.scaleAverage));
   const participation = average(history.map((h) => h.participationRate));
 
   return (
@@ -39,8 +35,8 @@ export default async function DashboardPage() {
 
       <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard label="Sessões" value={String(sessions.length)} hint={`${history.length} encerradas`} />
-        <StatCard label="Utilidade média" value={`${formatScore(overall)} / 10`} hint="Feedback pós-evento" />
-        <StatCard label="Média das dimensões" value={`${formatScore(dimensions)} / 5`} hint="Clareza, engajamento, conteúdo, aplicabilidade" />
+        <StatCard label="Nota geral" value={`${formatScore(overall)} / 10`} hint="Utilidade, satisfação ou recomendação" />
+        <StatCard label="Média das dimensões" value={`${formatScore(dimensions)} / 5`} hint="Perguntas de 1 a 5 das pesquisas" />
         <StatCard label="Participação média" value={formatPercent(participation)} hint="Quem respondeu algo ÷ quem entrou" />
       </section>
 

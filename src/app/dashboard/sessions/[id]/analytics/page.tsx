@@ -14,37 +14,25 @@ import {
   quizStats,
 } from "@/lib/domain/metrics";
 import { ratingStats, snapshotFromResponses } from "@/lib/domain/results";
+import { questionResults, strengthsAndWeaknesses } from "@/lib/domain/survey";
 import { formatDateTime } from "@/lib/datetime";
 import { formatPercent, formatScore, formatSeconds, plural } from "@/lib/format";
 import { isUuid } from "@/lib/action-result";
 import { TypeTag } from "@/components/interaction-type-tag";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, EmptyState, Progress } from "@/components/ui/misc";
+import { Alert, EmptyState } from "@/components/ui/misc";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { StatusBadge } from "@/components/sessions/status-badge";
 import { ResultsView } from "@/components/results/results-view";
 import { PulseChart } from "@/components/analytics/pulse-chart";
 import { OpenTextList } from "@/components/analytics/open-text-list";
 import { InsightsPanel, type InsightView } from "@/components/analytics/insights-panel";
+import { SurveyQuestionResults, SurveyScorecard } from "@/components/analytics/survey-report";
 
 export const metadata: Metadata = { title: "Analytics da sessão" };
 
 const evidenceSchema = z.array(z.string());
-
-function ScoreRow({ label, value, max }: { label: string; value: number | null; max: number }) {
-  return (
-    <div className="grid gap-1.5">
-      <div className="flex justify-between text-sm">
-        <span>{label}</span>
-        <span className="font-semibold tabular-nums">
-          {formatScore(value)} <span className="font-normal text-muted-foreground">/ {max}</span>
-        </span>
-      </div>
-      <Progress value={value === null ? 0 : (value / max) * 100} />
-    </div>
-  );
-}
 
 export default async function SessionAnalyticsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -54,14 +42,16 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
   const data = await loadSessionAnalytics(supabase, id);
   if (!data) notFound();
 
-  const { session, interactionsWithOptions, participants, responses, feedback } = data;
+  const { session, interactionsWithOptions, participants, responses } = data;
   const pulse = computePulse(data);
   const overview = computeOverview(data, pulse);
-  const { scores } = overview;
+  const { survey } = overview;
+  const { strengths, weaknesses } = strengthsAndWeaknesses(survey.dimensions);
+  const surveyResults = questionResults(data.survey.questions, data.survey.answers);
   const allOptions = interactionsWithOptions.flatMap((i) => i.options);
   const quizIds = new Set(interactionsWithOptions.filter((i) => i.type === "quiz").map((i) => i.id));
   const ranking = quizRanking(responses.filter((r) => quizIds.has(r.interaction_id)), participants);
-  const lowSample = confidenceFromSample(scores.count) === "low";
+  const lowSample = confidenceFromSample(survey.count) === "low";
 
   const insights: InsightView[] = data.latestInsights.map((i) => {
     const evidence = evidenceSchema.safeParse(i.evidence);
@@ -105,32 +95,35 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
         <StatCard label="Participantes" value={String(overview.participants)} hint={`${overview.uniqueResponders} responderam algo`} />
         <StatCard label="Respostas" value={String(overview.totalResponses)} hint={`Taxa de resposta ${formatPercent(overview.responseRate)}`} />
         <StatCard label="Participação" value={formatPercent(overview.participationRate)} hint="Quem respondeu ÷ quem entrou" />
-        <StatCard label="Avaliações" value={String(scores.count)} hint={`${formatPercent(overview.feedbackResponseRate)} dos participantes`} />
+        <StatCard label="Pesquisas respondidas" value={String(survey.count)} hint={`${formatPercent(overview.surveyResponseRate)} dos participantes`} />
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_1.4fr]">
         <Card>
           <CardHeader>
             <CardTitle>Scorecard</CardTitle>
-            <CardDescription>Médias do feedback pós-evento.</CardDescription>
+            <CardDescription>
+              {data.survey.name ? `Pesquisa “${data.survey.name}”.` : "Pesquisa pós-evento."} Seus pontos fortes e fracos
+              segundo a plateia.
+            </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            {scores.count === 0 ? (
-              <EmptyState title="Sem avaliações ainda" description="O link de avaliação aparece no celular e no projetor ao encerrar a sessão." />
+            {survey.count === 0 ? (
+              <EmptyState
+                title="Sem pesquisas respondidas"
+                description="O link da pesquisa aparece no celular e no projetor ao encerrar a sessão."
+              />
             ) : (
               <>
-                <ScoreRow label="Utilidade geral" value={scores.overall} max={10} />
-                <ScoreRow label="Clareza" value={scores.clarity} max={5} />
-                <ScoreRow label="Engajamento" value={scores.engagement} max={5} />
-                <ScoreRow label="Conteúdo" value={scores.content} max={5} />
-                <ScoreRow label="Aplicabilidade" value={scores.applicability} max={5} />
-                <div className="flex justify-between border-t pt-3 text-sm">
-                  <span>Interação (participação)</span>
-                  <span className="font-semibold">{formatPercent(overview.participationRate)}</span>
-                </div>
+                <SurveyScorecard
+                  dimensions={survey.dimensions}
+                  strengths={strengths}
+                  weaknesses={weaknesses}
+                  participationRate={overview.participationRate}
+                />
                 {lowSample ? (
                   <p className="text-xs text-muted-foreground">
-                    Amostra pequena ({plural(scores.count, "avaliação", "avaliações")}): interprete com cautela.
+                    Amostra pequena ({plural(survey.count, "pesquisa", "pesquisas")}): interprete com cautela.
                   </p>
                 ) : null}
               </>
@@ -241,24 +234,18 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
         </Card>
       ) : null}
 
-      <section className="grid gap-4 lg:grid-cols-3">
-        {(
-          [
-            ["O que foi mais valioso", feedback.map((f) => f.most_valuable_part)],
-            ["O que poderia melhorar", feedback.map((f) => f.improvement)],
-            ["Comentários", feedback.map((f) => f.comment)],
-          ] as const
-        ).map(([title, values]) => (
-          <Card key={title}>
-            <CardHeader>
-              <CardTitle className="text-base">{title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <OpenTextList items={values.filter((v): v is string => Boolean(v && v.trim()))} emptyText="Sem comentários." />
-            </CardContent>
-          </Card>
-        ))}
-      </section>
+      {surveyResults.length > 0 ? (
+        <section className="flex flex-col gap-4">
+          <div>
+            <h2 className="text-lg font-semibold">Resultados da pesquisa</h2>
+            <p className="text-sm text-muted-foreground">
+              {data.survey.name ? `Modelo “${data.survey.name}” · ` : ""}
+              {plural(survey.count, "resposta", "respostas")}
+            </p>
+          </div>
+          <SurveyQuestionResults results={surveyResults} />
+        </section>
+      ) : null}
     </div>
   );
 }

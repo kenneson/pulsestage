@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createAdminClient, type AdminSupabase } from "@/lib/supabase/admin";
-import { findSessionByCode } from "@/lib/data/public";
+import { findSessionByCode, getSessionSurvey } from "@/lib/data/public";
 import {
   getParticipantIdFromCookie,
   hasSentFeedback,
@@ -22,6 +22,7 @@ import {
 } from "@/lib/domain/interactions";
 import { MAX_PARTICIPANTS_PER_SESSION, normalizeJoinCode } from "@/lib/domain/session";
 import { normalizeTerm } from "@/lib/domain/words";
+import { parseSurveyAnswers } from "@/lib/domain/survey";
 import { fail, firstIssue, formValues, isUuid, ok, type ActionResult } from "@/lib/action-result";
 
 // ---------------------------------------------------------------------------
@@ -208,51 +209,17 @@ export async function submitAnswerAction(
 }
 
 // ---------------------------------------------------------------------------
-// Feedback pós-evento
+// Pesquisa pós-evento
 // ---------------------------------------------------------------------------
 
-export type FeedbackFormState = { error?: string; done?: boolean };
+export type SurveyFormState = { error?: string; done?: boolean };
 
-const dimension = z.coerce.number().int().min(1).max(5).optional();
-const longText = (max: number) => z.string().trim().max(max, "Texto muito longo.").optional();
-
-const feedbackSchema = z.object({
-  overall: z.coerce
-    .number({ error: "Responda a primeira pergunta." })
-    .int()
-    .min(0, "Responda a primeira pergunta.")
-    .max(10, "Responda a primeira pergunta."),
-  clarity: dimension,
-  engagement: dimension,
-  content: dimension,
-  applicability: dimension,
-  mostValuable: longText(1000),
-  improvement: longText(1000),
-  comment: longText(2000),
-});
-
-const FEEDBACK_FIELDS = [
-  "overall",
-  "clarity",
-  "engagement",
-  "content",
-  "applicability",
-  "mostValuable",
-  "improvement",
-  "comment",
-] as const;
-
-export async function submitFeedbackAction(
+export async function submitSurveyAction(
   sessionId: string,
-  _prev: FeedbackFormState,
+  _prev: SurveyFormState,
   formData: FormData,
-): Promise<FeedbackFormState> {
+): Promise<SurveyFormState> {
   if (!isUuid(sessionId)) return { error: "Sessão inválida." };
-
-  const values = formValues(formData, FEEDBACK_FIELDS);
-  if (values.overall === undefined) return { error: "Responda a primeira pergunta." };
-  const parsed = feedbackSchema.safeParse(values);
-  if (!parsed.success) return { error: firstIssue(parsed.error) };
 
   const participantId = await getParticipantIdFromCookie(sessionId);
   if (!participantId && (await hasSentFeedback(sessionId))) return { done: true };
@@ -260,23 +227,43 @@ export async function submitFeedbackAction(
   const admin = createAdminClient();
   const { data: session } = await admin.from("sessions").select("status").eq("id", sessionId).maybeSingle();
   if (!session) return { error: "Sessão não encontrada." };
-  if (session.status !== "completed") return { error: "A avaliação abre quando a sessão terminar." };
+  if (session.status !== "completed") return { error: "A pesquisa abre quando a sessão terminar." };
 
-  const f = parsed.data;
-  const { error } = await admin.from("feedback").insert({
-    session_id: sessionId,
-    participant_id: participantId,
-    overall_rating: f.overall,
-    clarity_rating: f.clarity ?? null,
-    engagement_rating: f.engagement ?? null,
-    content_rating: f.content ?? null,
-    applicability_rating: f.applicability ?? null,
-    most_valuable_part: f.mostValuable ?? null,
-    improvement: f.improvement ?? null,
-    comment: f.comment ?? null,
+  const survey = await getSessionSurvey(admin, sessionId);
+  if (!survey || survey.questions.length === 0) return { error: "A pesquisa desta sessão não está disponível." };
+
+  const parsed = parseSurveyAnswers(survey.questions, (field) => {
+    const value = formData.get(field);
+    return typeof value === "string" ? value : undefined;
   });
+  if (!parsed.ok) return { error: parsed.error };
 
-  if (error && !isUniqueViolation(error)) return { error: "Não foi possível enviar. Tente de novo." };
+  const created = await admin
+    .from("survey_responses")
+    .insert({ session_id: sessionId, participant_id: participantId })
+    .select("id")
+    .single();
+  if (created.error) {
+    if (isUniqueViolation(created.error)) {
+      await markFeedbackSent(sessionId);
+      return { done: true };
+    }
+    return { error: "Não foi possível enviar. Tente de novo." };
+  }
+
+  const { error } = await admin.from("survey_answers").insert(
+    parsed.answers.map((a) => ({
+      response_id: created.data.id,
+      question_id: a.questionId,
+      value_int: a.valueInt,
+      value_text: a.valueText,
+    })),
+  );
+  if (error) {
+    // Sem transação no cliente: desfaz a resposta para não deixar uma pesquisa vazia contada.
+    await admin.from("survey_responses").delete().eq("id", created.data.id);
+    return { error: "Não foi possível enviar. Tente de novo." };
+  }
 
   await markFeedbackSent(sessionId);
   return { done: true };

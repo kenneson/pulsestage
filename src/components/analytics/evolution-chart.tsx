@@ -2,22 +2,13 @@
 
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-export type EvolutionPoint = {
-  label: string;
-  clarity: number | null;
-  engagement: number | null;
-  content: number | null;
-  applicability: number | null;
-};
+/** Uma linha por sessão: rótulo do eixo X + média de cada dimensão (1–5) ou null. */
+export type EvolutionPoint = { label: string } & Record<string, number | string | null>;
+export type EvolutionSeries = { key: string; name: string };
 
-const SERIES = [
-  { key: "clarity", name: "Clareza", color: "var(--chart-1)" },
-  { key: "engagement", name: "Engajamento", color: "var(--chart-2)" },
-  { key: "content", name: "Conteúdo", color: "var(--chart-3)" },
-  { key: "applicability", name: "Aplicabilidade", color: "var(--chart-4)" },
-] as const;
+const COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)"];
 
-export function EvolutionChart({ points }: { points: EvolutionPoint[] }) {
+export function EvolutionChart({ points, series }: { points: EvolutionPoint[]; series: EvolutionSeries[] }) {
   return (
     <div className="h-72 w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -30,8 +21,17 @@ export function EvolutionChart({ points }: { points: EvolutionPoint[] }) {
             formatter={(value) => (typeof value === "number" ? value.toFixed(1).replace(".", ",") : "—")}
           />
           <Legend />
-          {SERIES.map((s) => (
-            <Line key={s.key} type="monotone" dataKey={s.key} name={s.name} stroke={s.color} strokeWidth={2} dot={{ r: 3 }} connectNulls />
+          {series.map((s, index) => (
+            <Line
+              key={s.key}
+              type="monotone"
+              dataKey={s.key}
+              name={s.name}
+              stroke={COLORS[index % COLORS.length]}
+              strokeWidth={2}
+              dot={{ r: 3 }}
+              connectNulls
+            />
           ))}
         </LineChart>
       </ResponsiveContainer>
