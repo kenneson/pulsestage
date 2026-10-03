@@ -16,6 +16,7 @@ import {
 import { ratingStats, snapshotFromResponses } from "@/lib/domain/results";
 import { questionResults, strengthsAndWeaknesses } from "@/lib/domain/survey";
 import { formatDateTime } from "@/lib/datetime";
+import { getSpeakerProfile } from "@/lib/data/profile";
 import { formatPercent, formatScore, formatSeconds, plural } from "@/lib/format";
 import { isUuid } from "@/lib/action-result";
 import { TypeTag } from "@/components/interaction-type-tag";
@@ -23,6 +24,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, EmptyState } from "@/components/ui/misc";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { ClipboardIcon, ListIcon, TrendingUpIcon, UsersIcon } from "@/components/icons";
 import { StatusBadge } from "@/components/sessions/status-badge";
 import { ResultsView } from "@/components/results/results-view";
 import { PulseChart } from "@/components/analytics/pulse-chart";
@@ -43,6 +45,7 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
   if (!data) notFound();
 
   const { session, interactionsWithOptions, participants, responses } = data;
+  const { timeZone } = await getSpeakerProfile();
   const pulse = computePulse(data);
   const overview = computeOverview(data, pulse);
   const { survey } = overview;
@@ -73,7 +76,7 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
         <div>
           <StatusBadge status={session.status} />
           <h1 className="mt-2 text-2xl font-semibold tracking-tight">{session.title}</h1>
-          <p className="text-sm text-muted-foreground">{formatDateTime(session.started_at ?? session.scheduled_at)}</p>
+          <p className="text-sm text-muted-foreground">{formatDateTime(session.started_at ?? session.scheduled_at, timeZone)}</p>
         </div>
         <div className="flex gap-2">
           <Link href={`/dashboard/sessions/${id}`} className={buttonVariants({ variant: "outline" })}>
@@ -92,10 +95,10 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
       ) : null}
 
       <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Participantes" value={String(overview.participants)} hint={`${overview.uniqueResponders} responderam algo`} />
-        <StatCard label="Respostas" value={String(overview.totalResponses)} hint={`Taxa de resposta ${formatPercent(overview.responseRate)}`} />
-        <StatCard label="Participação" value={formatPercent(overview.participationRate)} hint="Quem respondeu ÷ quem entrou" />
-        <StatCard label="Pesquisas respondidas" value={String(survey.count)} hint={`${formatPercent(overview.surveyResponseRate)} dos participantes`} />
+        <StatCard label="Participantes" value={String(overview.participants)} hint={`${overview.uniqueResponders} responderam algo`} icon={<UsersIcon />} paper="bg-rev-blue" />
+        <StatCard label="Respostas" value={String(overview.totalResponses)} hint={`Taxa de resposta ${formatPercent(overview.responseRate)}`} icon={<ListIcon />} paper="bg-rev-yellow" />
+        <StatCard label="Participação" value={formatPercent(overview.participationRate)} hint="Quem respondeu ÷ quem entrou" icon={<TrendingUpIcon />} paper="bg-rev-green" />
+        <StatCard label="Pesquisas respondidas" value={String(survey.count)} hint={`${formatPercent(overview.surveyResponseRate)} dos participantes`} icon={<ClipboardIcon />} paper="bg-rev-gold" />
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_1.4fr]">
@@ -153,7 +156,7 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
             sessionId={id}
             insights={insights}
             configured={isAIConfigured()}
-            generatedAt={latest ? formatDateTime(latest.created_at) : null}
+            generatedAt={latest ? formatDateTime(latest.created_at, timeZone) : null}
             meta={latest?.provider ? `${latest.provider}${latest.model ? ` · ${latest.model}` : ""}` : null}
           />
         </CardContent>

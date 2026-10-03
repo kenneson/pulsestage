@@ -337,26 +337,46 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          bio: string | null
           created_at: string
+          default_duration_minutes: number | null
+          default_survey_template_id: string | null
           id: string
           name: string | null
+          time_zone: string
           updated_at: string
         }
         Insert: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
+          default_duration_minutes?: number | null
+          default_survey_template_id?: string | null
           id: string
           name?: string | null
+          time_zone?: string
           updated_at?: string
         }
         Update: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
+          default_duration_minutes?: number | null
+          default_survey_template_id?: string | null
           id?: string
           name?: string | null
+          time_zone?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_default_survey_template_id_fkey"
+            columns: ["default_survey_template_id"]
+            isOneToOne: false
+            referencedRelation: "survey_templates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       responses: {
         Row: {

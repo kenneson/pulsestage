@@ -24,6 +24,12 @@
   `survey_responses`/`survey_answers`, gravadas pelo servidor. Regras em `lib/domain/survey.ts` (dimensões,
   validação, NPS, pontos fortes/fracos). A tabela `feedback` é legado: convertida por `convert_legacy_feedback()`.
 - `database.types.ts` agora é gerado do banco (não editar à mão).
+- **Conta** (`/dashboard/conta`, migration `20261003010000_profile_settings.sql`): perfil com foto (bucket `avatars`,
+  cada usuário só grava na própria pasta) e mini-bio; preferências (fuso, pesquisa e duração padrão) lidas por
+  `getSpeakerProfile()` (`lib/data/profile.ts`); datas formatadas e interpretadas no fuso do speaker; exportação
+  em JSON e exclusão de conta (único uso da secret key fora do fluxo do participante).
+- Navegação do painel: barra lateral com ícones (`components/dashboard/nav-links.tsx`); ícones novos vão em
+  `components/icons.tsx`, no mesmo traço. Design aprovado no Claude Design (link no histórico do projeto).
 - Imports de valor entre módulos de `lib/domain/` usam extensão `.ts` (os testes rodam no Node sem compilar).
 - **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta
   (seção "Teste manual" do README). `src/lib/supabase/database.types.ts` foi escrito à mão:

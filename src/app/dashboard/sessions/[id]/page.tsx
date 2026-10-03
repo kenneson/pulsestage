@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { fetchAllRows } from "@/lib/supabase/fetch-all";
 import { getOwnedSession, getSessionInteractions } from "@/lib/data/sessions";
 import { listSurveyTemplates } from "@/lib/data/surveys";
+import { getSpeakerProfile } from "@/lib/data/profile";
 import { toPublicInteraction } from "@/lib/domain/interactions";
 import { utcToZonedParts, formatDateTime } from "@/lib/datetime";
 import { isUuid } from "@/lib/action-result";
@@ -62,7 +63,8 @@ export default async function SessionBuilderPage({ params }: { params: Promise<{
     ];
   });
 
-  const when = utcToZonedParts(session.scheduled_at);
+  const { timeZone } = await getSpeakerProfile();
+  const when = utcToZonedParts(session.scheduled_at, timeZone);
   const status = session.status;
 
   return (
@@ -76,7 +78,7 @@ export default async function SessionBuilderPage({ params }: { params: Promise<{
             </span>
           </div>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight">{session.title}</h1>
-          <p className="text-sm text-muted-foreground">{formatDateTime(session.scheduled_at)}</p>
+          <p className="text-sm text-muted-foreground">{formatDateTime(session.scheduled_at, timeZone)}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <DeleteSessionButton sessionId={id} title={session.title} />

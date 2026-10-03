@@ -3,13 +3,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { SessionForm } from "@/components/sessions/session-form";
 import { createClient } from "@/lib/supabase/server";
 import { listSurveyTemplates } from "@/lib/data/surveys";
+import { getSpeakerProfile } from "@/lib/data/profile";
 
 export const metadata: Metadata = { title: "Nova sessão" };
 
 export default async function NewSessionPage() {
-  const templates = await listSurveyTemplates(await createClient());
+  const [templates, profile] = await Promise.all([listSurveyTemplates(await createClient()), getSpeakerProfile()]);
   const surveyOptions = templates.map((t) => ({ id: t.id, name: t.name, isPlatform: t.isPlatform }));
-  const defaultSurvey = templates.find((t) => t.slug === "geral")?.id ?? "";
+  const defaultSurvey =
+    templates.find((t) => t.id === profile.defaultSurveyTemplateId)?.id ?? templates.find((t) => t.slug === "geral")?.id ?? "";
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -26,7 +28,7 @@ export default async function NewSessionPage() {
               description: "",
               date: "",
               time: "",
-              duration: "60",
+              duration: String(profile.defaultDurationMinutes ?? 60),
               joinCode: "",
               surveyTemplateId: defaultSurvey,
             }}

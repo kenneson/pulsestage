@@ -1,38 +1,15 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { signOutAction } from "@/features/auth/actions";
-import { Logo } from "@/components/logo";
-import { NavLinks } from "@/components/dashboard/nav-links";
-import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme";
+import { getSpeakerProfile } from "@/lib/data/profile";
+import { DashboardSidebar } from "@/components/dashboard/nav-links";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: profile } = await supabase.from("profiles").select("name").eq("id", user.id).maybeSingle();
+  const profile = await getSpeakerProfile();
 
   return (
-    <div className="flex min-h-dvh flex-col bg-muted/30">
-      <header className="sticky top-0 z-20 border-b bg-background/90 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 md:px-6">
-          <Logo href="/dashboard" />
-          <NavLinks />
-          <div className="ml-auto flex items-center gap-2">
-            <span className="hidden text-sm text-muted-foreground sm:inline">{profile?.name ?? user.email}</span>
-            <ThemeToggle />
-            <form action={signOutAction}>
-              <Button type="submit" variant="ghost" size="sm">
-                Sair
-              </Button>
-            </form>
-          </div>
-        </div>
-      </header>
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 md:px-6">{children}</main>
+    <div className="min-h-dvh bg-muted/30 md:flex">
+      <DashboardSidebar name={profile.name} email={profile.email} avatarUrl={profile.avatarUrl} />
+      <main className="min-w-0 flex-1 px-4 py-8 md:px-8 lg:px-10">
+        <div className="mx-auto w-full max-w-6xl">{children}</div>
+      </main>
     </div>
   );
 }

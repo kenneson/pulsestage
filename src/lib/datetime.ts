@@ -45,21 +45,43 @@ export function utcToZonedParts(iso: string | null, timeZone = APP_TIME_ZONE): {
   return { date: `${get("year")}-${get("month")}-${get("day")}`, time: `${get("hour")}:${get("minute")}` };
 }
 
-export function formatDateTime(iso: string | null): string {
+export function formatDateTime(iso: string | null, timeZone = APP_TIME_ZONE): string {
   if (!iso) return "Sem data";
-  return new Intl.DateTimeFormat("pt-BR", { timeZone: APP_TIME_ZONE, dateStyle: "medium", timeStyle: "short" }).format(
-    new Date(iso),
-  );
+  return new Intl.DateTimeFormat("pt-BR", { timeZone, dateStyle: "medium", timeStyle: "short" }).format(new Date(iso));
 }
 
-export function formatDate(iso: string | null): string {
+export function formatDate(iso: string | null, timeZone = APP_TIME_ZONE): string {
   if (!iso) return "Sem data";
-  return new Intl.DateTimeFormat("pt-BR", { timeZone: APP_TIME_ZONE, dateStyle: "medium" }).format(new Date(iso));
+  return new Intl.DateTimeFormat("pt-BR", { timeZone, dateStyle: "medium" }).format(new Date(iso));
 }
 
-export function formatShortDate(iso: string | null): string {
+export function formatShortDate(iso: string | null, timeZone = APP_TIME_ZONE): string {
   if (!iso) return "—";
-  return new Intl.DateTimeFormat("pt-BR", { timeZone: APP_TIME_ZONE, day: "2-digit", month: "short" }).format(
-    new Date(iso),
-  );
+  return new Intl.DateTimeFormat("pt-BR", { timeZone, day: "2-digit", month: "short" }).format(new Date(iso));
+}
+
+/** Fusos oferecidos na tela de preferências (qualquer fuso IANA válido é aceito no servidor). */
+export const TIME_ZONE_OPTIONS = [
+  { value: "America/Sao_Paulo", label: "Brasília, São Paulo, Rio (UTC−3)" },
+  { value: "America/Bahia", label: "Salvador (UTC−3)" },
+  { value: "America/Fortaleza", label: "Fortaleza (UTC−3)" },
+  { value: "America/Recife", label: "Recife (UTC−3)" },
+  { value: "America/Belem", label: "Belém (UTC−3)" },
+  { value: "America/Manaus", label: "Manaus (UTC−4)" },
+  { value: "America/Cuiaba", label: "Cuiabá (UTC−4)" },
+  { value: "America/Campo_Grande", label: "Campo Grande (UTC−4)" },
+  { value: "America/Porto_Velho", label: "Porto Velho (UTC−4)" },
+  { value: "America/Rio_Branco", label: "Rio Branco (UTC−5)" },
+  { value: "America/Noronha", label: "Fernando de Noronha (UTC−2)" },
+  { value: "Europe/Lisbon", label: "Lisboa" },
+  { value: "UTC", label: "UTC" },
+] as const;
+
+export function isValidTimeZone(value: string): boolean {
+  try {
+    new Intl.DateTimeFormat("pt-BR", { timeZone: value });
+    return true;
+  } catch {
+    return false;
+  }
 }

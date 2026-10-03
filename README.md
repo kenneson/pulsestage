@@ -78,6 +78,7 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
 | "Como funciona" na home e guia de uso em `/dashboard/guia` | ✅ |
 | Repaginada visual "Roteiro com deixas" (landing nova, tokens, cores por tipo, luzes de deixa) | ✅ landing · app em detalhes |
 | Pesquisas pós-evento por modelo (5 prontos + modelos próprios, pontos fortes/fracos por dimensão) | ✅ |
+| Navegação lateral com ícones, conta e configurações (perfil, preferências, segurança, LGPD) | ✅ |
 | Testes unitários do domínio (sessão, palavras, datas, resultados, métricas) | ✅ |
 | Testes de integração e E2E | ⏳ |
 | Deploy na Vercel | ✅ |

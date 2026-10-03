@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { listOwnedSessions } from "@/lib/data/sessions";
+import { getSpeakerProfile } from "@/lib/data/profile";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/misc";
 import { SessionList } from "@/components/sessions/session-list";
@@ -11,7 +12,7 @@ export const metadata: Metadata = { title: "Sessões" };
 
 export default async function SessionsPage() {
   const supabase = await createClient();
-  const sessions = await listOwnedSessions(supabase);
+  const [sessions, { timeZone }] = await Promise.all([listOwnedSessions(supabase), getSpeakerProfile()]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -24,7 +25,7 @@ export default async function SessionsPage() {
       {sessions.length === 0 ? (
         <EmptyState title="Nenhuma sessão" description="Suas palestras, aulas e workshops aparecem aqui." />
       ) : (
-        <SessionList sessions={sessions} />
+        <SessionList sessions={sessions} timeZone={timeZone} />
       )}
     </div>
   );

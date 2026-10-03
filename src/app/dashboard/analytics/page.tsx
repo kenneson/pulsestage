@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { loadSpeakerHistory } from "@/lib/data/analytics";
 import { formatShortDate } from "@/lib/datetime";
+import { getSpeakerProfile } from "@/lib/data/profile";
 import { formatPercent, formatScore } from "@/lib/format";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/misc";
@@ -32,12 +33,12 @@ function pickSeries(history: HistoryRow[]): EvolutionSeries[] {
 
 export default async function EvolutionPage() {
   const supabase = await createClient();
-  const { history } = await loadSpeakerHistory(supabase);
+  const [{ history }, { timeZone }] = await Promise.all([loadSpeakerHistory(supabase), getSpeakerProfile()]);
 
   const withSurvey = history.filter((h) => h.survey.count > 0);
   const series = pickSeries(withSurvey);
   const points: EvolutionPoint[] = withSurvey.map((h) => {
-    const point: EvolutionPoint = { label: formatShortDate(h.date) };
+    const point: EvolutionPoint = { label: formatShortDate(h.date, timeZone) };
     for (const s of series) {
       point[s.key] = h.survey.dimensions.find((d) => d.dimension === s.key && d.kind === "scale")?.mean ?? null;
     }
@@ -95,7 +96,7 @@ export default async function EvolutionPage() {
                           {h.title}
                         </Link>
                       </td>
-                      <td className="py-2 text-muted-foreground">{formatShortDate(h.date)}</td>
+                      <td className="py-2 text-muted-foreground">{formatShortDate(h.date, timeZone)}</td>
                       <td className="py-2 text-right tabular-nums">{h.participants}</td>
                       <td className="py-2 text-right tabular-nums">{formatPercent(h.participationRate)}</td>
                       <td className="py-2 text-right tabular-nums">{formatScore(h.survey.headline)}</td>

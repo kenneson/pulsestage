@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getOwnedSession } from "@/lib/data/sessions";
+import { getSpeakerProfile } from "@/lib/data/profile";
 import { hasDbErrorCode, isUniqueViolation } from "@/lib/supabase/errors";
 import { zonedToUtcIso } from "@/lib/datetime";
 import {
@@ -41,14 +42,17 @@ type SessionValues = {
   surveyTemplateId: string | null;
 };
 
-function parseSessionForm(formData: FormData): { ok: true; values: SessionValues } | { ok: false; error: string } {
+function parseSessionForm(
+  formData: FormData,
+  timeZone: string,
+): { ok: true; values: SessionValues } | { ok: false; error: string } {
   const parsed = sessionFormSchema.safeParse(formValues(formData, FIELDS));
   if (!parsed.success) return { ok: false, error: firstIssue(parsed.error) };
   const { title, description, date, time, duration, joinCode, surveyTemplateId } = parsed.data;
 
   let scheduledAt: string | null = null;
   if (date) {
-    scheduledAt = zonedToUtcIso(date, time ?? "00:00");
+    scheduledAt = zonedToUtcIso(date, time ?? "00:00", timeZone);
     if (!scheduledAt) return { ok: false, error: "Data ou horário inválidos." };
   }
 
@@ -81,7 +85,7 @@ async function isVisibleTemplate(supabase: Awaited<ReturnType<typeof createClien
 }
 
 export async function createSessionAction(_prev: SessionFormState, formData: FormData): Promise<SessionFormState> {
-  const parsed = parseSessionForm(formData);
+  const parsed = parseSessionForm(formData, (await getSpeakerProfile()).timeZone);
   if (!parsed.ok) return { error: parsed.error };
   const { values } = parsed;
 
@@ -129,7 +133,7 @@ export async function updateSessionAction(
   formData: FormData,
 ): Promise<SessionFormState> {
   if (!isUuid(sessionId)) return { error: "Sessão inválida." };
-  const parsed = parseSessionForm(formData);
+  const parsed = parseSessionForm(formData, (await getSpeakerProfile()).timeZone);
   if (!parsed.ok) return { error: parsed.error };
   const { values } = parsed;
 

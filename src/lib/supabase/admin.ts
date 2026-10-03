@@ -9,7 +9,8 @@ export type AdminSupabase = ReturnType<typeof createAdminClient>;
 /**
  * Cliente com a secret key: ignora o RLS.
  * Use APENAS nos fluxos do participante, sempre depois de validar o cookie assinado,
- * e para leituras públicas sanitizadas (sem is_correct, sem dados pessoais).
+ * para leituras públicas sanitizadas (sem is_correct, sem dados pessoais) e na exclusão
+ * da própria conta (apagar um usuário do Auth exige a secret key).
  */
 export function createAdminClient() {
   return createClient<Database>(publicEnv.supabaseUrl, serverEnv().SUPABASE_SECRET_KEY, {
