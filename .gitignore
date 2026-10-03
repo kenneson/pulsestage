@@ -27,3 +27,8 @@ yarn-debug.log*
 yarn-error.log*
 .DS_Store
 coverage/
+
+# impeccable: capturas de revisão e estado temporário da página de decisão
+.impeccable/review/
+.impeccable/questions/
+.impeccable/config.local.json

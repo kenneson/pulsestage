@@ -43,7 +43,7 @@ function EmptyState({
 function Alert({ children, tone = "error", className }: { children: React.ReactNode; tone?: "error" | "success" | "info"; className?: string }) {
   const tones = {
     error: "border-destructive/30 bg-destructive/5 text-destructive",
-    success: "border-emerald-600/30 bg-emerald-50 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-300",
+    success: "border-primary/30 bg-primary/10 text-foreground",
     info: "border-border bg-muted text-foreground",
   } as const;
   return (

@@ -19,7 +19,7 @@ export function SessionList({ sessions }: { sessions: SessionRow[] }) {
               <p className="truncate font-medium">{s.title}</p>
               <p className="text-sm text-muted-foreground">
                 {formatDateTime(s.scheduled_at ?? s.started_at ?? s.created_at)} · código{" "}
-                <span className="font-mono">{s.join_code}</span>
+                <span className="font-script">{s.join_code}</span>
               </p>
             </div>
             <StatusBadge status={s.status} />

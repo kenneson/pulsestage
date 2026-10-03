@@ -10,7 +10,9 @@ import {
   type InteractionType,
   type PublicInteraction,
 } from "@/lib/domain/interactions";
+import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { TYPE_PAPER, TypeTag } from "@/components/interaction-type-tag";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/components/ui/confirm-dialog";
 import { EmptyState } from "@/components/ui/misc";
@@ -108,12 +110,12 @@ export function InteractionsEditor({
           return (
             <li key={interaction.id} className="rounded-xl border bg-background">
               <div className="flex items-start gap-3 p-4">
-                <span className="grid size-7 shrink-0 place-items-center rounded-md bg-muted text-sm font-semibold">
+                <span className="w-7 shrink-0 pt-0.5 font-script text-xl font-bold leading-none tabular-nums" aria-label={`Deixa ${index + 1}`}>
                   {index + 1}
                 </span>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant="secondary">{INTERACTION_TYPE_META[interaction.type].label}</Badge>
+                    <TypeTag type={interaction.type} />
                     {item.isActive ? <Badge variant="live">Ativa</Badge> : null}
                     {item.responses > 0 ? (
                       <span className="text-xs text-muted-foreground">{item.responses} respostas</span>
@@ -188,6 +190,7 @@ export function InteractionsEditor({
           <div className="flex flex-wrap gap-2">
             {INTERACTION_TYPES.map((type) => (
               <Button key={type} variant="outline" size="sm" onClick={() => setCreating(type)} title={INTERACTION_TYPE_META[type].description}>
+                <span aria-hidden className={cn("size-2.5 rounded-sm", TYPE_PAPER[type])} />
                 {INTERACTION_TYPE_META[type].label}
               </Button>
             ))}

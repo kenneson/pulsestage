@@ -5,7 +5,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { loadSessionAnalytics } from "@/lib/data/analytics";
 import { isAIConfigured } from "@/lib/ai";
-import { INTERACTION_TYPE_META, toPublicInteraction } from "@/lib/domain/interactions";
+import { toPublicInteraction } from "@/lib/domain/interactions";
 import {
   computeOverview,
   computePulse,
@@ -17,7 +17,7 @@ import { ratingStats, snapshotFromResponses } from "@/lib/domain/results";
 import { formatDateTime } from "@/lib/datetime";
 import { formatPercent, formatScore, formatSeconds, plural } from "@/lib/format";
 import { isUuid } from "@/lib/action-result";
-import { Badge } from "@/components/ui/badge";
+import { TypeTag } from "@/components/interaction-type-tag";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, EmptyState, Progress } from "@/components/ui/misc";
@@ -180,8 +180,8 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
               <Card key={row.id}>
                 <CardHeader>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm text-muted-foreground">#{index + 1}</span>
-                    <Badge variant="secondary">{INTERACTION_TYPE_META[pub.type].label}</Badge>
+                    <span className="font-script text-sm font-bold text-muted-foreground">#{index + 1}</span>
+                    <TypeTag type={pub.type} />
                     <span className="text-xs text-muted-foreground">
                       {plural(rowResponses.length, "resposta", "respostas")}
                       {point?.rate !== null && point?.rate !== undefined ? ` · ${formatPercent(point.rate)} dos presentes` : ""}

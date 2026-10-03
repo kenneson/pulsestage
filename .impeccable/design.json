@@ -1,0 +1,872 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-03T02:14:50.252Z",
+  "title": "Design System: PulseStage",
+  "extensions": {
+    "colorMeta": {
+      "background": {
+        "role": "neutral",
+        "displayName": "Campo frio",
+        "canonical": "oklch(0.985 0.002 250)",
+        "tonalRamp": [
+          "oklch(0.150 0.002 250)",
+          "oklch(0.264 0.002 250)",
+          "oklch(0.379 0.002 250)",
+          "oklch(0.493 0.002 250)",
+          "oklch(0.607 0.002 250)",
+          "oklch(0.721 0.002 250)",
+          "oklch(0.836 0.002 250)",
+          "oklch(0.950 0.002 250)"
+        ]
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Tinta",
+        "canonical": "oklch(0.2 0.012 260)",
+        "tonalRamp": [
+          "oklch(0.150 0.012 260)",
+          "oklch(0.264 0.012 260)",
+          "oklch(0.379 0.012 260)",
+          "oklch(0.493 0.012 260)",
+          "oklch(0.607 0.012 260)",
+          "oklch(0.721 0.012 260)",
+          "oklch(0.836 0.012 260)",
+          "oklch(0.950 0.012 260)"
+        ]
+      },
+      "card": {
+        "role": "neutral",
+        "displayName": "Página de roteiro",
+        "canonical": "oklch(1 0 0)",
+        "tonalRamp": [
+          "oklch(0.150 0 0)",
+          "oklch(0.264 0 0)",
+          "oklch(0.379 0 0)",
+          "oklch(0.493 0 0)",
+          "oklch(0.607 0 0)",
+          "oklch(0.721 0 0)",
+          "oklch(0.836 0 0)",
+          "oklch(0.950 0 0)"
+        ]
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "Luz de deixa VAI",
+        "canonical": "oklch(0.5 0.13 152)",
+        "tonalRamp": [
+          "oklch(0.150 0.13 152)",
+          "oklch(0.264 0.13 152)",
+          "oklch(0.379 0.13 152)",
+          "oklch(0.493 0.13 152)",
+          "oklch(0.607 0.13 152)",
+          "oklch(0.721 0.13 152)",
+          "oklch(0.836 0.13 152)",
+          "oklch(0.950 0.13 152)"
+        ]
+      },
+      "primary-foreground": {
+        "role": "primary",
+        "displayName": "Texto sobre VAI",
+        "canonical": "oklch(0.99 0.004 152)",
+        "tonalRamp": [
+          "oklch(0.150 0.004 152)",
+          "oklch(0.264 0.004 152)",
+          "oklch(0.379 0.004 152)",
+          "oklch(0.493 0.004 152)",
+          "oklch(0.607 0.004 152)",
+          "oklch(0.721 0.004 152)",
+          "oklch(0.836 0.004 152)",
+          "oklch(0.950 0.004 152)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Faixa",
+        "canonical": "oklch(0.955 0.004 250)",
+        "tonalRamp": [
+          "oklch(0.150 0.004 250)",
+          "oklch(0.264 0.004 250)",
+          "oklch(0.379 0.004 250)",
+          "oklch(0.493 0.004 250)",
+          "oklch(0.607 0.004 250)",
+          "oklch(0.721 0.004 250)",
+          "oklch(0.836 0.004 250)",
+          "oklch(0.950 0.004 250)"
+        ]
+      },
+      "muted-foreground": {
+        "role": "neutral",
+        "displayName": "Lápis",
+        "canonical": "oklch(0.47 0.012 260)",
+        "tonalRamp": [
+          "oklch(0.150 0.012 260)",
+          "oklch(0.264 0.012 260)",
+          "oklch(0.379 0.012 260)",
+          "oklch(0.493 0.012 260)",
+          "oklch(0.607 0.012 260)",
+          "oklch(0.721 0.012 260)",
+          "oklch(0.836 0.012 260)",
+          "oklch(0.950 0.012 260)"
+        ]
+      },
+      "accent": {
+        "role": "neutral",
+        "displayName": "Hover neutro",
+        "canonical": "oklch(0.95 0.006 250)",
+        "tonalRamp": [
+          "oklch(0.150 0.006 250)",
+          "oklch(0.264 0.006 250)",
+          "oklch(0.379 0.006 250)",
+          "oklch(0.493 0.006 250)",
+          "oklch(0.607 0.006 250)",
+          "oklch(0.721 0.006 250)",
+          "oklch(0.836 0.006 250)",
+          "oklch(0.950 0.006 250)"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Pauta",
+        "canonical": "oklch(0.9 0.005 250)",
+        "tonalRamp": [
+          "oklch(0.150 0.005 250)",
+          "oklch(0.264 0.005 250)",
+          "oklch(0.379 0.005 250)",
+          "oklch(0.493 0.005 250)",
+          "oklch(0.607 0.005 250)",
+          "oklch(0.721 0.005 250)",
+          "oklch(0.836 0.005 250)",
+          "oklch(0.950 0.005 250)"
+        ]
+      },
+      "input": {
+        "role": "neutral",
+        "displayName": "Pauta de campo",
+        "canonical": "oklch(0.86 0.006 250)",
+        "tonalRamp": [
+          "oklch(0.150 0.006 250)",
+          "oklch(0.264 0.006 250)",
+          "oklch(0.379 0.006 250)",
+          "oklch(0.493 0.006 250)",
+          "oklch(0.607 0.006 250)",
+          "oklch(0.721 0.006 250)",
+          "oklch(0.836 0.006 250)",
+          "oklch(0.950 0.006 250)"
+        ]
+      },
+      "ring": {
+        "role": "primary",
+        "displayName": "Anel de foco",
+        "canonical": "oklch(0.6 0.13 152)",
+        "tonalRamp": [
+          "oklch(0.150 0.13 152)",
+          "oklch(0.264 0.13 152)",
+          "oklch(0.379 0.13 152)",
+          "oklch(0.493 0.13 152)",
+          "oklch(0.607 0.13 152)",
+          "oklch(0.721 0.13 152)",
+          "oklch(0.836 0.13 152)",
+          "oklch(0.950 0.13 152)"
+        ]
+      },
+      "destructive": {
+        "role": "error",
+        "displayName": "Erro",
+        "canonical": "oklch(0.56 0.21 27)",
+        "tonalRamp": [
+          "oklch(0.150 0.21 27)",
+          "oklch(0.264 0.21 27)",
+          "oklch(0.379 0.21 27)",
+          "oklch(0.493 0.21 27)",
+          "oklch(0.607 0.21 27)",
+          "oklch(0.721 0.21 27)",
+          "oklch(0.836 0.21 27)",
+          "oklch(0.950 0.21 27)"
+        ]
+      },
+      "standby": {
+        "role": "secondary",
+        "displayName": "Luz de deixa âmbar",
+        "canonical": "oklch(0.78 0.15 70)",
+        "tonalRamp": [
+          "oklch(0.150 0.15 70)",
+          "oklch(0.264 0.15 70)",
+          "oklch(0.379 0.15 70)",
+          "oklch(0.493 0.15 70)",
+          "oklch(0.607 0.15 70)",
+          "oklch(0.721 0.15 70)",
+          "oklch(0.836 0.15 70)",
+          "oklch(0.950 0.15 70)"
+        ]
+      },
+      "standby-foreground": {
+        "role": "secondary",
+        "displayName": "Texto sobre âmbar",
+        "canonical": "oklch(0.3 0.06 60)",
+        "tonalRamp": [
+          "oklch(0.150 0.06 60)",
+          "oklch(0.264 0.06 60)",
+          "oklch(0.379 0.06 60)",
+          "oklch(0.493 0.06 60)",
+          "oklch(0.607 0.06 60)",
+          "oklch(0.721 0.06 60)",
+          "oklch(0.836 0.06 60)",
+          "oklch(0.950 0.06 60)"
+        ]
+      },
+      "highlight": {
+        "role": "secondary",
+        "displayName": "Marca-texto",
+        "canonical": "oklch(0.93 0.13 102)",
+        "tonalRamp": [
+          "oklch(0.150 0.13 102)",
+          "oklch(0.264 0.13 102)",
+          "oklch(0.379 0.13 102)",
+          "oklch(0.493 0.13 102)",
+          "oklch(0.607 0.13 102)",
+          "oklch(0.721 0.13 102)",
+          "oklch(0.836 0.13 102)",
+          "oklch(0.950 0.13 102)"
+        ]
+      },
+      "rev-blue": {
+        "role": "tertiary",
+        "displayName": "Papel azul (Enquete)",
+        "canonical": "oklch(0.91 0.045 240)",
+        "tonalRamp": [
+          "oklch(0.150 0.045 240)",
+          "oklch(0.264 0.045 240)",
+          "oklch(0.379 0.045 240)",
+          "oklch(0.493 0.045 240)",
+          "oklch(0.607 0.045 240)",
+          "oklch(0.721 0.045 240)",
+          "oklch(0.836 0.045 240)",
+          "oklch(0.950 0.045 240)"
+        ]
+      },
+      "rev-pink": {
+        "role": "tertiary",
+        "displayName": "Papel rosa (Escala)",
+        "canonical": "oklch(0.92 0.045 5)",
+        "tonalRamp": [
+          "oklch(0.150 0.045 5)",
+          "oklch(0.264 0.045 5)",
+          "oklch(0.379 0.045 5)",
+          "oklch(0.493 0.045 5)",
+          "oklch(0.607 0.045 5)",
+          "oklch(0.721 0.045 5)",
+          "oklch(0.836 0.045 5)",
+          "oklch(0.950 0.045 5)"
+        ]
+      },
+      "rev-yellow": {
+        "role": "tertiary",
+        "displayName": "Papel amarelo (Nuvem de palavras)",
+        "canonical": "oklch(0.95 0.08 100)",
+        "tonalRamp": [
+          "oklch(0.150 0.08 100)",
+          "oklch(0.264 0.08 100)",
+          "oklch(0.379 0.08 100)",
+          "oklch(0.493 0.08 100)",
+          "oklch(0.607 0.08 100)",
+          "oklch(0.721 0.08 100)",
+          "oklch(0.836 0.08 100)",
+          "oklch(0.950 0.08 100)"
+        ]
+      },
+      "rev-green": {
+        "role": "tertiary",
+        "displayName": "Papel verde (Pergunta aberta)",
+        "canonical": "oklch(0.92 0.055 152)",
+        "tonalRamp": [
+          "oklch(0.150 0.055 152)",
+          "oklch(0.264 0.055 152)",
+          "oklch(0.379 0.055 152)",
+          "oklch(0.493 0.055 152)",
+          "oklch(0.607 0.055 152)",
+          "oklch(0.721 0.055 152)",
+          "oklch(0.836 0.055 152)",
+          "oklch(0.950 0.055 152)"
+        ]
+      },
+      "rev-gold": {
+        "role": "tertiary",
+        "displayName": "Papel dourado (Quiz)",
+        "canonical": "oklch(0.88 0.09 78)",
+        "tonalRamp": [
+          "oklch(0.150 0.09 78)",
+          "oklch(0.264 0.09 78)",
+          "oklch(0.379 0.09 78)",
+          "oklch(0.493 0.09 78)",
+          "oklch(0.607 0.09 78)",
+          "oklch(0.721 0.09 78)",
+          "oklch(0.836 0.09 78)",
+          "oklch(0.950 0.09 78)"
+        ]
+      },
+      "rev-foreground": {
+        "role": "tertiary",
+        "displayName": "Texto sobre papel de revisão",
+        "canonical": "oklch(0.22 0.012 260)",
+        "tonalRamp": [
+          "oklch(0.150 0.012 260)",
+          "oklch(0.264 0.012 260)",
+          "oklch(0.379 0.012 260)",
+          "oklch(0.493 0.012 260)",
+          "oklch(0.607 0.012 260)",
+          "oklch(0.721 0.012 260)",
+          "oklch(0.836 0.012 260)",
+          "oklch(0.950 0.012 260)"
+        ]
+      },
+      "rev-blue-ink": {
+        "role": "tertiary",
+        "displayName": "Tinta azul",
+        "canonical": "oklch(0.46 0.13 245)",
+        "tonalRamp": [
+          "oklch(0.150 0.13 245)",
+          "oklch(0.264 0.13 245)",
+          "oklch(0.379 0.13 245)",
+          "oklch(0.493 0.13 245)",
+          "oklch(0.607 0.13 245)",
+          "oklch(0.721 0.13 245)",
+          "oklch(0.836 0.13 245)",
+          "oklch(0.950 0.13 245)"
+        ]
+      },
+      "rev-pink-ink": {
+        "role": "tertiary",
+        "displayName": "Tinta rosa",
+        "canonical": "oklch(0.48 0.17 8)",
+        "tonalRamp": [
+          "oklch(0.150 0.17 8)",
+          "oklch(0.264 0.17 8)",
+          "oklch(0.379 0.17 8)",
+          "oklch(0.493 0.17 8)",
+          "oklch(0.607 0.17 8)",
+          "oklch(0.721 0.17 8)",
+          "oklch(0.836 0.17 8)",
+          "oklch(0.950 0.17 8)"
+        ]
+      },
+      "rev-yellow-ink": {
+        "role": "tertiary",
+        "displayName": "Tinta amarela",
+        "canonical": "oklch(0.46 0.1 95)",
+        "tonalRamp": [
+          "oklch(0.150 0.1 95)",
+          "oklch(0.264 0.1 95)",
+          "oklch(0.379 0.1 95)",
+          "oklch(0.493 0.1 95)",
+          "oklch(0.607 0.1 95)",
+          "oklch(0.721 0.1 95)",
+          "oklch(0.836 0.1 95)",
+          "oklch(0.950 0.1 95)"
+        ]
+      },
+      "rev-green-ink": {
+        "role": "tertiary",
+        "displayName": "Tinta verde",
+        "canonical": "oklch(0.46 0.12 152)",
+        "tonalRamp": [
+          "oklch(0.150 0.12 152)",
+          "oklch(0.264 0.12 152)",
+          "oklch(0.379 0.12 152)",
+          "oklch(0.493 0.12 152)",
+          "oklch(0.607 0.12 152)",
+          "oklch(0.721 0.12 152)",
+          "oklch(0.836 0.12 152)",
+          "oklch(0.950 0.12 152)"
+        ]
+      },
+      "rev-gold-ink": {
+        "role": "tertiary",
+        "displayName": "Tinta dourada",
+        "canonical": "oklch(0.48 0.11 65)",
+        "tonalRamp": [
+          "oklch(0.150 0.11 65)",
+          "oklch(0.264 0.11 65)",
+          "oklch(0.379 0.11 65)",
+          "oklch(0.493 0.11 65)",
+          "oklch(0.607 0.11 65)",
+          "oklch(0.721 0.11 65)",
+          "oklch(0.836 0.11 65)",
+          "oklch(0.950 0.11 65)"
+        ]
+      },
+      "chart-1": {
+        "role": "tertiary",
+        "displayName": "Série 1 (Clareza)",
+        "canonical": "oklch(0.5 0.13 245)",
+        "tonalRamp": [
+          "oklch(0.150 0.13 245)",
+          "oklch(0.264 0.13 245)",
+          "oklch(0.379 0.13 245)",
+          "oklch(0.493 0.13 245)",
+          "oklch(0.607 0.13 245)",
+          "oklch(0.721 0.13 245)",
+          "oklch(0.836 0.13 245)",
+          "oklch(0.950 0.13 245)"
+        ]
+      },
+      "chart-2": {
+        "role": "tertiary",
+        "displayName": "Série 2 (Engajamento)",
+        "canonical": "oklch(0.55 0.17 8)",
+        "tonalRamp": [
+          "oklch(0.150 0.17 8)",
+          "oklch(0.264 0.17 8)",
+          "oklch(0.379 0.17 8)",
+          "oklch(0.493 0.17 8)",
+          "oklch(0.607 0.17 8)",
+          "oklch(0.721 0.17 8)",
+          "oklch(0.836 0.17 8)",
+          "oklch(0.950 0.17 8)"
+        ]
+      },
+      "chart-3": {
+        "role": "tertiary",
+        "displayName": "Série 3 (Conteúdo)",
+        "canonical": "oklch(0.52 0.13 152)",
+        "tonalRamp": [
+          "oklch(0.150 0.13 152)",
+          "oklch(0.264 0.13 152)",
+          "oklch(0.379 0.13 152)",
+          "oklch(0.493 0.13 152)",
+          "oklch(0.607 0.13 152)",
+          "oklch(0.721 0.13 152)",
+          "oklch(0.836 0.13 152)",
+          "oklch(0.950 0.13 152)"
+        ]
+      },
+      "chart-4": {
+        "role": "tertiary",
+        "displayName": "Série 4 (Aplicabilidade)",
+        "canonical": "oklch(0.65 0.14 70)",
+        "tonalRamp": [
+          "oklch(0.150 0.14 70)",
+          "oklch(0.264 0.14 70)",
+          "oklch(0.379 0.14 70)",
+          "oklch(0.493 0.14 70)",
+          "oklch(0.607 0.14 70)",
+          "oklch(0.721 0.14 70)",
+          "oklch(0.836 0.14 70)",
+          "oklch(0.950 0.14 70)"
+        ]
+      },
+      "background-dark": {
+        "role": "neutral",
+        "displayName": "Campo frio (coxia)",
+        "canonical": "oklch(0.13 0 0)",
+        "tonalRamp": [
+          "oklch(0.150 0 0)",
+          "oklch(0.264 0 0)",
+          "oklch(0.379 0 0)",
+          "oklch(0.493 0 0)",
+          "oklch(0.607 0 0)",
+          "oklch(0.721 0 0)",
+          "oklch(0.836 0 0)",
+          "oklch(0.950 0 0)"
+        ]
+      },
+      "foreground-dark": {
+        "role": "neutral",
+        "displayName": "Tinta (coxia)",
+        "canonical": "oklch(0.95 0.004 250)",
+        "tonalRamp": [
+          "oklch(0.150 0.004 250)",
+          "oklch(0.264 0.004 250)",
+          "oklch(0.379 0.004 250)",
+          "oklch(0.493 0.004 250)",
+          "oklch(0.607 0.004 250)",
+          "oklch(0.721 0.004 250)",
+          "oklch(0.836 0.004 250)",
+          "oklch(0.950 0.004 250)"
+        ]
+      },
+      "card-dark": {
+        "role": "neutral",
+        "displayName": "Página de roteiro (coxia)",
+        "canonical": "oklch(0.175 0 0)",
+        "tonalRamp": [
+          "oklch(0.150 0 0)",
+          "oklch(0.264 0 0)",
+          "oklch(0.379 0 0)",
+          "oklch(0.493 0 0)",
+          "oklch(0.607 0 0)",
+          "oklch(0.721 0 0)",
+          "oklch(0.836 0 0)",
+          "oklch(0.950 0 0)"
+        ]
+      },
+      "muted-dark": {
+        "role": "neutral",
+        "displayName": "Faixa (coxia)",
+        "canonical": "oklch(0.235 0 0)",
+        "tonalRamp": [
+          "oklch(0.150 0 0)",
+          "oklch(0.264 0 0)",
+          "oklch(0.379 0 0)",
+          "oklch(0.493 0 0)",
+          "oklch(0.607 0 0)",
+          "oklch(0.721 0 0)",
+          "oklch(0.836 0 0)",
+          "oklch(0.950 0 0)"
+        ]
+      },
+      "muted-foreground-dark": {
+        "role": "neutral",
+        "displayName": "Lápis (coxia)",
+        "canonical": "oklch(0.72 0 0)",
+        "tonalRamp": [
+          "oklch(0.150 0 0)",
+          "oklch(0.264 0 0)",
+          "oklch(0.379 0 0)",
+          "oklch(0.493 0 0)",
+          "oklch(0.607 0 0)",
+          "oklch(0.721 0 0)",
+          "oklch(0.836 0 0)",
+          "oklch(0.950 0 0)"
+        ]
+      },
+      "border-dark": {
+        "role": "neutral",
+        "displayName": "Pauta (coxia)",
+        "canonical": "oklch(1 0 0 / 11%)",
+        "tonalRamp": [
+          "oklch(0.150 0 0)",
+          "oklch(0.264 0 0)",
+          "oklch(0.379 0 0)",
+          "oklch(0.493 0 0)",
+          "oklch(0.607 0 0)",
+          "oklch(0.721 0 0)",
+          "oklch(0.836 0 0)",
+          "oklch(0.950 0 0)"
+        ]
+      },
+      "primary-dark": {
+        "role": "primary",
+        "displayName": "Luz de deixa VAI (coxia)",
+        "canonical": "oklch(0.76 0.15 152)",
+        "tonalRamp": [
+          "oklch(0.150 0.15 152)",
+          "oklch(0.264 0.15 152)",
+          "oklch(0.379 0.15 152)",
+          "oklch(0.493 0.15 152)",
+          "oklch(0.607 0.15 152)",
+          "oklch(0.721 0.15 152)",
+          "oklch(0.836 0.15 152)",
+          "oklch(0.950 0.15 152)"
+        ]
+      },
+      "primary-foreground-dark": {
+        "role": "primary",
+        "displayName": "Texto sobre VAI (coxia)",
+        "canonical": "oklch(0.17 0.02 152)",
+        "tonalRamp": [
+          "oklch(0.150 0.02 152)",
+          "oklch(0.264 0.02 152)",
+          "oklch(0.379 0.02 152)",
+          "oklch(0.493 0.02 152)",
+          "oklch(0.607 0.02 152)",
+          "oklch(0.721 0.02 152)",
+          "oklch(0.836 0.02 152)",
+          "oklch(0.950 0.02 152)"
+        ]
+      },
+      "standby-dark": {
+        "role": "secondary",
+        "displayName": "Luz de deixa âmbar (coxia)",
+        "canonical": "oklch(0.8 0.15 72)",
+        "tonalRamp": [
+          "oklch(0.150 0.15 72)",
+          "oklch(0.264 0.15 72)",
+          "oklch(0.379 0.15 72)",
+          "oklch(0.493 0.15 72)",
+          "oklch(0.607 0.15 72)",
+          "oklch(0.721 0.15 72)",
+          "oklch(0.836 0.15 72)",
+          "oklch(0.950 0.15 72)"
+        ]
+      },
+      "highlight-dark": {
+        "role": "secondary",
+        "displayName": "Marca-texto (coxia)",
+        "canonical": "oklch(0.86 0.15 100)",
+        "tonalRamp": [
+          "oklch(0.150 0.15 100)",
+          "oklch(0.264 0.15 100)",
+          "oklch(0.379 0.15 100)",
+          "oklch(0.493 0.15 100)",
+          "oklch(0.607 0.15 100)",
+          "oklch(0.721 0.15 100)",
+          "oklch(0.836 0.15 100)",
+          "oklch(0.950 0.15 100)"
+        ]
+      },
+      "destructive-dark": {
+        "role": "error",
+        "displayName": "Erro (coxia)",
+        "canonical": "oklch(0.7 0.19 22)",
+        "tonalRamp": [
+          "oklch(0.150 0.19 22)",
+          "oklch(0.264 0.19 22)",
+          "oklch(0.379 0.19 22)",
+          "oklch(0.493 0.19 22)",
+          "oklch(0.607 0.19 22)",
+          "oklch(0.721 0.19 22)",
+          "oklch(0.836 0.19 22)",
+          "oklch(0.950 0.19 22)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display (fecho)",
+        "purpose": "Uma vez por página: o fecho."
+      },
+      "headline": {
+        "displayName": "Fala-manchete",
+        "purpose": "A fala do hero, com personagem na margem."
+      },
+      "title": {
+        "displayName": "Título de ato",
+        "purpose": "Ato I/II/III; número do ato em muted-foreground."
+      },
+      "script-body": {
+        "displayName": "Rubrica",
+        "purpose": "Prosa de cena em Courier Prime, até 60ch."
+      },
+      "body": {
+        "displayName": "Corpo",
+        "purpose": "Explicações e interface em Geist."
+      },
+      "label": {
+        "displayName": "Rótulo de roteiro",
+        "purpose": "Números/estados de deixa, tipos, cabeçalhos de tabela, slugs. Caixa alta."
+      },
+      "ui-label": {
+        "displayName": "Rótulo de interface",
+        "purpose": "Botões e rótulos de formulário."
+      }
+    },
+    "themes": {
+      "light": "padrão (sem classe)",
+      "dark": "classe .dark em <html> (coxia); tokens com sufixo -dark no frontmatter"
+    },
+    "shadows": [
+      {
+        "name": "script-page",
+        "value": "0 24px 48px -28px color-mix(in oklch, var(--foreground) 35%, transparent)",
+        "purpose": "Folha do hero (só no claro)."
+      },
+      {
+        "name": "loose-sheet",
+        "value": "0 24px 48px -32px color-mix(in oklch, var(--foreground) 40%, transparent)",
+        "purpose": "Folha de deixas, notas do diretor (só no claro)."
+      },
+      {
+        "name": "revision-paper",
+        "value": "0 10px 24px -18px color-mix(in oklch, var(--foreground) 45%, transparent)",
+        "purpose": "Papéis de revisão empilhados."
+      },
+      {
+        "name": "lamp-halo",
+        "value": "0 0 0 4px color-mix(in oklch, var(--primary) 30%, transparent)",
+        "purpose": "Lâmpada acesa (troque --primary por --standby em atenção)."
+      },
+      {
+        "name": "kbd",
+        "value": "inset 0 -2px 0 var(--border)",
+        "purpose": "Tecla <kbd>."
+      }
+    ],
+    "motion": [
+      {
+        "name": "lamp",
+        "value": "300ms background-color, box-shadow",
+        "purpose": "Lâmpada passando de apagada a âmbar a verde."
+      },
+      {
+        "name": "paper-lift",
+        "value": "300ms ease-out translateY(-4px)",
+        "purpose": "Papel de revisão no hover/foco."
+      },
+      {
+        "name": "bar-fill",
+        "value": "700ms ease-out width",
+        "purpose": "Barras de resultado (300ms na demo do hero)."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "0.01ms em tudo",
+        "purpose": "prefers-reduced-motion global; a demo pula ao resultado final."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botão primário (VAI)",
+      "kind": "button",
+      "refersTo": "button-primary-lg",
+      "description": "Ação principal: CTA de cadastro, salvar, iniciar sessão.",
+      "html": "<button class=\"ds-btn-primary\">Criar minha sessão</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 24px;border:0;border-radius:6px;background:var(--primary);color:var(--primary-foreground);font:500 1rem/1 var(--font-geist-sans), Geist, ui-sans-serif, system-ui, sans-serif;box-shadow:0 1px 2px rgb(0 0 0 / .05);cursor:pointer;transition:background-color .15s}.ds-btn-primary:hover{background:color-mix(in oklch,var(--primary) 90%,transparent)}.ds-btn-primary:focus-visible{outline:none;box-shadow:0 0 0 2px var(--background),0 0 0 4px var(--ring)}"
+    },
+    {
+      "name": "Botão outline",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Ação secundária ao lado do primário (ex.: Entrar no fecho).",
+      "html": "<button class=\"ds-btn-outline\">Entrar</button>",
+      "css": ".ds-btn-outline{display:inline-flex;align-items:center;height:36px;padding:8px 16px;border:1px solid var(--input);border-radius:6px;background:var(--background);color:var(--foreground);font:500 .875rem/1 var(--font-geist-sans), Geist, ui-sans-serif, system-ui, sans-serif;cursor:pointer;transition:background-color .15s}.ds-btn-outline:hover{background:var(--accent)}.ds-btn-outline:focus-visible{outline:none;box-shadow:0 0 0 2px var(--background),0 0 0 4px var(--ring)}"
+    },
+    {
+      "name": "Botão ghost",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Navegação do topo e ações terciárias.",
+      "html": "<button class=\"ds-btn-ghost\">Como funciona</button>",
+      "css": ".ds-btn-ghost{display:inline-flex;align-items:center;height:36px;padding:8px 16px;border:0;border-radius:6px;background:transparent;color:var(--foreground);font:500 .875rem/1 var(--font-geist-sans), Geist, ui-sans-serif, system-ui, sans-serif;cursor:pointer;transition:background-color .15s}.ds-btn-ghost:hover{background:var(--accent)}.ds-btn-ghost:focus-visible{outline:none;box-shadow:0 0 0 2px var(--background),0 0 0 4px var(--ring)}"
+    },
+    {
+      "name": "Botão de deixa",
+      "kind": "custom",
+      "refersTo": "button-cue",
+      "description": "Chama uma deixa: contorno em tinta, Courier Prime em caixa alta, lâmpada de estado à esquerda.",
+      "html": "<button class=\"ds-btn-cue\"><span class=\"ds-lamp\" aria-hidden=\"true\"></span>Vai</button>",
+      "css": ".ds-btn-cue{display:inline-flex;align-items:center;gap:12px;height:44px;padding:0 16px;border:2px solid var(--foreground);border-radius:6px;background:transparent;color:var(--foreground);font:700 1rem/1 var(--font-courier-prime), 'Courier Prime', 'Courier New', monospace;text-transform:uppercase;letter-spacing:.025em;cursor:pointer;transition:background-color .15s,color .15s}.ds-btn-cue:hover{background:var(--foreground);color:var(--background)}.ds-btn-cue:focus-visible{outline:none;box-shadow:0 0 0 2px var(--background),0 0 0 4px var(--ring)}.ds-lamp{display:inline-block;width:16px;height:16px;border-radius:9999px;border:2px solid var(--primary);background:var(--primary);box-shadow:0 0 0 4px color-mix(in oklch,var(--primary) 30%,transparent);transition:background-color .3s,box-shadow .3s}"
+    },
+    {
+      "name": "Campo de texto",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Formulários e código de participação.",
+      "html": "<input class=\"ds-input\" placeholder=\"IA2026\" aria-label=\"Código da sessão\">",
+      "css": ".ds-input{height:40px;width:100%;max-width:280px;padding:4px 12px;border:1px solid var(--input);border-radius:6px;background:transparent;color:var(--foreground);font:400 .875rem/1.4 var(--font-geist-sans), Geist, ui-sans-serif, system-ui, sans-serif;outline:none;transition:border-color .15s,box-shadow .15s}.ds-input::placeholder{color:var(--muted-foreground)}.ds-input:focus-visible{border-color:var(--ring);box-shadow:0 0 0 3px color-mix(in oklch,var(--ring) 40%,transparent)}"
+    },
+    {
+      "name": "Etiquetas de tipo",
+      "kind": "chip",
+      "refersTo": "type-tag-poll",
+      "description": "Papel de revisão por tipo de interação, sempre com o nome escrito.",
+      "html": "<span class=\"ds-tag\" style=\"background:var(--rev-blue)\">Enquete</span> <span class=\"ds-tag\" style=\"background:var(--rev-pink)\">Escala</span> <span class=\"ds-tag\" style=\"background:var(--rev-yellow)\">Nuvem de palavras</span> <span class=\"ds-tag\" style=\"background:var(--rev-green)\">Pergunta aberta</span> <span class=\"ds-tag\" style=\"background:var(--rev-gold)\">Quiz</span>",
+      "css": ".ds-tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;color:var(--rev-foreground);font:700 .75rem/1.4 var(--font-courier-prime), 'Courier Prime', 'Courier New', monospace;text-transform:uppercase;letter-spacing:.05em}"
+    },
+    {
+      "name": "Badges de estado",
+      "kind": "chip",
+      "refersTo": "badge-live",
+      "description": "Ao vivo em verde VAI, pausa em âmbar; sempre rotulados.",
+      "html": "<span class=\"ds-badge ds-badge-live\">Ao vivo</span> <span class=\"ds-badge ds-badge-standby\">Pausada</span>",
+      "css": ".ds-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px;font:500 .75rem/1.4 var(--font-geist-sans), Geist, ui-sans-serif, system-ui, sans-serif;white-space:nowrap}.ds-badge-live{background:var(--primary);color:var(--primary-foreground)}.ds-badge-standby{background:var(--standby);color:var(--standby-foreground)}"
+    },
+    {
+      "name": "Página de roteiro",
+      "kind": "card",
+      "refersTo": "script-page",
+      "description": "Superfície de papel: branca, 4px, sombra suave no claro, borda só no escuro.",
+      "html": "<article class=\"ds-page\"><p class=\"ds-slug\">Int. Auditório — noite</p><p class=\"ds-line\">Seu público fala. Você entende. <mark>Sua próxima palestra fica melhor.</mark></p></article>",
+      "css": ".ds-page{max-width:520px;padding:32px;border-radius:4px;background:var(--card);color:var(--card-foreground);font-family:var(--font-courier-prime), 'Courier Prime', 'Courier New', monospace;box-shadow:0 24px 48px -28px color-mix(in oklch,var(--foreground) 35%,transparent)}:host-context(.dark) .ds-page{border:1px solid var(--border)}.ds-slug{margin:0 0 16px;font-size:.875rem;font-weight:700;text-transform:uppercase;text-decoration:underline;text-underline-offset:4px}.ds-line{margin:0;font-size:2rem;font-weight:700;line-height:1.05;letter-spacing:-.03em}.ds-line mark{background:var(--highlight);color:var(--highlight-foreground);padding:0 4px;box-decoration-break:clone;-webkit-box-decoration-break:clone}"
+    },
+    {
+      "name": "Barras de resultado",
+      "kind": "custom",
+      "description": "Líder em tinta, demais em tinta a 35%, correta do quiz em verde com ✓.",
+      "html": "<ul class=\"ds-bars\"><li><span>Sim, todo dia</span><span>48%</span><i><b style=\"width:48%;background:var(--foreground)\"></b></i></li><li><span>Estou começando ✓</span><span>29%</span><i><b style=\"width:29%;background:var(--primary)\"></b></i></li><li><span>Ainda não</span><span>14%</span><i><b style=\"width:14%;background:color-mix(in oklch,var(--foreground) 35%,transparent)\"></b></i></li></ul>",
+      "css": ".ds-bars{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;max-width:420px;font:500 .875rem/1.3 var(--font-geist-sans), Geist, ui-sans-serif, system-ui, sans-serif;color:var(--foreground)}.ds-bars li{display:grid;grid-template-columns:1fr auto;gap:6px 16px}.ds-bars li>span:nth-child(2){font-variant-numeric:tabular-nums;color:var(--muted-foreground)}.ds-bars i{grid-column:span 2;height:10px;border-radius:9999px;background:var(--muted);overflow:hidden}.ds-bars b{display:block;height:100%;border-radius:9999px;transition:width .7s ease-out}"
+    },
+    {
+      "name": "Nota com confiança",
+      "kind": "custom",
+      "description": "Confiança como peso de sublinhado; amostra sempre escrita.",
+      "html": "<ol class=\"ds-notes\"><li><p class=\"ds-hi\">A nuvem de palavras teve a maior participação.</p><small>confiança alta · 64 respostas</small></li><li><p class=\"ds-lo\">Alguns comentários pedem mais exemplos práticos.</p><small>confiança baixa · 3 comentários</small></li></ol>",
+      "css": ".ds-notes{margin:0;padding-left:24px;display:flex;flex-direction:column;gap:16px;font-family:var(--font-courier-prime), 'Courier Prime', 'Courier New', monospace;color:var(--foreground)}.ds-notes p{margin:0 0 4px;line-height:1.625;text-decoration:underline;text-underline-offset:6px}.ds-hi{text-decoration-thickness:2px;text-decoration-color:var(--foreground)}.ds-lo{text-decoration-thickness:1px;text-decoration-style:dashed;text-decoration-color:color-mix(in oklch,var(--foreground) 40%,transparent)}.ds-notes small{font-size:.75rem;color:var(--muted-foreground)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Roteiro com deixas",
+    "overview": "A palestra é um espetáculo com roteiro, e o PulseStage é o caderno do diretor de cena. A superfície é uma página de roteiro branca (branco frio, nunca creme) sobre um campo quase branco e frio; a voz de roteiro (Courier Prime) fala nas falas-manchete, nos números de deixa, nos códigos e nos dados tabulares, enquanto a Geist cuida de toda a interface operacional. A cor não decora: ela tem função de palco. Verde é a luz de deixa VAI (ação principal e estado ao vivo), âmbar é atenção (próxima deixa, pausa), amarelo é o marca-texto do diretor, e cinco papéis de revisão coloridos identificam os cinco tipos de interação em todo o produto.\n\nNo escuro, a página vira coxia: palco preto neutro, quase sem matiz, com as mesmas cores funcionando como fita de marcação, mais claras e mais saturadas. A densidade é de documento de trabalho: colunas de leitura curtas, numerais tabulares, rubricas entre parênteses, linhas tracejadas onde o roteiro divide cenas. Recusa explícita do visual SaaS índigo anterior e do hero dividido com captura de tela mais fileira de cards de recursos.\n\nHonestidade de dados é parte da linguagem visual: a confiança de uma nota é desenhada pelo peso do sublinhado, amostras pequenas recebem traço tracejado, e todo estado ao vivo vem com rótulo de texto além da cor.",
+    "keyCharacteristics": [
+      "Página de roteiro branca, sombra suave, cantos quase retos (4px).",
+      "Duas vozes: Courier Prime (roteiro) e Geist (interface).",
+      "Verde VAI, âmbar atenção, amarelo marca-texto; cada um com um só significado.",
+      "Cinco papéis de revisão, um por tipo de interação, com tinta correspondente.",
+      "Coxia neutra no escuro; borda substitui a sombra.",
+      "Estado sempre rotulado em texto; confiança como peso de linha."
+    ],
+    "rules": [
+      {
+        "name": "The One Meaning Rule",
+        "body": "Verde é VAI, âmbar é atenção, amarelo é marca-texto. Nenhuma dessas cores é usada para outra coisa, e nenhuma decora.",
+        "section": "colors"
+      },
+      {
+        "name": "The Revision Paper Rule",
+        "body": "Cada tipo de interação tem um papel e só um, igual no construtor, na sala ao vivo, no analytics e na landing (`TYPE_PAPER`). Um tipo novo exige um papel novo; nunca reaproveite um existente.",
+        "section": "colors"
+      },
+      {
+        "name": "The White Page Rule",
+        "body": "A página do roteiro é branca e fria. Creme, bege ou papel envelhecido estão fora deste mundo.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Voices Rule",
+        "body": "Courier Prime para o que pertence ao roteiro (falas-manchete, números de deixa, códigos como `IA2026`, dados tabulares, slugs de cena); Geist para o que o usuário opera ou lê como instrução. Pergunta exibida ao público é Geist, mesmo dentro de uma página em Courier.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Kicker Rule",
+        "body": "Nenhum rótulo pequeno em caixa alta sobre um título. Rótulos em caixa alta só existem como dispositivos do roteiro com função própria: slug de cena, número de deixa, nome do tipo, cabeçalho de tabela.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "Todo número que muda ou se compara usa `tabular-nums`.",
+        "section": "typography"
+      },
+      {
+        "name": "The Paper Not Box Rule",
+        "body": "No claro, papel tem sombra e não tem borda; no escuro, tem borda e não depende de sombra.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do usar `primary` só para ação principal, ao vivo, correto e foco.",
+      "Do marcar cada tipo de interação com seu papel de revisão (`TYPE_PAPER`) em toda tela onde o tipo aparece.",
+      "Do escrever o estado ao lado de toda cor de estado (lâmpada, badge, barra).",
+      "Do desenhar confiança como peso de sublinhado: contínuo e pesado para amostra grande, tracejado e fino para amostra pequena, com a amostra escrita.",
+      "Do usar Courier Prime para códigos, números de deixa e numerais tabulares; Geist para botões, formulários e perguntas ao público.",
+      "Do dar às superfícies de papel sombra suave no claro e borda fina no escuro.",
+      "Do respeitar `prefers-reduced-motion` (regra global; a demo pula direto ao resultado)."
+    ],
+    "donts": [
+      "Don't usar rótulos kicker ou eyebrow sobre títulos.",
+      "Don't usar creme, bege ou papel envelhecido para a página.",
+      "Don't reutilizar um papel de revisão para outra coisa que não o seu tipo.",
+      "Don't usar verde, âmbar ou amarelo como decoração.",
+      "Don't comunicar estado só por cor.",
+      "Don't pôr borda em superfícies de papel no tema claro.",
+      "Don't voltar ao índigo SaaS nem ao hero dividido com captura de tela e fileira de cards de recursos."
+    ]
+  }
+}

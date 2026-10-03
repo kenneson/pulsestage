@@ -3,51 +3,87 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.17 0.01 265);
+  --radius: 0.5rem;
+  /* Página de roteiro: branco frio (não creme), tinta quase preta. */
+  --background: oklch(0.985 0.002 250);
+  --foreground: oklch(0.2 0.012 260);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.17 0.01 265);
-  --primary: oklch(0.48 0.2 268);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.96 0.01 265);
-  --secondary-foreground: oklch(0.21 0.01 265);
-  --muted: oklch(0.965 0.005 265);
-  --muted-foreground: oklch(0.52 0.015 265);
-  --accent: oklch(0.96 0.01 265);
-  --accent-foreground: oklch(0.21 0.01 265);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.006 265);
-  --input: oklch(0.9 0.008 265);
-  --ring: oklch(0.6 0.15 268);
-  --chart-1: oklch(0.51 0.23 277);
-  --chart-2: oklch(0.61 0.11 222);
-  --chart-3: oklch(0.63 0.17 149);
-  --chart-4: oklch(0.67 0.16 58);
+  --card-foreground: oklch(0.2 0.012 260);
+  /* Luz de deixa verde = VAI (ação principal e estado ao vivo). */
+  --primary: oklch(0.5 0.13 152);
+  --primary-foreground: oklch(0.99 0.004 152);
+  --secondary: oklch(0.955 0.004 250);
+  --secondary-foreground: oklch(0.22 0.012 260);
+  --muted: oklch(0.955 0.004 250);
+  --muted-foreground: oklch(0.47 0.012 260);
+  --accent: oklch(0.95 0.006 250);
+  --accent-foreground: oklch(0.22 0.012 260);
+  --destructive: oklch(0.56 0.21 27);
+  --border: oklch(0.9 0.005 250);
+  --input: oklch(0.86 0.006 250);
+  --ring: oklch(0.6 0.13 152);
+  /* Luz de deixa âmbar = atenção (próxima deixa, pausa). */
+  --standby: oklch(0.78 0.15 70);
+  --standby-foreground: oklch(0.3 0.06 60);
+  /* Marca-texto do diretor de cena. */
+  --highlight: oklch(0.93 0.13 102);
+  --highlight-foreground: oklch(0.2 0.012 260);
+  /* Papéis de revisão do roteiro: um por tipo de interação. */
+  --rev-blue: oklch(0.91 0.045 240);
+  --rev-pink: oklch(0.92 0.045 5);
+  --rev-yellow: oklch(0.95 0.08 100);
+  --rev-green: oklch(0.92 0.055 152);
+  --rev-gold: oklch(0.88 0.09 78);
+  --rev-foreground: oklch(0.22 0.012 260);
+  --rev-blue-ink: oklch(0.46 0.13 245);
+  --rev-pink-ink: oklch(0.48 0.17 8);
+  --rev-yellow-ink: oklch(0.46 0.1 95);
+  --rev-green-ink: oklch(0.46 0.12 152);
+  --rev-gold-ink: oklch(0.48 0.11 65);
+  --chart-1: oklch(0.5 0.13 245);
+  --chart-2: oklch(0.55 0.17 8);
+  --chart-3: oklch(0.52 0.13 152);
+  --chart-4: oklch(0.65 0.14 70);
   color-scheme: light;
 }
 
+/* Coxia: palco preto, fita de marcação colorida. */
 .dark {
-  --background: oklch(0.16 0.01 265);
-  --foreground: oklch(0.97 0 0);
-  --card: oklch(0.2 0.012 265);
-  --card-foreground: oklch(0.97 0 0);
-  --primary: oklch(0.72 0.15 268);
-  --primary-foreground: oklch(0.16 0.01 265);
-  --secondary: oklch(0.26 0.012 265);
-  --secondary-foreground: oklch(0.97 0 0);
-  --muted: oklch(0.26 0.012 265);
-  --muted-foreground: oklch(0.72 0.01 265);
-  --accent: oklch(0.26 0.012 265);
-  --accent-foreground: oklch(0.97 0 0);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 18%);
-  --ring: oklch(0.72 0.15 268);
-  --destructive: oklch(0.704 0.191 22.216);
-  --chart-1: oklch(0.68 0.16 277);
-  --chart-2: oklch(0.75 0.12 215);
-  --chart-3: oklch(0.77 0.16 150);
-  --chart-4: oklch(0.8 0.15 75);
+  --background: oklch(0.13 0 0);
+  --foreground: oklch(0.95 0.004 250);
+  --card: oklch(0.175 0 0);
+  --card-foreground: oklch(0.95 0.004 250);
+  --primary: oklch(0.76 0.15 152);
+  --primary-foreground: oklch(0.17 0.02 152);
+  --secondary: oklch(0.235 0 0);
+  --secondary-foreground: oklch(0.95 0.004 250);
+  --muted: oklch(0.235 0 0);
+  --muted-foreground: oklch(0.72 0 0);
+  --accent: oklch(0.25 0 0);
+  --accent-foreground: oklch(0.95 0.004 250);
+  --border: oklch(1 0 0 / 11%);
+  --input: oklch(1 0 0 / 17%);
+  --ring: oklch(0.76 0.15 152);
+  --destructive: oklch(0.7 0.19 22);
+  --standby: oklch(0.8 0.15 72);
+  --standby-foreground: oklch(0.25 0.05 60);
+  --highlight: oklch(0.86 0.15 100);
+  --highlight-foreground: oklch(0.18 0.012 260);
+  --rev-blue: oklch(0.32 0.06 240);
+  --rev-pink: oklch(0.33 0.07 5);
+  --rev-yellow: oklch(0.36 0.07 100);
+  --rev-green: oklch(0.33 0.07 152);
+  --rev-gold: oklch(0.36 0.08 75);
+  --rev-foreground: oklch(0.95 0.004 250);
+  --rev-blue-ink: oklch(0.74 0.12 240);
+  --rev-pink-ink: oklch(0.75 0.14 8);
+  --rev-yellow-ink: oklch(0.86 0.14 100);
+  --rev-green-ink: oklch(0.78 0.14 152);
+  --rev-gold-ink: oklch(0.82 0.14 78);
+  --chart-1: oklch(0.74 0.12 240);
+  --chart-2: oklch(0.75 0.14 8);
+  --chart-3: oklch(0.78 0.14 152);
+  --chart-4: oklch(0.82 0.14 78);
   color-scheme: dark;
 }
 
@@ -68,11 +104,27 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-standby: var(--standby);
+  --color-standby-foreground: var(--standby-foreground);
+  --color-highlight: var(--highlight);
+  --color-highlight-foreground: var(--highlight-foreground);
+  --color-rev-blue: var(--rev-blue);
+  --color-rev-pink: var(--rev-pink);
+  --color-rev-yellow: var(--rev-yellow);
+  --color-rev-green: var(--rev-green);
+  --color-rev-gold: var(--rev-gold);
+  --color-rev-foreground: var(--rev-foreground);
+  --color-rev-blue-ink: var(--rev-blue-ink);
+  --color-rev-pink-ink: var(--rev-pink-ink);
+  --color-rev-yellow-ink: var(--rev-yellow-ink);
+  --color-rev-green-ink: var(--rev-green-ink);
+  --color-rev-gold-ink: var(--rev-gold-ink);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-script: var(--font-courier-prime), "Courier New", monospace;
 }
 
 @layer base {
@@ -81,6 +133,16 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
+    caret-color: var(--primary);
+    accent-color: var(--primary);
+    scrollbar-color: color-mix(in oklch, var(--foreground) 28%, transparent) transparent;
+  }
+  ::selection {
+    background: var(--highlight);
+    color: var(--highlight-foreground);
+  }
+  a {
+    text-underline-offset: 0.2em;
   }
 }
 

@@ -8,7 +8,7 @@ export function JoinCodeForm({ defaultValue = "" }: { defaultValue?: string }) {
       <Input
         name="code"
         defaultValue={defaultValue}
-        placeholder="Código da sessão"
+        placeholder="Código"
         aria-label="Código da sessão"
         autoCapitalize="characters"
         autoComplete="off"

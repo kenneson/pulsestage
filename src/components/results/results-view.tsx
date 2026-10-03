@@ -16,7 +16,7 @@ function Bars({ bars, variant, highlightKey }: { bars: Bar[]; variant: Variant; 
         return (
           <li key={bar.key} className="grid gap-1.5">
             <div className={cn("flex items-baseline justify-between gap-4", big ? "text-3xl" : "text-sm")}>
-              <span className={cn("font-medium", correct && "text-emerald-600 dark:text-emerald-400")}>
+              <span className={cn("font-medium", correct && "text-primary")}>
                 {bar.label}
                 {correct ? " ✓" : ""}
               </span>
@@ -29,7 +29,7 @@ function Bars({ bars, variant, highlightKey }: { bars: Bar[]; variant: Variant; 
               <div
                 className={cn(
                   "h-full rounded-full transition-[width] duration-700 ease-out",
-                  correct ? "bg-emerald-500" : leading ? "bg-primary" : "bg-primary/50",
+                  correct ? "bg-primary" : leading ? "bg-foreground" : "bg-foreground/35",
                 )}
                 style={{ width: `${Math.round(bar.pct * 100)}%` }}
               />

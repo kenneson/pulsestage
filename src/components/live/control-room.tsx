@@ -7,7 +7,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
 import { setActiveInteractionAction } from "@/features/interactions/actions";
 import { setSessionStatusAction } from "@/features/sessions/actions";
-import { INTERACTION_TYPE_META, type PublicInteraction } from "@/lib/domain/interactions";
+import type { PublicInteraction } from "@/lib/domain/interactions";
 import { EMPTY_SNAPSHOT } from "@/lib/domain/results";
 import { toSessionStatus, type SessionStatus } from "@/lib/domain/session";
 import { useLiveState } from "@/lib/realtime/use-live-state";
@@ -24,6 +24,7 @@ import { useConfirm } from "@/components/ui/confirm-dialog";
 import { ExternalIcon, NextIcon, PauseIcon, PlayIcon, StopIcon, UsersIcon } from "@/components/icons";
 import { ResultsView } from "@/components/results/results-view";
 import { StatusBadge } from "@/components/sessions/status-badge";
+import { TypeTag } from "@/components/interaction-type-tag";
 
 export type ControlRoomInteraction = PublicInteraction & { correctOptionId: string | null };
 
@@ -170,7 +171,7 @@ export function ControlRoom({ session, interactions, initialLive, initialResults
             <div className="min-w-0">
               {active ? (
                 <>
-                  <Badge variant="secondary">{INTERACTION_TYPE_META[active.type].label}</Badge>
+                  <TypeTag type={active.type} />
                   <CardTitle className="mt-2 text-xl">{active.title}</CardTitle>
                   <p className="mt-1 text-sm text-muted-foreground">
                     {plural((results[active.id] ?? EMPTY_SNAPSHOT).total, "resposta", "respostas")} de{" "}
@@ -227,7 +228,7 @@ export function ControlRoom({ session, interactions, initialLive, initialResults
                 <QRCodeSVG value={joinUrl} size={168} marginSize={0} />
               </div>
               <p className="text-sm text-muted-foreground">Código de entrada</p>
-              <p className="font-mono text-3xl font-bold tracking-widest">{session.joinCode}</p>
+              <p className="font-script text-3xl font-bold tracking-widest">{session.joinCode}</p>
               <p className="break-all text-xs text-muted-foreground">{joinUrl}</p>
             </CardContent>
           </Card>
@@ -252,7 +253,7 @@ export function ControlRoom({ session, interactions, initialLive, initialResults
                           isActive ? "bg-primary/10 font-medium" : "hover:bg-muted disabled:hover:bg-transparent",
                         )}
                       >
-                        <span className="w-5 shrink-0 text-muted-foreground tabular-nums">{index + 1}</span>
+                        <span className="w-5 shrink-0 font-script font-bold text-muted-foreground tabular-nums">{index + 1}</span>
                         <span className="min-w-0 flex-1 truncate">{interaction.title}</span>
                         {isActive ? (
                           <Badge variant="live">Ativa</Badge>

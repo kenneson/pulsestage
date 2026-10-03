@@ -12,6 +12,10 @@
 - Confirmações usam `useConfirm()` (`components/ui/confirm-dialog.tsx`, `<dialog>` nativo), nunca `window.confirm`.
 - `/privacidade` descreve cookies, IA e retenção: atualize-a ao mudar o que é coletado ou enviado à IA.
 - `/dashboard/guia` cita os rótulos reais dos botões: ao renomear um botão ou mudar um fluxo, atualize o guia.
+- Identidade visual "Roteiro com deixas" (caderno do diretor de cena): fatos do produto em `PRODUCT.md`, sistema visual em
+  `DESIGN.md`, contrato da landing em `.impeccable/surfaces/`. Verde = VAI (primary), âmbar = atenção (`standby`),
+  papéis de revisão `rev-*` = um por tipo de interação (`components/interaction-type-tag.tsx`), Courier Prime (`font-script`)
+  para falas, deixas, códigos e numerais. Não inventar depoimentos, logos ou números na landing.
 - Deploy na Vercel feito; `npm test` cobre os módulos puros de `lib/domain/`.
 - **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta
   (seção "Teste manual" do README). `src/lib/supabase/database.types.ts` foi escrito à mão:

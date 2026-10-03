@@ -65,7 +65,7 @@ export default async function SessionBuilderPage({ params }: { params: Promise<{
           <div className="flex items-center gap-2">
             <StatusBadge status={status} />
             <span className="text-sm text-muted-foreground">
-              Código <span className="font-mono font-semibold text-foreground">{session.join_code}</span>
+              Código <span className="font-script font-semibold text-foreground">{session.join_code}</span>
             </span>
           </div>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight">{session.title}</h1>

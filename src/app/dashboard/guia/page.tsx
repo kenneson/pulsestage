@@ -29,7 +29,7 @@ function Section({ id, title, children }: { id: string; title: string; children:
 }
 
 function Kbd({ children }: { children: React.ReactNode }) {
-  return <kbd className="rounded border bg-muted px-1.5 py-0.5 font-mono text-xs text-foreground">{children}</kbd>;
+  return <kbd className="rounded border bg-muted px-1.5 py-0.5 font-script text-xs text-foreground">{children}</kbd>;
 }
 
 export default function GuidePage() {
