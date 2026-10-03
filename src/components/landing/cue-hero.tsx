@@ -5,8 +5,9 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { JoinCodeForm } from "@/components/join-code-form";
+import { CheckIcon } from "@/components/icons";
 
-// Demonstração da deixa: respostas simuladas, nunca dados reais. Rotulada como tal na tela.
+// Demonstração no hero: respostas simuladas, nunca dados reais. Rotulada como tal na tela.
 const OPTIONS = [
   { label: "Sim, todo dia", target: 35 },
   { label: "Estou começando", target: 21 },
@@ -17,8 +18,19 @@ const TOTAL = OPTIONS.reduce((sum, o) => sum + o.target, 0);
 
 type Phase = "idle" | "standby" | "go" | "done";
 
+/** Posição da linha na entrada em sequência do roteiro (ver .script-line em globals.css). */
+const line = (n: number) => ({ "--line": n }) as React.CSSProperties;
+
 /** Luz de deixa: âmbar = atenção, verde = VAI. O texto ao lado diz o estado (nunca só a cor). */
-export function CueLamp({ state, className }: { state: "off" | "standby" | "go"; className?: string }) {
+export function CueLamp({
+  state,
+  pulse = false,
+  className,
+}: {
+  state: "off" | "standby" | "go";
+  pulse?: boolean;
+  className?: string;
+}) {
   return (
     <span
       aria-hidden
@@ -27,6 +39,7 @@ export function CueLamp({ state, className }: { state: "off" | "standby" | "go";
         state === "off" && "border-foreground/25 bg-foreground/10",
         state === "standby" && "border-standby bg-standby shadow-[0_0_0_4px_color-mix(in_oklch,var(--standby)_30%,transparent)]",
         state === "go" && "border-primary bg-primary shadow-[0_0_0_4px_color-mix(in_oklch,var(--primary)_30%,transparent)]",
+        state === "go" && pulse && "cue-live",
         className,
       )}
     />
@@ -77,8 +90,25 @@ function useCueDemo() {
     );
   }
 
+  const callRef = useRef(call);
+  useEffect(() => {
+    callRef.current = call;
+  });
+
+  // Roda a demonstração uma vez sozinha, depois que o hero termina de entrar.
+  useEffect(() => {
+    const start = window.setTimeout(() => callRef.current(), 1600);
+    return () => window.clearTimeout(start);
+  }, []);
+
   return { phase, votes, call };
 }
+
+const FACTS = [
+  "A plateia entra pelo QR Code ou por um código, sem baixar app",
+  "As respostas aparecem no telão na hora",
+  "No fim, você recebe a avaliação do público e um relatório",
+];
 
 export function CueHero() {
   const { phase, votes, call } = useCueDemo();
@@ -86,144 +116,110 @@ export function CueHero() {
   const answered = votes.reduce((a, b) => a + b, 0);
   const leader = Math.max(...votes);
   const status =
-    phase === "idle" ? "Em espera" : phase === "standby" ? "Atenção…" : phase === "go" ? "VAI: respostas chegando" : "Deixa executada";
-
-  const cueButton = (
-    <button
-      type="button"
-      onClick={call}
-      disabled={phase === "standby" || phase === "go"}
-      className={cn(
-        "group inline-flex h-11 items-center gap-3 rounded-md border-2 border-foreground px-4 font-script text-base font-bold uppercase tracking-wide transition-colors",
-        "hover:bg-foreground hover:text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-        "disabled:cursor-progress disabled:opacity-70 disabled:hover:bg-transparent disabled:hover:text-foreground",
-      )}
-    >
-      <CueLamp state={lamp} />
-      {phase === "done" ? "De novo" : "Vai"}
-    </button>
-  );
+    phase === "idle"
+      ? "Pronta para abrir"
+      : phase === "standby"
+        ? "Abrindo a votação…"
+        : phase === "go"
+          ? "No ar: respostas chegando"
+          : "Votação encerrada";
 
   return (
-    <div className="relative grid overflow-hidden rounded-sm bg-card dark:border text-card-foreground shadow-[0_24px_48px_-28px_color-mix(in_oklch,var(--foreground)_35%,transparent)] md:grid-cols-[13rem_1fr]">
-      {/* Furos do fichário do diretor de cena. */}
-      <div aria-hidden className="absolute inset-y-0 left-3 hidden flex-col justify-around md:flex">
-        {[0, 1, 2].map((i) => (
-          <span key={i} className="size-4 rounded-full border border-foreground/15 bg-background shadow-[inset_0_1px_2px_color-mix(in_oklch,var(--foreground)_25%,transparent)]" />
-        ))}
-      </div>
-
-      {/* Margem de deixas. */}
-      <aside
-        aria-label="Margem de deixas"
-        className="flex items-center justify-between gap-4 border-b border-dashed px-5 py-4 font-script md:flex-col md:items-start md:justify-start md:border-b-0 md:border-r md:py-10 md:pl-12 md:pr-6"
-      >
-        <div className="flex flex-col gap-1">
-          <span className="text-xs uppercase tracking-widest text-muted-foreground">
-            Deixa 1 <span className="text-rev-blue-ink">· enquete</span>
-          </span>
-          <span role="status" aria-live="polite" className="text-sm font-bold">
-            {status}
-          </span>
-        </div>
-        {cueButton}
-        <p className="hidden text-xs leading-relaxed text-muted-foreground md:block">
-          Aperte para chamar a deixa, como faria no palco.
+    <div className="grid gap-10 rounded-sm bg-card p-6 text-card-foreground shadow-[0_24px_48px_-28px_color-mix(in_oklch,var(--foreground)_35%,transparent)] dark:border sm:p-10 lg:grid-cols-[1.1fr_1fr] lg:gap-14 lg:p-14">
+      <div className="flex flex-col gap-6">
+        <h1
+          className="script-line text-balance font-script text-[clamp(2.1rem,4.2vw,3.6rem)] font-bold leading-[1.05] tracking-[-0.03em]"
+          style={line(0)}
+        >
+          Enquetes, quiz e perguntas{" "}
+          <mark className="highlighter box-decoration-clone px-1 text-highlight-foreground">ao vivo</mark> para palestras e
+          aulas.
+        </h1>
+        <p className="script-line max-w-[56ch] text-lg leading-relaxed text-muted-foreground" style={line(1)}>
+          Você projeta a pergunta, a plateia responde pelo celular e o resultado aparece na tela em segundos. Depois,
+          o PulseStage mostra o que funcionou para a sua próxima apresentação ser melhor.
         </p>
-      </aside>
-
-      {/* Página do roteiro. */}
-      <div className="flex flex-col gap-6 px-5 py-8 font-script sm:px-10 md:py-12 lg:px-16">
-        <p className="text-sm font-bold uppercase underline decoration-1 underline-offset-4">Int. Auditório — noite</p>
-        <p className="max-w-[58ch] text-base leading-relaxed">
-          Duzentas pessoas, celulares no bolso. As luzes baixam e o palestrante sobe ao palco.
-        </p>
-
-        <div className="relative sm:pl-36">
-          <span aria-hidden className="absolute left-0 top-[0.9em] hidden text-sm font-bold uppercase sm:block">
-            Palestrante.
-          </span>
-          <h1 className="text-balance text-[clamp(2.1rem,4.4vw,3.9rem)] font-bold leading-[1.05] tracking-[-0.03em]">
-            Seu público fala. Você entende.
-            <br />
-            <mark className="bg-highlight box-decoration-clone px-1 text-highlight-foreground">
-              Sua próxima palestra fica melhor.
-            </mark>
-          </h1>
-        </div>
-
-        <div className="flex flex-col gap-5 sm:pl-36">
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-          <Link href="/signup" className={buttonVariants({ size: "lg", className: "font-sans" })}>
+        <ul className="script-line flex flex-col gap-2" style={line(2)}>
+          {FACTS.map((fact) => (
+            <li key={fact} className="flex items-start gap-2.5">
+              <CheckIcon className="mt-1 shrink-0 text-primary" />
+              <span>{fact}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="script-line flex flex-wrap items-center gap-x-5 gap-y-3" style={line(3)}>
+          <Link href="/signup" className={buttonVariants({ size: "lg" })}>
             Criar minha sessão
           </Link>
-          <span className="font-sans text-sm text-muted-foreground">
+          <span className="text-sm text-muted-foreground">
             Grátis durante o beta ·{" "}
             <Link href="/login" className="font-medium text-foreground underline-offset-4 hover:underline">
               já tenho conta
             </Link>
           </span>
         </div>
-
-          <div className="flex max-w-md flex-col gap-2 rounded-sm bg-muted/70 p-4 font-sans">
-            <p className="text-sm font-medium">Vai assistir a uma palestra? Digite o código que aparece no telão.</p>
-            <JoinCodeForm />
-          </div>
+        <div className="script-line flex max-w-md flex-col gap-2 rounded-sm bg-muted/70 p-4" style={line(4)}>
+          <p className="text-sm font-medium">Vai participar de uma palestra? Digite o código que aparece na tela.</p>
+          <JoinCodeForm />
         </div>
-
-        <div className="flex max-w-[60ch] flex-col gap-3 border-t border-dashed pt-6">
-          <p className="text-base leading-relaxed">
-            Ela pergunta. A plateia responde pelo celular, sem app e sem cadastro, e o resultado aparece no telão na
-            hora. No fim, o PulseStage entrega as notas do que funcionou.
-          </p>
-
-          {phase === "idle" ? (
-            <div className="flex flex-col items-start gap-4 rounded-sm border border-dashed p-5">
-              <p className="text-base italic leading-relaxed text-muted-foreground">
-                (No telão, a pergunta espera a deixa. Aperte VAI para chamá-la.)
-              </p>
-              {cueButton}
-            </div>
-          ) : (
-            <figure
-              aria-label="Demonstração de enquete com respostas simuladas"
-              className="flex min-h-[15.5rem] flex-col gap-3 rounded-sm border bg-background/60 p-4"
-            >
-              <figcaption className="flex flex-wrap items-baseline justify-between gap-2 text-sm">
-                <span className="font-bold uppercase">Insert — telão</span>
-                <span className="text-xs text-muted-foreground">demonstração · respostas simuladas</span>
-              </figcaption>
-              <p className="font-sans text-lg font-semibold leading-snug">Você já usa IA no seu trabalho?</p>
-              <ul className="flex flex-col gap-2">
-                {OPTIONS.map((o, i) => {
-                  const count = votes[i] ?? 0;
-                  const pct = answered > 0 ? count / answered : 0;
-                  const leading = answered > 0 && count === leader;
-                  return (
-                    <li key={o.label} className="grid grid-cols-[1fr_auto] items-baseline gap-x-3 gap-y-1">
-                      <span className="font-sans text-sm">{o.label}</span>
-                      <span className="text-sm tabular-nums">{Math.round(pct * 100)}%</span>
-                      <span className="col-span-2 h-2.5 overflow-hidden rounded-full bg-rev-blue">
-                        <span
-                          className={cn(
-                            "block h-full rounded-full transition-[width] duration-300 ease-out",
-                            leading ? "bg-rev-blue-ink" : "bg-rev-blue-ink/55",
-                          )}
-                          style={{ width: `${Math.round(pct * 100)}%` }}
-                        />
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-              <p className="text-xs tabular-nums text-muted-foreground">
-                {answered} respostas
-              </p>
-            </figure>
-          )}
-        </div>
-
       </div>
+
+      {/* Demonstração: o que a plateia vê no telão. */}
+      <figure
+        aria-label="Demonstração de enquete com respostas simuladas"
+        className="script-line flex flex-col gap-4 self-start rounded-sm border bg-background/60 p-5 sm:p-6"
+        style={line(2)}
+      >
+        <figcaption className="flex flex-col gap-1">
+          <span className="font-script text-sm font-bold uppercase">Experimente: é assim que aparece no telão</span>
+          <span className="text-xs text-muted-foreground">Demonstração com respostas simuladas.</span>
+        </figcaption>
+
+        <p className="text-xl font-semibold leading-snug">Você já usa IA no seu trabalho?</p>
+        <ul className="flex flex-col gap-3">
+          {OPTIONS.map((o, i) => {
+            const count = votes[i] ?? 0;
+            const pct = answered > 0 ? count / answered : 0;
+            const leading = answered > 0 && count === leader;
+            return (
+              <li key={o.label} className="grid grid-cols-[1fr_auto] items-baseline gap-x-3 gap-y-1.5">
+                <span className="text-sm">{o.label}</span>
+                <span className="font-script text-sm font-bold tabular-nums">{Math.round(pct * 100)}%</span>
+                <span className="col-span-2 h-3 overflow-hidden rounded-full bg-rev-blue">
+                  <span
+                    className={cn(
+                      "block h-full origin-left rounded-full transition-transform duration-300 ease-out",
+                      leading ? "bg-rev-blue-ink" : "bg-rev-blue-ink/55",
+                    )}
+                    style={{ transform: `scaleX(${pct})` }}
+                  />
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-dashed pt-4">
+          <span role="status" aria-live="polite" className="flex items-center gap-2 text-sm">
+            <CueLamp state={lamp} pulse={phase === "go"} />
+            <span className="font-medium">{status}</span>
+            <span className="font-script tabular-nums text-muted-foreground">· {answered} respostas</span>
+          </span>
+          <button
+            type="button"
+            onClick={call}
+            disabled={phase === "standby" || phase === "go"}
+            className={cn(
+              "inline-flex h-10 items-center gap-2 rounded-md border-2 border-foreground px-4 text-sm font-semibold",
+              "transition-[color,background-color,scale] duration-150 ease-out active:scale-[0.97]",
+              "hover:bg-foreground hover:text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+              "disabled:cursor-progress disabled:opacity-60 disabled:hover:bg-transparent disabled:hover:text-foreground",
+            )}
+          >
+            {phase === "done" ? "Simular de novo" : "Simular votação"}
+          </button>
+        </div>
+      </figure>
     </div>
   );
 }

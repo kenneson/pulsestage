@@ -19,9 +19,9 @@ THESIS: A palestra é um espetáculo com roteiro; o PulseStage é o caderno do d
 
 OWN-WORLD: Página de roteiro branca (não creme) furada para fichário, margem de deixas à esquerda, Courier Prime no formato de roteiro (personagem em caixa alta, fala, rubrica entre parênteses). Papéis de revisão coloridos (azul, rosa, amarelo, verde, dourado) = os cinco tipos de interação. Luz de deixa âmbar (atenção) e verde (VAI) = estados ao vivo. Escuro = coxia preta com fita de marcação.
 
-STORY: Ato I antes (escreva o roteiro com os cinco tipos), Ato II durante (chame as deixas: QR, telão, seta →), Ato III depois (notas do diretor: sinal de participação, scorecard, insights com confiança como peso de linha). Fecha com "Sua deixa" e o cadastro.
+STORY: Clareza primeiro (feedback do dono, 2026-10-03: a versão metafórica não dizia o que o produto faz). O visitante entende em segundos: o que é (enquetes, quiz e perguntas ao vivo para palestras e aulas), como funciona (3 passos), os 5 tipos, o painel durante a apresentação, o relatório depois, para quem é e perguntas frequentes. O mundo do roteiro fica no visual (papel, Courier, cores por tipo, luz verde), nunca no texto: sem jargão de teatro ("deixa", "ato", "INT.", "notas do diretor").
 
-FIRST VIEWPORT: Desktop: coluna de deixas estreita à esquerda (furos + DEIXA 1 com lâmpada e botão VAI), página de roteiro à direita: slug de cena, rubrica, PALESTRANTE e a fala-manchete grande "Seu público fala. Você entende. Sua próxima palestra fica melhor." com marca-texto na última frase; CTA primário verde logo abaixo, link Entrar, e a ficha "Vai assistir? Digite o código". VAI revela a enquete-demo no lugar da rubrica do telão. Mobile: a deixa vira faixa acima da fala.
+FIRST VIEWPORT: Folha de papel com duas colunas no desktop: à esquerda a manchete em Courier "Enquetes, quiz e perguntas ao vivo para palestras e aulas." (marca-texto em "ao vivo"), subtítulo explicando o fluxo, 3 fatos com check, CTA verde "Criar minha sessão" + "Grátis durante o beta", ficha do código do participante; à direita a demonstração "Experimente: é assim que aparece no telão", que roda sozinha uma vez e pode ser repetida. Celular: uma coluna, demonstração depois da ficha.
 
 FORM: Roteiro com deixas (caderno do diretor de cena), candidato 1 da lista ordenada (escolha do usuário, IMPECCABLE'S PICK); seed key 9e370257.
 

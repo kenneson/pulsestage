@@ -88,6 +88,9 @@
 }
 
 @theme inline {
+  /* Curvas fortes (as nativas do CSS são fracas demais para UI). */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -152,5 +155,111 @@
   *::after {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Movimento da landing. Tudo em CSS: entrada do roteiro (uma vez), revelação
+   por rolagem (scroll-driven, só onde o navegador suporta; sem suporte, o
+   conteúdo já aparece pronto) e a luz de deixa ativa.
+   --------------------------------------------------------------------------- */
+
+html {
+  scroll-padding-top: 1.5rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Entrada do roteiro: as linhas surgem como se fossem datilografadas em sequência. */
+@keyframes script-line {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+.script-line {
+  animation: script-line 560ms var(--ease-out) both;
+  animation-delay: calc(var(--line, 0) * 70ms);
+}
+
+/* Marca-texto: a caneta passa sobre a frase depois que ela aparece. */
+@keyframes highlighter {
+  from {
+    background-size: 0% 100%;
+    color: var(--foreground);
+  }
+}
+
+.highlighter {
+  background-color: transparent;
+  background-image: linear-gradient(var(--highlight), var(--highlight));
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  animation: highlighter 700ms var(--ease-in-out) 480ms both;
+}
+
+/* Luz de deixa ativa (VAI): o halo respira, como a lâmpada acesa na coxia. */
+@keyframes cue-go {
+  50% {
+    box-shadow: 0 0 0 8px color-mix(in oklch, var(--primary) 0%, transparent);
+  }
+}
+
+.cue-live {
+  animation: cue-go 1.8s var(--ease-in-out) infinite;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes reveal {
+      from {
+        opacity: 0;
+        transform: translateY(1.5rem);
+      }
+    }
+
+    /* Folhas de revisão entram pela direita, como páginas encaixadas no fichário. */
+    @keyframes page-in {
+      from {
+        opacity: 0;
+        transform: translateX(2.5rem) rotate(0.6deg);
+      }
+    }
+
+    @keyframes bar-grow {
+      from {
+        transform: scaleY(0.08);
+      }
+    }
+
+    .reveal,
+    .reveal-page,
+    .reveal-bar {
+      animation-timing-function: var(--ease-out);
+      animation-fill-mode: both;
+      animation-timeline: view();
+    }
+
+    .reveal {
+      animation-name: reveal;
+      animation-range: entry 5% cover 28%;
+    }
+
+    .reveal-page {
+      animation-name: page-in;
+      animation-range: entry 0% cover 30%;
+    }
+
+    .reveal-bar {
+      transform-box: fill-box;
+      transform-origin: bottom;
+      animation-name: bar-grow;
+      animation-range: entry 30% cover 50%;
+    }
   }
 }
