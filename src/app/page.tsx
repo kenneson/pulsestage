@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { JoinCodeForm } from "@/components/join-code-form";
 import { buttonVariants } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme";
 
 const STEPS = [
   { title: "Interaja", text: "Enquetes, quizzes, nuvem de palavras e perguntas abertas, ao vivo pelo celular da audiência." },
@@ -15,6 +16,7 @@ export default function Home() {
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
         <Logo />
         <nav className="flex items-center gap-2">
+          <ThemeToggle />
           <Link href="/login" className={buttonVariants({ variant: "ghost" })}>
             Entrar
           </Link>

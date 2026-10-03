@@ -5,15 +5,13 @@
 - Banco: `supabase/migrations/`. A migration inicial é a fonte da verdade do schema. Nunca edite uma migration já aplicada; crie uma nova.
 
 ## Status
-- Código do MVP **escrito sem instalar dependências nem compilar** (o ambiente de criação não tinha rede).
-  Já validado: testes dos módulos puros (`npm test`) e uma checagem de tipos interna com stubs das libs.
-- **Primeira tarefa:** `npm install`, depois `npx tsc --noEmit`, `npm run lint` e `npm run build`, corrigindo
-  o que aparecer. Pontos mais prováveis de ajuste:
-  - versões das libs (Next 16, zod 4, recharts 3, @supabase/ssr 0.7): confirme a API de cada uma;
-  - `src/proxy.ts` é a convenção do Next 16. Em Next 15, renomeie para `src/middleware.ts` com função `middleware`;
-  - regras novas do `eslint-plugin-react-hooks` (ex.: setState durante render no `control-room.tsx`);
-  - `src/lib/supabase/database.types.ts` foi escrito à mão: substitua por `npm run db:types` após ligar o projeto.
-- Depois: aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta (seção "Teste manual" do README).
+- Dependências instaladas (Next 16.3); `tsc --noEmit`, `lint`, `build` e `npm test` passam sem ajustes.
+- Tema escuro: classe `dark` no `<html>`, aplicada antes da pintura por script no `app/layout.tsx`
+  (preferência em `localStorage.theme`, senão a do sistema); toggle e Toaster em `components/theme.tsx`.
+  Cores novas devem usar os tokens de `globals.css` (inclui `--chart-1..4`) ou ter variante `dark:`.
+- **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta
+  (seção "Teste manual" do README). `src/lib/supabase/database.types.ts` foi escrito à mão:
+  substitua por `npm run db:types` após ligar o projeto.
 
 ## Mapa do código
 - `src/lib/domain/` regras puras (status, interações, palavras, resultados, métricas). Sem I/O.

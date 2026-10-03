@@ -11,10 +11,10 @@ export type EvolutionPoint = {
 };
 
 const SERIES = [
-  { key: "clarity", name: "Clareza", color: "#4f46e5" },
-  { key: "engagement", name: "Engajamento", color: "#0891b2" },
-  { key: "content", name: "Conteúdo", color: "#16a34a" },
-  { key: "applicability", name: "Aplicabilidade", color: "#d97706" },
+  { key: "clarity", name: "Clareza", color: "var(--chart-1)" },
+  { key: "engagement", name: "Engajamento", color: "var(--chart-2)" },
+  { key: "content", name: "Conteúdo", color: "var(--chart-3)" },
+  { key: "applicability", name: "Aplicabilidade", color: "var(--chart-4)" },
 ] as const;
 
 export function EvolutionChart({ points }: { points: EvolutionPoint[] }) {
@@ -25,7 +25,10 @@ export function EvolutionChart({ points }: { points: EvolutionPoint[] }) {
           <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
           <XAxis dataKey="label" tick={{ fontSize: 12 }} stroke="var(--muted-foreground)" />
           <YAxis domain={[1, 5]} tick={{ fontSize: 12 }} stroke="var(--muted-foreground)" />
-          <Tooltip formatter={(value) => (typeof value === "number" ? value.toFixed(1).replace(".", ",") : "—")} />
+          <Tooltip
+            contentStyle={{ background: "var(--card)", borderColor: "var(--border)", color: "var(--card-foreground)" }}
+            formatter={(value) => (typeof value === "number" ? value.toFixed(1).replace(".", ",") : "—")}
+          />
           <Legend />
           {SERIES.map((s) => (
             <Line key={s.key} type="monotone" dataKey={s.key} name={s.name} stroke={s.color} strokeWidth={2} dot={{ r: 3 }} connectNulls />

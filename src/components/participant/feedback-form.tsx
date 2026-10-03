@@ -51,7 +51,7 @@ export function FeedbackForm({ sessionId }: { sessionId: string }) {
   if (state.done) {
     return (
       <div className="flex flex-col items-center gap-3 py-12 text-center">
-        <span className="grid size-14 place-items-center rounded-full bg-emerald-100 text-emerald-700">
+        <span className="grid size-14 place-items-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400">
           <CheckIcon width={28} height={28} />
         </span>
         <h2 className="text-2xl font-semibold">Obrigado!</h2>

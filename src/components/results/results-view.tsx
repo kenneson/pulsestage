@@ -16,7 +16,7 @@ function Bars({ bars, variant, highlightKey }: { bars: Bar[]; variant: Variant; 
         return (
           <li key={bar.key} className="grid gap-1.5">
             <div className={cn("flex items-baseline justify-between gap-4", big ? "text-3xl" : "text-sm")}>
-              <span className={cn("font-medium", correct && "text-emerald-600")}>
+              <span className={cn("font-medium", correct && "text-emerald-600 dark:text-emerald-400")}>
                 {bar.label}
                 {correct ? " ✓" : ""}
               </span>

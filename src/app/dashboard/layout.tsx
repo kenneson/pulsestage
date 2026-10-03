@@ -4,6 +4,7 @@ import { signOutAction } from "@/features/auth/actions";
 import { Logo } from "@/components/logo";
 import { NavLinks } from "@/components/dashboard/nav-links";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -20,8 +21,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 md:px-6">
           <Logo href="/dashboard" />
           <NavLinks />
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-2">
             <span className="hidden text-sm text-muted-foreground sm:inline">{profile?.name ?? user.email}</span>
+            <ThemeToggle />
             <form action={signOutAction}>
               <Button type="submit" variant="ghost" size="sm">
                 Sair

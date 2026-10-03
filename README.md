@@ -8,8 +8,8 @@ com tela de projetor, feedback pós-evento, analytics, evolução entre sessões
 **Stack:** Next.js (App Router) · TypeScript estrito · Tailwind v4 · componentes estilo shadcn/ui ·
 Supabase (Auth, Postgres, RLS, Realtime) · Zod · Recharts · Vercel.
 
-> ⚠️ O código foi escrito sem acesso à internet: as dependências ainda não foram instaladas nem o build
-> executado. Rode o passo a passo abaixo e corrija o que o `tsc`/`build` apontar (veja `CLAUDE.md`).
+> ⚠️ Dependências instaladas e `tsc`/`lint`/`build` passando, mas o fluxo ainda não foi testado contra um
+> Supabase real (veja "Teste manual" e `CLAUDE.md`).
 
 ## Rodando localmente
 
@@ -68,7 +68,8 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
 | Fase | Situação |
 |---|---|
 | Especificação e schema | ✅ |
-| Código do MVP (auth, sessões, builder, ao vivo, projetor, participante, feedback, analytics, evolução, IA) | ✅ escrito, ⏳ falta instalar/compilar |
+| Código do MVP (auth, sessões, builder, ao vivo, projetor, participante, feedback, analytics, evolução, IA) | ✅ compila (tsc, lint, build), ⏳ falta teste ponta a ponta |
+| Tema escuro (toggle claro/escuro, segue o sistema por padrão) | ✅ |
 | Testes de integração e E2E | ⏳ |
 | Deploy na Vercel | ⏳ |
 
