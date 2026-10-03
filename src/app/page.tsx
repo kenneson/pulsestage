@@ -164,30 +164,35 @@ function Kbd({ children }: { children: React.ReactNode }) {
   );
 }
 
+/** Escalona itens lado a lado na revelação por rolagem (ver .reveal em globals.css). */
+const stagger = (i: number) => ({ "--i": i }) as React.CSSProperties;
+
 const paperShadow = "shadow-[0_24px_48px_-32px_color-mix(in_oklch,var(--foreground)_40%,transparent)]";
 
 export default function Home() {
   const chartMax = 60;
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-5 md:px-6">
-        <Logo />
-        <nav className="flex items-center gap-1 sm:gap-2">
-          <a href="#como-funciona" className={cn(buttonVariants({ variant: "ghost" }), "hidden sm:inline-flex")}>
-            Como funciona
-          </a>
-          <ThemeToggle />
-          <Link href="/login" className={buttonVariants({ variant: "ghost" })}>
-            Entrar
-          </Link>
-          <Link href="/signup" className={cn(buttonVariants(), "hidden sm:inline-flex")}>
-            Criar conta
-          </Link>
-        </nav>
-      </header>
+      <div className="site-header sticky top-0 z-30">
+        <header className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4 md:px-6">
+          <Logo />
+          <nav className="flex items-center gap-1 sm:gap-2">
+            <a href="#como-funciona" className={cn(buttonVariants({ variant: "ghost" }), "hidden sm:inline-flex")}>
+              Como funciona
+            </a>
+            <ThemeToggle />
+            <Link href="/login" className={buttonVariants({ variant: "ghost" })}>
+              Entrar
+            </Link>
+            <Link href="/signup" className={cn(buttonVariants(), "hidden sm:inline-flex")}>
+              Criar conta
+            </Link>
+          </nav>
+        </header>
+      </div>
 
       <main className="flex flex-1 flex-col">
-        <section className="mx-auto w-full max-w-6xl px-4 pb-20 pt-2 md:px-6 md:pb-24">
+        <section className="mx-auto w-full max-w-6xl px-4 pb-20 pt-6 md:px-6 md:pb-24">
           <CueHero />
         </section>
 
@@ -199,7 +204,7 @@ export default function Home() {
             </SectionHeading>
             <ol className="grid gap-10 md:grid-cols-3 md:gap-8">
               {STEPS.map((step, index) => (
-                <li key={step.title} className="reveal flex flex-col gap-3 border-t-2 border-foreground pt-5">
+                <li key={step.title} className="reveal flex flex-col gap-3 border-t-2 border-foreground pt-5" style={stagger(index)}>
                   <span className="font-script text-5xl font-bold leading-none tabular-nums" aria-hidden>
                     {index + 1}
                   </span>
@@ -431,8 +436,8 @@ export default function Home() {
               Funciona em auditório, sala de aula, reunião ou treinamento, presencial ou online com tela compartilhada.
             </SectionHeading>
             <dl className="grid gap-10 md:grid-cols-3 md:gap-8">
-              {AUDIENCES.map((a) => (
-                <div key={a.who} className="reveal flex flex-col gap-2 border-t pt-5">
+              {AUDIENCES.map((a, index) => (
+                <div key={a.who} className="reveal flex flex-col gap-2 border-t pt-5" style={stagger(index)}>
                   <dt className="font-script text-xl font-bold">{a.who}</dt>
                   <dd className="leading-relaxed text-muted-foreground">{a.text}</dd>
                 </div>

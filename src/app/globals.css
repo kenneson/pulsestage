@@ -149,23 +149,29 @@
   }
 }
 
+/* Movimento reduzido = menos e mais suave, não zero: transições ficam instantâneas,
+   animações de deslocamento viram esmaecimentos (variantes no fim do arquivo). */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
+  }
+  .animate-ping,
+  .animate-pulse,
+  .cue-live {
+    animation: none !important;
   }
 }
 
 /* ---------------------------------------------------------------------------
-   Movimento da landing. Tudo em CSS: entrada do roteiro (uma vez), revelação
-   por rolagem (scroll-driven, só onde o navegador suporta; sem suporte, o
-   conteúdo já aparece pronto) e a luz de deixa ativa.
+   Movimento da landing. Tudo em CSS: entrada do hero (uma vez), revelação por
+   rolagem (scroll-driven; sem suporte, o conteúdo já aparece pronto), cabeçalho
+   que ganha fundo ao rolar e a luz "no ar" pulsando.
    --------------------------------------------------------------------------- */
 
 html {
-  scroll-padding-top: 1.5rem;
+  scroll-padding-top: 5rem;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -174,20 +180,39 @@ html {
   }
 }
 
-/* Entrada do roteiro: as linhas surgem como se fossem datilografadas em sequência. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Entrada do hero: as linhas sobem saindo do desfoque, uma depois da outra. */
 @keyframes script-line {
   from {
     opacity: 0;
-    transform: translateY(0.5rem);
+    transform: translateY(1.5rem);
+    filter: blur(6px);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(3rem) rotate(1deg);
+    filter: blur(6px);
   }
 }
 
 .script-line {
-  animation: script-line 560ms var(--ease-out) both;
-  animation-delay: calc(var(--line, 0) * 70ms);
+  animation: script-line 900ms var(--ease-out) both;
+  animation-delay: calc(120ms + var(--line, 0) * 120ms);
 }
 
-/* Marca-texto: a caneta passa sobre a frase depois que ela aparece. */
+.slide-in-right {
+  animation: slide-in-right 1000ms var(--ease-out) 450ms both;
+}
+
+/* Marca-texto: a caneta passa sobre a palavra depois que a manchete aparece. */
 @keyframes highlighter {
   from {
     background-size: 0% 100%;
@@ -200,66 +225,112 @@ html {
   background-image: linear-gradient(var(--highlight), var(--highlight));
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  animation: highlighter 700ms var(--ease-in-out) 480ms both;
+  animation: highlighter 900ms var(--ease-in-out) 900ms both;
 }
 
-/* Luz de deixa ativa (VAI): o halo respira, como a lâmpada acesa na coxia. */
+/* Luz "no ar": o halo respira, como a lâmpada acesa na coxia. */
 @keyframes cue-go {
   50% {
-    box-shadow: 0 0 0 8px color-mix(in oklch, var(--primary) 0%, transparent);
+    box-shadow: 0 0 0 9px color-mix(in oklch, var(--primary) 0%, transparent);
   }
 }
 
 .cue-live {
-  animation: cue-go 1.8s var(--ease-in-out) infinite;
+  animation: cue-go 1.6s var(--ease-in-out) infinite;
+}
+
+/* Cabeçalho fixo: transparente no topo, ganha fundo e borda conforme a página rola. */
+.site-header {
+  background-color: color-mix(in oklch, var(--background) 85%, transparent);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+}
+
+@supports (animation-timeline: scroll()) {
+  @keyframes header-settle {
+    from {
+      background-color: transparent;
+      border-bottom-color: transparent;
+      backdrop-filter: blur(0);
+    }
+  }
+
+  .site-header {
+    animation: header-settle linear both;
+    animation-timeline: scroll();
+    animation-range: 0 120px;
+  }
 }
 
 @supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    @keyframes reveal {
-      from {
-        opacity: 0;
-        transform: translateY(1.5rem);
-      }
+  @keyframes reveal {
+    from {
+      opacity: 0;
+      transform: translateY(3rem);
+      filter: blur(4px);
     }
+  }
 
-    /* Folhas de revisão entram pela direita, como páginas encaixadas no fichário. */
-    @keyframes page-in {
-      from {
-        opacity: 0;
-        transform: translateX(2.5rem) rotate(0.6deg);
-      }
+  /* Folhas de revisão entram pela direita, como páginas encaixadas no fichário. */
+  @keyframes page-in {
+    from {
+      opacity: 0;
+      transform: translateX(4rem) rotate(2deg);
     }
+  }
 
-    @keyframes bar-grow {
-      from {
-        transform: scaleY(0.08);
-      }
+  @keyframes bar-grow {
+    from {
+      transform: scaleY(0.08);
     }
+  }
 
+  .reveal,
+  .reveal-page,
+  .reveal-bar {
+    animation-timing-function: var(--ease-out);
+    animation-fill-mode: both;
+    animation-timeline: view();
+  }
+
+  /* --i escalona itens lado a lado, que entram na tela ao mesmo tempo. */
+  .reveal {
+    animation-name: reveal;
+    animation-range: entry calc(var(--i, 0) * 12%) cover calc(30% + var(--i, 0) * 8%);
+  }
+
+  .reveal-page {
+    animation-name: page-in;
+    animation-range: entry 0% cover 35%;
+  }
+
+  .reveal-bar {
+    transform-box: fill-box;
+    transform-origin: bottom;
+    animation-name: bar-grow;
+    animation-range: entry 30% cover 55%;
+  }
+}
+
+/* Movimento reduzido: as mesmas aparições, só com esmaecimento (sem deslocar nada). */
+@media (prefers-reduced-motion: reduce) {
+  .script-line,
+  .slide-in-right {
+    animation-name: fade-in;
+  }
+
+  .highlighter {
+    animation: fade-in 600ms ease-out 400ms both;
+  }
+
+  @supports (animation-timeline: view()) {
     .reveal,
-    .reveal-page,
-    .reveal-bar {
-      animation-timing-function: var(--ease-out);
-      animation-fill-mode: both;
-      animation-timeline: view();
-    }
-
-    .reveal {
-      animation-name: reveal;
-      animation-range: entry 5% cover 28%;
-    }
-
     .reveal-page {
-      animation-name: page-in;
-      animation-range: entry 0% cover 30%;
+      animation-name: fade-in;
     }
 
     .reveal-bar {
-      transform-box: fill-box;
-      transform-origin: bottom;
-      animation-name: bar-grow;
-      animation-range: entry 30% cover 50%;
+      animation: none;
     }
   }
 }

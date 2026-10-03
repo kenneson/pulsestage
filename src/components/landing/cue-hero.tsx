@@ -97,7 +97,7 @@ function useCueDemo() {
 
   // Roda a demonstração uma vez sozinha, depois que o hero termina de entrar.
   useEffect(() => {
-    const start = window.setTimeout(() => callRef.current(), 1600);
+    const start = window.setTimeout(() => callRef.current(), 1900);
     return () => window.clearTimeout(start);
   }, []);
 
@@ -167,8 +167,7 @@ export function CueHero() {
       {/* Demonstração: o que a plateia vê no telão. */}
       <figure
         aria-label="Demonstração de enquete com respostas simuladas"
-        className="script-line flex flex-col gap-4 self-start rounded-sm border bg-background/60 p-5 sm:p-6"
-        style={line(2)}
+        className="slide-in-right flex flex-col gap-4 self-start rounded-sm border bg-background/60 p-5 sm:p-6"
       >
         <figcaption className="flex flex-col gap-1">
           <span className="font-script text-sm font-bold uppercase">Experimente: é assim que aparece no telão</span>
