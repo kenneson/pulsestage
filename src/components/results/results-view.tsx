@@ -2,6 +2,7 @@ import type { PublicInteraction } from "@/lib/domain/interactions";
 import { optionBars, ratingBars, ratingStats, wordList, type Bar, type ResultsSnapshot } from "@/lib/domain/results";
 import { formatInt, formatPercent, formatScore, plural } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { WordCloud } from "./word-cloud";
 
 type Variant = "compact" | "display";
 
@@ -41,28 +42,10 @@ function Bars({ bars, variant, highlightKey }: { bars: Bar[]; variant: Variant; 
   );
 }
 
-function WordCloud({ snapshot, variant }: { snapshot: ResultsSnapshot; variant: Variant }) {
+function WordCloudResults({ snapshot, variant }: { snapshot: ResultsSnapshot; variant: Variant }) {
   const words = wordList(snapshot, variant === "display" ? 40 : 30);
   if (words.length === 0) return <Waiting variant={variant} />;
-  const max = words[0]?.count ?? 1;
-  const [minSize, maxSize] = variant === "display" ? ([22, 88] as const) : ([13, 36] as const);
-  return (
-    <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 py-2">
-      {words.map(({ word, count }) => {
-        const weight = max > 1 ? (count - 1) / (max - 1) : 1;
-        return (
-          <span
-            key={word}
-            title={`${word}: ${count}`}
-            className={cn("leading-tight", weight > 0.66 ? "font-bold text-primary" : weight > 0.33 ? "font-semibold" : "text-muted-foreground")}
-            style={{ fontSize: `${Math.round(minSize + weight * (maxSize - minSize))}px` }}
-          >
-            {word}
-          </span>
-        );
-      })}
-    </div>
-  );
+  return <WordCloud words={words} variant={variant} />;
 }
 
 function OpenTexts({ snapshot, variant }: { snapshot: ResultsSnapshot; variant: Variant }) {
@@ -130,7 +113,7 @@ export function ResultsView({
       );
     }
     case "word_cloud":
-      return <WordCloud snapshot={snapshot} variant={variant} />;
+      return <WordCloudResults snapshot={snapshot} variant={variant} />;
     case "open_text":
       if (hideOpenText) {
         return (

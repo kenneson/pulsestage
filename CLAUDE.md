@@ -55,6 +55,10 @@
   pelo trigger `validate_session_status` (soma o tempo parado ao retomar ou encerrar). Regras em `lib/domain/timing.ts`
   (duração = fim − início − pausas). Cronômetro na sala ao vivo (`components/live/talk-timer.tsx`, âmbar ao passar do
   previsto); duração real no cabeçalho do analytics e do relatório.
+- **Nuvem de palavras** (`components/results/word-cloud.tsx`): `d3-cloud` calcula as posições no navegador (semente fixa,
+  espera as fontes, reduz o tamanho até caberem todas) e o React desenha o SVG; palavras deslizam (transform em CSS) quando
+  as contagens mudam. A normalização dos termos continua no servidor (seção 0.3). O d3-cloud usa o campo `weight` dos
+  itens: o destaque pela contagem se chama `emphasis`.
 - **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta
   (seção "Teste manual" do README). `src/lib/supabase/database.types.ts` foi escrito à mão:
   substitua por `npm run db:types` após ligar o projeto.
