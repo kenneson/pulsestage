@@ -46,24 +46,25 @@ export function useDeckControls({
   const activeId = live?.active_interaction_id ?? null;
   const slideAt = live?.current_slide_changed_at ?? null;
 
-  const [cursor, setCursor] = useState(() =>
-    initialCursor(
+  // O cursor guarda o item (não a posição): o deck pode ganhar perguntas novas durante a apresentação.
+  const [cursorItem, setCursorItem] = useState<DeckItem | null>(() => {
+    const index = initialCursor(
       deck,
       { activeInteractionId: activeId, currentSlide: live?.current_slide ?? null, currentSlideChangedAt: slideAt },
       lastActivated,
-    ),
-  );
+    );
+    return deck[index] ?? null;
+  });
+  const cursor = deckIndexOf(deck, cursorItem);
 
   // Mudanças vindas do realtime (inclusive de outra janela) movem o cursor.
   const [seen, setSeen] = useState({ activeId, slideAt });
   if (seen.activeId !== activeId || seen.slideAt !== slideAt) {
     setSeen({ activeId, slideAt });
     if (activeId && activeId !== seen.activeId) {
-      const index = deckIndexOf(deck, { kind: "interaction", id: activeId });
-      if (index >= 0) setCursor(index);
+      setCursorItem({ kind: "interaction", id: activeId });
     } else if (slideAt !== seen.slideAt && live?.current_slide !== null && live?.current_slide !== undefined) {
-      const index = deckIndexOf(deck, { kind: "slide", index: live.current_slide });
-      if (index >= 0) setCursor(index);
+      setCursorItem({ kind: "slide", index: live.current_slide });
     }
   }
 
@@ -78,13 +79,12 @@ export function useDeckControls({
 
   const goTo = useCallback(
     (item: DeckItem) => {
-      const index = deckIndexOf(deck, item);
-      if (index >= 0) setCursor(index);
+      setCursorItem(item);
       run(() =>
         item.kind === "slide" ? showSlideAction(sessionId, item.index) : setActiveInteractionAction(sessionId, item.id),
       );
     },
-    [deck, run, sessionId],
+    [run, sessionId],
   );
 
   const showJoinScreen = useCallback(() => run(() => showSlideAction(sessionId, null)), [run, sessionId]);
@@ -121,5 +121,5 @@ export function useDeckControls({
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  return { cursor, next, previous, goTo, showJoinScreen, closeActive, pending };
+  return { cursor, cursorItem, next, previous, goTo, showJoinScreen, closeActive, pending };
 }

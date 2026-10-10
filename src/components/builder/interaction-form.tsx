@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Field, Input, Label, Select, Textarea } from "@/components/ui/input";
 import { Alert } from "@/components/ui/misc";
 import { PlusIcon, TrashIcon } from "@/components/icons";
+import type { ActionResult } from "@/lib/action-result";
 
 export type EditableOption = { id?: string; label: string; isCorrect: boolean; points: number };
 
@@ -73,12 +74,22 @@ function toInput(draft: InteractionDraft): InteractionInput {
   }
 }
 
+/** Botão de salvar alternativo (ex.: sala ao vivo: "Lançar agora" e "Deixar como próxima"). */
+export type InteractionFormAction = {
+  label: string;
+  pendingLabel: string;
+  variant?: "default" | "outline";
+  disabled?: boolean;
+  submit: (input: InteractionInput) => Promise<ActionResult<{ id: string }>>;
+};
+
 export function InteractionForm({
   sessionId,
   initial,
   locked,
   onDone,
   onCancel,
+  actions,
 }: {
   sessionId: string;
   initial: InteractionDraft;
@@ -86,6 +97,8 @@ export function InteractionForm({
   locked?: boolean;
   onDone: () => void;
   onCancel: () => void;
+  /** Sem `actions`, há um único "Salvar" que cria ou edita pelo roteiro. */
+  actions?: InteractionFormAction[];
 }) {
   const [draft, setDraft] = useState<InteractionDraft>(initial);
   const [error, setError] = useState<string | null>(null);
@@ -103,7 +116,15 @@ export function InteractionForm({
       ),
     }));
 
-  function save() {
+  const defaultAction: InteractionFormAction = {
+    label: "Salvar",
+    pendingLabel: "Salvando…",
+    submit: (input) => saveInteractionAction(sessionId, draft.id, input),
+  };
+  const formActions = actions ?? [defaultAction];
+  const [running, setRunning] = useState<string | null>(null);
+
+  function save(action: InteractionFormAction) {
     const input = toInput(draft);
     const check = interactionInputSchema.safeParse(input);
     if (!check.success) {
@@ -111,13 +132,15 @@ export function InteractionForm({
       return;
     }
     setError(null);
+    setRunning(action.label);
     startTransition(async () => {
-      const result = await saveInteractionAction(sessionId, draft.id, input);
+      const result = await action.submit(input);
+      setRunning(null);
       if (!result.ok) {
         setError(result.error);
         return;
       }
-      toast.success(draft.id ? "Interação atualizada." : "Interação criada.");
+      if (!actions) toast.success(draft.id ? "Interação atualizada." : "Interação criada.");
       onDone();
     });
   }
@@ -304,10 +327,17 @@ export function InteractionForm({
 
       {error ? <Alert>{error}</Alert> : null}
 
-      <div className="flex gap-2">
-        <Button onClick={save} disabled={pending}>
-          {pending ? "Salvando…" : "Salvar"}
-        </Button>
+      <div className="flex flex-wrap gap-2">
+        {formActions.map((action) => (
+          <Button
+            key={action.label}
+            variant={action.variant ?? "default"}
+            onClick={() => save(action)}
+            disabled={pending || action.disabled}
+          >
+            {pending && running === action.label ? action.pendingLabel : action.label}
+          </Button>
+        ))}
         <Button variant="ghost" onClick={onCancel} disabled={pending}>
           Cancelar
         </Button>

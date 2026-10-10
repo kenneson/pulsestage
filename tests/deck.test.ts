@@ -5,6 +5,7 @@ import {
   buildDeck,
   gapLabel,
   initialCursor,
+  insertAfterItem,
   moveInteraction,
   nextItem,
   placeInteraction,
@@ -99,3 +100,35 @@ test("rótulos, lacunas e caminhos no storage", () => {
   assert.equal(slidePath("u", "s", "b", 0, "webp"), "u/s/b/001.webp");
   assert.equal(slidePath("u", "s", "b", 11, "jpeg"), "u/s/b/012.jpg");
 });
+
+test("pergunta criada ao vivo entra logo depois do que está no telão e vira a próxima", () => {
+  const interactions: DeckInteraction[] = [
+    { id: "a", afterSlide: 1 },
+    { id: "b", afterSlide: 1 },
+    { id: "c", afterSlide: null },
+    { id: "nova", afterSlide: null },
+  ];
+  // [slide0, a, b, slide1, slide2, c]
+  // No telão o slide 1 (índice 0): entra antes de "a", na mesma lacuna.
+  const afterSlide = insertAfterItem(interactions, "nova", slide(0), 3);
+  assert.deepEqual(afterSlide, { ids: ["nova", "a", "b", "c"], afterSlides: [1, 1, 1, null] });
+  assert.deepEqual(nextItem(buildDeck(3, idsToDeck(afterSlide)), 0), ask("nova"));
+  // Na pergunta "a": entra entre "a" e "b".
+  assert.deepEqual(insertAfterItem(interactions, "nova", ask("a"), 3), {
+    ids: ["a", "nova", "b", "c"],
+    afterSlides: [1, 1, 1, null],
+  });
+  // Último slide: vai para o fim, antes de "c" (que também está no fim).
+  assert.deepEqual(insertAfterItem(interactions, "nova", slide(2), 3).ids, ["a", "b", "nova", "c"]);
+  // Nada mostrado ainda: primeiro item do deck.
+  assert.deepEqual(insertAfterItem(interactions, "nova", null, 3), {
+    ids: ["nova", "a", "b", "c"],
+    afterSlides: [0, 1, 1, null],
+  });
+  // Sem slides: logo depois da última pergunta lançada.
+  assert.deepEqual(insertAfterItem(interactions, "nova", ask("b"), 0).ids, ["a", "b", "nova", "c"]);
+});
+
+function idsToDeck(arrangement: { ids: string[]; afterSlides: (number | null)[] }): DeckInteraction[] {
+  return arrangement.ids.map((id, i) => ({ id, afterSlide: arrangement.afterSlides[i] ?? null }));
+}

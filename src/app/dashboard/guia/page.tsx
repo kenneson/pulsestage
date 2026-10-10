@@ -147,6 +147,12 @@ export default function GuidePage() {
                 parar de receber respostas daquela interação.
               </li>
               <li>
+                Surgiu uma pergunta que não estava no roteiro? Clique em <strong>“Nova pergunta”</strong>, ao lado de
+                Roteiro, escolha o tipo e escreva. <strong>“Lançar agora”</strong> abre para a plateia na hora;{" "}
+                <strong>“Deixar como próxima”</strong> coloca a pergunta logo depois do que está no telão, para o
+                próximo <Kbd>→</Kbd>. Com slides, ela entra nesse mesmo ponto da apresentação.
+              </li>
+              <li>
                 No quiz, <strong>“Mostrar resposta”</strong> destaca a alternativa correta na sua sala ao vivo, para você
                 comentar o resultado com a plateia.
               </li>

@@ -47,6 +47,10 @@
   no servidor (`lib/data/slides.ts`). Navegação compartilhada em `components/live/use-deck-controls.ts` (→/PageDown,
   ←/PageUp); o projetor aceita o teclado só quando o dono da sessão está logado nele. Excluir sessão/conta apaga os
   arquivos; duplicar copia para um lote novo.
+- **Nova pergunta ao vivo**: botão no card Roteiro da sala ao vivo (`components/live/add-interaction-dialog.tsx`,
+  reaproveita `InteractionForm` com `actions`). `addLiveInteractionAction` cria, posiciona logo depois do item no telão
+  (`insertAfterItem` em `lib/domain/deck.ts`) e, com “Lançar agora”, ativa. O cursor do deck guarda o item, não o
+  índice, para sobreviver a perguntas inseridas durante a apresentação.
 - **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta
   (seção "Teste manual" do README). `src/lib/supabase/database.types.ts` foi escrito à mão:
   substitua por `npm run db:types` após ligar o projeto.

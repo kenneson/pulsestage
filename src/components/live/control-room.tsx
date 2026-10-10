@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
@@ -37,6 +37,7 @@ import { StatusBadge } from "@/components/sessions/status-badge";
 import { TypeTag } from "@/components/interaction-type-tag";
 import { QrDownloadButton } from "@/components/sessions/qr-download-button";
 import { lastActivatedOf, useDeckControls } from "./use-deck-controls";
+import { AddInteractionDialog } from "./add-interaction-dialog";
 
 export type ControlRoomInteraction = PublicInteraction & { correctOptionId: string | null };
 
@@ -68,6 +69,12 @@ export function ControlRoom({ session, interactions, deck, slideUrls, initialLiv
 
   const [lastActivated] = useState(() => lastActivatedOf(interactions));
   const controls = useDeckControls({ sessionId: session.id, deck, live, lastActivated, enabled: status === "live" });
+
+  // Pergunta criada agora (aqui ou em outra janela) já está no ar: busca o conteúdo dela no servidor.
+  const missingActive = activeId && !active ? activeId : null;
+  useEffect(() => {
+    if (missingActive) router.refresh();
+  }, [missingActive, router]);
   const pending = statusPending || controls.pending;
 
   const [showAnswer, setShowAnswer] = useState(false);
@@ -275,8 +282,15 @@ export function ControlRoom({ session, interactions, deck, slideUrls, initialLiv
           </Card>
 
           <Card>
-            <CardHeader>
+            <CardHeader className="flex-row items-center justify-between gap-2">
               <CardTitle>Roteiro</CardTitle>
+              {status === "live" || status === "paused" ? (
+                <AddInteractionDialog
+                  sessionId={session.id}
+                  after={controls.cursorItem}
+                  canLaunch={status === "live"}
+                />
+              ) : null}
             </CardHeader>
             <CardContent>
               <ol className={cn("flex flex-col gap-1", hasSlides && "max-h-[28rem] overflow-y-auto pr-1")}>

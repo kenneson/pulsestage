@@ -7,6 +7,7 @@ import { createClient, type ServerSupabase } from "@/lib/supabase/server";
 import { getOwnedSession } from "@/lib/data/sessions";
 import { hasDbErrorCode } from "@/lib/supabase/errors";
 import { hasOptions, interactionInputSchema, type ParsedInteractionInput } from "@/lib/domain/interactions";
+import { insertAfterItem, MAX_SLIDES } from "@/lib/domain/deck";
 import { getAIProvider, suggestInteractions } from "@/lib/ai";
 import { AIProviderError } from "@/lib/ai/types";
 import { fail, firstIssue, isUuid, ok, type ActionResult } from "@/lib/action-result";
@@ -36,6 +37,46 @@ function optionRows(interactionId: string, input: ParsedInteractionInput) {
   }));
 }
 
+/** Cria a interação no fim do roteiro, com as alternativas. */
+async function createInteraction(
+  supabase: ServerSupabase,
+  sessionId: string,
+  input: ParsedInteractionInput,
+): Promise<ActionResult<{ id: string }>> {
+  const { data: last, error: lastError } = await supabase
+    .from("interactions")
+    .select("position")
+    .eq("session_id", sessionId)
+    .order("position", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (lastError) return fail("Não foi possível criar a interação.");
+
+  const created = await supabase
+    .from("interactions")
+    .insert({
+      type: input.type,
+      title: input.title,
+      description: input.description || null,
+      settings: input.settings,
+      session_id: sessionId,
+      position: last ? last.position + 1 : 0,
+    })
+    .select("id")
+    .single();
+  if (created.error) return fail("Não foi possível criar a interação.");
+
+  const rows = optionRows(created.data.id, input);
+  if (rows.length > 0) {
+    const { error } = await supabase.from("interaction_options").insert(rows);
+    if (error) {
+      await supabase.from("interactions").delete().eq("id", created.data.id);
+      return fail("Não foi possível salvar as alternativas.");
+    }
+  }
+  return ok({ id: created.data.id });
+}
+
 export async function saveInteractionAction(
   sessionId: string,
   interactionId: string | null,
@@ -61,33 +102,10 @@ export async function saveInteractionAction(
 
   // ---- Criar --------------------------------------------------------------
   if (interactionId === null) {
-    const { data: last, error: lastError } = await supabase
-      .from("interactions")
-      .select("position")
-      .eq("session_id", sessionId)
-      .order("position", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (lastError) return fail("Não foi possível criar a interação.");
-
-    const created = await supabase
-      .from("interactions")
-      .insert({ ...fields, session_id: sessionId, position: last ? last.position + 1 : 0 })
-      .select("id")
-      .single();
-    if (created.error) return fail("Não foi possível criar a interação.");
-
-    const rows = optionRows(created.data.id, input);
-    if (rows.length > 0) {
-      const { error } = await supabase.from("interaction_options").insert(rows);
-      if (error) {
-        await supabase.from("interactions").delete().eq("id", created.data.id);
-        return fail("Não foi possível salvar as alternativas.");
-      }
-    }
-
+    const created = await createInteraction(supabase, sessionId, input);
+    if (!created.ok) return created;
     revalidateSession(sessionId);
-    return ok({ id: created.data.id });
+    return created;
   }
 
   // ---- Editar -------------------------------------------------------------
@@ -244,4 +262,68 @@ export async function setActiveInteractionAction(
     return fail("Não foi possível alterar a interação ativa.");
   }
   return ok(null);
+}
+
+const deckItemSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("slide"), index: z.number().int().min(0).max(MAX_SLIDES) }),
+  z.object({ kind: z.literal("interaction"), id: z.uuid() }),
+]);
+
+const livePlacementSchema = z.object({
+  /** o que está (ou esteve por último) no telão; a pergunta nova entra logo depois */
+  after: deckItemSchema.nullable(),
+  launch: z.boolean(),
+});
+
+/**
+ * "Nova pergunta" na sala ao vivo: cria, coloca logo depois do ponto atual da apresentação
+ * (vira a próxima) e, com `launch`, já abre para a plateia.
+ * Falha com código "created" quando a pergunta já existe mas um passo seguinte falhou (não criar de novo).
+ */
+export async function addLiveInteractionAction(
+  sessionId: string,
+  rawInput: unknown,
+  rawPlacement: unknown,
+): Promise<ActionResult<{ id: string }>> {
+  const parsed = interactionInputSchema.safeParse(rawInput);
+  const placement = livePlacementSchema.safeParse(rawPlacement);
+  if (!isUuid(sessionId) || !placement.success) return fail("Dados inválidos.");
+  if (!parsed.success) return fail(firstIssue(parsed.error));
+
+  const supabase = await createClient();
+  const session = await getOwnedSession(supabase, sessionId);
+  if (!session) return fail("Sessão não encontrada.");
+  if (session.status === "completed") return fail("A sessão já foi encerrada.");
+  if (placement.data.launch && session.status !== "live") return fail("Retome a sessão para lançar a pergunta.");
+
+  const created = await createInteraction(supabase, sessionId, parsed.data);
+  if (!created.ok) return created;
+  const id = created.data.id;
+  revalidateSession(sessionId);
+
+  const { data: rows, error: rowsError } = await supabase
+    .from("interactions")
+    .select("id, after_slide")
+    .eq("session_id", sessionId)
+    .order("position");
+  if (rowsError) return fail("A pergunta foi criada no fim do roteiro, mas não foi possível posicioná-la.", "created");
+  const arrangement = insertAfterItem(
+    rows.map((r) => ({ id: r.id, afterSlide: r.after_slide })),
+    id,
+    placement.data.after,
+    session.slide_count,
+  );
+  const { error: arrangeError } = await supabase.rpc("arrange_interactions", {
+    p_session_id: sessionId,
+    p_ids: arrangement.ids,
+    // O gerador de tipos não expressa elementos nulos em int[]; null = "no fim".
+    p_after_slides: arrangement.afterSlides as number[],
+  });
+  if (arrangeError) return fail("A pergunta foi criada no fim do roteiro, mas não foi possível posicioná-la.", "created");
+
+  if (placement.data.launch) {
+    const { error } = await supabase.rpc("set_active_interaction", { p_session_id: sessionId, p_interaction_id: id });
+    if (error) return fail("A pergunta foi criada como a próxima, mas não foi possível lançá-la.", "created");
+  }
+  return ok({ id });
 }

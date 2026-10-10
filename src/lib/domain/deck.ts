@@ -149,6 +149,36 @@ export function moveInteraction(
   return arrangementOf(next);
 }
 
+/**
+ * Pergunta criada durante a apresentação: entra logo depois do item que está (ou esteve por último) no telão,
+ * para ser a próxima. `after` null = nada mostrado ainda: vira o primeiro item do deck.
+ */
+export function insertAfterItem(
+  interactions: readonly DeckInteraction[],
+  id: string,
+  after: DeckItem | null,
+  slideCount: number,
+): Arrangement {
+  const rest = inDeckOrder(
+    interactions.filter((i) => i.id !== id),
+    slideCount,
+  );
+  let insertAt: number;
+  let afterSlide: number | null;
+  const previous = after?.kind === "interaction" ? rest.findIndex((i) => i.id === after.id) : -1;
+  if (previous >= 0) {
+    insertAt = previous + 1;
+    afterSlide = rest[previous]!.afterSlide;
+  } else {
+    // Depois do slide k (índice k-1) a lacuna é k; antes de tudo, 0. Entra no começo da lacuna.
+    const gap = after?.kind === "slide" ? Math.min(after.index + 1, slideCount) : 0;
+    const firstInGap = rest.findIndex((i) => anchorOf(i.afterSlide, slideCount) >= gap);
+    insertAt = firstInGap < 0 ? rest.length : firstInGap;
+    afterSlide = gap >= slideCount ? null : gap;
+  }
+  return arrangementOf([...rest.slice(0, insertAt), { id, afterSlide }, ...rest.slice(insertAt)]);
+}
+
 /** Rótulo da lacuna para o seletor: "Antes do 1º slide", "Depois do slide 3", "No fim". */
 export function gapLabel(afterSlide: number | null, slideCount: number): string {
   const anchor = anchorOf(afterSlide, slideCount);
