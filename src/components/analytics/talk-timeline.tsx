@@ -15,6 +15,7 @@ export type TimelineInteractionMeta = { number: number; title: string; typeLabel
 const KIND_LABEL: Record<SegmentKind, string> = {
   slide: "Slides",
   interaction: "Perguntas",
+  ranking: "Ranking do quiz",
   join: "QR Code / abertura",
   pause: "Pausa",
 };
@@ -22,6 +23,8 @@ const KIND_LABEL: Record<SegmentKind, string> = {
 const KIND_STYLE: Record<SegmentKind, string> = {
   slide: "bg-timeline-slide",
   interaction: "bg-timeline-question",
+  // Mesma família das perguntas (o ranking faz parte do quiz), mais clara.
+  ranking: "bg-timeline-question/45",
   join: "bg-muted-foreground/25",
   pause: "border border-dashed border-muted-foreground/60 bg-transparent",
 };
@@ -66,7 +69,7 @@ export function TalkTimeline({
   const ticks = short
     ? scaleLinear().domain([0, span]).ticks(6).filter((t) => t < span)
     : scaleLinear().domain([0, span / 60]).ticks(8).filter((m) => Number.isInteger(m) && m * 60 < span).map((m) => m * 60);
-  const kinds = (["slide", "interaction", "join", "pause"] as const).filter((k) => timeline.totals[k] > 0);
+  const kinds = (["slide", "interaction", "ranking", "join", "pause"] as const).filter((k) => timeline.totals[k] > 0);
   const topSlides = timeline.slides.slice(0, 5);
   const longestSlide = topSlides[0]?.seconds ?? 1;
   const active = hovered !== null ? timeline.segments[hovered] : null;

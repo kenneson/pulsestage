@@ -156,6 +156,12 @@ export default function GuidePage() {
                 No quiz, <strong>“Mostrar resposta”</strong> destaca a alternativa correta na sua sala ao vivo, para você
                 comentar o resultado com a plateia.
               </li>
+              <li>
+                Com pelo menos um quiz no roteiro, <strong>“Mostrar ranking”</strong> leva o top 10 ao telão (e fecha a
+                pergunta aberta). Cada um aparece na posição de antes do último quiz e desliza até a nova, com os pontos
+                subindo. <strong>“Ocultar ranking”</strong> ou o próximo <Kbd>→</Kbd> tiram o ranking do telão. Quem
+                entrou sem nome aparece como “Participante” e um código.
+              </li>
             </ol>
             <p>
               <strong>“Pausar”</strong> congela a sessão (ninguém responde) e <strong>“Retomar”</strong> volta ao normal.

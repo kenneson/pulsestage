@@ -34,6 +34,7 @@ export function useDeckControls({
   live,
   lastActivated,
   enabled,
+  onChanged,
 }: {
   sessionId: string;
   deck: DeckItem[];
@@ -41,6 +42,8 @@ export function useDeckControls({
   lastActivated: { id: string; at: string } | null;
   /** só com a sessão ao vivo */
   enabled: boolean;
+  /** depois de cada mudança bem-sucedida (ex.: reler o estado ao vivo) */
+  onChanged?: () => void;
 }) {
   const [pending, startTransition] = useTransition();
   const activeId = live?.active_interaction_id ?? null;
@@ -73,8 +76,9 @@ export function useDeckControls({
       startTransition(async () => {
         const result = await task();
         if (!result.ok) toast.error(result.error);
+        else onChanged?.();
       }),
-    [],
+    [onChanged],
   );
 
   const goTo = useCallback(

@@ -14,6 +14,7 @@ import { formatInt } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { ResultsView } from "@/components/results/results-view";
 import type { DeckItem } from "@/lib/domain/deck";
+import { QuizLeaderboard } from "./quiz-leaderboard";
 import { lastActivatedOf, useDeckControls } from "@/components/live/use-deck-controls";
 
 const joinHost = (url: string) => url.replace(/^https?:\/\//, "").replace(/\/join\/.*/, "");
@@ -55,7 +56,8 @@ export function DisplayView({
   /** o dono da sessão, logado neste navegador, pode avançar pelo teclado ou passador aqui mesmo */
   canControl: boolean;
 }) {
-  const { state } = useLiveState(session.id, initialLive);
+  // Um projetor por sessão: a releitura periódica cobre eventos do realtime que se percam.
+  const { state } = useLiveState(session.id, initialLive, undefined, 10_000);
   const results = useInteractionResults(session.id, initialResults);
   const online = usePresence(session.id, "observer");
   const status = toSessionStatus(state?.status ?? "draft");
@@ -102,6 +104,8 @@ export function DisplayView({
         <p className="text-3xl text-muted-foreground">Voltamos em instantes.</p>
       </div>
     );
+  } else if (state?.show_leaderboard) {
+    body = <QuizLeaderboard sessionId={session.id} version={state.leaderboard_at} />;
   } else if (active) {
     body = (
       <div className="flex w-full max-w-6xl flex-col gap-10">

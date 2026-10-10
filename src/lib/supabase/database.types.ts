@@ -487,8 +487,10 @@ export type Database = {
           active_interaction_id: string | null
           current_slide: number | null
           current_slide_changed_at: string | null
+          leaderboard_at: string | null
           participant_count: number
           session_id: string
+          show_leaderboard: boolean
           status: string
           updated_at: string
         }
@@ -497,8 +499,10 @@ export type Database = {
           active_interaction_id?: string | null
           current_slide?: number | null
           current_slide_changed_at?: string | null
+          leaderboard_at?: string | null
           participant_count?: number
           session_id: string
+          show_leaderboard?: boolean
           status: string
           updated_at?: string
         }
@@ -507,8 +511,10 @@ export type Database = {
           active_interaction_id?: string | null
           current_slide?: number | null
           current_slide_changed_at?: string | null
+          leaderboard_at?: string | null
           participant_count?: number
           session_id?: string
+          show_leaderboard?: boolean
           status?: string
           updated_at?: string
         }
@@ -853,6 +859,10 @@ export type Database = {
       }
       set_active_interaction: {
         Args: { p_interaction_id?: string; p_session_id: string }
+        Returns: undefined
+      }
+      show_leaderboard: {
+        Args: { p_session_id: string; p_show: boolean }
         Returns: undefined
       }
       show_slide: {

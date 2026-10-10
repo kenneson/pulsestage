@@ -64,6 +64,13 @@
   monta os trechos (slide, pergunta, QR, pausa) e o tempo por slide; sessões anteriores usam `legacyEvents` (só perguntas).
   Gráfico em `components/analytics/talk-timeline.tsx` (eixo com `d3-scale`; cores `--timeline-slide/--timeline-question`,
   par validado para daltonismo nos dois temas; tooltip, legenda e tabela).
+- **Ranking do quiz no telão** (migration `20261011010000_quiz_leaderboard.sql`): `show_leaderboard()` liga
+  `session_live_state.show_leaderboard` (fecha a pergunta ativa); `show_slide()` e a abertura de uma pergunta desligam.
+  O projetor busca `/api/session/[id]/leaderboard` (secret key, só enquanto o ranking está no telão; nome escolhido ou
+  “Participante XXXX”, pontos e posições). `lib/domain/leaderboard.ts` calcula a posição atual e a de antes do último
+  quiz; `components/display/quiz-leaderboard.tsx` anima (linhas deslizam, pontos sobem). Também vira trecho na linha do tempo.
+- **Realtime resistente**: `useLiveState` relê `session_live_state` ao conectar (e 3 s depois), expõe `refresh()` (a sala
+  ao vivo chama após cada ação) e aceita `pollMs` (só o projetor, 10 s). Nunca usar `pollMs` para participantes.
 - **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta
   (seção "Teste manual" do README). `src/lib/supabase/database.types.ts` foi escrito à mão:
   substitua por `npm run db:types` após ligar o projeto.

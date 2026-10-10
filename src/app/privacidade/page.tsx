@@ -42,8 +42,9 @@ export default function PrivacyPage() {
         <Section title="O que coletamos de quem participa">
           <ul className="flex flex-col gap-1">
             <li>
-              <strong className="text-foreground">Nome (opcional).</strong> Aparece só no ranking do quiz. Sem nome,
-              você participa de forma anônima.
+              <strong className="text-foreground">Nome (opcional).</strong> Aparece só no ranking do quiz, que o
+              palestrante pode mostrar no telão da sala. Sem nome, você participa de forma anônima e aparece como
+              “Participante” seguido de um código.
             </li>
             <li>
               <strong className="text-foreground">Respostas e avaliação.</strong> O que você responde nas interações e

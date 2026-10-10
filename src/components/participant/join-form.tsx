@@ -17,7 +17,7 @@ export function JoinForm({ code }: { code: string }) {
       <Field>
         <Label htmlFor="name">Seu nome (opcional)</Label>
         <Input id="name" name="name" maxLength={60} autoComplete="given-name" placeholder="Pode participar sem nome" />
-        <p className="text-xs text-muted-foreground">Aparece só no ranking do quiz. Em branco, você fica anônimo.</p>
+        <p className="text-xs text-muted-foreground">Aparece só no ranking do quiz, que pode ser mostrado no telão. Em branco, você fica anônimo.</p>
       </Field>
 
       <details className="rounded-lg border px-3 py-2 text-sm">

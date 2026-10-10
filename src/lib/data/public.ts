@@ -8,6 +8,8 @@ import {
 } from "@/lib/domain/interactions";
 import { toSurveyQuestions, type SurveyQuestion } from "@/lib/domain/survey";
 import type { DeckSession } from "@/lib/data/slides";
+import { fetchAllRows } from "@/lib/supabase/fetch-all";
+import { leaderboard, type LeaderboardEntry } from "@/lib/domain/leaderboard";
 
 // Leituras públicas feitas no servidor com a secret key.
 // Tudo que sai daqui é sanitizado: sem is_correct, points ou dados pessoais.
@@ -139,4 +141,44 @@ export async function getSessionSurvey(admin: AdminSupabase, sessionId: string):
   if (questions.error) throw new Error(questions.error.message);
   if (!survey.data) return null;
   return { name: survey.data.name, questions: toSurveyQuestions(questions.data) };
+}
+
+/**
+ * Ranking do quiz para o telão. Só existe enquanto o palestrante o mostra (show_leaderboard):
+ * fora disso, quem tem o link do projetor não consegue ler nomes e pontos.
+ * Sai só nome escolhido (ou "Participante XXXX"), pontos, acertos e posições.
+ */
+export async function getPublicLeaderboard(admin: AdminSupabase, sessionId: string): Promise<LeaderboardEntry[] | null> {
+  const state = await getLiveState(admin, sessionId);
+  if (!state || state.status === "draft" || !state.show_leaderboard) return null;
+
+  const { data: quizzes, error } = await admin
+    .from("interactions")
+    .select("id, activated_at")
+    .eq("session_id", sessionId)
+    .eq("type", "quiz");
+  if (error) throw new Error(error.message);
+  if (quizzes.length === 0) return [];
+
+  const quizIds = quizzes.map((q) => q.id);
+  const [responses, participants] = await Promise.all([
+    fetchAllRows<{ participant_id: string; interaction_id: string; value: unknown }>((from, to) =>
+      admin.from("responses").select("participant_id, interaction_id, value").in("interaction_id", quizIds).range(from, to),
+    ),
+    fetchAllRows<{ id: string; display_name: string | null }>((from, to) =>
+      admin.from("participants").select("id, display_name").eq("session_id", sessionId).range(from, to),
+    ),
+  ]);
+
+  // "Antes do último quiz": o quiz respondido aberto por último.
+  const answered = new Set(responses.map((r) => r.interaction_id));
+  const latest = quizzes
+    .filter((q) => answered.has(q.id) && q.activated_at)
+    .sort((a, b) => (b.activated_at ?? "").localeCompare(a.activated_at ?? ""))[0];
+
+  return leaderboard(
+    responses.map((r) => ({ participantId: r.participant_id, interactionId: r.interaction_id, value: r.value })),
+    participants,
+    latest?.id ?? null,
+  );
 }

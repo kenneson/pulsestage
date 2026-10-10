@@ -39,6 +39,8 @@ import { QrDownloadButton } from "@/components/sessions/qr-download-button";
 import { lastActivatedOf, useDeckControls } from "./use-deck-controls";
 import { AddInteractionDialog } from "./add-interaction-dialog";
 import { TalkTimer } from "./talk-timer";
+import { QuizLeaderboard } from "@/components/display/quiz-leaderboard";
+import { showLeaderboardAction } from "@/features/live/actions";
 import type { SessionClock } from "@/lib/domain/timing";
 
 export type ControlRoomInteraction = PublicInteraction & { correctOptionId: string | null };
@@ -71,7 +73,7 @@ export function ControlRoom({
   const router = useRouter();
   const [statusPending, startTransition] = useTransition();
   const [confirm, confirmDialog] = useConfirm();
-  const { state: live, connected } = useLiveState(session.id, initialLive, () => router.refresh());
+  const { state: live, connected, refresh: refreshLive } = useLiveState(session.id, initialLive, () => router.refresh());
   const results = useInteractionResults(session.id, initialResults);
   const online = usePresence(session.id, "observer");
 
@@ -83,7 +85,14 @@ export function ControlRoom({
   const slideOnScreen = live?.current_slide ?? null;
 
   const [lastActivated] = useState(() => lastActivatedOf(interactions));
-  const controls = useDeckControls({ sessionId: session.id, deck, live, lastActivated, enabled: status === "live" });
+  const controls = useDeckControls({
+    sessionId: session.id,
+    deck,
+    live,
+    lastActivated,
+    enabled: status === "live",
+    onChanged: refreshLive,
+  });
 
   // Status mudou (aqui ou em outra janela): busca início e pausas atualizados para o cronômetro.
   const statusSeen = useRef(status);
@@ -114,6 +123,7 @@ export function ControlRoom({
         toast.error(result.error);
         return;
       }
+      await refreshLive();
       if (to === "completed") router.push(`/dashboard/sessions/${session.id}/analytics`);
     });
 
@@ -124,6 +134,14 @@ export function ControlRoom({
   }
 
   const participantCount = live?.participant_count ?? 0;
+  const hasQuiz = interactions.some((i) => i.type === "quiz");
+  const leaderboardOn = status === "live" && Boolean(live?.show_leaderboard);
+  const toggleLeaderboard = (show: boolean) =>
+    startTransition(async () => {
+      const result = await showLeaderboardAction(session.id, show);
+      if (!result.ok) toast.error(result.error);
+      else await refreshLive();
+    });
   const next = controls.next;
 
   return (
@@ -196,7 +214,12 @@ export function ControlRoom({
         <Card>
           <CardHeader className="flex-row flex-wrap items-start justify-between gap-4">
             <div className="min-w-0">
-              {active ? (
+              {leaderboardOn ? (
+                <>
+                  <p className="font-script text-xs font-bold uppercase tracking-wider text-muted-foreground">No telão</p>
+                  <CardTitle className="mt-1 text-xl">Ranking do quiz</CardTitle>
+                </>
+              ) : active ? (
                 <>
                   <TypeTag type={active.type} />
                   <CardTitle className="mt-2 text-xl">{active.title}</CardTitle>
@@ -219,6 +242,11 @@ export function ControlRoom({
               )}
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
+              {hasQuiz && status === "live" ? (
+                <Button variant="outline" size="sm" disabled={pending} onClick={() => toggleLeaderboard(!leaderboardOn)}>
+                  {leaderboardOn ? "Ocultar ranking" : "Mostrar ranking"}
+                </Button>
+              ) : null}
               {active?.type === "quiz" ? (
                 <Button variant="outline" size="sm" onClick={() => setShowAnswer((v) => !v)}>
                   {showAnswer ? "Ocultar resposta" : "Mostrar resposta"}
@@ -246,7 +274,9 @@ export function ControlRoom({
             </div>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            {active ? (
+            {leaderboardOn ? (
+              <QuizLeaderboard sessionId={session.id} version={live?.leaderboard_at ?? null} variant="compact" />
+            ) : active ? (
               <ResultsView
                 interaction={active}
                 snapshot={results[active.id] ?? EMPTY_SNAPSHOT}
@@ -315,6 +345,7 @@ export function ControlRoom({
                   sessionId={session.id}
                   after={controls.cursorItem}
                   canLaunch={status === "live"}
+                  onChanged={refreshLive}
                 />
               ) : null}
             </CardHeader>

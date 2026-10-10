@@ -4,13 +4,13 @@
 
 export type TimelineEvent = {
   at: string;
-  kind: "status" | "slide" | "interaction_open" | "interaction_close";
+  kind: "status" | "slide" | "interaction_open" | "interaction_close" | "leaderboard";
   status?: string | null;
   slide?: number | null;
   interactionId?: string | null;
 };
 
-export type SegmentKind = "slide" | "interaction" | "join" | "pause";
+export type SegmentKind = "slide" | "interaction" | "ranking" | "join" | "pause";
 
 export type Segment = {
   kind: SegmentKind;
@@ -53,12 +53,14 @@ export function buildTimeline(events: readonly TimelineEvent[], endAt: string | 
   let paused = false;
   let slide: number | null = null;
   let active: string | null = null;
+  let ranking = false;
   let cursor = t0;
   let ended = false;
   const segments: Segment[] = [];
 
   const screen = (): Omit<Segment, "start" | "end"> => {
     if (paused) return { kind: "pause" };
+    if (ranking) return { kind: "ranking" };
     if (active) return { kind: "interaction", interactionId: active };
     if (slide !== null) return { kind: "slide", slide };
     return { kind: "join" };
@@ -82,15 +84,19 @@ export function buildTimeline(events: readonly TimelineEvent[], endAt: string | 
       paused = event.status === "paused";
     } else if (event.kind === "slide") {
       slide = event.slide ?? null;
+      ranking = false;
+    } else if (event.kind === "leaderboard") {
+      ranking = event.status === "shown";
     } else if (event.kind === "interaction_open" && event.interactionId) {
       active = event.interactionId;
+      ranking = false;
     } else if (event.kind === "interaction_close" && event.interactionId === active) {
       active = null;
     }
   }
   if (!ended && endAt) close(Date.parse(endAt));
 
-  const totals: Record<SegmentKind, number> = { slide: 0, interaction: 0, join: 0, pause: 0 };
+  const totals: Record<SegmentKind, number> = { slide: 0, interaction: 0, ranking: 0, join: 0, pause: 0 };
   const bySlide = new Map<number, number>();
   const byInteraction = new Map<string, number>();
   for (const s of segments) {

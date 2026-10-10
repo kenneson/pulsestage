@@ -22,12 +22,15 @@ export function AddInteractionDialog({
   sessionId,
   after,
   canLaunch,
+  onChanged,
 }: {
   sessionId: string;
   /** item no telão (ou o último mostrado) */
   after: DeckItem | null;
   /** só com a sessão ao vivo; pausada, a pergunta fica como a próxima */
   canLaunch: boolean;
+  /** depois de criar (ex.: reler o estado ao vivo) */
+  onChanged?: () => void;
 }) {
   const router = useRouter();
   const ref = useRef<HTMLDialogElement>(null);
@@ -102,6 +105,7 @@ export function AddInteractionDialog({
               onDone={() => {
                 close();
                 router.refresh();
+                onChanged?.();
               }}
               onCancel={() => setType(null)}
             />

@@ -65,3 +65,26 @@ test("sessões antigas: perguntas pelos horários de abertura e fechamento", () 
     ],
   );
 });
+
+test("ranking do quiz no telão vira um trecho próprio e some ao avançar", () => {
+  const timeline = buildTimeline(
+    [
+      { at: at(0), kind: "status", status: "live" },
+      { at: at(1), kind: "interaction_open", interactionId: "quiz" },
+      { at: at(3), kind: "interaction_close", interactionId: "quiz" },
+      { at: at(3), kind: "leaderboard", status: "shown" },
+      { at: at(5), kind: "slide", slide: 2 },
+      { at: at(7), kind: "status", status: "completed" },
+    ],
+    null,
+  );
+  assert.deepEqual(
+    timeline?.segments.map((s) => [s.kind, s.start / 60, s.end / 60]),
+    [
+      ["join", 0, 1],
+      ["interaction", 1, 3],
+      ["ranking", 3, 5],
+      ["slide", 5, 7],
+    ],
+  );
+});
