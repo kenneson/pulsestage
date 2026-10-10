@@ -161,6 +161,11 @@ export default function GuidePage() {
               <strong>“Pausar”</strong> congela a sessão (ninguém responde) e <strong>“Retomar”</strong> volta ao normal.
               O número de “conectados agora” é aproximado; os participantes que entraram de fato aparecem no total ao lado.
             </p>
+            <p>
+              Ao lado do status fica o <strong>cronômetro da palestra</strong>: o tempo desde “Iniciar sessão”, sem contar
+              as pausas, comparado com a duração que você previu nas informações da sessão. Ele fica âmbar quando passa
+              do previsto. A duração real fica registrada no analytics e no relatório.
+            </p>
           </Section>
 
           <Section id="participantes" title="5. O que a audiência vê">
@@ -199,6 +204,10 @@ export default function GuidePage() {
               No <strong>analytics da sessão</strong> você encontra:
             </p>
             <ul className="flex flex-col gap-1">
+              <li>
+                <strong>Tempo de palestra:</strong> logo abaixo do título, a duração real (sem as pausas) e a diferença
+                para a duração prevista.
+              </li>
               <li>
                 <strong>Participação:</strong> quem respondeu algo dividido por quem entrou.
               </li>

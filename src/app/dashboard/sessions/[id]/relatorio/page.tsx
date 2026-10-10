@@ -6,6 +6,7 @@ import { loadSessionAnalytics } from "@/lib/data/analytics";
 import { getSpeakerProfile } from "@/lib/data/profile";
 import { computeOverview, computePulse, confidenceFromSample } from "@/lib/domain/metrics";
 import { questionResults, strengthsAndWeaknesses, type DimensionScore } from "@/lib/domain/survey";
+import { durationSummary, sessionClock } from "@/lib/domain/timing";
 import { formatDateTime } from "@/lib/datetime";
 import { formatPercent, formatScore, plural } from "@/lib/format";
 import { isUuid } from "@/lib/action-result";
@@ -37,6 +38,7 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
 
   const pulse = computePulse(data);
   const overview = computeOverview(data, pulse);
+  const talkTime = durationSummary(sessionClock(data.session), data.session.estimated_duration_minutes);
   const { survey } = overview;
   const { strengths, weaknesses } = strengthsAndWeaknesses(survey.dimensions);
   // Comentários iguais viram um item com a contagem, do mais citado ao menos citado.
@@ -74,6 +76,7 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
           <h1 className="font-script text-3xl font-bold leading-tight tracking-tight">{data.session.title}</h1>
           <p className="text-muted-foreground">
             {profile.name ?? profile.email} · {formatDateTime(data.session.started_at ?? data.session.scheduled_at, profile.timeZone)}
+            {talkTime ? ` · ${talkTime}` : ""}
             {data.survey.name ? ` · pesquisa “${data.survey.name}”` : ""}
           </p>
           {profile.bio ? <p className="text-muted-foreground">{profile.bio}</p> : null}

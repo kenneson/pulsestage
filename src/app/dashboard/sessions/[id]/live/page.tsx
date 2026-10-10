@@ -10,6 +10,7 @@ import { isUuid } from "@/lib/action-result";
 import { ControlRoom, type ControlRoomInteraction } from "@/components/live/control-room";
 import { getSlideUrls } from "@/lib/data/slides";
 import { buildDeck } from "@/lib/domain/deck";
+import { sessionClock } from "@/lib/domain/timing";
 
 export const metadata: Metadata = { title: "Sala ao vivo" };
 
@@ -44,6 +45,8 @@ export default async function LivePage({ params }: { params: Promise<{ id: strin
       initialLive={live.success ? live.data : null}
       initialResults={toResultsMap(resultsResult.data ?? [])}
       joinUrl={joinUrl(session.join_code)}
+      clock={sessionClock(session)}
+      plannedMinutes={session.estimated_duration_minutes}
     />
   );
 }

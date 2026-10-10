@@ -38,7 +38,7 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
 2. Clique em **Iniciar sessão** → sala ao vivo. Abra **Tela do projetor** em outra aba.
 3. Num celular (ou janela anônima), acesse o QR/código, entre e responda. Os resultados devem aparecer
    no projetor e na sala sem recarregar.
-4. Teste: responder duas vezes, quiz com tempo esgotado, pausar/retomar, encerrar a interação.
+4. Teste: responder duas vezes, quiz com tempo esgotado, pausar/retomar (o cronômetro para e volta), encerrar a interação.
 5. Slides: noutra sessão, envie um PDF na aba **Slides**, posicione as perguntas entre os slides e, ao vivo,
    avance com → / PageDown (e volte com ← / PageUp) na sala ao vivo e na tela do projetor aberta logado.
    Ao vivo, use **Nova pergunta** para criar uma pergunta e lançá-la na hora ou deixá-la como a próxima.
@@ -87,6 +87,7 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
 | IA sugere perguntas para o roteiro (“Gerar com IA”) | ✅ |
 | Slides em PDF dentro da sessão (slides e perguntas na mesma sequência, passador avança tudo) | ✅ |
 | Nova pergunta durante a sessão ao vivo (lançar agora ou deixar como próxima) | ✅ |
+| Tempo de palestra: cronômetro ao vivo (previsto × real, sem pausas) e duração no analytics e relatório | ✅ |
 | Testes unitários do domínio (sessão, palavras, datas, resultados, métricas) | ✅ |
 | Testes de integração e E2E | ⏳ |
 | Deploy na Vercel | ✅ |

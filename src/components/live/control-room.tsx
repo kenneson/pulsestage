@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
@@ -38,6 +38,8 @@ import { TypeTag } from "@/components/interaction-type-tag";
 import { QrDownloadButton } from "@/components/sessions/qr-download-button";
 import { lastActivatedOf, useDeckControls } from "./use-deck-controls";
 import { AddInteractionDialog } from "./add-interaction-dialog";
+import { TalkTimer } from "./talk-timer";
+import type { SessionClock } from "@/lib/domain/timing";
 
 export type ControlRoomInteraction = PublicInteraction & { correctOptionId: string | null };
 
@@ -50,9 +52,22 @@ type Props = {
   initialLive: LiveState | null;
   initialResults: ResultsMap;
   joinUrl: string;
+  /** início, fim e pausas da sessão, para o cronômetro */
+  clock: SessionClock;
+  plannedMinutes: number | null;
 };
 
-export function ControlRoom({ session, interactions, deck, slideUrls, initialLive, initialResults, joinUrl }: Props) {
+export function ControlRoom({
+  session,
+  interactions,
+  deck,
+  slideUrls,
+  initialLive,
+  initialResults,
+  joinUrl,
+  clock,
+  plannedMinutes,
+}: Props) {
   const router = useRouter();
   const [statusPending, startTransition] = useTransition();
   const [confirm, confirmDialog] = useConfirm();
@@ -69,6 +84,14 @@ export function ControlRoom({ session, interactions, deck, slideUrls, initialLiv
 
   const [lastActivated] = useState(() => lastActivatedOf(interactions));
   const controls = useDeckControls({ sessionId: session.id, deck, live, lastActivated, enabled: status === "live" });
+
+  // Status mudou (aqui ou em outra janela): busca início e pausas atualizados para o cronômetro.
+  const statusSeen = useRef(status);
+  useEffect(() => {
+    if (status === statusSeen.current) return;
+    statusSeen.current = status;
+    router.refresh();
+  }, [status, router]);
 
   // Pergunta criada agora (aqui ou em outra janela) já está no ar: busca o conteúdo dela no servidor.
   const missingActive = activeId && !active ? activeId : null;
@@ -110,6 +133,9 @@ export function ControlRoom({ session, interactions, deck, slideUrls, initialLiv
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <StatusBadge status={status} />
+            {status !== "draft" ? (
+              <TalkTimer clock={clock} plannedMinutes={plannedMinutes} running={status === "live"} paused={status === "paused"} />
+            ) : null}
             {!connected ? <Badge variant="warning">Reconectando…</Badge> : null}
           </div>
           <h1 className="mt-2 truncate text-2xl font-semibold tracking-tight">{session.title}</h1>

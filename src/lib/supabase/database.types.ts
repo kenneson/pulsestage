@@ -569,6 +569,8 @@ export type Database = {
           estimated_duration_minutes: number | null
           id: string
           join_code: string
+          paused_at: string | null
+          paused_seconds: number
           scheduled_at: string | null
           slide_count: number
           slides_batch: string | null
@@ -587,6 +589,8 @@ export type Database = {
           estimated_duration_minutes?: number | null
           id?: string
           join_code?: string
+          paused_at?: string | null
+          paused_seconds?: number
           scheduled_at?: string | null
           slide_count?: number
           slides_batch?: string | null
@@ -605,6 +609,8 @@ export type Database = {
           estimated_duration_minutes?: number | null
           id?: string
           join_code?: string
+          paused_at?: string | null
+          paused_seconds?: number
           scheduled_at?: string | null
           slide_count?: number
           slides_batch?: string | null

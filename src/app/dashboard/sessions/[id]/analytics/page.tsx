@@ -15,6 +15,7 @@ import {
 } from "@/lib/domain/metrics";
 import { ratingStats, snapshotFromResponses } from "@/lib/domain/results";
 import { questionResults, strengthsAndWeaknesses } from "@/lib/domain/survey";
+import { durationSummary, sessionClock } from "@/lib/domain/timing";
 import { formatDateTime } from "@/lib/datetime";
 import { getSpeakerProfile } from "@/lib/data/profile";
 import { formatPercent, formatScore, formatSeconds, plural } from "@/lib/format";
@@ -69,6 +70,7 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
     };
   });
   const latest = data.latestInsights[0];
+  const talkTime = durationSummary(sessionClock(session), session.estimated_duration_minutes);
 
   return (
     <div className="flex flex-col gap-8">
@@ -76,7 +78,10 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
         <div>
           <StatusBadge status={session.status} />
           <h1 className="mt-2 text-2xl font-semibold tracking-tight">{session.title}</h1>
-          <p className="text-sm text-muted-foreground">{formatDateTime(session.started_at ?? session.scheduled_at, timeZone)}</p>
+          <p className="text-sm text-muted-foreground">
+            {formatDateTime(session.started_at ?? session.scheduled_at, timeZone)}
+            {talkTime ? ` · ${talkTime}` : ""}
+          </p>
         </div>
         <div className="flex gap-2">
           <Link href={`/dashboard/sessions/${id}`} className={buttonVariants({ variant: "outline" })}>

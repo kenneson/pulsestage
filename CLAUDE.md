@@ -51,6 +51,10 @@
   reaproveita `InteractionForm` com `actions`). `addLiveInteractionAction` cria, posiciona logo depois do item no telão
   (`insertAfterItem` em `lib/domain/deck.ts`) e, com “Lançar agora”, ativa. O cursor do deck guarda o item, não o
   índice, para sobreviver a perguntas inseridas durante a apresentação.
+- **Tempo de palestra** (migration `20261010010000_session_timing.sql`): `sessions.paused_at/paused_seconds`, mantidos
+  pelo trigger `validate_session_status` (soma o tempo parado ao retomar ou encerrar). Regras em `lib/domain/timing.ts`
+  (duração = fim − início − pausas). Cronômetro na sala ao vivo (`components/live/talk-timer.tsx`, âmbar ao passar do
+  previsto); duração real no cabeçalho do analytics e do relatório.
 - **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta
   (seção "Teste manual" do README). `src/lib/supabase/database.types.ts` foi escrito à mão:
   substitua por `npm run db:types` após ligar o projeto.
