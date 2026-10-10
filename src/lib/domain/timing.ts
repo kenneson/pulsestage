@@ -46,6 +46,17 @@ export function formatDuration(totalSeconds: number): string {
   return rest === 0 ? `${minutes / 60} h` : `${Math.floor(minutes / 60)} h ${String(rest).padStart(2, "0")} min`;
 }
 
+/** Trecho curto, com segundos: "45 s", "3 min 20 s", "1 h 02 min". */
+export function formatSpan(totalSeconds: number): string {
+  const s = Math.max(0, Math.round(totalSeconds));
+  if (s < 60) return `${s} s`;
+  if (s < 3600) {
+    const rest = s % 60;
+    return rest === 0 ? `${Math.floor(s / 60)} min` : `${Math.floor(s / 60)} min ${rest} s`;
+  }
+  return formatDuration(s);
+}
+
 /** Comparação com a duração prevista: diferença em minutos (positiva = passou do tempo). */
 export function versusPlanned(totalSeconds: number, plannedMinutes: number | null): { diffMinutes: number; over: boolean } | null {
   if (!plannedMinutes) return null;

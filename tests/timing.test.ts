@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { durationSummary, formatClock, formatDuration, talkSeconds, versusPlanned } from "../src/lib/domain/timing.ts";
+import { durationSummary, formatClock, formatDuration, formatSpan, talkSeconds, versusPlanned } from "../src/lib/domain/timing.ts";
 
 const at = (minutes: number, seconds = 0) => new Date(Date.UTC(2026, 9, 10, 19, minutes, seconds)).toISOString();
 
@@ -23,6 +23,10 @@ test("formatos do relógio e da duração", () => {
   assert.equal(formatDuration(65 * 60), "1 h 05 min");
   assert.equal(formatDuration(120 * 60), "2 h");
   assert.equal(formatDuration(12), "menos de 1 min");
+  assert.equal(formatSpan(45), "45 s");
+  assert.equal(formatSpan(200), "3 min 20 s");
+  assert.equal(formatSpan(180), "3 min");
+  assert.equal(formatSpan(3720), "1 h 02 min");
 });
 
 test("comparação com o previsto e resumo para o relatório", () => {

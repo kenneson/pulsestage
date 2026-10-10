@@ -436,6 +436,51 @@ export type Database = {
           },
         ]
       }
+      session_events: {
+        Row: {
+          at: string
+          id: number
+          interaction_id: string | null
+          kind: string
+          session_id: string
+          slide: number | null
+          status: string | null
+        }
+        Insert: {
+          at?: string
+          id?: never
+          interaction_id?: string | null
+          kind: string
+          session_id: string
+          slide?: number | null
+          status?: string | null
+        }
+        Update: {
+          at?: string
+          id?: never
+          interaction_id?: string | null
+          kind?: string
+          session_id?: string
+          slide?: number | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_events_interaction_id_fkey"
+            columns: ["interaction_id"]
+            isOneToOne: false
+            referencedRelation: "interactions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_events_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       session_live_state: {
         Row: {
           active_interaction_activated_at: string | null

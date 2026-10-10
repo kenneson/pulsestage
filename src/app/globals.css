@@ -44,6 +44,9 @@
   --chart-2: oklch(0.55 0.17 8);
   --chart-3: oklch(0.52 0.13 152);
   --chart-4: oklch(0.65 0.14 70);
+  /* Linha do tempo da palestra: par validado (CVD e visão normal) contra o card claro. */
+  --timeline-slide: #2a78d6;
+  --timeline-question: #eb6834;
   color-scheme: light;
 }
 
@@ -84,6 +87,8 @@
   --chart-2: oklch(0.75 0.14 8);
   --chart-3: oklch(0.78 0.14 152);
   --chart-4: oklch(0.82 0.14 78);
+  --timeline-slide: #3987e5;
+  --timeline-question: #d95926;
   color-scheme: dark;
 }
 
@@ -122,6 +127,8 @@
   --color-rev-yellow-ink: var(--rev-yellow-ink);
   --color-rev-green-ink: var(--rev-green-ink);
   --color-rev-gold-ink: var(--rev-gold-ink);
+  --color-timeline-slide: var(--timeline-slide);
+  --color-timeline-question: var(--timeline-question);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

@@ -16,6 +16,11 @@ import {
 import { ratingStats, snapshotFromResponses } from "@/lib/domain/results";
 import { questionResults, strengthsAndWeaknesses } from "@/lib/domain/survey";
 import { durationSummary, sessionClock } from "@/lib/domain/timing";
+import { buildTimeline } from "@/lib/domain/timeline";
+import { getTimelineEvents } from "@/lib/data/timeline";
+import { getSlideUrls } from "@/lib/data/slides";
+import { INTERACTION_TYPE_META, isInteractionType } from "@/lib/domain/interactions";
+import { TalkTimeline, type TimelineInteractionMeta } from "@/components/analytics/talk-timeline";
 import { formatDateTime } from "@/lib/datetime";
 import { getSpeakerProfile } from "@/lib/data/profile";
 import { formatPercent, formatScore, formatSeconds, plural } from "@/lib/format";
@@ -56,6 +61,22 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
   const quizIds = new Set(interactionsWithOptions.filter((i) => i.type === "quiz").map((i) => i.id));
   const ranking = quizRanking(responses.filter((r) => quizIds.has(r.interaction_id)), participants);
   const lowSample = confidenceFromSample(survey.count) === "low";
+
+  const [timelineData, slideUrls] = await Promise.all([
+    getTimelineEvents(supabase, session, interactionsWithOptions),
+    getSlideUrls(supabase, session),
+  ]);
+  const timeline = buildTimeline(timelineData.events, session.ended_at ?? new Date().toISOString());
+  const timelineMeta: Record<string, TimelineInteractionMeta> = Object.fromEntries(
+    interactionsWithOptions.map((i, index) => [
+      i.id,
+      {
+        number: index + 1,
+        title: i.title,
+        typeLabel: isInteractionType(i.type) ? INTERACTION_TYPE_META[i.type].label : "Pergunta",
+      },
+    ]),
+  );
 
   const insights: InsightView[] = data.latestInsights.map((i) => {
     const evidence = evidenceSchema.safeParse(i.evidence);
@@ -167,6 +188,25 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
           </CardContent>
         </Card>
       </div>
+
+      {timeline && timeline.span > 0 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Linha do tempo da palestra</CardTitle>
+            <CardDescription>
+              O que esteve no telão a cada momento. Mostra para onde foi o tempo, não a atenção da plateia.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <TalkTimeline
+              timeline={timeline}
+              interactions={timelineMeta}
+              slideUrls={slideUrls}
+              recorded={timelineData.recorded}
+            />
+          </CardContent>
+        </Card>
+      ) : null}
 
       <Card>
         <CardHeader>

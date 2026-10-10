@@ -212,6 +212,11 @@ export default function GuidePage() {
                 <strong>Participação:</strong> quem respondeu algo dividido por quem entrou.
               </li>
               <li>
+                <strong>Linha do tempo da palestra:</strong> o que esteve no telão a cada momento (slides, perguntas,
+                QR Code e pausas) e os slides em que você mais ficou. Passe o mouse num trecho para ver o horário e a
+                duração. Mostra para onde foi o tempo, não a atenção da plateia.
+              </li>
+              <li>
                 <strong>Sinal de participação:</strong> para cada interação, respostas divididas pelos participantes
                 presentes naquele momento. Mostra onde o público se envolveu mais. Mede participação, não atenção.
               </li>

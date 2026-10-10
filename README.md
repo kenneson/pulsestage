@@ -89,6 +89,7 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
 | Nova pergunta durante a sessão ao vivo (lançar agora ou deixar como próxima) | ✅ |
 | Tempo de palestra: cronômetro ao vivo (previsto × real, sem pausas) e duração no analytics e relatório | ✅ |
 | Nuvem de palavras com layout d3-cloud (animada, no telão, sala ao vivo e analytics) | ✅ |
+| Linha do tempo da palestra no analytics (slides, perguntas, QR e pausas; tempo por slide) | ✅ |
 | Testes unitários do domínio (sessão, palavras, datas, resultados, métricas) | ✅ |
 | Testes de integração e E2E | ⏳ |
 | Deploy na Vercel | ✅ |

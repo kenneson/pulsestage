@@ -59,6 +59,11 @@
   espera as fontes, reduz o tamanho até caberem todas) e o React desenha o SVG; palavras deslizam (transform em CSS) quando
   as contagens mudam. A normalização dos termos continua no servidor (seção 0.3). O d3-cloud usa o campo `weight` dos
   itens: o destaque pela contagem se chama `emphasis`.
+- **Linha do tempo** (migration `20261011000000_session_timeline.sql`): `session_events` (status, slide, abertura e
+  fechamento de pergunta), gravada só por triggers e por `show_slide()`; RLS de leitura para o dono. `lib/domain/timeline.ts`
+  monta os trechos (slide, pergunta, QR, pausa) e o tempo por slide; sessões anteriores usam `legacyEvents` (só perguntas).
+  Gráfico em `components/analytics/talk-timeline.tsx` (eixo com `d3-scale`; cores `--timeline-slide/--timeline-question`,
+  par validado para daltonismo nos dois temas; tooltip, legenda e tabela).
 - **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta
   (seção "Teste manual" do README). `src/lib/supabase/database.types.ts` foi escrito à mão:
   substitua por `npm run db:types` após ligar o projeto.
