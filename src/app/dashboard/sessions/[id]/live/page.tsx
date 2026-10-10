@@ -8,6 +8,8 @@ import { toResultsMap } from "@/lib/domain/results";
 import { joinUrl } from "@/lib/env";
 import { isUuid } from "@/lib/action-result";
 import { ControlRoom, type ControlRoomInteraction } from "@/components/live/control-room";
+import { getSlideUrls } from "@/lib/data/slides";
+import { buildDeck } from "@/lib/domain/deck";
 
 export const metadata: Metadata = { title: "Sala ao vivo" };
 
@@ -19,10 +21,11 @@ export default async function LivePage({ params }: { params: Promise<{ id: strin
   const session = await getOwnedSession(supabase, id);
   if (!session) notFound();
 
-  const [interactions, liveResult, resultsResult] = await Promise.all([
+  const [interactions, liveResult, resultsResult, slideUrls] = await Promise.all([
     getSessionInteractions(supabase, id),
     supabase.from("session_live_state").select("*").eq("session_id", id).maybeSingle(),
     supabase.from("interaction_results").select("*").eq("session_id", id),
+    getSlideUrls(supabase, session),
   ]);
 
   const controlInteractions: ControlRoomInteraction[] = interactions.flatMap((row) => {
@@ -36,6 +39,8 @@ export default async function LivePage({ params }: { params: Promise<{ id: strin
     <ControlRoom
       session={{ id, title: session.title, status: session.status, joinCode: session.join_code }}
       interactions={controlInteractions}
+      deck={buildDeck(slideUrls.length, controlInteractions)}
+      slideUrls={slideUrls}
       initialLive={live.success ? live.data : null}
       initialResults={toResultsMap(resultsResult.data ?? [])}
       joinUrl={joinUrl(session.join_code)}

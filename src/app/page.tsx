@@ -133,7 +133,7 @@ const FAQ = [
   },
   {
     q: "Funciona junto com meus slides?",
-    a: "Sim, lado a lado. O PulseStage abre em uma aba própria: deixe os slides no projetor e alterne para a tela de resultados (Alt+Tab) na hora de cada pergunta, ou use uma segunda tela. Baixe o QR Code da sessão para colocar num slide. Ainda não há integração que mostre a pergunta dentro do PowerPoint ou do Google Slides.",
+    a: "Sim. Envie o PDF da apresentação (exportado do PowerPoint, Google Slides, Keynote ou Canva) e apresente pelo PulseStage: slides e perguntas ficam na mesma sequência e o passador avança tudo, sem trocar de janela. Animações e vídeos não são mantidos; se precisar deles, apresente pelo seu programa e alterne para a tela de resultados (Alt+Tab) na hora de cada pergunta. Ainda não há integração que mostre a pergunta dentro do PowerPoint ou do Google Slides.",
   },
   {
     q: "Quantas pessoas podem participar?",

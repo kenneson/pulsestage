@@ -3,7 +3,8 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { deleteInteractionAction, reorderInteractionsAction } from "@/features/interactions/actions";
+import { arrangeInteractionsAction, deleteInteractionAction } from "@/features/interactions/actions";
+import { gapLabel, moveInteraction } from "@/lib/domain/deck";
 import {
   INTERACTION_TYPE_META,
   INTERACTION_TYPES,
@@ -36,12 +37,15 @@ export function InteractionsEditor({
   readOnly,
   library = [],
   aiEnabled = false,
+  slideCount = 0,
 }: {
   sessionId: string;
   items: EditorItem[];
   readOnly: boolean;
   library?: LibraryItem[];
   aiEnabled?: boolean;
+  /** com slides, subir/descer também muda o ponto da apresentação em que a pergunta entra */
+  slideCount?: number;
 }) {
   const router = useRouter();
   const [editing, setEditing] = useState<string | null>(null);
@@ -58,16 +62,12 @@ export function InteractionsEditor({
   };
 
   function move(index: number, delta: -1 | 1) {
-    const target = index + delta;
-    if (target < 0 || target >= items.length) return;
-    const ids = items.map((i) => i.interaction.id);
-    const a = ids[index];
-    const b = ids[target];
-    if (!a || !b) return;
-    ids[index] = b;
-    ids[target] = a;
+    const id = items[index]?.interaction.id;
+    const deckItems = items.map((i) => ({ id: i.interaction.id, afterSlide: i.interaction.afterSlide }));
+    const arrangement = id ? moveInteraction(deckItems, id, delta, slideCount) : null;
+    if (!arrangement) return;
     startTransition(async () => {
-      const result = await reorderInteractionsAction(sessionId, ids);
+      const result = await arrangeInteractionsAction(sessionId, arrangement);
       if (!result.ok) toast.error(result.error);
       router.refresh();
     });
@@ -128,6 +128,11 @@ export function InteractionsEditor({
                       {item.isActive ? <Badge variant="live">Ativa</Badge> : null}
                       {item.responses > 0 ? (
                         <span className="text-xs text-muted-foreground">{item.responses} respostas</span>
+                      ) : null}
+                      {slideCount > 0 ? (
+                        <span className="text-xs text-muted-foreground">
+                          {gapLabel(interaction.afterSlide, slideCount)}
+                        </span>
                       ) : null}
                     </div>
                     <p className="mt-1 font-medium">{interaction.title}</p>

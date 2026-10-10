@@ -7,6 +7,7 @@ import {
   type PublicInteraction,
 } from "@/lib/domain/interactions";
 import { toSurveyQuestions, type SurveyQuestion } from "@/lib/domain/survey";
+import type { DeckSession } from "@/lib/data/slides";
 
 // Leituras públicas feitas no servidor com a secret key.
 // Tudo que sai daqui é sanitizado: sem is_correct, points ou dados pessoais.
@@ -33,6 +34,17 @@ export async function getPublicSession(admin: AdminSupabase, sessionId: string):
     .maybeSingle();
   if (error) throw new Error(error.message);
   return data ? { id: data.id, title: data.title, status: data.status, joinCode: data.join_code } : null;
+}
+
+/** Dados do deck (slides) da sessão, para gerar as URLs assinadas no servidor. */
+export async function getSessionDeck(admin: AdminSupabase, sessionId: string): Promise<DeckSession | null> {
+  const { data, error } = await admin
+    .from("sessions")
+    .select("id, speaker_id, slides_batch, slide_count, slides_format")
+    .eq("id", sessionId)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return data;
 }
 
 export async function getPublicInteractions(admin: AdminSupabase, sessionId: string): Promise<PublicInteraction[]> {

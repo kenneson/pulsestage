@@ -217,6 +217,7 @@ export type Database = {
       interactions: {
         Row: {
           activated_at: string | null
+          after_slide: number | null
           closed_at: string | null
           created_at: string
           description: string | null
@@ -231,6 +232,7 @@ export type Database = {
         }
         Insert: {
           activated_at?: string | null
+          after_slide?: number | null
           closed_at?: string | null
           created_at?: string
           description?: string | null
@@ -245,6 +247,7 @@ export type Database = {
         }
         Update: {
           activated_at?: string | null
+          after_slide?: number | null
           closed_at?: string | null
           created_at?: string
           description?: string | null
@@ -437,6 +440,8 @@ export type Database = {
         Row: {
           active_interaction_activated_at: string | null
           active_interaction_id: string | null
+          current_slide: number | null
+          current_slide_changed_at: string | null
           participant_count: number
           session_id: string
           status: string
@@ -445,6 +450,8 @@ export type Database = {
         Insert: {
           active_interaction_activated_at?: string | null
           active_interaction_id?: string | null
+          current_slide?: number | null
+          current_slide_changed_at?: string | null
           participant_count?: number
           session_id: string
           status: string
@@ -453,6 +460,8 @@ export type Database = {
         Update: {
           active_interaction_activated_at?: string | null
           active_interaction_id?: string | null
+          current_slide?: number | null
+          current_slide_changed_at?: string | null
           participant_count?: number
           session_id?: string
           status?: string
@@ -561,6 +570,9 @@ export type Database = {
           id: string
           join_code: string
           scheduled_at: string | null
+          slide_count: number
+          slides_batch: string | null
+          slides_format: string | null
           speaker_id: string
           started_at: string | null
           status: string
@@ -576,6 +588,9 @@ export type Database = {
           id?: string
           join_code?: string
           scheduled_at?: string | null
+          slide_count?: number
+          slides_batch?: string | null
+          slides_format?: string | null
           speaker_id: string
           started_at?: string | null
           status?: string
@@ -591,6 +606,9 @@ export type Database = {
           id?: string
           join_code?: string
           scheduled_at?: string | null
+          slide_count?: number
+          slides_batch?: string | null
+          slides_format?: string | null
           speaker_id?: string
           started_at?: string | null
           status?: string
@@ -771,6 +789,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      arrange_interactions: {
+        Args: { p_after_slides: number[]; p_ids: string[]; p_session_id: string }
+        Returns: undefined
+      }
       convert_legacy_feedback: { Args: never; Returns: undefined }
       generate_join_code: { Args: { len?: number }; Returns: string }
       is_session_owner: { Args: { p_session_id: string }; Returns: boolean }
@@ -780,6 +802,10 @@ export type Database = {
       }
       set_active_interaction: {
         Args: { p_interaction_id?: string; p_session_id: string }
+        Returns: undefined
+      }
+      show_slide: {
+        Args: { p_session_id: string; p_slide?: number }
         Returns: undefined
       }
       take_survey_snapshot: {

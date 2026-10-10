@@ -8,6 +8,9 @@ export const liveStateSchema = z.object({
   active_interaction_id: z.string().nullable(),
   active_interaction_activated_at: z.string().nullable(),
   participant_count: z.number(),
+  // Slide no telão (deck); ausente em payloads antigos.
+  current_slide: z.number().nullable().default(null),
+  current_slide_changed_at: z.string().nullable().default(null),
   updated_at: z.string(),
 });
 

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { removeSlideFiles } from "@/lib/data/slides";
 import { isValidTimeZone } from "@/lib/datetime";
 import { firstIssue, formValues, fail, ok, type ActionResult } from "@/lib/action-result";
 
@@ -173,6 +174,7 @@ export async function deleteAccountAction(_prev: AccountFormState, formData: For
   if (files && files.length > 0) {
     await admin.storage.from(AVATAR_BUCKET).remove(files.map((f) => `${user.id}/${f.name}`));
   }
+  await removeSlideFiles(admin, user.id);
   const { error } = await admin.auth.admin.deleteUser(user.id);
   if (error) return { error: "Não foi possível excluir a conta. Tente de novo." };
 

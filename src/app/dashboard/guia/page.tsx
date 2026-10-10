@@ -10,10 +10,11 @@ export const metadata: Metadata = { title: "Guia" };
 const SECTIONS = [
   { id: "criar", title: "1. Criar a sessão" },
   { id: "roteiro", title: "2. Montar o roteiro" },
-  { id: "ao-vivo", title: "3. Apresentar ao vivo" },
-  { id: "participantes", title: "4. O que a audiência vê" },
-  { id: "encerrar", title: "5. Encerrar e aplicar a pesquisa" },
-  { id: "analytics", title: "6. Analisar os resultados" },
+  { id: "slides", title: "3. Apresentar com seus slides" },
+  { id: "ao-vivo", title: "4. Apresentar ao vivo" },
+  { id: "participantes", title: "5. O que a audiência vê" },
+  { id: "encerrar", title: "6. Encerrar e aplicar a pesquisa" },
+  { id: "analytics", title: "7. Analisar os resultados" },
   { id: "dicas", title: "Dicas" },
 ];
 
@@ -102,7 +103,21 @@ export default function GuidePage() {
             </p>
           </Section>
 
-          <Section id="ao-vivo" title="3. Apresentar ao vivo">
+          <Section id="slides" title="3. Apresentar com seus slides">
+            <p>
+              Opcional, mas evita trocar de janela no palco: na aba <strong>“Slides”</strong> da sessão, clique em{" "}
+              <strong>“Escolher PDF”</strong> e envie o PDF da apresentação (no PowerPoint: Arquivo → Exportar → PDF; no
+              Google Slides: Arquivo → Fazer download → PDF). O PDF é convertido no seu navegador e só as imagens dos
+              slides são enviadas. Animações, transições e vídeos não são mantidos.
+            </p>
+            <p>
+              Em cada pergunta, escolha em que ponto ela entra: <em>Antes do 1º slide</em>, <em>Depois do slide 3</em>{" "}
+              etc. Na sala ao vivo, o roteiro vira uma sequência só: slide, pergunta, próximo slide. Use{" "}
+              <strong>“Trocar PDF”</strong> para enviar uma versão nova; as perguntas continuam nos mesmos pontos.
+            </p>
+          </Section>
+
+          <Section id="ao-vivo" title="4. Apresentar ao vivo">
             <ol className="flex flex-col gap-1">
               <li>
                 Clique em <strong>“Iniciar sessão”</strong>. Você vai para a <strong>sala ao vivo</strong>, seu painel de
@@ -114,16 +129,26 @@ export default function GuidePage() {
                 código de entrada.
               </li>
               <li>
-                Para lançar uma pergunta, clique nela na lista ou em <strong>“Próxima”</strong>. Também funciona a seta
-                <Kbd>→</Kbd> do teclado quando a sala ao vivo é a janela em foco. O passador de slides controla a janela
-                que estiver em foco: com os slides abertos, ele avança os slides.
+                Para lançar uma pergunta, clique nela na lista ou em <strong>“Próxima”</strong>. Também funcionam a seta{" "}
+                <Kbd>→</Kbd> e o <Kbd>PageDown</Kbd> (as teclas do passador de slides) com a sala ao vivo em foco.
+              </li>
+              <li>
+                Com slides enviados, <strong>“Próxima”</strong> percorre slides e perguntas na ordem do roteiro e{" "}
+                <strong>“Anterior”</strong> (<Kbd>←</Kbd> ou <Kbd>PageUp</Kbd>) volta ao slide anterior. Ao encerrar uma
+                pergunta, o telão volta para o slide que estava por trás. <strong>“Mostrar no telão”</strong>, ao lado do
+                QR Code, exibe o código de entrada de novo.
+              </li>
+              <li>
+                Vai usar uma tela só, espelhada no projetor? Abra a tela do projetor logado na sua conta: nela, o passador
+                e as setas também avançam a apresentação, e quem tiver o link sem estar logado só assiste.
               </li>
               <li>
                 Os resultados aparecem em tempo real no projetor e na sala. Clique em <strong>“Encerrar”</strong> para
                 parar de receber respostas daquela interação.
               </li>
               <li>
-                No quiz, <strong>“Mostrar resposta”</strong> destaca a alternativa correta no projetor.
+                No quiz, <strong>“Mostrar resposta”</strong> destaca a alternativa correta na sua sala ao vivo, para você
+                comentar o resultado com a plateia.
               </li>
             </ol>
             <p>
@@ -132,7 +157,7 @@ export default function GuidePage() {
             </p>
           </Section>
 
-          <Section id="participantes" title="4. O que a audiência vê">
+          <Section id="participantes" title="5. O que a audiência vê">
             <ul className="flex flex-col gap-1">
               <li>Quem participa entra pelo QR Code ou pelo código, sem criar conta. O nome é opcional.</li>
               <li>A pergunta ativa aparece sozinha no celular e muda quando você avança. Não é preciso recarregar.</li>
@@ -144,7 +169,7 @@ export default function GuidePage() {
             </ul>
           </Section>
 
-          <Section id="encerrar" title="5. Encerrar e aplicar a pesquisa">
+          <Section id="encerrar" title="6. Encerrar e aplicar a pesquisa">
             <p>
               Ao final, clique em <strong>“Encerrar sessão”</strong>. Os celulares mostram o link da pesquisa e o
               projetor exibe um QR Code para ela. Deixe essa tela no ar por um minuto.
@@ -163,7 +188,7 @@ export default function GuidePage() {
             </p>
           </Section>
 
-          <Section id="analytics" title="6. Analisar os resultados">
+          <Section id="analytics" title="7. Analisar os resultados">
             <p>
               No <strong>analytics da sessão</strong> você encontra:
             </p>
@@ -210,9 +235,10 @@ export default function GuidePage() {
               <li>Uma interação a cada 10 ou 15 minutos mantém o público envolvido sem quebrar o ritmo.</li>
               <li>Deixe o QR Code visível nos primeiros minutos: quem chega atrasado também entra.</li>
               <li>
-                Com PowerPoint ou Google Slides: clique em <strong>“Baixar QR Code”</strong> (na página da sessão ou na
-                sala ao vivo) e cole a imagem num slide. Na hora de cada pergunta, alterne dos slides para a tela do
-                projetor com <Kbd>Alt</Kbd>+<Kbd>Tab</Kbd>.
+                Prefere apresentar pelo PowerPoint ou Google Slides, com animações? Clique em{" "}
+                <strong>“Baixar QR Code”</strong> (na página da sessão ou na sala ao vivo) e cole a imagem num slide. Na
+                hora de cada pergunta, alterne dos slides para a tela do projetor com <Kbd>Alt</Kbd>+<Kbd>Tab</Kbd>. Sem
+                trocar de janela, só enviando o PDF na aba <strong>“Slides”</strong>.
               </li>
               <li>
                 Peça para responderem a pesquisa ainda na sala. A taxa de resposta cai muito depois que o público

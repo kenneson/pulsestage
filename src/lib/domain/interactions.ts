@@ -181,6 +181,8 @@ export const publicInteractionSchema = z.object({
   settings: normalizedSettingsSchema,
   options: z.array(publicOptionSchema),
   activatedAt: z.string().nullable(),
+  /** lacuna do deck (depois de quantos slides); null = no fim */
+  afterSlide: z.number().nullable(),
 });
 
 export type PublicOption = z.infer<typeof publicOptionSchema>;
@@ -203,6 +205,7 @@ export function toPublicInteraction(
       .sort((a, b) => a.position - b.position)
       .map((o) => ({ id: o.id, label: o.label })),
     activatedAt: row.activated_at,
+    afterSlide: row.after_slide,
   };
 }
 

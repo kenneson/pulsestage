@@ -9,17 +9,26 @@ import { getOwnedSession } from "@/lib/data/sessions";
 import { generateJoinCode } from "@/lib/domain/session";
 import { isUniqueViolation } from "@/lib/supabase/errors";
 import { fail, firstIssue, isUuid, ok, type ActionResult } from "@/lib/action-result";
+import { removeSlideFiles, slidePaths, SLIDES_BUCKET } from "@/lib/data/slides";
+import { isSlideFormat } from "@/lib/domain/deck";
+import type { SessionRow } from "@/lib/supabase/types";
 
 const MAX_COPY = 50;
 
 /**
  * Copia interações (com alternativas, acerto e pontos do quiz) para o fim do roteiro de outra sessão.
  * O RLS garante que origem e destino são do speaker logado.
+ * `keepDeckPosition`: ao duplicar a sessão, cada pergunta continua no mesmo ponto dos slides.
  */
-async function copyInteractions(supabase: ServerSupabase, sourceIds: string[], targetSessionId: string): Promise<number> {
+async function copyInteractions(
+  supabase: ServerSupabase,
+  sourceIds: string[],
+  targetSessionId: string,
+  keepDeckPosition = false,
+): Promise<number> {
   const { data: sources, error } = await supabase
     .from("interactions")
-    .select("type, title, description, settings, position, id, interaction_options(label, position, is_correct, points)")
+    .select("type, title, description, settings, position, after_slide, id, interaction_options(label, position, is_correct, points)")
     .in("id", sourceIds);
   if (error) throw new Error(error.message);
   if (sources.length === 0) return 0;
@@ -44,6 +53,7 @@ async function copyInteractions(supabase: ServerSupabase, sourceIds: string[], t
     description: s.description,
     settings: s.settings,
     position: start + index,
+    after_slide: keepDeckPosition ? s.after_slide : null,
   }));
   const inserted = await supabase.from("interactions").insert(rows);
   if (inserted.error) throw new Error(inserted.error.message);
@@ -93,7 +103,26 @@ export async function copyToSessionAction(raw: unknown): Promise<ActionResult<{ 
   }
 }
 
-/** Nova sessão em rascunho com as mesmas informações, perguntas e pesquisa. */
+/** Copia os arquivos dos slides para um lote novo da sessão de destino e liga o deck a ela. */
+async function copySlides(supabase: ServerSupabase, source: SessionRow, targetSessionId: string): Promise<void> {
+  const from = slidePaths(source);
+  if (from.length === 0 || !isSlideFormat(source.slides_format)) return;
+  const batch = randomUUID();
+  const target = { ...source, id: targetSessionId, slides_batch: batch };
+  const to = slidePaths(target);
+  const bucket = supabase.storage.from(SLIDES_BUCKET);
+  for (let i = 0; i < from.length; i++) {
+    const { error } = await bucket.copy(from[i]!, to[i]!);
+    if (error) throw new Error(error.message);
+  }
+  const { error } = await supabase
+    .from("sessions")
+    .update({ slides_batch: batch, slide_count: source.slide_count, slides_format: source.slides_format })
+    .eq("id", targetSessionId);
+  if (error) throw new Error(error.message);
+}
+
+/** Nova sessão em rascunho com as mesmas informações, perguntas, slides e pesquisa. */
 export async function duplicateSessionAction(sessionId: string): Promise<ActionResult> {
   if (!isUuid(sessionId)) return fail("Sessão inválida.");
   const supabase = await createClient();
@@ -126,11 +155,18 @@ export async function duplicateSessionAction(sessionId: string): Promise<ActionR
     .order("position");
   try {
     if (interactions && interactions.length > 0) {
-      await copyInteractions(supabase, interactions.map((i) => i.id), createdId);
+      await copyInteractions(supabase, interactions.map((i) => i.id), createdId, true);
     }
   } catch {
     await supabase.from("sessions").delete().eq("id", createdId);
     return fail("Não foi possível copiar as perguntas da sessão.");
+  }
+  try {
+    await copySlides(supabase, source, createdId);
+  } catch {
+    await removeSlideFiles(supabase, `${source.speaker_id}/${createdId}`);
+    await supabase.from("sessions").delete().eq("id", createdId);
+    return fail("Não foi possível copiar os slides da sessão.");
   }
 
   revalidatePath("/dashboard", "layout");

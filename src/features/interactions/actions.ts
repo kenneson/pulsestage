@@ -201,12 +201,25 @@ export async function deleteInteractionAction(sessionId: string, interactionId: 
   return ok(null);
 }
 
-export async function reorderInteractionsAction(sessionId: string, orderedIds: string[]): Promise<ActionResult> {
-  const parsed = z.array(z.uuid()).max(200).safeParse(orderedIds);
+const arrangementSchema = z
+  .object({
+    ids: z.array(z.uuid()).max(200),
+    afterSlides: z.array(z.number().int().min(0).nullable()).max(200),
+  })
+  .refine((a) => a.ids.length === a.afterSlides.length);
+
+/** Nova ordem do roteiro e o ponto do deck (depois de quantos slides) de cada interação. */
+export async function arrangeInteractionsAction(sessionId: string, raw: unknown): Promise<ActionResult> {
+  const parsed = arrangementSchema.safeParse(raw);
   if (!isUuid(sessionId) || !parsed.success) return fail("Dados inválidos.");
 
   const supabase = await createClient();
-  const { error } = await supabase.rpc("reorder_interactions", { p_session_id: sessionId, p_ids: parsed.data });
+  const { error } = await supabase.rpc("arrange_interactions", {
+    p_session_id: sessionId,
+    p_ids: parsed.data.ids,
+    // O gerador de tipos não expressa elementos nulos em int[]; null = "no fim".
+    p_after_slides: parsed.data.afterSlides as number[],
+  });
   if (error) return fail("Não foi possível reordenar.");
 
   revalidateSession(sessionId);

@@ -64,6 +64,11 @@ export default function PrivacyPage() {
             você entrar com o Google, recebemos dele apenas nome, e-mail e foto do perfil, sem acesso a mais nada da sua
             conta. Também guardamos as sessões, interações e resultados que você cria.
           </p>
+          <p>
+            Se você enviar os slides de uma apresentação, o PDF é convertido em imagens no seu próprio navegador e só
+            essas imagens são guardadas, num armazenamento privado. Elas aparecem para a plateia apenas na tela do
+            projetor, por links temporários.
+          </p>
         </Section>
 
         <Section title="Cookies e armazenamento no navegador">
@@ -105,7 +110,7 @@ export default function PrivacyPage() {
         <Section title="Por quanto tempo guardamos">
           <p>
             Os dados de uma sessão ficam guardados enquanto ela existir. Quando o palestrante exclui a sessão, todas as
-            respostas, participantes, contatos, avaliações e insights dela são apagados definitivamente.
+            respostas, participantes, contatos, avaliações, insights e slides dela são apagados definitivamente.
           </p>
         </Section>
 

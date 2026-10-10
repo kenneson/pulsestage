@@ -1,14 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
-import { setActiveInteractionAction } from "@/features/interactions/actions";
 import { setSessionStatusAction } from "@/features/sessions/actions";
 import type { PublicInteraction } from "@/lib/domain/interactions";
+import { INTERACTION_TYPE_META } from "@/lib/domain/interactions";
 import { EMPTY_SNAPSHOT } from "@/lib/domain/results";
+import type { DeckItem } from "@/lib/domain/deck";
 import { toSessionStatus, type SessionStatus } from "@/lib/domain/session";
 import { useLiveState } from "@/lib/realtime/use-live-state";
 import { useInteractionResults } from "@/lib/realtime/use-interaction-results";
@@ -21,25 +22,38 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useConfirm } from "@/components/ui/confirm-dialog";
-import { ExternalIcon, NextIcon, PauseIcon, PlayIcon, StopIcon, UsersIcon } from "@/components/icons";
+import {
+  ChevronLeftIcon,
+  ExternalIcon,
+  NextIcon,
+  PauseIcon,
+  PlayIcon,
+  QrCodeIcon,
+  StopIcon,
+  UsersIcon,
+} from "@/components/icons";
 import { ResultsView } from "@/components/results/results-view";
 import { StatusBadge } from "@/components/sessions/status-badge";
 import { TypeTag } from "@/components/interaction-type-tag";
 import { QrDownloadButton } from "@/components/sessions/qr-download-button";
+import { lastActivatedOf, useDeckControls } from "./use-deck-controls";
 
 export type ControlRoomInteraction = PublicInteraction & { correctOptionId: string | null };
 
 type Props = {
   session: { id: string; title: string; status: string; joinCode: string };
   interactions: ControlRoomInteraction[];
+  /** slides e interações na ordem da apresentação (sem slides, só as interações) */
+  deck: DeckItem[];
+  slideUrls: string[];
   initialLive: LiveState | null;
   initialResults: ResultsMap;
   joinUrl: string;
 };
 
-export function ControlRoom({ session, interactions, initialLive, initialResults, joinUrl }: Props) {
+export function ControlRoom({ session, interactions, deck, slideUrls, initialLive, initialResults, joinUrl }: Props) {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const [statusPending, startTransition] = useTransition();
   const [confirm, confirmDialog] = useConfirm();
   const { state: live, connected } = useLiveState(session.id, initialLive, () => router.refresh());
   const results = useInteractionResults(session.id, initialResults);
@@ -48,32 +62,20 @@ export function ControlRoom({ session, interactions, initialLive, initialResults
   const status: SessionStatus = toSessionStatus(live?.status ?? session.status);
   const activeId = live?.active_interaction_id ?? null;
   const active = interactions.find((i) => i.id === activeId) ?? null;
+  const byId = new Map(interactions.map((i) => [i.id, i]));
+  const hasSlides = slideUrls.length > 0;
+  const slideOnScreen = live?.current_slide ?? null;
 
-  // Última interaction ativada, para saber qual é a "próxima" depois de encerrar.
-  const [lastActivated, setLastActivated] = useState<string | null>(activeId);
+  const [lastActivated] = useState(() => lastActivatedOf(interactions));
+  const controls = useDeckControls({ sessionId: session.id, deck, live, lastActivated, enabled: status === "live" });
+  const pending = statusPending || controls.pending;
+
   const [showAnswer, setShowAnswer] = useState(false);
-  if (activeId && activeId !== lastActivated) {
-    setLastActivated(activeId);
+  const [answerFor, setAnswerFor] = useState(activeId);
+  if (answerFor !== activeId) {
+    setAnswerFor(activeId);
     setShowAnswer(false);
   }
-
-  const lastIndex = lastActivated ? interactions.findIndex((i) => i.id === lastActivated) : -1;
-  const next = interactions[lastIndex + 1] ?? null;
-
-  const run = useCallback(
-    (task: () => Promise<{ ok: boolean; error?: string }>) => {
-      startTransition(async () => {
-        const result = await task();
-        if (!result.ok) toast.error(result.error ?? "Algo deu errado.");
-      });
-    },
-    [startTransition],
-  );
-
-  const activate = useCallback(
-    (interactionId: string | null) => run(() => setActiveInteractionAction(session.id, interactionId)),
-    [run, session.id],
-  );
 
   const changeStatus = (to: SessionStatus) =>
     startTransition(async () => {
@@ -85,23 +87,14 @@ export function ControlRoom({ session, interactions, initialLive, initialResults
       if (to === "completed") router.push(`/dashboard/sessions/${session.id}/analytics`);
     });
 
-  // Atalho: seta para a direita ativa a próxima interaction.
-  const nextRef = useRef<(() => void) | null>(null);
-  useEffect(() => {
-    nextRef.current = status === "live" && next && !pending ? () => activate(next.id) : null;
-  });
-  useEffect(() => {
-    function onKey(event: KeyboardEvent) {
-      const target = event.target as HTMLElement | null;
-      if (target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
-      if (document.querySelector("dialog[open]")) return;
-      if (event.key === "ArrowRight") nextRef.current?.();
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  function itemLabel(item: DeckItem): string {
+    if (item.kind === "slide") return `Slide ${item.index + 1}`;
+    const interaction = byId.get(item.id);
+    return interaction ? `${INTERACTION_TYPE_META[interaction.type].label}: ${interaction.title}` : "Interação";
+  }
 
   const participantCount = live?.participant_count ?? 0;
+  const next = controls.next;
 
   return (
     <div className="flex flex-col gap-6">
@@ -168,7 +161,7 @@ export function ControlRoom({ session, interactions, initialLive, initialResults
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <Card>
-          <CardHeader className="flex-row items-start justify-between gap-4">
+          <CardHeader className="flex-row flex-wrap items-start justify-between gap-4">
             <div className="min-w-0">
               {active ? (
                 <>
@@ -179,46 +172,85 @@ export function ControlRoom({ session, interactions, initialLive, initialResults
                     {participantCount}
                   </p>
                 </>
+              ) : hasSlides && slideOnScreen !== null && status === "live" ? (
+                <>
+                  <p className="font-script text-xs font-bold uppercase tracking-wider text-muted-foreground">No telão</p>
+                  <CardTitle className="mt-1 text-xl">
+                    Slide {slideOnScreen + 1} <span className="text-muted-foreground">de {slideUrls.length}</span>
+                  </CardTitle>
+                </>
               ) : (
-                <CardTitle className="text-xl">Nenhuma interação ativa</CardTitle>
+                <CardTitle className="text-xl">
+                  {hasSlides && status === "live" ? "QR Code no telão" : "Nenhuma interação ativa"}
+                </CardTitle>
               )}
             </div>
-            <div className="flex shrink-0 gap-2">
+            <div className="flex shrink-0 flex-wrap gap-2">
               {active?.type === "quiz" ? (
                 <Button variant="outline" size="sm" onClick={() => setShowAnswer((v) => !v)}>
                   {showAnswer ? "Ocultar resposta" : "Mostrar resposta"}
                 </Button>
               ) : null}
               {active ? (
-                <Button variant="outline" size="sm" disabled={pending} onClick={() => activate(null)}>
+                <Button variant="outline" size="sm" disabled={pending} onClick={controls.closeActive}>
                   <StopIcon /> Encerrar
                 </Button>
               ) : null}
-              <Button size="sm" disabled={pending || status !== "live" || !next} onClick={() => next && activate(next.id)}>
+              {hasSlides ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  aria-label="Voltar ao slide anterior"
+                  disabled={pending || !controls.previous}
+                  onClick={() => controls.previous && controls.goTo(controls.previous)}
+                >
+                  <ChevronLeftIcon /> Anterior
+                </Button>
+              ) : null}
+              <Button size="sm" disabled={pending || !next} onClick={() => next && controls.goTo(next)}>
                 <NextIcon /> Próxima
               </Button>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex flex-col gap-4">
             {active ? (
               <ResultsView
                 interaction={active}
                 snapshot={results[active.id] ?? EMPTY_SNAPSHOT}
                 correctOptionId={showAnswer ? active.correctOptionId : null}
               />
+            ) : hasSlides && slideOnScreen !== null && slideUrls[slideOnScreen] && status === "live" ? (
+              // eslint-disable-next-line @next/next/no-img-element -- URL assinada do Storage
+              <img
+                src={slideUrls[slideOnScreen]}
+                alt={`Slide ${slideOnScreen + 1}`}
+                className="aspect-video w-full rounded-lg border bg-muted object-contain"
+              />
             ) : (
               <p className="py-10 text-center text-muted-foreground">
                 {status === "live"
                   ? next
-                    ? `Próxima: "${next.title}". Clique em Próxima ou pressione →.`
-                    : "Todas as interações foram apresentadas."
+                    ? `A seguir: ${itemLabel(next)}. Clique em Próxima ou pressione →.`
+                    : "Todo o roteiro foi apresentado."
                   : status === "paused"
-                    ? "Sessão pausada. Retome para ativar interações."
+                    ? "Sessão pausada. Retome para continuar."
                     : status === "draft"
-                      ? "Inicie a sessão para ativar interações."
+                      ? "Inicie a sessão para começar."
                       : "Sessão encerrada."}
               </p>
             )}
+            {status === "live" && (active || slideOnScreen !== null) ? (
+              <p className="text-sm text-muted-foreground">
+                {next ? (
+                  <>
+                    A seguir: <span className="font-medium text-foreground">{itemLabel(next)}</span>
+                    {hasSlides ? " · → ou PageDown avança, ← volta" : " · → avança"}
+                  </>
+                ) : (
+                  "Fim do roteiro."
+                )}
+              </p>
+            ) : null}
           </CardContent>
         </Card>
 
@@ -231,7 +263,14 @@ export function ControlRoom({ session, interactions, initialLive, initialResults
               <p className="text-sm text-muted-foreground">Código de entrada</p>
               <p className="font-script text-3xl font-bold tracking-widest">{session.joinCode}</p>
               <p className="break-all text-xs text-muted-foreground">{joinUrl}</p>
-              <QrDownloadButton joinUrl={joinUrl} code={session.joinCode} />
+              <div className="flex flex-wrap justify-center gap-2">
+                <QrDownloadButton joinUrl={joinUrl} code={session.joinCode} />
+                {hasSlides && status === "live" ? (
+                  <Button variant="outline" size="sm" disabled={pending || (slideOnScreen === null && !active)} onClick={controls.showJoinScreen}>
+                    <QrCodeIcon /> Mostrar no telão
+                  </Button>
+                ) : null}
+              </div>
             </CardContent>
           </Card>
 
@@ -240,25 +279,47 @@ export function ControlRoom({ session, interactions, initialLive, initialResults
               <CardTitle>Roteiro</CardTitle>
             </CardHeader>
             <CardContent>
-              <ol className="flex flex-col gap-1">
-                {interactions.map((interaction, index) => {
-                  const isActive = interaction.id === activeId;
-                  const total = (results[interaction.id] ?? EMPTY_SNAPSHOT).total;
+              <ol className={cn("flex flex-col gap-1", hasSlides && "max-h-[28rem] overflow-y-auto pr-1")}>
+                {deck.map((item, index) => {
+                  const isCurrent = index === controls.cursor;
+                  const onScreen =
+                    item.kind === "interaction"
+                      ? item.id === activeId
+                      : !active && slideOnScreen === item.index && status === "live";
+                  const total = item.kind === "interaction" ? (results[item.id] ?? EMPTY_SNAPSHOT).total : 0;
                   return (
-                    <li key={interaction.id}>
+                    <li key={item.kind === "slide" ? `s${item.index}` : item.id}>
                       <button
                         type="button"
-                        disabled={pending || status !== "live" || isActive}
-                        onClick={() => activate(interaction.id)}
+                        disabled={pending || status !== "live" || onScreen}
+                        onClick={() => controls.goTo(item)}
                         className={cn(
                           "flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors",
-                          isActive ? "bg-primary/10 font-medium" : "hover:bg-muted disabled:hover:bg-transparent",
+                          isCurrent ? "bg-primary/10 font-medium" : "hover:bg-muted disabled:hover:bg-transparent",
+                          item.kind === "slide" && "py-1",
                         )}
                       >
-                        <span className="w-5 shrink-0 font-script font-bold text-muted-foreground tabular-nums">{index + 1}</span>
-                        <span className="min-w-0 flex-1 truncate">{interaction.title}</span>
-                        {isActive ? (
-                          <Badge variant="live">Ativa</Badge>
+                        {item.kind === "slide" ? (
+                          <>
+                            {/* eslint-disable-next-line @next/next/no-img-element -- URL assinada do Storage */}
+                            <img
+                              src={slideUrls[item.index]}
+                              alt=""
+                              loading="lazy"
+                              className="aspect-video w-14 shrink-0 rounded border bg-muted object-cover"
+                            />
+                            <span className="min-w-0 flex-1 truncate text-muted-foreground">Slide {item.index + 1}</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="w-5 shrink-0 font-script font-bold text-muted-foreground tabular-nums">
+                              {interactions.findIndex((i) => i.id === item.id) + 1}
+                            </span>
+                            <span className="min-w-0 flex-1 truncate">{byId.get(item.id)?.title}</span>
+                          </>
+                        )}
+                        {onScreen ? (
+                          <Badge variant="live">{item.kind === "slide" ? "No telão" : "Ativa"}</Badge>
                         ) : total > 0 ? (
                           <span className="text-xs text-muted-foreground tabular-nums">{total}</span>
                         ) : null}
@@ -267,7 +328,7 @@ export function ControlRoom({ session, interactions, initialLive, initialResults
                   );
                 })}
               </ol>
-              {interactions.length === 0 ? (
+              {deck.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
                   Nenhuma interação.{" "}
                   <Link href={`/dashboard/sessions/${session.id}`} className="text-primary hover:underline">

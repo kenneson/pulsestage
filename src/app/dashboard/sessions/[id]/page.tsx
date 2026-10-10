@@ -20,6 +20,8 @@ import { isAIConfigured } from "@/lib/ai";
 import { QrDownloadButton } from "@/components/sessions/qr-download-button";
 import { joinUrl } from "@/lib/env";
 import { InteractionsEditor, type EditorItem } from "@/components/builder/interactions-editor";
+import { SlidesEditor, type SlideDeckInteraction } from "@/components/slides/slides-editor";
+import { getSlideUrls } from "@/lib/data/slides";
 
 export const metadata: Metadata = { title: "Editar sessão" };
 
@@ -31,13 +33,14 @@ export default async function SessionBuilderPage({ params }: { params: Promise<{
   const session = await getOwnedSession(supabase, id);
   if (!session) notFound();
 
-  const [interactions, responses, templates, snapshot] = await Promise.all([
+  const [interactions, responses, templates, snapshot, slideUrls] = await Promise.all([
     getSessionInteractions(supabase, id),
     fetchAllRows<{ interaction_id: string }>((from, to) =>
       supabase.from("responses").select("interaction_id").eq("session_id", id).range(from, to),
     ),
     listSurveyTemplates(supabase),
     supabase.from("session_surveys").select("name").eq("session_id", id).maybeSingle(),
+    getSlideUrls(supabase, session),
   ]);
   // Biblioteca sem as perguntas que já estão nesta sessão.
   const ownIds = new Set(interactions.map((i) => i.id));
@@ -67,6 +70,13 @@ export default async function SessionBuilderPage({ params }: { params: Promise<{
       },
     ];
   });
+
+  const deckInteractions: SlideDeckInteraction[] = items.map(({ interaction }) => ({
+    id: interaction.id,
+    type: interaction.type,
+    title: interaction.title,
+    afterSlide: interaction.afterSlide,
+  }));
 
   const { timeZone } = await getSpeakerProfile();
   const when = utcToZonedParts(session.scheduled_at, timeZone);
@@ -124,6 +134,30 @@ export default async function SessionBuilderPage({ params }: { params: Promise<{
                     readOnly={status === "completed"}
                     library={library}
                     aiEnabled={isAIConfigured()}
+                    slideCount={slideUrls.length}
+                  />
+                </CardContent>
+              </Card>
+            ),
+          },
+          {
+            id: "slides",
+            label: slideUrls.length > 0 ? `Slides (${slideUrls.length})` : "Slides",
+            content: (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Slides</CardTitle>
+                  <CardDescription>
+                    Apresente pelo PulseStage: slides e perguntas na mesma sequência, sem trocar de janela.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <SlidesEditor
+                    sessionId={id}
+                    speakerId={session.speaker_id}
+                    slideUrls={slideUrls}
+                    interactions={deckInteractions}
+                    readOnly={status === "completed"}
                   />
                 </CardContent>
               </Card>

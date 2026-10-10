@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { removeSlideFiles } from "@/lib/data/slides";
 import { getOwnedSession } from "@/lib/data/sessions";
 import { getSpeakerProfile } from "@/lib/data/profile";
 import { hasDbErrorCode, isUniqueViolation } from "@/lib/supabase/errors";
@@ -174,8 +175,12 @@ export async function updateSessionAction(
 export async function deleteSessionAction(sessionId: string): Promise<ActionResult> {
   if (!isUuid(sessionId)) return fail("Sessão inválida.");
   const supabase = await createClient();
+  const session = await getOwnedSession(supabase, sessionId);
+  if (!session) return fail("Sessão não encontrada.");
   const { error } = await supabase.from("sessions").delete().eq("id", sessionId);
   if (error) return fail("Não foi possível excluir a sessão.");
+  // Os slides ficam no Storage, fora do cascade do banco.
+  await removeSlideFiles(supabase, `${session.speaker_id}/${sessionId}`);
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/sessions");
   return ok(null);

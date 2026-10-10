@@ -38,6 +38,15 @@
 - Navegação do painel: barra lateral com ícones (`components/dashboard/nav-links.tsx`); ícones novos vão em
   `components/icons.tsx`, no mesmo traço. Design aprovado no Claude Design (link no histórico do projeto).
 - Imports de valor entre módulos de `lib/domain/` usam extensão `.ts` (os testes rodam no Node sem compilar).
+- **Slides** (migration `20261010000000_session_slides.sql`): o speaker envia o PDF na aba “Slides”; o navegador
+  converte cada página em imagem com pdf.js (build `legacy`, em `lib/slides/convert-pdf.ts`) e grava no bucket privado
+  `slides` (`{speaker}/{sessão}/{lote}/001.webp`). O PDF nunca é enviado. `sessions.slides_batch/slide_count/slides_format`
+  apontam o deck atual; `interactions.after_slide` diz depois de quantos slides a pergunta entra (null = no fim).
+  Regras do deck (sequência, próximo/anterior, posicionar) em `lib/domain/deck.ts`. Ao vivo, `show_slide()` grava
+  `session_live_state.current_slide` e encerra a pergunta ativa; projetor e sala recebem URLs assinadas (12 h) geradas
+  no servidor (`lib/data/slides.ts`). Navegação compartilhada em `components/live/use-deck-controls.ts` (→/PageDown,
+  ←/PageUp); o projetor aceita o teclado só quando o dono da sessão está logado nele. Excluir sessão/conta apaga os
+  arquivos; duplicar copia para um lote novo.
 - **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta
   (seção "Teste manual" do README). `src/lib/supabase/database.types.ts` foi escrito à mão:
   substitua por `npm run db:types` após ligar o projeto.
