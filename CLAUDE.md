@@ -87,6 +87,9 @@
   `lib/raffle/sound.ts`, Web Audio, liberado no primeiro clique); celulares e sala ao vivo só sabem após `RAFFLE_REVEAL_MS`.
   Com sorteio, encerrar a sessão não sai da sala ao vivo (card `components/live/raffle-panel.tsx`). Gestão na aba “Sorteio”
   e em `/dashboard/sorteios` (entrega via coluna `delivered_at`, único update permitido ao speaker).
+- **URL pública** (`lib/domain/app-url.ts`, usada em `lib/env.ts`): QR Code e links usam `NEXT_PUBLIC_APP_URL`, mas um
+  endereço `*.vercel.app` de deploy/branch (protegido por login da Vercel) é trocado pelo domínio de produção
+  (`VERCEL_PROJECT_PRODUCTION_URL`); sem `https://`, completa.
 - **Realtime resistente**: `useLiveState` relê `session_live_state` ao conectar (e 3 s depois), expõe `refresh()` (a sala
   ao vivo chama após cada ação) e aceita `pollMs` (só o projetor, 10 s). Nunca usar `pollMs` para participantes.
 - **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta
