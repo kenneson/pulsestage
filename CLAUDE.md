@@ -90,6 +90,9 @@
 - **URL pública** (`lib/domain/app-url.ts`, usada em `lib/env.ts`): QR Code e links usam `NEXT_PUBLIC_APP_URL`, mas um
   endereço `*.vercel.app` de deploy/branch (protegido por login da Vercel) é trocado pelo domínio de produção
   (`VERCEL_PROJECT_PRODUCTION_URL`); sem `https://`, completa.
+- **Landing** (`src/app/page.tsx`, contrato em `.impeccable/surfaces/`): manchete na largura toda e palco de demonstração
+  (`components/landing/stage-demo.tsx`, 4 cenas simuladas: enquete, nuvem, quiz e ranking, sorteio; texto do telão em
+  `cqw` para escalar com a tela). Seções de slides e de gamificação/sorteio. Só fatos do produto, nunca números de uso.
 - **Realtime resistente**: `useLiveState` relê `session_live_state` ao conectar (e 3 s depois), expõe `refresh()` (a sala
   ao vivo chama após cada ação) e aceita `pollMs` (só o projetor, 10 s). Nunca usar `pollMs` para participantes.
 - **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta

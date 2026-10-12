@@ -3,7 +3,9 @@ import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import { buttonVariants } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme";
-import { CueHero, CueLamp } from "@/components/landing/cue-hero";
+import { StageDemo } from "@/components/landing/stage-demo";
+import { JoinCodeForm } from "@/components/join-code-form";
+import { ShapeGlyph, shapeBg } from "@/components/option-shape";
 import { CheckIcon } from "@/components/icons";
 import { MAX_PARTICIPANTS_PER_SESSION } from "@/lib/domain/session";
 
@@ -56,21 +58,56 @@ const QUESTION_TYPES = [
   },
 ];
 
-type RowState = "done" | "live" | "next" | "waiting";
-
-const SESSION_PLAN: { n: number; at: string; type: string; ink: string; question: string; state: RowState }[] = [
-  { n: 1, at: "0 min", type: "Enquete", ink: "text-rev-blue-ink", question: "Você já usa IA no seu trabalho?", state: "done" },
-  { n: 2, at: "12 min", type: "Nuvem de palavras", ink: "text-rev-yellow-ink", question: "Uma palavra para o seu momento", state: "live" },
-  { n: 3, at: "25 min", type: "Quiz", ink: "text-rev-gold-ink", question: "Qual destes é um modelo de linguagem?", state: "next" },
-  { n: 4, at: "40 min", type: "Pergunta aberta", ink: "text-rev-green-ink", question: "O que você quer me perguntar?", state: "waiting" },
+const HERO_FACTS = [
+  "A plateia entra pelo QR Code, sem baixar app e sem criar conta",
+  "Seus slides e as perguntas numa sequência só, no mesmo passador",
+  "Quiz com ranking, sorteio de prêmios e relatório com IA no fim",
 ];
 
-const ROW_STATE_LABEL: Record<RowState, string> = {
-  done: "Encerrada",
-  live: "No ar",
-  next: "Próxima",
-  waiting: "Aguardando",
-};
+// Fatos do produto (limites e recursos), não números de uso.
+const PRODUCT_FACTS = [
+  { value: "0", text: "apps para a plateia instalar" },
+  { value: MAX_PARTICIPANTS_PER_SESSION.toLocaleString("pt-BR"), text: "pessoas por sessão" },
+  { value: "5", text: "tipos de pergunta para misturar" },
+  { value: "1", text: "tela para slides e perguntas" },
+];
+
+// Uma faixa de deck: slides (escuros, como no telão) e perguntas no papel do seu tipo.
+const DECK: ({ kind: "slide"; n: number; title: string } | { kind: "question"; paper: string; type: string; text: string })[] = [
+  { kind: "slide", n: 1, title: "Abertura" },
+  { kind: "question", paper: "bg-rev-blue", type: "Enquete", text: "Você já usa IA no trabalho?" },
+  { kind: "slide", n: 2, title: "O que muda" },
+  { kind: "slide", n: 3, title: "Na prática" },
+  { kind: "question", paper: "bg-rev-yellow", type: "Nuvem", text: "Uma palavra para o seu momento" },
+  { kind: "slide", n: 4, title: "Riscos" },
+  { kind: "question", paper: "bg-rev-gold", type: "Quiz", text: "Qual destes é um modelo de linguagem?" },
+  { kind: "slide", n: 5, title: "Próximos passos" },
+  { kind: "slide", n: 6, title: "Obrigado!" },
+];
+
+const SLIDE_POINTS = [
+  "Envie o PDF exportado do PowerPoint, Google Slides, Keynote ou Canva. O arquivo é convertido no seu navegador.",
+  "Arraste cada pergunta para o ponto exato da apresentação em que ela deve entrar.",
+  "No palco, o passador ou a seta do teclado avança tudo: slide, pergunta, resultado, próximo slide.",
+  "Surgiu uma dúvida na sala? Crie uma pergunta nova durante a palestra e lance na hora.",
+];
+
+const GAME_POINTS = [
+  { title: "Avatares", text: "Cada pessoa escolhe um bichinho ao entrar e aparece com ele no ranking." },
+  { title: "Formas e cores", text: "Alternativas no estilo dos jogos de quiz, com forma, cor e até imagem." },
+  { title: "Bônus de velocidade", text: "No quiz com tempo, quem acerta primeiro leva mais pontos." },
+  { title: "Ranking animado", text: "O telão mostra quem subiu e quem caiu depois de cada pergunta." },
+  { title: "Sorteio de prêmios", text: "Roleta de números com suspense, som e confete. Físico ou digital." },
+  { title: "Incentivo à pesquisa", text: "Se quiser, só concorre ao sorteio quem responde a pesquisa no fim." },
+];
+
+const QUIZ_TILES = ["GPT", "Excel", "Linux", "HTML"];
+
+const RANKING = [
+  { avatar: "🦉", name: "Carla", points: "1.950", move: "↑2" },
+  { avatar: "🦊", name: "Ana", points: "1.820", move: "↓1" },
+  { avatar: "🐼", name: "Bruno", points: "1.610", move: "↓1" },
+];
 
 // Exemplo ilustrativo (dados simulados) do relatório depois da sessão.
 const PULSE = [
@@ -129,15 +166,23 @@ const FAQ = [
   },
   {
     q: "Quanto custa?",
-    a: "Nada durante o beta. Você cria sua conta com Google ou e-mail e usa todos os recursos.",
+    a: "Nada durante o beta. Você cria sua conta com Google ou e-mail e usa todos os recursos, sem cartão de crédito.",
   },
   {
     q: "Funciona junto com meus slides?",
-    a: "Sim. Envie o PDF da apresentação (exportado do PowerPoint, Google Slides, Keynote ou Canva) e apresente pelo PulseStage: slides e perguntas ficam na mesma sequência e o passador avança tudo, sem trocar de janela. Animações e vídeos não são mantidos; se precisar deles, apresente pelo seu programa e alterne para a tela de resultados (Alt+Tab) na hora de cada pergunta. Ainda não há integração que mostre a pergunta dentro do PowerPoint ou do Google Slides.",
+    a: "Sim. Envie o PDF da apresentação e apresente pelo PulseStage: slides e perguntas ficam na mesma sequência e o passador avança tudo, sem trocar de janela. Animações e vídeos dos slides não são mantidos; se precisar deles, apresente pelo seu programa e alterne para a tela de resultados na hora de cada pergunta.",
+  },
+  {
+    q: "Como funciona o sorteio?",
+    a: "Você cadastra os prêmios e escolhe quem concorre: todos que entraram ou só quem respondeu a pesquisa no fim. Cada pessoa recebe um número no celular. O ganhador é escolhido pelo servidor e revelado no telão com animação; a mensagem do prêmio, como um cupom, aparece só no celular de quem ganhou.",
   },
   {
     q: "Quantas pessoas podem participar?",
     a: `Até ${MAX_PARTICIPANTS_PER_SESSION.toLocaleString("pt-BR")} participantes por sessão. Cada pessoa responde uma vez por pergunta.`,
+  },
+  {
+    q: "Consigo levar os resultados para fora?",
+    a: "Sim. Cada sessão gera um relatório em PDF e exporta as respostas e a pesquisa em planilha (CSV). Você também pode duplicar uma sessão para repetir a palestra.",
   },
   {
     q: "E os dados de quem participa?",
@@ -164,6 +209,9 @@ function Kbd({ children }: { children: React.ReactNode }) {
   );
 }
 
+/** Posição da linha na entrada em sequência do hero (ver .script-line em globals.css). */
+const line = (n: number) => ({ "--line": n }) as React.CSSProperties;
+
 /** Escalona itens lado a lado na revelação por rolagem (ver .reveal em globals.css). */
 const stagger = (i: number) => ({ "--i": i }) as React.CSSProperties;
 
@@ -177,23 +225,87 @@ export default function Home() {
         <header className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4 md:px-6">
           <Logo />
           <nav className="flex items-center gap-1 sm:gap-2">
-            <a href="#como-funciona" className={cn(buttonVariants({ variant: "ghost" }), "hidden sm:inline-flex")}>
+            <a href="#como-funciona" className={cn(buttonVariants({ variant: "ghost" }), "hidden md:inline-flex")}>
               Como funciona
+            </a>
+            <a href="#recursos" className={cn(buttonVariants({ variant: "ghost" }), "hidden md:inline-flex")}>
+              Recursos
             </a>
             <ThemeToggle />
             <Link href="/login" className={buttonVariants({ variant: "ghost" })}>
               Entrar
             </Link>
             <Link href="/signup" className={cn(buttonVariants(), "hidden sm:inline-flex")}>
-              Criar conta
+              Criar conta grátis
             </Link>
           </nav>
         </header>
       </div>
 
       <main className="flex flex-1 flex-col">
-        <section className="mx-auto w-full max-w-6xl px-4 pb-20 pt-6 md:px-6 md:pb-24">
-          <CueHero />
+        <section className="mx-auto w-full max-w-6xl px-4 pb-16 pt-6 md:px-6 md:pb-20">
+          <div className="flex flex-col gap-10 rounded-sm bg-card p-6 text-card-foreground shadow-[0_24px_48px_-28px_color-mix(in_oklch,var(--foreground)_35%,transparent)] dark:border sm:p-10 lg:gap-14 lg:p-14">
+            <h1
+              className="script-line max-w-5xl text-balance font-script text-[clamp(2.3rem,5.4vw,4.9rem)] font-bold leading-[1] tracking-[-0.04em]"
+              style={line(0)}
+            >
+              Faça a plateia participar da sua palestra,{" "}
+              <mark className="highlighter box-decoration-clone px-1 text-highlight-foreground">ao vivo</mark>.
+            </h1>
+
+            <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-end lg:gap-14">
+              <div className="flex flex-col gap-6">
+                <p className="script-line max-w-[58ch] text-lg leading-relaxed text-muted-foreground" style={line(1)}>
+                  Enquetes, quiz, nuvem de palavras e sorteio respondidos pelo celular, com o resultado no telão em
+                  segundos e seus slides na mesma tela. Depois, um relatório mostra o que funcionou para a próxima ser
+                  ainda melhor.
+                </p>
+                <div className="script-line flex flex-wrap items-center gap-x-5 gap-y-3" style={line(2)}>
+                  <Link href="/signup" className={buttonVariants({ size: "lg" })}>
+                    Criar minha sessão grátis
+                  </Link>
+                  <span className="text-sm text-muted-foreground">
+                    Grátis durante o beta, sem cartão ·{" "}
+                    <Link href="/login" className="font-medium text-foreground underline-offset-4 hover:underline">
+                      já tenho conta
+                    </Link>
+                  </span>
+                </div>
+              </div>
+              <ul className="script-line flex flex-col gap-2.5" style={line(3)}>
+                {HERO_FACTS.map((fact) => (
+                  <li key={fact} className="flex items-start gap-2.5">
+                    <CheckIcon className="mt-1 shrink-0 text-primary" />
+                    <span>{fact}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="slide-in-right mx-auto w-full max-w-4xl">
+              <StageDemo />
+            </div>
+
+            <div className="script-line flex flex-col gap-3 border-t border-dashed pt-6 sm:flex-row sm:items-center sm:justify-between" style={line(4)}>
+              <p className="text-sm font-medium">Vai participar de uma palestra? Digite o código que aparece na tela.</p>
+              <div className="w-full sm:max-w-sm">
+                <JoinCodeForm />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Fatos do produto. */}
+        <section aria-label="O PulseStage em números do produto" className="mx-auto w-full max-w-6xl px-4 pb-16 md:px-6 md:pb-20">
+          <dl className="grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-4">
+            {PRODUCT_FACTS.map((fact, index) => (
+              <div key={fact.text} className="reveal flex flex-col gap-1 border-t-2 border-foreground pt-4" style={stagger(index)}>
+                <dt className="sr-only">{fact.text}</dt>
+                <dd className="font-script text-[clamp(2.4rem,5vw,3.75rem)] font-bold leading-none tabular-nums">{fact.value}</dd>
+                <dd className="text-muted-foreground">{fact.text}</dd>
+              </div>
+            ))}
+          </dl>
         </section>
 
         {/* Como funciona: três passos (a ordem importa). */}
@@ -241,99 +353,148 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Durante a apresentação. */}
-        <section className="border-t">
-          <div className="mx-auto grid w-full max-w-6xl gap-12 px-4 py-20 md:px-6 md:py-24 lg:grid-cols-[3fr_2fr] lg:gap-16">
-            <div className="flex flex-col gap-10 lg:order-2">
-              <SectionHeading title="Durante a apresentação, você no controle">
-                Um painel no seu notebook mostra a pergunta no ar, quantas pessoas estão participando e as respostas
-                chegando.
+        {/* Slides e perguntas na mesma sequência. */}
+        <section id="recursos" className="border-t">
+          <div className="mx-auto grid w-full max-w-6xl gap-12 px-4 py-20 md:px-6 md:py-24 lg:grid-cols-[2fr_3fr] lg:gap-16">
+            <div className="flex flex-col gap-8">
+              <SectionHeading title="Seus slides e suas perguntas numa sequência só">
+                Nada de trocar de janela no meio da palestra. Você apresenta pelo PulseStage e a interação entra no
+                momento certo.
               </SectionHeading>
-              <ul className="reveal flex flex-col gap-4 text-base leading-relaxed">
-                <li className="flex items-start gap-2.5">
-                  <CheckIcon className="mt-1 shrink-0 text-primary" />
-                  <span>
-                    <strong className="font-semibold">Tela do projetor separada:</strong> mostra a pergunta, os votos, a
-                    nuvem de palavras e o ranking do quiz, em letras grandes.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <CheckIcon className="mt-1 shrink-0 text-primary" />
-                  <span>
-                    <strong className="font-semibold">
-                      Avance com a seta <Kbd>→</Kbd>
-                    </strong>{" "}
-                    do teclado, com o painel do PulseStage em foco.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <CheckIcon className="mt-1 shrink-0 text-primary" />
-                  <span>
-                    <strong className="font-semibold">Pause e retome</strong> a qualquer momento. Ninguém responde
-                    enquanto a sessão está pausada.
-                  </span>
-                </li>
+              <ul className="reveal flex flex-col gap-4 leading-relaxed">
+                {SLIDE_POINTS.map((point) => (
+                  <li key={point} className="flex items-start gap-2.5">
+                    <CheckIcon className="mt-1 shrink-0 text-primary" />
+                    <span>{point}</span>
+                  </li>
+                ))}
               </ul>
             </div>
 
-            <div className={cn("reveal overflow-hidden rounded-sm bg-card dark:border lg:order-1", paperShadow)}>
-              <div className="flex items-center justify-between border-b px-5 py-3 text-sm">
-                <span className="font-script font-bold uppercase">Roteiro da sessão</span>
-                <span className="text-xs text-muted-foreground">exemplo</span>
-              </div>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
-                    <th scope="col" className="px-5 py-2 font-normal">#</th>
-                    <th scope="col" className="hidden px-2 py-2 font-normal sm:table-cell">Quando</th>
-                    <th scope="col" className="px-2 py-2 font-normal">Pergunta</th>
-                    <th scope="col" className="px-5 py-2 text-right font-normal">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {SESSION_PLAN.map((row) => (
-                    <tr key={row.n} className={cn("border-b last:border-b-0", row.state === "live" && "bg-primary/[0.07]")}>
-                      <td className="px-5 py-4 align-top font-script text-2xl font-bold tabular-nums">{row.n}</td>
-                      <td className="hidden px-2 py-4 align-top font-script tabular-nums text-muted-foreground sm:table-cell">
-                        {row.at}
-                      </td>
-                      <td className="px-2 py-4 align-top">
-                        <span className={cn("block font-script text-xs font-bold uppercase tracking-wider", row.ink)}>{row.type}</span>
-                        <span className={cn("text-base", row.state === "done" && "text-muted-foreground")}>{row.question}</span>
-                      </td>
-                      <td className="px-5 py-4 align-top">
-                        <span className="flex items-center justify-end gap-2 whitespace-nowrap font-medium">
-                          {row.state === "done" ? (
-                            <CheckIcon className="text-muted-foreground" />
-                          ) : (
-                            <CueLamp state={row.state === "live" ? "go" : row.state === "next" ? "standby" : "off"} pulse />
-                          )}
-                          <span
-                            className={cn(
-                              "sr-only sm:not-sr-only",
-                              (row.state === "done" || row.state === "waiting") && "text-muted-foreground",
-                            )}
-                          >
-                            {ROW_STATE_LABEL[row.state]}
-                          </span>
+            <figure className={cn("reveal flex flex-col gap-6 self-center rounded-sm bg-card p-6 dark:border sm:p-8", paperShadow)}>
+              <ol className="grid grid-cols-2 gap-3 sm:grid-cols-3" aria-label="Exemplo de sequência da apresentação">
+                {DECK.map((item, index) =>
+                  item.kind === "slide" ? (
+                    <li key={`s${item.n}`} className="flex flex-col gap-1.5">
+                      <span className="dark flex aspect-video flex-col justify-between rounded-sm border bg-background p-2 text-foreground">
+                        <span className="text-xs font-semibold leading-tight">{item.title}</span>
+                        <span aria-hidden className="flex flex-col gap-1">
+                          <span className="h-0.5 w-3/4 rounded-full bg-foreground/30" />
+                          <span className="h-0.5 w-1/2 rounded-full bg-foreground/30" />
                         </span>
-                      </td>
-                    </tr>
+                      </span>
+                      <span className="font-script text-xs text-muted-foreground">Slide {item.n}</span>
+                    </li>
+                  ) : (
+                    <li key={`q${index}`} className="flex flex-col gap-1.5">
+                      <span className={cn("flex aspect-video flex-col justify-between rounded-sm p-2 text-rev-foreground", item.paper)}>
+                        <span className="font-script text-[0.65rem] font-bold uppercase tracking-wider">{item.type}</span>
+                        <span className="text-xs font-medium leading-tight">{item.text}</span>
+                      </span>
+                      <span className="font-script text-xs text-muted-foreground">Pergunta</span>
+                    </li>
+                  ),
+                )}
+              </ol>
+              <figcaption className="flex flex-wrap items-center gap-3 border-t border-dashed pt-4 text-sm text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <Kbd>→</Kbd> ou o passador avança
+                </span>
+                <span aria-hidden>·</span>
+                <span>arraste as perguntas para mudar a ordem</span>
+              </figcaption>
+            </figure>
+          </div>
+        </section>
+
+        {/* Gamificação e sorteio. */}
+        <section className="border-t bg-muted/40">
+          <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 py-20 md:px-6 md:py-24">
+            <SectionHeading title="Quiz, ranking e sorteio: a sala inteira quer jogar">
+              Recursos de jogo para a plateia participar do começo ao fim, e um sorteio para fechar a palestra em clima
+              de festa.
+            </SectionHeading>
+
+            <div className="grid gap-6 lg:grid-cols-3">
+              {/* Celular: alternativas com forma e cor. */}
+              <div className={cn("reveal flex flex-col gap-3 rounded-sm bg-card p-5 dark:border", paperShadow)} style={stagger(0)}>
+                <p className="font-semibold leading-snug">Qual destes é um modelo de linguagem?</p>
+                <div className="grid grid-cols-2 gap-2" aria-hidden>
+                  {QUIZ_TILES.map((label, i) => (
+                    <span
+                      key={label}
+                      className={cn(
+                        "flex min-h-14 items-center gap-2 rounded-lg px-3 font-semibold text-white",
+                        shapeBg(i),
+                        i === 0 && "ring-4 ring-foreground ring-offset-2 ring-offset-card",
+                      )}
+                    >
+                      <ShapeGlyph index={i} className="size-5 text-white" />
+                      {label}
+                    </span>
                   ))}
-                </tbody>
-              </table>
+                </div>
+                <p className="rounded-md bg-primary/15 py-2 text-center text-sm font-semibold text-primary">Certa! +950 pontos</p>
+                <p className="mt-auto text-xs text-muted-foreground">No celular da plateia · exemplo</p>
+              </div>
+
+              {/* Telão: ranking. */}
+              <div className="reveal dark flex flex-col gap-3 rounded-sm border bg-background p-5 text-foreground" style={stagger(1)}>
+                <p className="text-center text-lg font-semibold">Ranking do quiz</p>
+                <ol className="flex flex-col gap-2">
+                  {RANKING.map((r, i) => (
+                    <li
+                      key={r.name}
+                      className={cn("flex items-center gap-3 rounded-md px-3 py-2", i === 0 ? "bg-primary/20" : "bg-muted")}
+                    >
+                      <span className="w-6 font-script font-bold tabular-nums">{i + 1}º</span>
+                      <span aria-hidden className="text-xl leading-none">
+                        {r.avatar}
+                      </span>
+                      <span className="flex-1 font-semibold">{r.name}</span>
+                      <span className="text-xs text-muted-foreground tabular-nums">{r.move}</span>
+                      <span className="font-script font-bold tabular-nums">{r.points}</span>
+                    </li>
+                  ))}
+                </ol>
+                <p className="mt-auto text-xs text-muted-foreground">No telão · exemplo</p>
+              </div>
+
+              {/* Sorteio. */}
+              <div className="reveal dark flex flex-col items-center gap-3 rounded-sm border bg-background p-5 text-center text-foreground" style={stagger(2)}>
+                <p className="text-sm text-muted-foreground">Sorteando: Livro autografado</p>
+                <span className="rounded-xl border-4 border-dashed border-primary px-6 font-script text-6xl font-bold leading-tight text-primary tabular-nums">
+                  042
+                </span>
+                <p className="flex items-center gap-2 text-lg font-semibold">
+                  <span aria-hidden className="text-2xl leading-none">
+                    🦉
+                  </span>
+                  Carla · Parabéns!
+                </p>
+                <p className="mt-auto text-xs text-muted-foreground">No telão · exemplo</p>
+              </div>
             </div>
+
+            <dl className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+              {GAME_POINTS.map((point, index) => (
+                <div key={point.title} className="reveal flex flex-col gap-1 border-t pt-4" style={stagger(index % 3)}>
+                  <dt className="font-script text-lg font-bold">{point.title}</dt>
+                  <dd className="leading-relaxed text-muted-foreground">{point.text}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </section>
 
         {/* Depois: o relatório. */}
-        <section className="border-t bg-muted/40">
+        <section className="border-t">
           <div className="mx-auto grid w-full max-w-6xl gap-12 px-4 py-20 md:px-6 md:py-24 lg:grid-cols-[2fr_3fr] lg:gap-16">
             <div className="flex flex-col gap-6">
               <SectionHeading title="Depois: o relatório da sessão">
-                Ao encerrar, a plateia responde uma pesquisa pelo celular: satisfação, atenção, didática, treinamento ou
-                um modelo seu. Você vê seus pontos fortes e fracos, onde o público mais participou e sugestões da IA para
-                a próxima vez.
+                Ao encerrar, a plateia responde uma pesquisa pelo celular. Você vê seus pontos fortes e fracos, onde o
+                público mais participou, quanto tempo ficou em cada slide e sugestões da IA para a próxima vez. Tudo
+                exportável em PDF e planilha.
               </SectionHeading>
               <p className="reveal text-sm leading-relaxed text-muted-foreground">
                 Os números medem participação, não atenção. E cada sugestão da IA mostra em quantas respostas se baseia:
@@ -431,7 +592,7 @@ export default function Home() {
         </section>
 
         {/* Para quem é. */}
-        <section className="border-t">
+        <section className="border-t bg-muted/40">
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 py-20 md:px-6 md:py-24">
             <SectionHeading title="Para quem apresenta para um público">
               Funciona em auditório, sala de aula, reunião ou treinamento, presencial ou online com tela compartilhada.
@@ -448,7 +609,7 @@ export default function Home() {
         </section>
 
         {/* Perguntas frequentes. */}
-        <section className="border-t bg-muted/40">
+        <section className="border-t">
           <div className="mx-auto grid w-full max-w-6xl gap-12 px-4 py-20 md:px-6 md:py-24 lg:grid-cols-[2fr_3fr] lg:gap-16">
             <SectionHeading title="Perguntas frequentes">O essencial antes de usar na sua próxima apresentação.</SectionHeading>
             <div className="reveal flex flex-col divide-y rounded-sm bg-card dark:border">
@@ -470,18 +631,19 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Chamada final. */}
-        <section className="border-t">
-          <div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-8 px-4 py-24 md:px-6 md:py-28">
-            <h2 className="reveal max-w-4xl font-script text-[clamp(2.4rem,5.5vw,5rem)] font-bold leading-none tracking-[-0.035em] text-balance">
-              Pronto para ouvir a sua plateia?
+        {/* Chamada final: o palco escuro, como o telão. */}
+        <section className="dark border-t bg-background text-foreground">
+          <div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-8 px-4 py-24 md:px-6 md:py-32">
+            <h2 className="reveal max-w-4xl font-script text-[clamp(2.6rem,6vw,5.5rem)] font-bold leading-[0.98] tracking-[-0.035em] text-balance">
+              Sua próxima palestra começa aqui.
             </h2>
             <p className="reveal max-w-xl text-lg leading-relaxed text-muted-foreground">
-              Crie a primeira sessão em poucos minutos, com Google ou e-mail. Grátis durante o beta.
+              Crie a primeira sessão em poucos minutos, com Google ou e-mail. Grátis durante o beta, sem cartão de
+              crédito.
             </p>
             <div className="reveal flex flex-wrap items-center gap-4">
               <Link href="/signup" className={buttonVariants({ size: "lg" })}>
-                Criar minha sessão
+                Criar minha sessão grátis
               </Link>
               <Link href="/login" className={buttonVariants({ size: "lg", variant: "outline" })}>
                 Entrar

@@ -21,7 +21,16 @@ OWN-WORLD: Página de roteiro branca (não creme) furada para fichário, margem 
 
 STORY: Clareza primeiro (feedback do dono, 2026-10-03: a versão metafórica não dizia o que o produto faz). O visitante entende em segundos: o que é (enquetes, quiz e perguntas ao vivo para palestras e aulas), como funciona (3 passos), os 5 tipos, o painel durante a apresentação, o relatório depois, para quem é e perguntas frequentes. O mundo do roteiro fica no visual (papel, Courier, cores por tipo, luz verde), nunca no texto: sem jargão de teatro ("deixa", "ato", "INT.", "notas do diretor").
 
-FIRST VIEWPORT: Folha de papel com duas colunas no desktop: à esquerda a manchete em Courier "Enquetes, quiz e perguntas ao vivo para palestras e aulas." (marca-texto em "ao vivo"), subtítulo explicando o fluxo, 3 fatos com check, CTA verde "Criar minha sessão" + "Grátis durante o beta", ficha do código do participante; à direita a demonstração "Experimente: é assim que aparece no telão", que roda sozinha uma vez e pode ser repetida. Celular: uma coluna, demonstração depois da ficha.
+FIRST VIEWPORT (repaginada em 2026-10-12, foco em vender): folha de roteiro com a manchete em Courier na largura toda
+"Faça a plateia participar da sua palestra, ao vivo." (marca-texto em "ao vivo"); abaixo, subtítulo + CTA verde
+"Criar minha sessão grátis" ("Grátis durante o beta, sem cartão") e, ao lado, 3 fatos com check; depois o palco de
+demonstração (`components/landing/stage-demo.tsx`): telão escuro e celular da plateia passando sozinhos por Enquete,
+Nuvem de palavras, Quiz e ranking e Sorteio (abas clicáveis, barra de tempo, dados simulados e rotulados; movimento
+reduzido mostra o estado final sem autoplay). Fecha com a ficha do código do participante. Nada de hero dividido.
+
+SECTIONS: fatos do produto (limites e recursos reais: 0 apps, 2.000 pessoas por sessão, 5 tipos, 1 tela), Como
+funciona, Cinco tipos (papéis de revisão), Slides e perguntas numa sequência só, Quiz/ranking/sorteio (gamificação),
+Relatório, Para quem, Perguntas frequentes, chamada final na coxia escura ("Sua próxima palestra começa aqui.").
 
 FORM: Roteiro com deixas (caderno do diretor de cena), candidato 1 da lista ordenada (escolha do usuário, IMPECCABLE'S PICK); seed key 9e370257.
 

@@ -314,6 +314,17 @@ html {
   animation: cue-go 1.6s var(--ease-in-out) infinite;
 }
 
+/* Demonstração do palco: barra de tempo da cena atual (passa sozinha para a próxima). */
+@keyframes stage-progress {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+.stage-progress {
+  animation: stage-progress linear both;
+}
+
 /* Cabeçalho fixo: transparente no topo, ganha fundo e borda conforme a página rola. */
 .site-header {
   background-color: color-mix(in oklch, var(--background) 85%, transparent);
@@ -396,6 +407,10 @@ html {
 
   .highlighter {
     animation: fade-in 600ms ease-out 400ms both;
+  }
+
+  .stage-progress {
+    display: none;
   }
 
   @supports (animation-timeline: view()) {
