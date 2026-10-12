@@ -161,3 +161,5 @@ $$;
 create trigger sessions_lock_timing
   before insert or update on public.sessions
   for each row execute function public.lock_session_timing();
+
+revoke execute on function public.lock_session_timing() from public, anon, authenticated;
