@@ -5,6 +5,7 @@ import { toSessionStatus } from "@/lib/domain/session";
 import { cn } from "@/lib/utils";
 import { CheckIcon, ChevronRightIcon } from "@/components/icons";
 import { StatusBadge } from "./status-badge";
+import { DuplicateSessionButton } from "./session-controls";
 
 export function sessionHref(session: Pick<SessionRow, "id" | "status">): string {
   if (session.status === "live" || session.status === "paused") return `/dashboard/sessions/${session.id}/live`;
@@ -29,12 +30,21 @@ function StatusMark({ status }: { status: string }) {
   );
 }
 
-export function SessionList({ sessions, timeZone }: { sessions: SessionRow[]; timeZone?: string }) {
+export function SessionList({
+  sessions,
+  timeZone,
+  duplicable = false,
+}: {
+  sessions: SessionRow[];
+  timeZone?: string;
+  /** botão "Duplicar" em cada linha */
+  duplicable?: boolean;
+}) {
   return (
     <ul className="divide-y rounded-md bg-card shadow-[0_10px_28px_-18px_color-mix(in_oklch,var(--foreground)_32%,transparent)] dark:border">
       {sessions.map((s) => (
-        <li key={s.id}>
-          <Link href={sessionHref(s)} className="group flex items-center gap-4 px-4 py-3.5 transition-colors hover:bg-muted/50">
+        <li key={s.id} className="flex items-center pr-2 transition-colors hover:bg-muted/50">
+          <Link href={sessionHref(s)} className="group flex min-w-0 flex-1 items-center gap-4 px-4 py-3.5">
             <span className="grid size-5 place-items-center">
               <StatusMark status={s.status} />
             </span>
@@ -48,6 +58,7 @@ export function SessionList({ sessions, timeZone }: { sessions: SessionRow[]; ti
             <StatusBadge status={s.status} />
             <ChevronRightIcon className="text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden />
           </Link>
+          {duplicable ? <DuplicateSessionButton sessionId={s.id} title={s.title} iconOnly /> : null}
         </li>
       ))}
     </ul>

@@ -32,12 +32,15 @@ export function InsightsPanel({
   sessionId,
   insights,
   configured,
+  problem,
   generatedAt,
   meta,
 }: {
   sessionId: string;
   insights: InsightView[];
   configured: boolean;
+  /** o que falta na configuração (ex.: "Falta a variável AI_API_KEY") */
+  problem?: string | null;
   generatedAt: string | null;
   meta: string | null;
 }) {
@@ -71,8 +74,9 @@ export function InsightsPanel({
 
       {!configured ? (
         <Alert tone="info">
-          IA não configurada. Defina <code>AI_PROVIDER</code> e <code>AI_API_KEY</code> no ambiente. O restante do
-          analytics funciona normalmente.
+          IA não configurada. {problem ?? "Defina AI_PROVIDER e AI_API_KEY no ambiente."} Na Vercel: Settings →
+          Environment Variables, marque o ambiente Production e faça Redeploy para valer. O restante do analytics
+          funciona normalmente.
         </Alert>
       ) : null}
 

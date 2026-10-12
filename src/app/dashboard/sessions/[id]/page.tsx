@@ -116,7 +116,7 @@ export default async function SessionBuilderPage({
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <DeleteSessionButton sessionId={id} title={session.title} />
-          <DuplicateSessionButton sessionId={id} />
+          <DuplicateSessionButton sessionId={id} title={session.title} />
           {status !== "completed" ? <QrDownloadButton joinUrl={joinUrl(session.join_code)} code={session.join_code} /> : null}
           {status === "draft" ? <StartSessionButton sessionId={id} hasInteractions={items.length > 0} /> : null}
           {status === "live" || status === "paused" ? (

@@ -17,13 +17,38 @@ const DEFAULT_MODELS = {
   anthropic: "claude-sonnet-5-5",
 } as const;
 
+type ProviderName = keyof typeof DEFAULT_MODELS;
+
+/** Aceita "Groq", " groq " etc. */
+function providerName(value: string | undefined): ProviderName | null {
+  const name = value?.toLowerCase();
+  return name === "groq" || name === "openai" || name === "anthropic" ? name : null;
+}
+
+/**
+ * O que falta na configuração da IA, em português e sem revelar a chave; null = configurada.
+ * Mostrado no analytics para o speaker saber qual variável ajustar.
+ */
+export function aiConfigProblem(): string | null {
+  const env = serverEnv();
+  if (!env.AI_PROVIDER && !env.AI_API_KEY) return "Faltam as variáveis AI_PROVIDER e AI_API_KEY.";
+  if (!env.AI_PROVIDER) return "Falta a variável AI_PROVIDER (groq, openai ou anthropic).";
+  if (!providerName(env.AI_PROVIDER)) {
+    return `AI_PROVIDER está como "${env.AI_PROVIDER.slice(0, 30)}": use groq, openai ou anthropic.`;
+  }
+  if (!env.AI_API_KEY) return "Falta a variável AI_API_KEY (a chave do provedor).";
+  return null;
+}
+
 /** Retorna o provider configurado, ou null quando não há credenciais (o app segue funcionando). */
 export function getAIProvider(): AIProvider | null {
   const env = serverEnv();
-  if (!env.AI_PROVIDER || !env.AI_API_KEY) return null;
-  const model = env.AI_MODEL ?? DEFAULT_MODELS[env.AI_PROVIDER];
+  const provider = providerName(env.AI_PROVIDER);
+  if (!provider || !env.AI_API_KEY) return null;
+  // AI_MODEL com o nome do provedor (ex.: "groq") é engano comum: usa o modelo padrão.
+  const model = env.AI_MODEL && !providerName(env.AI_MODEL) ? env.AI_MODEL : DEFAULT_MODELS[provider];
 
-  switch (env.AI_PROVIDER) {
+  switch (provider) {
     case "groq":
       return new OpenAICompatibleProvider("groq", model, "https://api.groq.com/openai/v1", env.AI_API_KEY);
     case "openai":
@@ -35,7 +60,7 @@ export function getAIProvider(): AIProvider | null {
 
 export function isAIConfigured(): boolean {
   try {
-    return getAIProvider() !== null;
+    return aiConfigProblem() === null;
   } catch {
     return false;
   }

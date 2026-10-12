@@ -10,7 +10,7 @@ import { hasOptions, interactionInputSchema, type ParsedInteractionInput } from 
 import { insertAfterItem, MAX_SLIDES } from "@/lib/domain/deck";
 import { droppedImages, imageOwner } from "@/lib/domain/gamification";
 import { optionImagesOf, removeUnusedOptionImages } from "@/lib/data/option-images";
-import { getAIProvider, suggestInteractions } from "@/lib/ai";
+import { aiConfigProblem, getAIProvider, suggestInteractions } from "@/lib/ai";
 import { AIProviderError } from "@/lib/ai/types";
 import { fail, firstIssue, isUuid, ok, type ActionResult } from "@/lib/action-result";
 
@@ -188,7 +188,7 @@ export async function suggestInteractionsAction(
   if (!isUuid(sessionId) || !avoid.success) return fail("Dados inválidos.");
 
   const provider = getAIProvider();
-  if (!provider) return fail("A IA não está configurada. Defina AI_PROVIDER e AI_API_KEY.", "not_configured");
+  if (!provider) return fail(`A IA não está configurada. ${aiConfigProblem() ?? ""}`.trim(), "not_configured");
 
   const supabase = await createClient();
   const session = await getOwnedSession(supabase, sessionId);

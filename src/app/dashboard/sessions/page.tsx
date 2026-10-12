@@ -25,7 +25,7 @@ export default async function SessionsPage() {
       {sessions.length === 0 ? (
         <EmptyState title="Nenhuma sessão" description="Suas palestras, aulas e workshops aparecem aqui." />
       ) : (
-        <SessionList sessions={sessions} timeZone={timeZone} />
+        <SessionList sessions={sessions} timeZone={timeZone} duplicable />
       )}
     </div>
   );

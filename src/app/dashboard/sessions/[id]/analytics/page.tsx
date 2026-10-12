@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { loadSessionAnalytics } from "@/lib/data/analytics";
-import { isAIConfigured } from "@/lib/ai";
+import { aiConfigProblem, isAIConfigured } from "@/lib/ai";
 import { toPublicInteraction } from "@/lib/domain/interactions";
 import {
   computeOverview,
@@ -32,6 +32,7 @@ import { Alert, EmptyState } from "@/components/ui/misc";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { ClipboardIcon, DownloadIcon, FileTextIcon, ListIcon, TableIcon, TrendingUpIcon, UsersIcon } from "@/components/icons";
 import { StatusBadge } from "@/components/sessions/status-badge";
+import { DuplicateSessionButton } from "@/components/sessions/session-controls";
 import { ResultsView } from "@/components/results/results-view";
 import { PulseChart } from "@/components/analytics/pulse-chart";
 import { OpenTextList } from "@/components/analytics/open-text-list";
@@ -49,6 +50,13 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
   const supabase = await createClient();
   const data = await loadSessionAnalytics(supabase, id);
   if (!data) notFound();
+  const aiProblem = (() => {
+    try {
+      return aiConfigProblem();
+    } catch {
+      return null;
+    }
+  })();
 
   const { session, interactionsWithOptions, participants, responses } = data;
   const { timeZone } = await getSpeakerProfile();
@@ -104,10 +112,11 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
             {talkTime ? ` · ${talkTime}` : ""}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Link href={`/dashboard/sessions/${id}`} className={buttonVariants({ variant: "outline" })}>
             Ver interações
           </Link>
+          <DuplicateSessionButton sessionId={id} title={session.title} />
           <details className="relative">
             <summary className={buttonVariants({ variant: "outline", className: "cursor-pointer list-none [&::-webkit-details-marker]:hidden" })}>
               <DownloadIcon /> Exportar
@@ -217,6 +226,7 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
             sessionId={id}
             insights={insights}
             configured={isAIConfigured()}
+            problem={aiProblem}
             generatedAt={latest ? formatDateTime(latest.created_at, timeZone) : null}
             meta={latest?.provider ? `${latest.provider}${latest.model ? ` · ${latest.model}` : ""}` : null}
           />

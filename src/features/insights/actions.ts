@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { loadSessionAnalytics } from "@/lib/data/analytics";
-import { generateInsights, getAIProvider } from "@/lib/ai";
+import { aiConfigProblem, generateInsights, getAIProvider } from "@/lib/ai";
 import { buildInsightInput } from "@/lib/ai/build-input";
 import { AIProviderError } from "@/lib/ai/types";
 import type { InsightOutput } from "@/lib/ai/schema";
@@ -19,7 +19,7 @@ export async function generateInsightsAction(sessionId: string): Promise<ActionR
   if (!isUuid(sessionId)) return fail("Sessão inválida.");
 
   const provider = getAIProvider();
-  if (!provider) return fail("A IA não está configurada. Defina AI_PROVIDER e AI_API_KEY.", "not_configured");
+  if (!provider) return fail(`A IA não está configurada. ${aiConfigProblem() ?? ""}`.trim(), "not_configured");
 
   const supabase = await createClient();
   const data = await loadSessionAnalytics(supabase, sessionId);

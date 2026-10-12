@@ -12,6 +12,8 @@ import { fail, firstIssue, isUuid, ok, type ActionResult } from "@/lib/action-re
 import { removeSlideFiles, slidePaths, SLIDES_BUCKET } from "@/lib/data/slides";
 import { isSlideFormat } from "@/lib/domain/deck";
 import type { SessionRow } from "@/lib/supabase/types";
+import { getSpeakerProfile } from "@/lib/data/profile";
+import { zonedToUtcIso } from "@/lib/datetime";
 
 const MAX_COPY = 50;
 
@@ -124,12 +126,37 @@ async function copySlides(supabase: ServerSupabase, source: SessionRow, targetSe
   if (error) throw new Error(error.message);
 }
 
-/** Nova sessão em rascunho com as mesmas informações, perguntas, slides, pesquisa e prêmios do sorteio. */
-export async function duplicateSessionAction(sessionId: string): Promise<ActionResult> {
+const duplicateSchema = z.object({
+  title: z.string().trim().min(1, "Dê um nome à nova sessão.").max(200, "Nome muito longo.").optional(),
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida.")
+    .optional()
+    .or(z.literal("")),
+  time: z
+    .string()
+    .regex(/^\d{2}:\d{2}$/, "Horário inválido.")
+    .optional()
+    .or(z.literal("")),
+});
+
+/**
+ * Nova sessão em rascunho com as mesmas informações, perguntas, slides, pesquisa e prêmios do sorteio.
+ * Nome e data opcionais (sem nome: "… (cópia)"; sem data: sem agendamento).
+ */
+export async function duplicateSessionAction(sessionId: string, raw: unknown = {}): Promise<ActionResult> {
   if (!isUuid(sessionId)) return fail("Sessão inválida.");
+  const options = duplicateSchema.safeParse(raw);
+  if (!options.success) return fail(firstIssue(options.error));
   const supabase = await createClient();
   const source = await getOwnedSession(supabase, sessionId);
   if (!source) return fail("Sessão não encontrada.");
+
+  let scheduledAt: string | null = null;
+  if (options.data.date) {
+    scheduledAt = zonedToUtcIso(options.data.date, options.data.time || "00:00", (await getSpeakerProfile()).timeZone);
+    if (!scheduledAt) return fail("Data ou horário inválidos.");
+  }
 
   let createdId: string | null = null;
   for (let attempt = 0; attempt < 4 && !createdId; attempt++) {
@@ -137,7 +164,8 @@ export async function duplicateSessionAction(sessionId: string): Promise<ActionR
       .from("sessions")
       .insert({
         speaker_id: source.speaker_id,
-        title: `${source.title} (cópia)`.slice(0, 200),
+        title: options.data.title ?? `${source.title} (cópia)`.slice(0, 200),
+        scheduled_at: scheduledAt,
         description: source.description,
         estimated_duration_minutes: source.estimated_duration_minutes,
         survey_template_id: source.survey_template_id,
