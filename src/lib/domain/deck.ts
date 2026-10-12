@@ -179,6 +179,37 @@ export function insertAfterItem(
   return arrangementOf([...rest.slice(0, insertAt), { id, afterSlide }, ...rest.slice(insertAt)]);
 }
 
+/**
+ * Arrastar e soltar: a pergunta `id` passa a ficar logo antes de `before` no deck (null = no fim).
+ * Cada pergunta fica na lacuna dos slides que vêm antes dela, e a ordem do roteiro segue a do deck.
+ * null quando não há o que mudar (pergunta inexistente ou solta sobre ela mesma).
+ */
+export function dropInteraction(
+  interactions: readonly DeckInteraction[],
+  id: string,
+  before: DeckItem | null,
+  slideCount: number,
+): Arrangement | null {
+  if (!interactions.some((i) => i.id === id)) return null;
+  if (before?.kind === "interaction" && before.id === id) return null;
+  const deck = buildDeck(slideCount, interactions).filter((item) => !(item.kind === "interaction" && item.id === id));
+  const at = before ? deck.findIndex((item) => sameItem(item, before)) : deck.length;
+  if (at < 0) return null;
+  deck.splice(at, 0, { kind: "interaction", id });
+
+  const ids: string[] = [];
+  const afterSlides: (number | null)[] = [];
+  let slidesBefore = 0;
+  for (const item of deck) {
+    if (item.kind === "slide") slidesBefore++;
+    else {
+      ids.push(item.id);
+      afterSlides.push(slidesBefore >= slideCount ? null : slidesBefore);
+    }
+  }
+  return { ids, afterSlides };
+}
+
 /** Rótulo da lacuna para o seletor: "Antes do 1º slide", "Depois do slide 3", "No fim". */
 export function gapLabel(afterSlide: number | null, slideCount: number): string {
   const anchor = anchorOf(afterSlide, slideCount);

@@ -121,8 +121,9 @@ export default function GuidePage() {
               slides são enviadas. Animações, transições e vídeos não são mantidos.
             </p>
             <p>
-              Em cada pergunta, escolha em que ponto ela entra: <em>Antes do 1º slide</em>, <em>Depois do slide 3</em>{" "}
-              etc. Na sala ao vivo, o roteiro vira uma sequência só: slide, pergunta, próximo slide. Use{" "}
+              Arraste cada pergunta para o ponto em que ela deve entrar (solte na metade esquerda de um slide para ficar
+              antes dele, na direita para ficar depois), ou escolha no seletor: <em>Antes do 1º slide</em>,{" "}
+              <em>Depois do slide 3</em> etc. Na sala ao vivo, o roteiro vira uma sequência só: slide, pergunta, próximo slide. Use{" "}
               <strong>“Trocar PDF”</strong> para enviar uma versão nova; as perguntas continuam nos mesmos pontos.
             </p>
           </Section>

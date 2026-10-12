@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   anchorOf,
   buildDeck,
+  dropInteraction,
   gapLabel,
   initialCursor,
   insertAfterItem,
@@ -132,3 +133,27 @@ test("pergunta criada ao vivo entra logo depois do que está no telão e vira a 
 function idsToDeck(arrangement: { ids: string[]; afterSlides: (number | null)[] }): DeckInteraction[] {
   return arrangement.ids.map((id, i) => ({ id, afterSlide: arrangement.afterSlides[i] ?? null }));
 }
+
+test("arrastar: a pergunta fica antes do item onde foi solta e herda a lacuna", () => {
+  // Deck: a, S1, b, S2, S3, c(fim)
+  const interactions: DeckInteraction[] = [
+    { id: "a", afterSlide: 0 },
+    { id: "b", afterSlide: 1 },
+    { id: "c", afterSlide: null },
+  ];
+  // c solta antes do slide 2 (índice 1): depois do slide 1, logo após b.
+  assert.deepEqual(dropInteraction(interactions, "c", slide(1), 3), { ids: ["a", "b", "c"], afterSlides: [0, 1, 1] });
+  // c solta antes de b: mesma lacuna, mas na frente.
+  assert.deepEqual(dropInteraction(interactions, "c", ask("b"), 3), { ids: ["a", "c", "b"], afterSlides: [0, 1, 1] });
+  // a solta no fim.
+  assert.deepEqual(dropInteraction(interactions, "a", null, 3), { ids: ["b", "c", "a"], afterSlides: [1, null, null] });
+  // b solta antes do primeiro slide: lacuna 0, depois de a.
+  assert.deepEqual(dropInteraction(interactions, "b", slide(0), 3), { ids: ["a", "b", "c"], afterSlides: [0, 0, null] });
+});
+
+test("arrastar: soltar sobre ela mesma ou pergunta inexistente não muda nada", () => {
+  const interactions: DeckInteraction[] = [{ id: "a", afterSlide: 1 }];
+  assert.equal(dropInteraction(interactions, "a", ask("a"), 2), null);
+  assert.equal(dropInteraction(interactions, "x", null, 2), null);
+  assert.equal(dropInteraction(interactions, "a", slide(9), 2), null);
+});

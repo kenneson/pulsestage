@@ -1,12 +1,22 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useOptimistic, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { saveSlidesAction, removeSlidesAction } from "@/features/slides/actions";
 import { arrangeInteractionsAction } from "@/features/interactions/actions";
-import { anchorOf, buildDeck, gapLabel, placeInteraction, slidePath, type DeckInteraction } from "@/lib/domain/deck";
+import {
+  anchorOf,
+  buildDeck,
+  dropInteraction,
+  gapLabel,
+  placeInteraction,
+  slidePath,
+  type Arrangement,
+  type DeckInteraction,
+  type DeckItem,
+} from "@/lib/domain/deck";
 import type { InteractionType } from "@/lib/domain/interactions";
 import { convertPdf, PdfConversionError } from "@/lib/slides/convert-pdf";
 import { cn } from "@/lib/utils";
@@ -15,9 +25,20 @@ import { Alert, Progress } from "@/components/ui/misc";
 import { Select } from "@/components/ui/input";
 import { useConfirm } from "@/components/ui/confirm-dialog";
 import { TYPE_PAPER, TypeTag } from "@/components/interaction-type-tag";
-import { PresentationIcon, RefreshIcon, TrashIcon } from "@/components/icons";
+import { GripIcon, PresentationIcon, RefreshIcon, TrashIcon } from "@/components/icons";
 
 export type SlideDeckInteraction = DeckInteraction & { type: InteractionType; title: string };
+
+/** Aplica a nova ordem às perguntas (para mostrar o resultado antes de o servidor responder). */
+function arranged(interactions: readonly SlideDeckInteraction[], arrangement: Arrangement): SlideDeckInteraction[] {
+  const byId = new Map(interactions.map((i) => [i.id, i]));
+  return arrangement.ids.flatMap((id, index) => {
+    const item = byId.get(id);
+    return item ? [{ ...item, afterSlide: arrangement.afterSlides[index] ?? null }] : [];
+  });
+}
+
+type DropTarget = { index: number; side: "before" | "after" };
 
 const UPLOAD_CONCURRENCY = 4;
 
@@ -141,16 +162,41 @@ export function SlidesEditor({
   const [confirm, confirmDialog] = useConfirm();
   const slideCount = slideUrls.length;
   const busy = progress !== null || pending;
-  const byId = new Map(interactions.map((i) => [i.id, i]));
+  // A nova ordem aparece na hora; se o servidor recusar, volta ao que estava.
+  const [shown, setShown] = useOptimistic(interactions);
+  const byId = new Map(shown.map((i) => [i.id, i]));
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
 
-  function place(id: string, afterSlide: number) {
-    const arrangement = placeInteraction(interactions, id, afterSlide, slideCount);
-    if (!arrangement) return;
+  function save(arrangement: Arrangement) {
     startTransition(async () => {
+      setShown(arranged(shown, arrangement));
       const result = await arrangeInteractionsAction(sessionId, arrangement);
       if (!result.ok) toast.error(result.error);
       router.refresh();
     });
+  }
+
+  function place(id: string, afterSlide: number) {
+    const arrangement = placeInteraction(shown, id, afterSlide, slideCount);
+    if (arrangement) save(arrangement);
+  }
+
+  function endDrag() {
+    setDragId(null);
+    setDropTarget(null);
+  }
+
+  /** Solta a pergunta arrastada antes ou depois do item `index` do deck. */
+  function drop(deck: DeckItem[], target: DropTarget) {
+    const id = dragId;
+    endDrag();
+    if (!id) return;
+    const before = target.side === "before" ? deck[target.index]! : (deck[target.index + 1] ?? null);
+    const arrangement = dropInteraction(shown, id, before, slideCount);
+    const current = buildDeck(slideCount, shown);
+    const next = arrangement ? buildDeck(slideCount, arranged(shown, arrangement)) : current;
+    if (arrangement && JSON.stringify(next) !== JSON.stringify(current)) save(arrangement);
   }
 
   async function remove() {
@@ -220,7 +266,36 @@ export function SlidesEditor({
     );
   }
 
-  const deck = buildDeck(slideCount, interactions);
+  const deck = buildDeck(slideCount, shown);
+  const canDrag = !readOnly && !busy;
+
+  // Alvo de soltura: metade esquerda do item = antes; direita = depois (a grade corre da esquerda para a direita).
+  const dropProps = (index: number) =>
+    canDrag && dragId
+      ? {
+          onDragOver: (e: React.DragEvent<HTMLLIElement>) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "move";
+            const rect = e.currentTarget.getBoundingClientRect();
+            const side = e.clientX < rect.left + rect.width / 2 ? "before" : "after";
+            if (dropTarget?.index !== index || dropTarget.side !== side) setDropTarget({ index, side });
+          },
+          onDrop: (e: React.DragEvent<HTMLLIElement>) => {
+            e.preventDefault();
+            drop(deck, dropTarget?.index === index ? dropTarget : { index, side: "before" });
+          },
+        }
+      : {};
+  const marker = (index: number) =>
+    dropTarget?.index === index ? (
+      <span
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute inset-y-0 w-1 rounded-full bg-primary",
+          dropTarget.side === "before" ? "-left-2" : "-right-2",
+        )}
+      />
+    ) : null;
   const gapOptions = Array.from({ length: slideCount + 1 }, (_, gap) => gap);
 
   return (
@@ -229,7 +304,10 @@ export function SlidesEditor({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">
           <span className="font-script font-bold text-foreground tabular-nums">{slideCount}</span> slides ·{" "}
-          {interactions.length} perguntas. Escolha em que ponto da apresentação cada pergunta entra.
+          {shown.length} perguntas.{" "}
+          {readOnly
+            ? "Cada pergunta entra no ponto marcado."
+            : "Arraste as perguntas para o ponto da apresentação em que devem entrar, ou use o seletor de cada uma."}
         </p>
         {!readOnly ? (
           <div className="flex gap-2">
@@ -246,10 +324,11 @@ export function SlidesEditor({
       {error ? <Alert>{error}</Alert> : null}
 
       <ol className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        {deck.map((item) => {
+        {deck.map((item, index) => {
           if (item.kind === "slide") {
             return (
-              <li key={`s${item.index}`} className="flex flex-col gap-1.5">
+              <li key={`s${item.index}`} className="relative flex flex-col gap-1.5" {...dropProps(index)}>
+                {marker(index)}
                 {/* eslint-disable-next-line @next/next/no-img-element -- URL assinada do Storage, já em 1920 px */}
                 <img
                   src={slideUrls[item.index]}
@@ -266,9 +345,26 @@ export function SlidesEditor({
           return (
             <li
               key={item.id}
-              className={cn("flex flex-col gap-2 rounded-lg p-3 text-rev-foreground", TYPE_PAPER[interaction.type])}
+              className={cn(
+                "relative flex flex-col gap-2 rounded-lg p-3 text-rev-foreground transition-opacity",
+                TYPE_PAPER[interaction.type],
+                canDrag && "cursor-grab active:cursor-grabbing",
+                dragId === item.id && "opacity-40",
+              )}
+              draggable={canDrag}
+              onDragStart={(e) => {
+                e.dataTransfer.effectAllowed = "move";
+                e.dataTransfer.setData("text/plain", item.id);
+                setDragId(item.id);
+              }}
+              onDragEnd={endDrag}
+              {...dropProps(index)}
             >
-              <TypeTag type={interaction.type} className="bg-background/60" />
+              {marker(index)}
+              <div className="flex items-start justify-between gap-2">
+                <TypeTag type={interaction.type} className="bg-background/60" />
+                {canDrag ? <GripIcon aria-hidden className="shrink-0 opacity-60" /> : null}
+              </div>
               <p className="line-clamp-3 text-sm font-medium">{interaction.title}</p>
               {readOnly ? (
                 <span className="mt-auto text-xs">{gapLabel(interaction.afterSlide, slideCount)}</span>
