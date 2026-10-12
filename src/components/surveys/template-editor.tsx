@@ -120,7 +120,7 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
             <Card>
               <CardContent className="grid gap-4">
                 <div className="flex flex-wrap items-center gap-3">
-                  <span className="font-script text-xl font-bold tabular-nums">{index + 1}</span>
+                  <span className="font-display text-xl font-bold tabular-nums">{index + 1}</span>
                   <Select
                     aria-label="Tipo da pergunta"
                     value={q.kind}

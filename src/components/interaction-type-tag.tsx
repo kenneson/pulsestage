@@ -14,7 +14,7 @@ export function TypeTag({ type, className }: { type: InteractionType; className?
   return (
     <span
       className={cn(
-        "inline-flex w-fit shrink-0 items-center rounded-sm px-2 py-0.5 font-script text-xs font-bold uppercase tracking-wider text-rev-foreground",
+        "inline-flex w-fit shrink-0 items-center rounded-sm px-2 py-0.5 font-display text-xs font-bold uppercase tracking-wider text-rev-foreground",
         TYPE_PAPER[type],
         className,
       )}

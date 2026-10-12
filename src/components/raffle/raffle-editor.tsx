@@ -256,7 +256,7 @@ export function RaffleEditor({ sessionId, state }: { sessionId: string; state: R
                 ) : (
                   <li key={prize.id} className="flex flex-col gap-3 rounded-xl border p-4">
                     <div className="flex flex-wrap items-start gap-3">
-                      <span className="w-7 shrink-0 pt-0.5 font-script text-xl font-bold leading-none tabular-nums">{index + 1}</span>
+                      <span className="w-7 shrink-0 pt-0.5 font-display text-xl font-bold leading-none tabular-nums">{index + 1}</span>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
                           <Badge variant="outline">{PRIZE_KIND_LABEL[prize.kind]}</Badge>

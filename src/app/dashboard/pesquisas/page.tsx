@@ -17,7 +17,7 @@ function TemplateCard({ template }: { template: SurveyTemplate }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-script text-lg">{template.name}</CardTitle>
+        <CardTitle className="font-display text-lg">{template.name}</CardTitle>
         {template.description ? <CardDescription>{template.description}</CardDescription> : null}
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
@@ -30,7 +30,7 @@ function TemplateCard({ template }: { template: SurveyTemplate }) {
           <ol className="mt-3 flex flex-col gap-2">
             {template.questions.map((q, index) => (
               <li key={q.id} className="grid grid-cols-[1.5rem_1fr] gap-x-2">
-                <span className="font-script font-bold tabular-nums">{index + 1}.</span>
+                <span className="font-display font-bold tabular-nums">{index + 1}.</span>
                 <span>
                   {q.label}
                   {q.required ? " *" : ""}

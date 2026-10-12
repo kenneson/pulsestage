@@ -26,7 +26,7 @@ export function StatCard({
         ) : null}
         {label}
       </span>
-      <span className="font-script text-3xl font-bold tabular-nums">
+      <span className="font-display text-3xl font-bold tabular-nums">
         {value}
         {suffix ? <span className="text-base font-normal text-muted-foreground">{suffix}</span> : null}
       </span>

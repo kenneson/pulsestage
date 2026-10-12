@@ -94,10 +94,10 @@ export default async function DashboardPage() {
               >
                 {STATUS_LABEL[nextStatus]}
               </span>
-              código <strong className="font-script text-foreground">{next.join_code}</strong> ·{" "}
+              código <strong className="font-display text-foreground">{next.join_code}</strong> ·{" "}
               {plural(nextQuestions, "pergunta", "perguntas")}
             </p>
-            <h2 id="next-session" className="font-script text-2xl font-bold tracking-tight text-balance break-words">
+            <h2 id="next-session" className="font-display text-2xl font-bold tracking-tight text-balance break-words">
               {next.title}
             </h2>
           </div>
@@ -192,7 +192,7 @@ export default async function DashboardPage() {
               <h2 id="steps" className="font-semibold">
                 Primeiros passos
               </h2>
-              <span className="font-script text-sm font-bold tabular-nums">
+              <span className="font-display text-sm font-bold tabular-nums">
                 {doneCount}/{steps.length}
               </span>
             </div>

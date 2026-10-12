@@ -119,7 +119,7 @@ export function InteractionsEditor({
             return (
               <li key={interaction.id} className="rounded-xl border bg-background">
                 <div className="flex items-start gap-3 p-4">
-                  <span className="w-7 shrink-0 pt-0.5 font-script text-xl font-bold leading-none tabular-nums" aria-label={`Deixa ${index + 1}`}>
+                  <span className="w-7 shrink-0 pt-0.5 font-display text-xl font-bold leading-none tabular-nums" aria-label={`Deixa ${index + 1}`}>
                     {index + 1}
                   </span>
                   <div className="min-w-0 flex-1">

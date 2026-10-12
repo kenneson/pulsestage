@@ -12,10 +12,12 @@
 - Confirmações usam `useConfirm()` (`components/ui/confirm-dialog.tsx`, `<dialog>` nativo), nunca `window.confirm`.
 - `/privacidade` descreve cookies, IA e retenção: atualize-a ao mudar o que é coletado ou enviado à IA.
 - `/dashboard/guia` cita os rótulos reais dos botões: ao renomear um botão ou mudar um fluxo, atualize o guia.
-- Identidade visual "Roteiro com deixas" (caderno do diretor de cena): fatos do produto em `PRODUCT.md`, sistema visual em
-  `DESIGN.md`, contrato da landing em `.impeccable/surfaces/`. Verde = VAI (primary), âmbar = atenção (`standby`),
-  papéis de revisão `rev-*` = um por tipo de interação (`components/interaction-type-tag.tsx`), Courier Prime (`font-script`)
-  para falas, deixas, códigos e numerais. Não inventar depoimentos, logos ou números na landing.
+- Identidade visual "Campus" (desde 2026-10-12, substitui "Roteiro com deixas"): universitária e corporativa, acolhedora
+  para escolas. Fatos do produto em `PRODUCT.md`, sistema visual em `DESIGN.md`, contrato da landing em
+  `.impeccable/surfaces/`. Azul acadêmico = ação e ao vivo (primary), âmbar = atenção (`standby`), amarelo = marca-texto;
+  cores `rev-*` = uma por tipo de interação (`components/interaction-type-tag.tsx`). Fontes: Plus Jakarta Sans
+  (`font-display`) para títulos, numerais e códigos; Geist para interface. Escuro em azul-marinho. Não inventar
+  depoimentos, logos ou números na landing.
 - Deploy na Vercel feito; `npm test` cobre os módulos puros de `lib/domain/`.
 - **Pesquisas pós-evento por modelo** (migration `20261003000000_survey_templates.sql`, já aplicada) substituem o
   formulário fixo das seções 0.5 e 32 do PROMPT.md. Modelos em `survey_templates` (plataforma: `owner_id` null + slug;

@@ -63,7 +63,7 @@ export default async function RafflesPage() {
         <>
           {pending > 0 ? (
             <p className="text-sm">
-              <span className="font-script font-bold tabular-nums">{pending}</span>{" "}
+              <span className="font-display font-bold tabular-nums">{pending}</span>{" "}
               {pending === 1 ? "prêmio sorteado ainda não marcado como entregue." : "prêmios sorteados ainda não marcados como entregues."}
             </p>
           ) : null}

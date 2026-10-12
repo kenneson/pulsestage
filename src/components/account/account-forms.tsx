@@ -231,7 +231,7 @@ export function DeleteAccountForm() {
     <form action={action} className="flex flex-col gap-3">
       <Field>
         <Label htmlFor="confirm-delete">
-          Digite <strong className="font-script">EXCLUIR</strong> para confirmar
+          Digite <strong className="font-display">EXCLUIR</strong> para confirmar
         </Label>
         <Input
           id="confirm-delete"

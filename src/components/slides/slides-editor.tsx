@@ -132,7 +132,7 @@ function UploadProgress({ progress }: { progress: Progressing }) {
     <div className="flex flex-col gap-2" aria-live="polite">
       <p className="text-sm font-medium">
         {progress.label}…{" "}
-        <span className="font-script text-muted-foreground tabular-nums">
+        <span className="font-display text-muted-foreground tabular-nums">
           {progress.done}/{progress.total}
         </span>
       </p>
@@ -303,7 +303,7 @@ export function SlidesEditor({
       {confirmDialog}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">
-          <span className="font-script font-bold text-foreground tabular-nums">{slideCount}</span> slides ·{" "}
+          <span className="font-display font-bold text-foreground tabular-nums">{slideCount}</span> slides ·{" "}
           {shown.length} perguntas.{" "}
           {readOnly
             ? "Cada pergunta entra no ponto marcado."
@@ -336,7 +336,7 @@ export function SlidesEditor({
                   loading="lazy"
                   className="aspect-video w-full rounded-lg border bg-muted object-contain"
                 />
-                <span className="font-script text-xs text-muted-foreground">Slide {item.index + 1}</span>
+                <span className="font-display text-xs text-muted-foreground">Slide {item.index + 1}</span>
               </li>
             );
           }

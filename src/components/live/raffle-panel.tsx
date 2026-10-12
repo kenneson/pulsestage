@@ -97,7 +97,7 @@ export function RafflePanel({
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <p className="text-sm text-muted-foreground">
-          <span className="font-script font-bold tabular-nums text-foreground">{state.entrants}</span>{" "}
+          <span className="font-display font-bold tabular-nums text-foreground">{state.entrants}</span>{" "}
           {state.entrants === 1 ? "pessoa concorrendo" : "pessoas concorrendo"}
           {state.eligibility === "survey"
             ? status === "completed"
@@ -109,7 +109,7 @@ export function RafflePanel({
         {suspense ? (
           <p className="rounded-md bg-standby/15 px-3 py-2 text-sm" role="status">
             Sorteando… o telão revela em{" "}
-            <span className="font-script font-bold tabular-nums">
+            <span className="font-display font-bold tabular-nums">
               {Math.max(0, Math.ceil((Date.parse(drawnAt!) + RAFFLE_REVEAL_MS - now) / 1000))}s
             </span>
           </p>

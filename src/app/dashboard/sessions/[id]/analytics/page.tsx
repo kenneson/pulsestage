@@ -247,7 +247,7 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
               <Card key={row.id}>
                 <CardHeader>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-script text-sm font-bold text-muted-foreground">#{index + 1}</span>
+                    <span className="font-display text-sm font-bold text-muted-foreground">#{index + 1}</span>
                     <TypeTag type={pub.type} />
                     <span className="text-xs text-muted-foreground">
                       {plural(rowResponses.length, "resposta", "respostas")}

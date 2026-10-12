@@ -75,7 +75,7 @@ function Row({ entry, settled, total, variant }: { entry: Entry; settled: boolea
         opacity: settled || entry.previousRank !== null ? 1 : 0,
       }}
     >
-      <span className={cn("w-12 shrink-0 font-script font-bold tabular-nums", !big && "w-6", leader && "text-primary")}>
+      <span className={cn("w-12 shrink-0 font-display font-bold tabular-nums", !big && "w-6", leader && "text-primary")}>
         {entry.rank}º
       </span>
       <span
@@ -85,7 +85,7 @@ function Row({ entry, settled, total, variant }: { entry: Entry; settled: boolea
           big ? "size-14 text-4xl" : "size-8 text-lg",
         )}
       >
-        {entry.avatar ?? <span className="font-script text-muted-foreground">{entry.name.charAt(0).toUpperCase()}</span>}
+        {entry.avatar ?? <span className="font-display text-muted-foreground">{entry.name.charAt(0).toUpperCase()}</span>}
       </span>
       <span className={cn("min-w-0 flex-1 truncate font-semibold", leader && "text-primary")}>{entry.name}</span>
       {settled && moved !== null && moved !== 0 ? (
@@ -96,7 +96,7 @@ function Row({ entry, settled, total, variant }: { entry: Entry; settled: boolea
       {settled && entry.previousRank === null ? (
         <span className={cn("shrink-0 text-muted-foreground", big ? "text-xl" : "text-xs")}>novo</span>
       ) : null}
-      <span className="shrink-0 font-script font-bold tabular-nums">{formatInt(points)} pts</span>
+      <span className="shrink-0 font-display font-bold tabular-nums">{formatInt(points)} pts</span>
     </li>
   );
 }

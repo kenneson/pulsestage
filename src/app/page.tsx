@@ -59,7 +59,7 @@ const QUESTION_TYPES = [
 ];
 
 const HERO_FACTS = [
-  "A plateia entra pelo QR Code, sem baixar app e sem criar conta",
+  "Alunos e participantes entram pelo QR Code, sem app e sem cadastro",
   "Seus slides e as perguntas numa sequência só, no mesmo passador",
   "Quiz com ranking, sorteio de prêmios e relatório com IA no fim",
 ];
@@ -146,16 +146,20 @@ const SCORECARD = [
 
 const AUDIENCES = [
   {
-    who: "Palestrantes",
+    who: "Universidades e faculdades",
+    text: "Aulas expositivas com a turma inteira participando, verificação de entendimento em tempo real e avaliação da disciplina no fim.",
+  },
+  {
+    who: "Escolas: fundamental e médio",
+    text: "Quiz com ranking, avatares e sorteio deixam a revisão divertida. Os alunos respondem pelo celular, sem criar conta e com o nome que quiserem.",
+  },
+  {
+    who: "Empresas e treinamentos",
+    text: "Treinamentos, onboarding e reuniões gerais com a opinião de todos em segundos e um relatório pronto para o RH.",
+  },
+  {
+    who: "Palestrantes e eventos",
     text: "Quebre o gelo na abertura, puxe a plateia no meio e descubra depois o que realmente marcou.",
-  },
-  {
-    who: "Professores",
-    text: "Confira na hora se a turma entendeu, com quiz e perguntas anônimas que todo mundo tem coragem de responder.",
-  },
-  {
-    who: "Treinadores e facilitadores",
-    text: "Colete a opinião do grupo em segundos e leve dados concretos para o relatório do treinamento.",
   },
 ];
 
@@ -193,7 +197,7 @@ const FAQ = [
 function SectionHeading({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="reveal flex max-w-2xl flex-col gap-4">
-      <h2 className="font-script text-[clamp(1.8rem,3.2vw,2.75rem)] font-bold leading-[1.08] tracking-[-0.03em] text-balance">
+      <h2 className="font-display text-[clamp(1.8rem,3.2vw,2.75rem)] font-bold leading-[1.08] tracking-[-0.02em] text-balance">
         {title}
       </h2>
       <p className="text-lg leading-relaxed text-muted-foreground">{children}</p>
@@ -203,7 +207,7 @@ function SectionHeading({ title, children }: { title: string; children: React.Re
 
 function Kbd({ children }: { children: React.ReactNode }) {
   return (
-    <kbd className="inline-grid min-w-7 place-items-center rounded border bg-card px-1.5 pb-0.5 font-script text-sm font-bold text-foreground shadow-[inset_0_-2px_0_var(--border)]">
+    <kbd className="inline-grid min-w-7 place-items-center rounded border bg-card px-1.5 pb-0.5 font-display text-sm font-bold text-foreground shadow-[inset_0_-2px_0_var(--border)]">
       {children}
     </kbd>
   );
@@ -246,19 +250,19 @@ export default function Home() {
         <section className="mx-auto w-full max-w-6xl px-4 pb-16 pt-6 md:px-6 md:pb-20">
           <div className="flex flex-col gap-10 rounded-sm bg-card p-6 text-card-foreground shadow-[0_24px_48px_-28px_color-mix(in_oklch,var(--foreground)_35%,transparent)] dark:border sm:p-10 lg:gap-14 lg:p-14">
             <h1
-              className="script-line max-w-5xl text-balance font-script text-[clamp(2.3rem,5.4vw,4.9rem)] font-bold leading-[1] tracking-[-0.04em]"
+              className="script-line max-w-5xl text-balance font-display text-[clamp(2.4rem,5.6vw,5rem)] font-extrabold leading-[1.02] tracking-[-0.025em]"
               style={line(0)}
             >
-              Faça a plateia participar da sua palestra,{" "}
-              <mark className="highlighter box-decoration-clone px-1 text-highlight-foreground">ao vivo</mark>.
+              Aulas, palestras e treinamentos com{" "}
+              <mark className="highlighter box-decoration-clone rounded-md px-1.5 text-highlight-foreground">todo mundo participando</mark>.
             </h1>
 
             <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-end lg:gap-14">
               <div className="flex flex-col gap-6">
                 <p className="script-line max-w-[58ch] text-lg leading-relaxed text-muted-foreground" style={line(1)}>
                   Enquetes, quiz, nuvem de palavras e sorteio respondidos pelo celular, com o resultado no telão em
-                  segundos e seus slides na mesma tela. Depois, um relatório mostra o que funcionou para a próxima ser
-                  ainda melhor.
+                  segundos e seus slides na mesma tela. Para universidades, escolas e empresas. Depois, um relatório
+                  mostra o que funcionou para a próxima ser ainda melhor.
                 </p>
                 <div className="script-line flex flex-wrap items-center gap-x-5 gap-y-3" style={line(2)}>
                   <Link href="/signup" className={buttonVariants({ size: "lg" })}>
@@ -287,7 +291,7 @@ export default function Home() {
             </div>
 
             <div className="script-line flex flex-col gap-3 border-t border-dashed pt-6 sm:flex-row sm:items-center sm:justify-between" style={line(4)}>
-              <p className="text-sm font-medium">Vai participar de uma palestra? Digite o código que aparece na tela.</p>
+              <p className="text-sm font-medium">Vai participar de uma aula ou palestra? Digite o código que aparece na tela.</p>
               <div className="w-full sm:max-w-sm">
                 <JoinCodeForm />
               </div>
@@ -301,7 +305,7 @@ export default function Home() {
             {PRODUCT_FACTS.map((fact, index) => (
               <div key={fact.text} className="reveal flex flex-col gap-1 border-t-2 border-foreground pt-4" style={stagger(index)}>
                 <dt className="sr-only">{fact.text}</dt>
-                <dd className="font-script text-[clamp(2.4rem,5vw,3.75rem)] font-bold leading-none tabular-nums">{fact.value}</dd>
+                <dd className="font-display text-[clamp(2.4rem,5vw,3.75rem)] font-bold leading-none tabular-nums">{fact.value}</dd>
                 <dd className="text-muted-foreground">{fact.text}</dd>
               </div>
             ))}
@@ -317,7 +321,7 @@ export default function Home() {
             <ol className="grid gap-10 md:grid-cols-3 md:gap-8">
               {STEPS.map((step, index) => (
                 <li key={step.title} className="reveal flex flex-col gap-3 border-t-2 border-foreground pt-5" style={stagger(index)}>
-                  <span className="font-script text-5xl font-bold leading-none tabular-nums" aria-hidden>
+                  <span className="font-display text-5xl font-bold leading-none tabular-nums" aria-hidden>
                     {index + 1}
                   </span>
                   <h3 className="text-xl font-semibold">{step.title}</h3>
@@ -344,9 +348,9 @@ export default function Home() {
                   )}
                   style={{ marginLeft: `${index * 0.75}rem`, zIndex: QUESTION_TYPES.length - index }}
                 >
-                  <h3 className="font-script text-xl font-bold">{item.type}</h3>
+                  <h3 className="font-display text-xl font-bold">{item.type}</h3>
                   <p className="mt-1 max-w-[52ch] text-sm leading-relaxed">{item.text}</p>
-                  <p className="mt-2 font-script text-sm italic opacity-80">Ex.: “{item.example}”</p>
+                  <p className="mt-2 font-display text-sm italic opacity-80">Ex.: “{item.example}”</p>
                 </li>
               ))}
             </ol>
@@ -383,15 +387,15 @@ export default function Home() {
                           <span className="h-0.5 w-1/2 rounded-full bg-foreground/30" />
                         </span>
                       </span>
-                      <span className="font-script text-xs text-muted-foreground">Slide {item.n}</span>
+                      <span className="font-display text-xs text-muted-foreground">Slide {item.n}</span>
                     </li>
                   ) : (
                     <li key={`q${index}`} className="flex flex-col gap-1.5">
                       <span className={cn("flex aspect-video flex-col justify-between rounded-sm p-2 text-rev-foreground", item.paper)}>
-                        <span className="font-script text-[0.65rem] font-bold uppercase tracking-wider">{item.type}</span>
+                        <span className="font-display text-[0.65rem] font-bold uppercase tracking-wider">{item.type}</span>
                         <span className="text-xs font-medium leading-tight">{item.text}</span>
                       </span>
-                      <span className="font-script text-xs text-muted-foreground">Pergunta</span>
+                      <span className="font-display text-xs text-muted-foreground">Pergunta</span>
                     </li>
                   ),
                 )}
@@ -447,13 +451,13 @@ export default function Home() {
                       key={r.name}
                       className={cn("flex items-center gap-3 rounded-md px-3 py-2", i === 0 ? "bg-primary/20" : "bg-muted")}
                     >
-                      <span className="w-6 font-script font-bold tabular-nums">{i + 1}º</span>
+                      <span className="w-6 font-display font-bold tabular-nums">{i + 1}º</span>
                       <span aria-hidden className="text-xl leading-none">
                         {r.avatar}
                       </span>
                       <span className="flex-1 font-semibold">{r.name}</span>
                       <span className="text-xs text-muted-foreground tabular-nums">{r.move}</span>
-                      <span className="font-script font-bold tabular-nums">{r.points}</span>
+                      <span className="font-display font-bold tabular-nums">{r.points}</span>
                     </li>
                   ))}
                 </ol>
@@ -463,7 +467,7 @@ export default function Home() {
               {/* Sorteio. */}
               <div className="reveal dark flex flex-col items-center gap-3 rounded-sm border bg-background p-5 text-center text-foreground" style={stagger(2)}>
                 <p className="text-sm text-muted-foreground">Sorteando: Livro autografado</p>
-                <span className="rounded-xl border-4 border-dashed border-primary px-6 font-script text-6xl font-bold leading-tight text-primary tabular-nums">
+                <span className="rounded-xl border-4 border-dashed border-primary px-6 font-display text-6xl font-bold leading-tight text-primary tabular-nums">
                   042
                 </span>
                 <p className="flex items-center gap-2 text-lg font-semibold">
@@ -479,7 +483,7 @@ export default function Home() {
             <dl className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
               {GAME_POINTS.map((point, index) => (
                 <div key={point.title} className="reveal flex flex-col gap-1 border-t pt-4" style={stagger(index % 3)}>
-                  <dt className="font-script text-lg font-bold">{point.title}</dt>
+                  <dt className="font-display text-lg font-bold">{point.title}</dt>
                   <dd className="leading-relaxed text-muted-foreground">{point.text}</dd>
                 </div>
               ))}
@@ -504,7 +508,7 @@ export default function Home() {
 
             <article className={cn("reveal flex flex-col gap-8 rounded-sm bg-card p-6 dark:border sm:p-8", paperShadow)}>
               <header className="flex flex-wrap items-baseline justify-between gap-2 border-b pb-4">
-                <h3 className="font-script text-lg font-bold uppercase">Relatório: “IA no trabalho”</h3>
+                <h3 className="font-display text-lg font-bold uppercase">Relatório: “IA no trabalho”</h3>
                 <span className="text-xs text-muted-foreground">exemplo com dados simulados</span>
               </header>
 
@@ -514,7 +518,7 @@ export default function Home() {
                   viewBox="0 0 300 120"
                   role="img"
                   aria-label="Participação por pergunta: 82%, 91%, 58%, 66% e 74%"
-                  className="h-auto w-full font-script"
+                  className="h-auto w-full font-display"
                 >
                   {[0.25, 0.5, 0.75, 1].map((g) => (
                     <line key={g} x1="0" x2="300" y1={100 - g * 90} y2={100 - g * 90} stroke="var(--border)" strokeWidth="1" />
@@ -552,7 +556,7 @@ export default function Home() {
                 <ol className="flex flex-col gap-4">
                   {NOTES.map((note, index) => (
                     <li key={index} className="grid grid-cols-[1.5rem_1fr] gap-x-2">
-                      <span className="font-script font-bold tabular-nums">{index + 1}.</span>
+                      <span className="font-display font-bold tabular-nums">{index + 1}.</span>
                       <div className="flex flex-col gap-1">
                         <p
                           className={cn(
@@ -579,7 +583,7 @@ export default function Home() {
                   {SCORECARD.map((s) => (
                     <div key={s.label} className="flex flex-col">
                       <dt className="text-xs text-muted-foreground">{s.label}</dt>
-                      <dd className="font-script text-xl font-bold tabular-nums">
+                      <dd className="font-display text-xl font-bold tabular-nums">
                         {s.value}
                         <span className="text-sm font-normal text-muted-foreground">{s.scale}</span>
                       </dd>
@@ -594,13 +598,13 @@ export default function Home() {
         {/* Para quem é. */}
         <section className="border-t bg-muted/40">
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 py-20 md:px-6 md:py-24">
-            <SectionHeading title="Para quem apresenta para um público">
-              Funciona em auditório, sala de aula, reunião ou treinamento, presencial ou online com tela compartilhada.
+            <SectionHeading title="Da sala de aula ao auditório">
+              Funciona em sala de aula, auditório, reunião ou treinamento, presencial ou online com tela compartilhada.
             </SectionHeading>
-            <dl className="grid gap-10 md:grid-cols-3 md:gap-8">
+            <dl className="grid gap-10 sm:grid-cols-2 md:gap-8 lg:grid-cols-4">
               {AUDIENCES.map((a, index) => (
                 <div key={a.who} className="reveal flex flex-col gap-2 border-t pt-5" style={stagger(index)}>
-                  <dt className="font-script text-xl font-bold">{a.who}</dt>
+                  <dt className="font-display text-xl font-bold">{a.who}</dt>
                   <dd className="leading-relaxed text-muted-foreground">{a.text}</dd>
                 </div>
               ))}
@@ -634,8 +638,8 @@ export default function Home() {
         {/* Chamada final: o palco escuro, como o telão. */}
         <section className="dark border-t bg-background text-foreground">
           <div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-8 px-4 py-24 md:px-6 md:py-32">
-            <h2 className="reveal max-w-4xl font-script text-[clamp(2.6rem,6vw,5.5rem)] font-bold leading-[0.98] tracking-[-0.035em] text-balance">
-              Sua próxima palestra começa aqui.
+            <h2 className="reveal max-w-4xl font-display text-[clamp(2.6rem,6vw,5.5rem)] font-bold leading-[0.98] tracking-[-0.025em] text-balance">
+              Sua próxima aula ou palestra começa aqui.
             </h2>
             <p className="reveal max-w-xl text-lg leading-relaxed text-muted-foreground">
               Crie a primeira sessão em poucos minutos, com Google ou e-mail. Grátis durante o beta, sem cartão de

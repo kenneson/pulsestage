@@ -8,7 +8,7 @@ web
 
 ## Users
 
-- **Speaker (quem apresenta):** palestrantes de eventos, professores, instrutores, consultores, coaches, facilitadores e treinadores corporativos, com peso igual na comunicação. Cria a sessão antes, opera a sala ao vivo durante (muitas vezes num notebook ao lado do palco, com passador de slides) e analisa depois.
+- **Speaker (quem apresenta):** professores universitários e de escolas (ensino fundamental e médio), equipes de treinamento e RH de empresas, palestrantes de eventos, instrutores e facilitadores. Foco de venda: universidades, escolas e empresas. Cria a sessão antes, opera a sala ao vivo durante (muitas vezes num notebook ao lado do palco, com passador de slides) e analisa depois.
 - **Participant (audiência):** qualquer pessoa na plateia, no celular, sem conta e sem baixar app. Nome opcional; pode responder anonimamente.
 - **Projetor:** tela pública (projetor, TV, segunda tela) vista de longe por toda a sala.
 

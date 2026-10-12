@@ -80,7 +80,7 @@ export function TalkTimeline({
         {kinds.map((k) => (
           <li key={k} className="flex items-center gap-2">
             <span aria-hidden className={cn("inline-block h-3 w-5 rounded-[4px]", KIND_STYLE[k])} />
-            {kindLabel(k, recorded)} <span className="font-script tabular-nums text-foreground">{formatSpan(timeline.totals[k])}</span>
+            {kindLabel(k, recorded)} <span className="font-display tabular-nums text-foreground">{formatSpan(timeline.totals[k])}</span>
           </li>
         ))}
       </ul>
@@ -93,7 +93,7 @@ export function TalkTimeline({
             style={{ left: `${Math.min(88, Math.max(12, x((active.start + active.end) / 2)))}%` }}
           >
             <p className="truncate font-medium">{describe(active, interactions, recorded).long}</p>
-            <p className="font-script text-xs text-muted-foreground tabular-nums">
+            <p className="font-display text-xs text-muted-foreground tabular-nums">
               {formatClock(active.start)}–{formatClock(active.end)} · {formatSpan(active.end - active.start)}
             </p>
           </div>
@@ -128,7 +128,7 @@ export function TalkTimeline({
             x(segment.end) - x(segment.start) >= 6 && describe(segment, interactions, recorded).short ? (
               <span
                 key={`l${index}`}
-                className="absolute top-0.5 -translate-x-1/2 font-script"
+                className="absolute top-0.5 -translate-x-1/2 font-display"
                 style={{ left: `${x((segment.start + segment.end) / 2)}%` }}
               >
                 {describe(segment, interactions, recorded).short}
@@ -176,7 +176,7 @@ export function TalkTimeline({
                 <span className="h-2 overflow-hidden rounded-full bg-muted">
                   <span className="block h-full rounded-full bg-timeline-slide" style={{ width: `${(seconds / longestSlide) * 100}%` }} />
                 </span>
-                <span className="font-script tabular-nums">{formatSpan(seconds)}</span>
+                <span className="font-display tabular-nums">{formatSpan(seconds)}</span>
               </li>
             ))}
           </ol>
@@ -197,7 +197,7 @@ export function TalkTimeline({
             <tbody>
               {timeline.segments.map((segment, index) => (
                 <tr key={`t${index}`} className="border-t">
-                  <td className="py-1 pr-4 font-script tabular-nums">{formatClock(segment.start)}</td>
+                  <td className="py-1 pr-4 font-display tabular-nums">{formatClock(segment.start)}</td>
                   <td className="py-1 pr-4 tabular-nums">{formatSpan(segment.end - segment.start)}</td>
                   <td className="py-1">{describe(segment, interactions, recorded).long}</td>
                 </tr>

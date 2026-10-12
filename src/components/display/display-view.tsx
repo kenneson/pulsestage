@@ -31,7 +31,7 @@ function JoinPanel({ code, joinUrl, size = 260 }: { code: string; joinUrl: strin
         Acesse <span className="font-semibold text-foreground">{joinHost(joinUrl)}</span>{" "}
         e use o código
       </p>
-      <p className="font-script text-8xl font-bold tracking-[0.2em]">{code}</p>
+      <p className="font-display text-8xl font-bold tracking-[0.2em]">{code}</p>
     </div>
   );
 }
@@ -167,7 +167,7 @@ export function DisplayView({
           {online > 0 && !slideUrl ? ` · ${formatInt(online)} conectados` : ""}
         </span>
         <span>
-          Código <span className="font-script font-bold text-foreground">{session.joinCode}</span>
+          Código <span className="font-display font-bold text-foreground">{session.joinCode}</span>
         </span>
       </footer>
     </div>

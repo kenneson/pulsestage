@@ -46,7 +46,7 @@ export function TalkTimer({
       )}
     >
       <ClockIcon className="size-3.5" />
-      <span className="font-script font-bold tabular-nums">{formatClock(seconds)}</span>
+      <span className="font-display font-bold tabular-nums">{formatClock(seconds)}</span>
       {plannedMinutes ? (
         <span className={cn("tabular-nums", versus?.over ? "opacity-80" : "text-muted-foreground")}>
           / {formatClock(plannedMinutes * 60)}

@@ -34,7 +34,7 @@ function RankList({ title, items, tone }: { title: string; items: DimensionScore
               />
               {s.label}
             </span>
-            <span className="font-script font-bold tabular-nums">
+            <span className="font-display font-bold tabular-nums">
               {formatScore(s.mean)}
               <span className="font-normal text-muted-foreground">/{s.max}</span>
             </span>
@@ -113,7 +113,7 @@ export function SurveyQuestionResults({ results }: { results: QuestionResult[] }
         <Card key={r.question.id}>
           <CardHeader>
             <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-              <span className="font-script text-sm font-bold">#{index + 1}</span>
+              <span className="font-display text-sm font-bold">#{index + 1}</span>
               <span>{QUESTION_KIND_META[r.kind].label}</span>
               {r.question.dimension ? <span>· {DIMENSION_LABEL[r.question.dimension]}</span> : null}
               <span>· {plural(r.count, "resposta", "respostas")}</span>

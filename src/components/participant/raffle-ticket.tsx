@@ -76,7 +76,7 @@ export function RaffleTicketCard({
     return (
       <div className={cn("flex flex-col items-center gap-1 rounded-2xl border-2 border-dashed border-primary/60 p-5 text-center", className)}>
         <p className="text-sm text-muted-foreground">Seu número da sorte</p>
-        <p className="font-script text-5xl font-bold tabular-nums text-primary">{formatTicket(ticket.ticket)}</p>
+        <p className="font-display text-5xl font-bold tabular-nums text-primary">{formatTicket(ticket.ticket)}</p>
         {prizes ? <p className="mt-1 text-sm">Concorrendo a: {prizes}</p> : null}
         <p className="text-xs text-muted-foreground">Fique de olho no telão.</p>
       </div>

@@ -20,7 +20,7 @@ function Score({ score }: { score: DimensionScore }) {
   return (
     <div className="flex items-baseline justify-between gap-3">
       <span>{score.label}</span>
-      <strong className="font-script tabular-nums">
+      <strong className="font-display tabular-nums">
         {formatScore(score.mean)}
         <span className="font-normal text-muted-foreground">/{score.max}</span>
       </strong>
@@ -73,7 +73,7 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
             </span>
             PulseStage · Relatório da sessão
           </p>
-          <h1 className="font-script text-3xl font-bold leading-tight tracking-tight">{data.session.title}</h1>
+          <h1 className="font-display text-3xl font-bold leading-tight tracking-tight">{data.session.title}</h1>
           <p className="text-muted-foreground">
             {profile.name ?? profile.email} · {formatDateTime(data.session.started_at ?? data.session.scheduled_at, profile.timeZone)}
             {talkTime ? ` · ${talkTime}` : ""}
@@ -91,7 +91,7 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
           ].map(([label, value]) => (
             <div key={label} className="rounded-md border p-3">
               <p className="text-muted-foreground">{label}</p>
-              <p className="font-script text-2xl font-bold tabular-nums">{value}</p>
+              <p className="font-display text-2xl font-bold tabular-nums">{value}</p>
             </div>
           ))}
         </section>
@@ -139,7 +139,7 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
             <ol className="flex flex-col gap-2">
               {pulse.map((p, index) => (
                 <li key={p.interactionId} className="grid grid-cols-[1.5rem_minmax(0,1fr)_3rem] items-center gap-3">
-                  <span className="font-script font-bold tabular-nums">{index + 1}</span>
+                  <span className="font-display font-bold tabular-nums">{index + 1}</span>
                   <span className="flex min-w-0 flex-col gap-1">
                     <span className="truncate">{p.title}</span>
                     <span className="h-2 overflow-hidden rounded-full bg-muted print:bg-muted">
@@ -149,7 +149,7 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
                       />
                     </span>
                   </span>
-                  <span className="text-right font-script font-bold tabular-nums">{formatPercent(p.rate)}</span>
+                  <span className="text-right font-display font-bold tabular-nums">{formatPercent(p.rate)}</span>
                 </li>
               ))}
             </ol>

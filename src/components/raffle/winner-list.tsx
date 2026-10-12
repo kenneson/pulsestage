@@ -49,10 +49,10 @@ export function WinnerList({
       {winners.map((w) => (
         <li key={w.id} className={cn("flex flex-wrap items-center gap-3 px-3 py-2 text-sm", w.forfeitedAt && "text-muted-foreground")}>
           <span aria-hidden className="grid size-8 shrink-0 place-items-center rounded-full bg-muted text-lg leading-none">
-            {w.avatar ?? <span className="font-script text-sm">{w.name.charAt(0).toUpperCase()}</span>}
+            {w.avatar ?? <span className="font-display text-sm">{w.name.charAt(0).toUpperCase()}</span>}
           </span>
           <span className={cn("min-w-0 flex-1 truncate font-medium", w.forfeitedAt && "line-through")}>{w.name}</span>
-          <span className="font-script font-bold tabular-nums">nº {formatTicket(w.number)}</span>
+          <span className="font-display font-bold tabular-nums">nº {formatTicket(w.number)}</span>
           {w.forfeitedAt ? (
             <span className="text-xs">ausente</span>
           ) : canDeliver ? (

@@ -88,7 +88,7 @@ function Confetti() {
 function AvatarBubble({ winner, className }: { winner: RaffleWinnerView; className?: string }) {
   return (
     <span aria-hidden className={cn("grid shrink-0 place-items-center rounded-full bg-muted leading-none", className)}>
-      {winner.avatar ?? <span className="font-script text-muted-foreground">{winner.name.charAt(0).toUpperCase()}</span>}
+      {winner.avatar ?? <span className="font-display text-muted-foreground">{winner.name.charAt(0).toUpperCase()}</span>}
     </span>
   );
 }
@@ -97,7 +97,7 @@ function Ticket({ value, digits, spinning }: { value: string; digits: number; sp
   return (
     <div
       className={cn(
-        "rounded-3xl border-4 border-dashed px-14 py-8 font-script text-[11rem] font-bold leading-none tabular-nums",
+        "rounded-3xl border-4 border-dashed px-14 py-8 font-display text-[11rem] font-bold leading-none tabular-nums",
         spinning ? "border-standby text-standby" : "border-primary text-primary",
       )}
       style={{ minWidth: `${digits * 0.7 + 1.5}em` }}
@@ -248,7 +248,7 @@ export function RaffleStage({
         <p className="text-3xl text-muted-foreground">{prizeName(latest.prizeId)}</p>
         <AvatarBubble winner={winner} className="raffle-pop size-48 text-[8rem]" />
         <h1 className="raffle-pop max-w-5xl text-7xl font-semibold leading-tight">{winner.name}</h1>
-        <p className="font-script text-6xl font-bold tabular-nums text-primary">nº {formatTicket(winner.number, maxNumber)}</p>
+        <p className="font-display text-6xl font-bold tabular-nums text-primary">nº {formatTicket(winner.number, maxNumber)}</p>
         <p className="text-4xl">Parabéns! 🎉</p>
         {soundHint}
       </div>
@@ -275,7 +275,7 @@ export function RaffleStage({
                   <li key={w.id} className="flex items-center gap-3 text-xl">
                     <AvatarBubble winner={w} className="size-10 text-2xl" />
                     <span className="min-w-0 flex-1 truncate">{w.name}</span>
-                    <span className="font-script font-bold tabular-nums">nº {formatTicket(w.number, maxNumber)}</span>
+                    <span className="font-display font-bold tabular-nums">nº {formatTicket(w.number, maxNumber)}</span>
                   </li>
                 ))}
               </ul>
@@ -291,7 +291,7 @@ export function RaffleStage({
         ) : null}
         <div className="flex flex-col gap-3 text-left">
           <p className="text-5xl">
-            <span className="font-script font-bold tabular-nums text-primary">{formatInt(data.entrants)}</span>{" "}
+            <span className="font-display font-bold tabular-nums text-primary">{formatInt(data.entrants)}</span>{" "}
             {data.entrants === 1 ? "pessoa concorrendo" : "pessoas concorrendo"}
           </p>
           <p className="max-w-xl text-2xl text-muted-foreground">

@@ -225,12 +225,12 @@ export function ControlRoom({
             <div className="min-w-0">
               {raffleOn ? (
                 <>
-                  <p className="font-script text-xs font-bold uppercase tracking-wider text-muted-foreground">No telão</p>
+                  <p className="font-display text-xs font-bold uppercase tracking-wider text-muted-foreground">No telão</p>
                   <CardTitle className="mt-1 text-xl">Sorteio</CardTitle>
                 </>
               ) : leaderboardOn ? (
                 <>
-                  <p className="font-script text-xs font-bold uppercase tracking-wider text-muted-foreground">No telão</p>
+                  <p className="font-display text-xs font-bold uppercase tracking-wider text-muted-foreground">No telão</p>
                   <CardTitle className="mt-1 text-xl">Ranking do quiz</CardTitle>
                 </>
               ) : active ? (
@@ -244,7 +244,7 @@ export function ControlRoom({
                 </>
               ) : hasSlides && slideOnScreen !== null && status === "live" ? (
                 <>
-                  <p className="font-script text-xs font-bold uppercase tracking-wider text-muted-foreground">No telão</p>
+                  <p className="font-display text-xs font-bold uppercase tracking-wider text-muted-foreground">No telão</p>
                   <CardTitle className="mt-1 text-xl">
                     Slide {slideOnScreen + 1} <span className="text-muted-foreground">de {slideUrls.length}</span>
                   </CardTitle>
@@ -345,7 +345,7 @@ export function ControlRoom({
                 <QRCodeSVG value={joinUrl} size={168} marginSize={0} />
               </div>
               <p className="text-sm text-muted-foreground">Código de entrada</p>
-              <p className="font-script text-3xl font-bold tracking-widest">{session.joinCode}</p>
+              <p className="font-display text-3xl font-bold tracking-widest">{session.joinCode}</p>
               <p className="break-all text-xs text-muted-foreground">{joinUrl}</p>
               <div className="flex flex-wrap justify-center gap-2">
                 <QrDownloadButton joinUrl={joinUrl} code={session.joinCode} />
@@ -404,7 +404,7 @@ export function ControlRoom({
                           </>
                         ) : (
                           <>
-                            <span className="w-5 shrink-0 font-script font-bold text-muted-foreground tabular-nums">
+                            <span className="w-5 shrink-0 font-display font-bold text-muted-foreground tabular-nums">
                               {interactions.findIndex((i) => i.id === item.id) + 1}
                             </span>
                             <span className="min-w-0 flex-1 truncate">{byId.get(item.id)?.title}</span>

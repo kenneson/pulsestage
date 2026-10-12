@@ -27,7 +27,7 @@ export function QrDownloadButton({ joinUrl, code }: { joinUrl: string; code: str
     ctx.drawImage(qr, 0, 0, QR_SIZE, QR_SIZE);
     ctx.textAlign = "center";
     ctx.fillStyle = "#111111";
-    ctx.font = "bold 104px 'Courier New', monospace";
+    ctx.font = "800 104px 'Plus Jakarta Sans', 'Helvetica Neue', Arial, sans-serif";
     ctx.fillText(code, QR_SIZE / 2, QR_SIZE + 105, QR_SIZE - 80);
     ctx.fillStyle = "#444444";
     ctx.font = "40px Arial, sans-serif";

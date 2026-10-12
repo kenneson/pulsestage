@@ -1,22 +1,22 @@
 ---
 name: PulseStage
-description: "Roteiro com deixas: o caderno do diretor de cena para quem apresenta a um público."
+description: "Campus: interação ao vivo com cara de universidade e de empresa, acolhedora para escolas."
 colors:
-  background: "oklch(0.985 0.002 250)"
-  foreground: "oklch(0.2 0.012 260)"
+  background: "oklch(0.982 0.005 255)"
+  foreground: "oklch(0.22 0.035 262)"
   card: "oklch(1 0 0)"
-  primary: "oklch(0.5 0.13 152)"
-  primary-foreground: "oklch(0.99 0.004 152)"
-  muted: "oklch(0.955 0.004 250)"
-  muted-foreground: "oklch(0.47 0.012 260)"
-  accent: "oklch(0.95 0.006 250)"
-  border: "oklch(0.9 0.005 250)"
-  input: "oklch(0.86 0.006 250)"
-  ring: "oklch(0.6 0.13 152)"
+  primary: "oklch(0.52 0.19 262)"
+  primary-foreground: "oklch(0.99 0.005 262)"
+  muted: "oklch(0.955 0.01 258)"
+  muted-foreground: "oklch(0.48 0.025 262)"
+  accent: "oklch(0.95 0.014 258)"
+  border: "oklch(0.905 0.012 258)"
+  input: "oklch(0.86 0.015 258)"
+  ring: "oklch(0.6 0.17 262)"
   destructive: "oklch(0.56 0.21 27)"
   standby: "oklch(0.78 0.15 70)"
   standby-foreground: "oklch(0.3 0.06 60)"
-  highlight: "oklch(0.93 0.13 102)"
+  highlight: "oklch(0.92 0.13 98)"
   rev-blue: "oklch(0.91 0.045 240)"
   rev-pink: "oklch(0.92 0.045 5)"
   rev-yellow: "oklch(0.95 0.08 100)"
@@ -32,38 +32,38 @@ colors:
   chart-2: "oklch(0.55 0.17 8)"
   chart-3: "oklch(0.52 0.13 152)"
   chart-4: "oklch(0.65 0.14 70)"
-  background-dark: "oklch(0.13 0 0)"
-  foreground-dark: "oklch(0.95 0.004 250)"
-  card-dark: "oklch(0.175 0 0)"
-  muted-dark: "oklch(0.235 0 0)"
-  muted-foreground-dark: "oklch(0.72 0 0)"
-  border-dark: "oklch(1 0 0 / 11%)"
-  primary-dark: "oklch(0.76 0.15 152)"
-  primary-foreground-dark: "oklch(0.17 0.02 152)"
+  background-dark: "oklch(0.16 0.03 264)"
+  foreground-dark: "oklch(0.96 0.008 258)"
+  card-dark: "oklch(0.205 0.035 264)"
+  muted-dark: "oklch(0.26 0.035 264)"
+  muted-foreground-dark: "oklch(0.74 0.025 258)"
+  border-dark: "oklch(1 0 0 / 12%)"
+  primary-dark: "oklch(0.72 0.15 258)"
+  primary-foreground-dark: "oklch(0.17 0.04 264)"
   standby-dark: "oklch(0.8 0.15 72)"
   highlight-dark: "oklch(0.86 0.15 100)"
   destructive-dark: "oklch(0.7 0.19 22)"
 typography:
   display:
-    fontFamily: "Courier Prime, Courier New, monospace"
+    fontFamily: "Plus Jakarta Sans, ui-sans-serif, system-ui, sans-serif"
     fontSize: "clamp(2.6rem, 6vw, 5.5rem)"
     fontWeight: 700
     lineHeight: 0.98
     letterSpacing: "-0.035em"
   headline:
-    fontFamily: "Courier Prime, Courier New, monospace"
+    fontFamily: "Plus Jakarta Sans, ui-sans-serif, system-ui, sans-serif"
     fontSize: "clamp(2.1rem, 4.4vw, 3.9rem)"
     fontWeight: 700
     lineHeight: 1.05
     letterSpacing: "-0.03em"
   title:
-    fontFamily: "Courier Prime, Courier New, monospace"
+    fontFamily: "Plus Jakarta Sans, ui-sans-serif, system-ui, sans-serif"
     fontSize: "clamp(1.9rem, 3.4vw, 3rem)"
     fontWeight: 700
     lineHeight: 1.05
     letterSpacing: "-0.03em"
   script-body:
-    fontFamily: "Courier Prime, Courier New, monospace"
+    fontFamily: "Plus Jakarta Sans, ui-sans-serif, system-ui, sans-serif"
     fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.625
@@ -73,7 +73,7 @@ typography:
     fontWeight: 400
     lineHeight: 1.625
   label:
-    fontFamily: "Courier Prime, Courier New, monospace"
+    fontFamily: "Plus Jakarta Sans, ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.75rem"
     fontWeight: 700
     letterSpacing: "0.1em"
@@ -83,10 +83,10 @@ typography:
     fontWeight: 500
     lineHeight: 1
 rounded:
-  sm: "4px"
-  md: "6px"
-  lg: "8px"
-  xl: "12px"
+  sm: "8px"
+  md: "10px"
+  lg: "12px"
+  xl: "16px"
   full: "9999px"
 spacing:
   gutter: "16px"
@@ -188,155 +188,118 @@ components:
 
 ## Overview
 
-**Creative North Star: "Roteiro com deixas"**
+**Creative North Star: "Campus"**
 
-A palestra é um espetáculo com roteiro, e o PulseStage é o caderno do diretor de cena. A superfície é uma página de roteiro branca (branco frio, nunca creme) sobre um campo quase branco e frio; a voz de roteiro (Courier Prime) fala nas falas-manchete, nos números de deixa, nos códigos e nos dados tabulares, enquanto a Geist cuida de toda a interface operacional. A cor não decora: ela tem função de palco. Verde é a luz de deixa VAI (ação principal e estado ao vivo), âmbar é atenção (próxima deixa, pausa), amarelo é o marca-texto do diretor, e cinco papéis de revisão coloridos identificam os cinco tipos de interação em todo o produto.
+O PulseStage serve a sala de aula da universidade, a reunião da empresa e a turma do ensino fundamental com a mesma
+ferramenta. A cara precisa passar a confiança de um sistema institucional e, ao mesmo tempo, a leveza de algo que um
+aluno de 12 anos usa sem medo. Por isso: fundo claro levemente azulado, cartões brancos com cantos arredondados, tinta
+azul-marinho, um azul acadêmico como cor de ação e o amarelo de marca-texto como único acento quente. A diversão fica
+no conteúdo (quiz com formas e cores, avatares, ranking, sorteio), não no chrome da interface.
 
-No escuro, a página vira coxia: palco preto neutro, quase sem matiz, com as mesmas cores funcionando como fita de marcação, mais claras e mais saturadas. A densidade é de documento de trabalho: colunas de leitura curtas, numerais tabulares, rubricas entre parênteses, linhas tracejadas onde o roteiro divide cenas. Recusa explícita do visual SaaS índigo anterior e do hero dividido com captura de tela mais fileira de cards de recursos.
+No escuro, a interface vira um auditório com as luzes apagadas: azul-marinho profundo, não preto puro, com as mesmas
+cores mais claras. O telão do projetor usa sempre esse escuro (classe `dark`), com contraste alto para ser lido do fundo
+da sala.
 
-Honestidade de dados é parte da linguagem visual: a confiança de uma nota é desenhada pelo peso do sublinhado, amostras pequenas recebem traço tracejado, e todo estado ao vivo vem com rótulo de texto além da cor.
+Substitui a identidade anterior "Roteiro com deixas" (Courier Prime, verde VAI, papel de roteiro), trocada em
+2026-10-12 a pedido do dono por algo mais universitário e corporativo, sem deixar de fora as escolas.
 
 **Key Characteristics:**
-- Página de roteiro branca, sombra suave, cantos quase retos (4px).
-- Duas vozes: Courier Prime (roteiro) e Geist (interface).
-- Verde VAI, âmbar atenção, amarelo marca-texto; cada um com um só significado.
-- Cinco papéis de revisão, um por tipo de interação, com tinta correspondente.
-- Coxia neutra no escuro; borda substitui a sombra.
-- Estado sempre rotulado em texto; confiança como peso de linha.
+- Duas fontes: Plus Jakarta Sans (`font-display`) para títulos, numerais e códigos; Geist (`font-sans`) para interface e
+  texto corrido.
+- Azul acadêmico = ação principal e estado ao vivo; âmbar = atenção; amarelo = marca-texto. Cada um com um só
+  significado.
+- Uma cor de papel por tipo de interação (`TYPE_PAPER`), igual em todo o produto.
+- Cantos de 8 a 16px; sombra suave no claro, borda fina no escuro.
+- Estado sempre escrito em texto além da cor.
 
 ## Colors
 
-Campo frio e neutro, tinta quase preta, e cores de palco com significado fixo.
-
 ### Primary
-- **Luz de deixa VAI** (`primary`; `primary-dark` na coxia): ação principal (botão padrão, CTA "Criar minha sessão"), estado ao vivo (badge `live`), lâmpada de deixa acesa, resposta correta do quiz, foco (`ring`), cursor e `accent-color` de controles nativos. Nunca decoração.
+- **Azul acadêmico** (`primary`; mais claro no escuro): botão principal, CTA "Criar minha sessão grátis", badge "Ao
+  vivo", resposta correta do quiz, foco (`ring`), cursor e `accent-color` de controles nativos. Nunca decoração.
 
 ### Secondary
-- **Luz de deixa âmbar** (`standby`, texto `standby-foreground`): atenção, próxima deixa, sessão pausada (badge `warning`), barras de participação baixa (< 60%) no sinal de participação.
-- **Marca-texto do diretor** (`highlight`, texto `highlight-foreground`): a última frase da fala-manchete (`<mark>`), a seleção de texto (`::selection`) e, no escuro, o número do ato ("Ato I.") nos títulos de ato.
+- **Âmbar** (`standby`): atenção, próximo item, sessão pausada, participação baixa, roleta do sorteio girando.
+- **Marca-texto** (`highlight`): uma expressão da manchete (`<mark>`) e a seleção de texto.
 
 ### Tertiary
-- **Papéis de revisão** (`rev-blue`, `rev-pink`, `rev-yellow`, `rev-green`, `rev-gold`, sempre com texto `rev-foreground`): um papel por tipo de interação. Enquete = azul, Escala = rosa, Nuvem de palavras = amarelo, Pergunta aberta = verde, Quiz = dourado.
-- **Tintas de revisão** (`rev-*-ink`): a mesma família em tom escuro (claro no escuro) para texto e traço sobre o campo: rótulo do tipo na folha de deixas, nome da cor do papel, barras da enquete-demo.
-- **Séries de gráfico** (`chart-1..4`): azul, rosa, verde, âmbar alinhados às tintas, só para séries do gráfico de evolução.
+- **Papéis por tipo** (`rev-blue`, `rev-pink`, `rev-yellow`, `rev-green`, `rev-gold`, texto `rev-foreground`): Enquete =
+  azul, Escala = rosa, Nuvem de palavras = amarelo, Pergunta aberta = verde, Quiz = dourado. Tintas `rev-*-ink` para
+  texto e traço da mesma família.
+- **Formas e cores do quiz** (`shape-1..8`): só nas alternativas no estilo "Formas e cores"; texto branco com contraste
+  ≥ 5:1; a forma sempre acompanha a cor.
+- **Séries de gráfico** (`chart-1..4`) e **linha do tempo** (`timeline-slide/question`, par validado para daltonismo).
 
 ### Neutral
-- **Campo frio** (`background`): fundo da aplicação; faixas alternadas usam `muted` a 40%.
-- **Página de roteiro** (`card`): branco puro, a superfície onde o roteiro é escrito.
-- **Tinta** (`foreground`): texto, contorno do botão de deixa, barra líder nos resultados.
-- **Lápis** (`muted-foreground`): rubricas, metadados, legendas, estados executados.
-- **Pauta** (`border`, `input`): divisões, tabela, campos. Tracejada para separar cenas.
-- **Coxia** (`background-dark`, `card-dark`, `muted-dark`): pretos neutros sem matiz; `border-dark` é branco a 11%.
+- **Fundo** (`background`): claro levemente azulado; faixas alternadas em `muted` a 40%.
+- **Cartão** (`card`): branco puro.
+- **Tinta** (`foreground`): azul-marinho quase preto. **Texto secundário** (`muted-foreground`).
+- **Bordas** (`border`, `input`): azuladas e finas; tracejadas só para separar blocos internos.
+- **Escuro**: `background-dark`/`card-dark` em azul-marinho; `border-dark` é branco a 12%.
 - **Erro** (`destructive`): só ações destrutivas e erros.
 
 ### Named Rules
-**The One Meaning Rule.** Verde é VAI, âmbar é atenção, amarelo é marca-texto. Nenhuma dessas cores é usada para outra coisa, e nenhuma decora.
+**The One Meaning Rule.** Azul é ação e ao vivo, âmbar é atenção, amarelo é marca-texto. Nenhuma dessas cores decora.
 
-**The Revision Paper Rule.** Cada tipo de interação tem um papel e só um, igual no construtor, na sala ao vivo, no analytics e na landing (`TYPE_PAPER`). Um tipo novo exige um papel novo; nunca reaproveite um existente.
-
-**The White Page Rule.** A página do roteiro é branca e fria. Creme, bege ou papel envelhecido estão fora deste mundo.
+**The Type Color Rule.** Cada tipo de interação tem uma cor de papel, igual no construtor, na sala ao vivo, no analytics
+e na landing. Um tipo novo exige uma cor nova.
 
 ## Typography
 
-**Display Font:** Courier Prime (com Courier New, monospace), pesos 400/700, itálico.
-**Body Font:** Geist (com ui-sans-serif, system-ui, sans-serif).
-**Label/Mono Font:** Courier Prime, em caixa alta espaçada.
-
-**Character:** A Courier Prime é a voz do roteiro: personagem em caixa alta, fala em negrito, rubrica entre parênteses em itálico. A Geist é a voz do sistema: botões, formulários, explicações, perguntas exibidas ao público.
+**Display:** Plus Jakarta Sans (500–800), via `next/font` (`--font-jakarta`, utilitário `font-display`).
+**Body/UI:** Geist (`font-sans`).
 
 ### Hierarchy
-- **Display** (700, `clamp(2.6rem, 6vw, 5.5rem)`, 0.98): fecho da página ("A próxima deixa é sua."). Uma vez por página.
-- **Headline** (700, `clamp(2.1rem, 4.4vw, 3.9rem)`, 1.05): a fala-manchete do hero, precedida do personagem ("PALESTRANTE.") na margem.
-- **Title** (700, `clamp(1.9rem, 3.4vw, 3rem)`, 1.05): títulos de ato ("Ato I. Antes: escreva o roteiro"); o número do ato em `muted-foreground`.
-- **Script body** (400, 1rem, 1.625): rubricas e prosa de cena, máximo 58–60ch.
-- **Body** (400, 1rem a 1.125rem, 1.625): explicações em Geist, máximo ~52ch em blocos estreitos e `max-w-xl` nos parágrafos de seção.
-- **Label** (700, 0.75rem, 0.1em, caixa alta): números e estados de deixa, rótulos de tipo, cabeçalhos de tabela, slugs de cena.
-- **UI label** (500, 0.875rem): botões e rótulos de formulário.
+- **Display** (800, `clamp(2.4rem, 5.6vw, 5rem)`, 1.02, tracking -0.025em): manchete do hero e chamada final.
+- **Headline/Title** (700, `clamp(1.8rem, 3.2vw, 2.75rem)`, 1.08, tracking -0.02em): títulos de seção.
+- **Body** (400, 1rem a 1.125rem, 1.6): texto em Geist, máximo ~60ch.
+- **Label** (700, 0.75rem, caixa alta, tracking 0.08–0.1em): nome do tipo, cabeçalhos de tabela, códigos curtos.
+- **Numerais** em `font-display` com `tabular-nums` sempre que mudam ou se comparam.
 
 ### Named Rules
-**The Two Voices Rule.** Courier Prime para o que pertence ao roteiro (falas-manchete, números de deixa, códigos como `IA2026`, dados tabulares, slugs de cena); Geist para o que o usuário opera ou lê como instrução. Pergunta exibida ao público é Geist, mesmo dentro de uma página em Courier.
+**The Two Voices Rule.** `font-display` para títulos, números, códigos (`IA2026`) e rótulos de tipo; Geist para tudo
+que o usuário opera ou lê como instrução. Pergunta exibida ao público é Geist.
 
-**The No Kicker Rule.** Nenhum rótulo pequeno em caixa alta sobre um título. Rótulos em caixa alta só existem como dispositivos do roteiro com função própria: slug de cena, número de deixa, nome do tipo, cabeçalho de tabela.
-
-**The Tabular Rule.** Todo número que muda ou se compara usa `tabular-nums`.
+**The No Kicker Rule.** Nenhum rótulo pequeno em caixa alta sobre um título.
 
 ## Layout
 
-Container de 1152px (`max-w-6xl`) com calha de 16px, 24px a partir de 768px. Seções separadas por fio superior (`border-t`), com faixas alternadas em `muted/40`; respiro vertical de 80px, 112px a partir de 768px. Cada ato é uma grade de duas colunas assimétricas a partir de 1024px (`2fr 3fr`, invertida para `3fr 2fr` no ato seguinte), com espaço de 48px, 64px no desktop.
-
-A página do roteiro no hero tem margem de deixas de 13rem à esquerda (furos de fichário, deixa, botão VAI) e o texto à direita; a fala recua 9rem para abrir espaço ao nome do personagem. No celular, a margem de deixas vira uma faixa horizontal acima da fala, separada por fio tracejado. Os papéis de revisão se empilham com sobreposição de 8px e recuo progressivo de 0.75rem por folha.
+Container de 1152px (`max-w-6xl`), calha de 16px (24px a partir de 768px). Seções separadas por fio superior, com
+faixas alternadas em `muted/40`; respiro de 80px (112px no desktop). A landing abre com a manchete na largura toda e o
+palco de demonstração (telão + celular) abaixo; nada de hero dividido com captura de tela.
 
 ## Elevation & Depth
 
-Híbrido por tema. No claro, as superfícies de papel se elevam só por sombra suave e longa, sem borda; no escuro (coxia), a sombra some na escuridão e uma borda fina de 11% de branco faz o contorno (`dark:border`). Não há sombras duras nem deslocadas.
-
-### Shadow Vocabulary
-- **Página do roteiro** (`box-shadow: 0 24px 48px -28px color-mix(in oklch, var(--foreground) 35%, transparent)`): a folha do hero.
-- **Folha solta** (`box-shadow: 0 24px 48px -32px color-mix(in oklch, var(--foreground) 40%, transparent)`): folha de deixas, notas do diretor.
-- **Papel de revisão** (`box-shadow: 0 10px 24px -18px color-mix(in oklch, var(--foreground) 45%, transparent)`): folhas empilhadas por tipo.
-- **Halo da lâmpada** (`box-shadow: 0 0 0 4px color-mix(in oklch, var(--primary|--standby) 30%, transparent)`): lâmpada de deixa acesa.
-- **Tecla** (`box-shadow: inset 0 -2px 0 var(--border)`): `<kbd>`.
-
-### Named Rules
-**The Paper Not Box Rule.** No claro, papel tem sombra e não tem borda; no escuro, tem borda e não depende de sombra.
+No claro, cartões elevam-se por sombra suave e longa, sem borda; no escuro, borda fina de 12% e quase nenhuma sombra.
+- **Cartão do hero:** `0 24px 48px -28px color-mix(in oklch, var(--foreground) 35%, transparent)`.
+- **Cartão solto:** `0 24px 48px -32px … 40%`.
+- **Papel de tipo empilhado:** `0 10px 24px -18px … 45%`.
 
 ## Shapes
 
-Cantos quase retos: superfícies de papel e etiquetas de tipo em 4px (`rounded-sm`), botões, badges e campos em 6px. Círculos completos só para lâmpadas de deixa, furos de fichário e trilhos de barra. Fios tracejados dividem cenas (margem de deixas, rubrica do telão, placeholder da demo); fios contínuos dividem seções e linhas de tabela.
+`--radius` = 12px: `rounded-sm` 8px (cartões de conteúdo, etiquetas), `rounded-md` 10px (botões, campos),
+`rounded-lg` 12px, `rounded-xl` 16px (cartões grandes, celular). Círculos só para avatares, indicadores e trilhos de
+barra.
 
 ## Components
 
-### Buttons
-- **Shape:** cantos suaves (6px).
-- **Primary:** fundo `primary`, texto `primary-foreground`, Geist 500, 36px de altura (44px no `lg` dos CTAs); hover em `primary` a 90%.
-- **Hover / Focus:** transição de cor; foco com anel de 2px em `ring` e afastamento de 2px.
-- **Outline / Ghost:** outline com borda `input` sobre `background`; ghost transparente com hover `accent`. Navegação do topo usa ghost.
-- **Botão de deixa (VAI):** contorno de 2px em tinta, Courier Prime negrito em caixa alta, lâmpada à esquerda; no hover inverte para tinta cheia. Desabilitado enquanto a deixa corre.
-
-### Chips
-- **Etiqueta de tipo (`TypeTag`):** papel de revisão do tipo, texto `rev-foreground`, Courier Prime 0.75rem negrito em caixa alta, 4px. Sempre com o nome do tipo escrito.
-- **Badges de estado:** `live` = verde VAI; `warning` = âmbar (pausa); sempre com texto.
-
-### Cards / Containers
-- **Corner Style:** 4px nas superfícies de papel.
-- **Background:** `card` (branco) sobre `background` ou `muted/40`.
-- **Shadow Strategy:** ver Paper Not Box.
-- **Border:** só no escuro.
-- **Internal Padding:** 24px, 32px a partir de 640px; página do hero 20px a 64px conforme largura.
-
-### Inputs / Fields
-- **Style:** borda `input`, fundo transparente, 6px, 40px de altura.
-- **Focus:** borda `ring` com anel de 3px em `ring` a 40%.
-- **Disabled:** 50% de opacidade, cursor bloqueado.
-
-### Navigation
-- Logo à esquerda; à direita, ghost "Como funciona" (oculto no celular), alternador de tema, ghost "Entrar" e primário "Criar conta" (oculto no celular).
-
-### Lâmpada de deixa
-Círculo de 16px com contorno de 2px. Apagada: tinta a 10–25%. Atenção: âmbar com halo. VAI: verde com halo. Transição de 300ms em cor e halo. É decorativa para leitores de tela (`aria-hidden`): o estado é sempre escrito ao lado ("Em espera", "Atenção", "VAI", "Executada").
-
-### Barras de resultado
-Trilho `muted` arredondado; barra líder em tinta (`foreground`), demais em tinta a 35%, resposta correta do quiz em `primary` com "✓" no rótulo. Percentual tabular ao lado. Largura anima 700ms ease-out.
-
-### Notas com confiança
-Sublinhado de 2px em tinta cheia para confiança alta, tinta a 50% para média, 1px tracejado a 40% para baixa; sempre seguido de "confiança X · N respostas".
+- **Botões:** primário azul, Geist 500, 36px (44px no `lg`); outline com borda `input`; ghost com hover `accent`.
+- **Etiqueta de tipo (`TypeTag`):** papel do tipo, `font-display` 0.75rem bold em caixa alta, sempre com o nome.
+- **Badges:** `live` = azul com "Ao vivo"; `warning` = âmbar; sempre com texto.
+- **Campos:** borda `input`, 40px, foco com anel `ring`.
+- **Barras de resultado:** trilho `muted`, barra líder em tinta, demais em tinta a 35%, correta em `primary` com "✓".
+- **Telão:** sempre escuro (`dark`), texto grande, alto contraste.
 
 ## Do's and Don'ts
 
 ### Do:
 - **Do** usar `primary` só para ação principal, ao vivo, correto e foco.
-- **Do** marcar cada tipo de interação com seu papel de revisão (`TYPE_PAPER`) em toda tela onde o tipo aparece.
-- **Do** escrever o estado ao lado de toda cor de estado (lâmpada, badge, barra).
-- **Do** desenhar confiança como peso de sublinhado: contínuo e pesado para amostra grande, tracejado e fino para amostra pequena, com a amostra escrita.
-- **Do** usar Courier Prime para códigos, números de deixa e numerais tabulares; Geist para botões, formulários e perguntas ao público.
-- **Do** dar às superfícies de papel sombra suave no claro e borda fina no escuro.
-- **Do** respeitar `prefers-reduced-motion` (regra global; a demo pula direto ao resultado).
+- **Do** falar com universidades, escolas e empresas nos textos de venda; linguagem clara, sem jargão.
+- **Do** escrever o estado ao lado de toda cor de estado.
+- **Do** respeitar `prefers-reduced-motion`.
 
 ### Don't:
-- **Don't** usar rótulos kicker ou eyebrow sobre títulos.
-- **Don't** usar creme, bege ou papel envelhecido para a página.
-- **Don't** reutilizar um papel de revisão para outra coisa que não o seu tipo.
-- **Don't** usar verde, âmbar ou amarelo como decoração.
-- **Don't** comunicar estado só por cor.
-- **Don't** pôr borda em superfícies de papel no tema claro.
-- **Don't** voltar ao índigo SaaS nem ao hero dividido com captura de tela e fileira de cards de recursos.
+- **Don't** inventar depoimentos, logos ou números de uso.
+- **Don't** usar cores de tipo ou de forma fora do seu papel.
+- **Don't** usar o amarelo, o âmbar ou o azul como decoração.
+- **Don't** infantilizar a interface: a diversão vem do quiz, do ranking e do sorteio, não de enfeites.

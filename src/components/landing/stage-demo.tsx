@@ -59,7 +59,7 @@ function usePollScene() {
           {POLL.map((o, i) => (
             <li key={o.label} className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1">
               <span>{o.label}</span>
-              <span className="font-script font-bold tabular-nums">{phase > 0 ? o.pct : 0}%</span>
+              <span className="font-display font-bold tabular-nums">{phase > 0 ? o.pct : 0}%</span>
               <span className="col-span-2 h-[0.55em] overflow-hidden rounded-full bg-muted">
                 <span
                   className={cn("block h-full origin-left rounded-full transition-transform duration-[1800ms] ease-out", i === 0 ? "bg-foreground" : "bg-foreground/35")}
@@ -69,7 +69,7 @@ function usePollScene() {
             </li>
           ))}
         </ul>
-        <p className="font-script text-[1.8cqw] text-muted-foreground tabular-nums">
+        <p className="font-display text-[1.8cqw] text-muted-foreground tabular-nums">
           {phase > 0 ? "86 respostas" : "Aguardando respostas…"}
         </p>
       </div>
@@ -179,10 +179,10 @@ function useQuizScene() {
                 )}
                 style={{ transform: `translateY(${position * 2.6}em)` }}
               >
-                <span className="w-[1.6em] font-script font-bold tabular-nums">{position + 1}º</span>
+                <span className="w-[1.6em] font-display font-bold tabular-nums">{position + 1}º</span>
                 <span aria-hidden className="text-[1.25em] leading-none">{r.avatar}</span>
                 <span className="min-w-0 flex-1 truncate font-semibold">{r.name}</span>
-                <span className="font-script font-bold tabular-nums">{r.points.toLocaleString("pt-BR")}</span>
+                <span className="font-display font-bold tabular-nums">{r.points.toLocaleString("pt-BR")}</span>
               </li>
             );
           })}
@@ -236,12 +236,12 @@ function useRaffleScene() {
               🦉
             </span>
             <p className="text-[4.6cqw] font-semibold leading-none">Carla</p>
-            <p className="font-script text-[3cqw] font-bold text-primary tabular-nums">nº 042 · Parabéns!</p>
+            <p className="font-display text-[3cqw] font-bold text-primary tabular-nums">nº 042 · Parabéns!</p>
           </>
         ) : (
           <span
             className={cn(
-              "rounded-xl border-2 border-dashed px-[0.5em] font-script text-[12cqw] font-bold leading-tight tabular-nums",
+              "rounded-xl border-2 border-dashed px-[0.5em] font-display text-[12cqw] font-bold leading-tight tabular-nums",
               phase > 0 ? "border-primary text-primary" : "border-standby text-standby",
             )}
           >
@@ -260,7 +260,7 @@ function useRaffleScene() {
       ) : (
         <div className="flex flex-col items-center gap-0.5 rounded-lg border-2 border-dashed border-primary/60 p-2 text-center">
           <p className="text-[0.55rem] text-muted-foreground">Seu número da sorte</p>
-          <p className="font-script text-xl font-bold text-primary tabular-nums">042</p>
+          <p className="font-display text-xl font-bold text-primary tabular-nums">042</p>
           <p className="text-[0.5rem] text-muted-foreground">Fique de olho no telão.</p>
         </div>
       ),
