@@ -10,6 +10,7 @@ import { toSurveyQuestions, type SurveyQuestion } from "@/lib/domain/survey";
 import type { DeckSession } from "@/lib/data/slides";
 import { fetchAllRows } from "@/lib/supabase/fetch-all";
 import { leaderboard, type LeaderboardEntry } from "@/lib/domain/leaderboard";
+import { avatarOf } from "@/lib/domain/gamification";
 
 // Leituras públicas feitas no servidor com a secret key.
 // Tudo que sai daqui é sanitizado: sem is_correct, points ou dados pessoais.
@@ -105,6 +106,15 @@ export async function getSessionResults(admin: AdminSupabase, sessionId: string)
   return data;
 }
 
+export type ParticipantBadge = { name: string | null; avatar: string | null };
+
+/** Nome e avatar que o próprio participante escolheu, para o celular dele. */
+export async function getParticipantBadge(admin: AdminSupabase, participantId: string): Promise<ParticipantBadge> {
+  const { data, error } = await admin.from("participants").select("display_name, avatar").eq("id", participantId).maybeSingle();
+  if (error) throw new Error(error.message);
+  return { name: data?.display_name ?? null, avatar: avatarOf(data?.avatar)?.emoji ?? null };
+}
+
 /** Estado que o celular do participante precisa: interaction ativa e se já respondeu. */
 export async function getCurrentForParticipant(
   admin: AdminSupabase,
@@ -165,8 +175,8 @@ export async function getPublicLeaderboard(admin: AdminSupabase, sessionId: stri
     fetchAllRows<{ participant_id: string; interaction_id: string; value: unknown }>((from, to) =>
       admin.from("responses").select("participant_id, interaction_id, value").in("interaction_id", quizIds).range(from, to),
     ),
-    fetchAllRows<{ id: string; display_name: string | null }>((from, to) =>
-      admin.from("participants").select("id, display_name").eq("session_id", sessionId).range(from, to),
+    fetchAllRows<{ id: string; display_name: string | null; avatar: string | null }>((from, to) =>
+      admin.from("participants").select("id, display_name, avatar").eq("session_id", sessionId).range(from, to),
     ),
   ]);
 

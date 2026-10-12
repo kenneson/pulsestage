@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { InteractionOptionRow, InteractionRow } from "@/lib/supabase/types";
+import { optionImagePathSchema, optionStyleSchema } from "./gamification.ts";
 
 // ---------------------------------------------------------------------------
 // Tipos
@@ -29,7 +30,10 @@ export const INTERACTION_TYPE_META: Record<InteractionType, { label: string; des
 // Settings (JSONB) — um schema por tipo
 // ---------------------------------------------------------------------------
 
-export const multipleChoiceSettingsSchema = z.object({});
+export const multipleChoiceSettingsSchema = z.object({
+  /** "shapes": alternativas com forma e cor, como no Kahoot */
+  optionStyle: optionStyleSchema.default("text"),
+});
 
 export const ratingSettingsSchema = z
   .object({
@@ -51,6 +55,9 @@ export const openTextSettingsSchema = z.object({
 
 export const quizSettingsSchema = z.object({
   timerSeconds: z.number().int().min(5).max(300).nullable().default(null),
+  optionStyle: optionStyleSchema.default("text"),
+  /** quem responde antes ganha mais (só com tempo limite) */
+  speedBonus: z.boolean().default(false),
 });
 
 /** Settings achatados com defaults, usados pela UI e pelas regras de resposta. */
@@ -62,6 +69,8 @@ export const normalizedSettingsSchema = z.object({
   maxLength: z.number(),
   showOnDisplay: z.boolean(),
   timerSeconds: z.number().nullable(),
+  optionStyle: optionStyleSchema,
+  speedBonus: z.boolean(),
 });
 export type NormalizedSettings = z.infer<typeof normalizedSettingsSchema>;
 
@@ -73,6 +82,8 @@ const DEFAULT_SETTINGS: NormalizedSettings = {
   maxLength: 280,
   showOnDisplay: true,
   timerSeconds: null,
+  optionStyle: "text",
+  speedBonus: false,
 };
 
 export function normalizeSettings(type: InteractionType, raw: unknown): NormalizedSettings {
@@ -101,10 +112,19 @@ export function normalizeSettings(type: InteractionType, raw: unknown): Normaliz
     }
     case "quiz": {
       const parsed = quizSettingsSchema.safeParse(source);
-      return { ...DEFAULT_SETTINGS, timerSeconds: parsed.success ? parsed.data.timerSeconds : null };
+      return parsed.success
+        ? {
+            ...DEFAULT_SETTINGS,
+            timerSeconds: parsed.data.timerSeconds,
+            optionStyle: parsed.data.optionStyle,
+            speedBonus: parsed.data.speedBonus,
+          }
+        : DEFAULT_SETTINGS;
     }
-    case "multiple_choice":
-      return DEFAULT_SETTINGS;
+    case "multiple_choice": {
+      const parsed = multipleChoiceSettingsSchema.safeParse(source);
+      return parsed.success ? { ...DEFAULT_SETTINGS, optionStyle: parsed.data.optionStyle } : DEFAULT_SETTINGS;
+    }
   }
 }
 
@@ -117,6 +137,8 @@ export const optionInputSchema = z.object({
   label: z.string().trim().min(1, "Preencha todas as alternativas.").max(200),
   isCorrect: z.boolean().default(false),
   points: z.number().int().min(0).max(10000).default(100),
+  /** imagem no bucket option-images; o texto continua obrigatório (vira o texto alternativo) */
+  imagePath: optionImagePathSchema.nullish(),
 });
 
 const titleSchema = z.string().trim().min(1, "Escreva a pergunta.").max(300, "Pergunta muito longa.");
@@ -170,7 +192,7 @@ export type ParsedInteractionInput = z.output<typeof interactionInputSchema>;
 // Visão pública (participante e projetor) — nunca inclui is_correct/points
 // ---------------------------------------------------------------------------
 
-export const publicOptionSchema = z.object({ id: z.string(), label: z.string() });
+export const publicOptionSchema = z.object({ id: z.string(), label: z.string(), imagePath: z.string().nullable() });
 
 export const publicInteractionSchema = z.object({
   id: z.string(),
@@ -203,7 +225,7 @@ export function toPublicInteraction(
     options: options
       .filter((o) => o.interaction_id === row.id)
       .sort((a, b) => a.position - b.position)
-      .map((o) => ({ id: o.id, label: o.label })),
+      .map((o) => ({ id: o.id, label: o.label, imagePath: o.image_path })),
     activatedAt: row.activated_at,
     afterSlide: row.after_slide,
   };

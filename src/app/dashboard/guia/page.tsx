@@ -91,9 +91,16 @@ export default function GuidePage() {
               </li>
               <li>
                 <strong>Quiz:</strong> marque a alternativa correta, defina os pontos e, se quiser, o tempo para
-                responder. Gera ranking.
+                responder. Gera ranking. Com tempo definido, o <strong>“Bônus de velocidade”</strong> dá os pontos cheios
+                a quem acerta na hora e a metade a quem acerta no fim do tempo.
               </li>
             </ul>
+            <p>
+              Em enquetes e quizzes, <strong>“Aparência das alternativas”</strong> troca o texto simples por{" "}
+              <strong>“Formas e cores”</strong>: cada alternativa ganha uma forma (triângulo, losango, círculo,
+              quadrado…) e uma cor, no celular e no telão. O ícone de imagem ao lado de cada alternativa anexa uma foto ou
+              ilustração; o texto continua obrigatório e aparece embaixo dela.
+            </p>
             <p>
               Use o ícone de olho para <strong>pré-visualizar</strong> como o participante verá cada pergunta, as setas
               para <strong>subir ou descer</strong> na ordem e o lápis para editar. Para reaproveitar perguntas de outras
@@ -176,7 +183,10 @@ export default function GuidePage() {
 
           <Section id="participantes" title="5. O que a audiência vê">
             <ul className="flex flex-col gap-1">
-              <li>Quem participa entra pelo QR Code ou pelo código, sem criar conta. O nome é opcional.</li>
+              <li>
+                Quem participa entra pelo QR Code ou pelo código, sem criar conta. Nome e avatar (um bichinho ou
+                desenho) são opcionais; o avatar aparece ao lado do nome no ranking do quiz.
+              </li>
               <li>A pergunta ativa aparece sozinha no celular e muda quando você avança. Não é preciso recarregar.</li>
               <li>Cada pessoa responde uma vez por interação.</li>
               <li>

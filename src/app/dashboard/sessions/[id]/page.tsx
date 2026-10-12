@@ -65,7 +65,13 @@ export default async function SessionBuilderPage({ params }: { params: Promise<{
           title: row.title,
           description: row.description ?? "",
           settings: pub.settings,
-          options: row.options.map((o) => ({ id: o.id, label: o.label, isCorrect: o.is_correct, points: o.points })),
+          options: row.options.map((o) => ({
+            id: o.id,
+            label: o.label,
+            isCorrect: o.is_correct,
+            points: o.points,
+            imagePath: o.image_path,
+          })),
         },
       },
     ];

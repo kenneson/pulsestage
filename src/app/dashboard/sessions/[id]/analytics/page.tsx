@@ -288,7 +288,14 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
               {ranking.map((entry, index) => (
                 <li key={entry.participantId} className="flex items-center gap-3 py-2 text-sm">
                   <span className="w-6 font-semibold tabular-nums">{index + 1}º</span>
-                  <span className="flex-1">{entry.name}</span>
+                  <span className="flex min-w-0 flex-1 items-center gap-2">
+                    {entry.avatar ? (
+                      <span aria-hidden className="text-base leading-none">
+                        {entry.avatar}
+                      </span>
+                    ) : null}
+                    <span className="truncate">{entry.name}</span>
+                  </span>
                   <span className="text-muted-foreground">{entry.correct} acertos</span>
                   <span className="w-20 text-right font-semibold tabular-nums">{entry.points} pts</span>
                 </li>

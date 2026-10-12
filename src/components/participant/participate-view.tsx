@@ -44,11 +44,14 @@ export function ParticipateView({
   title,
   initialLive,
   initialCurrent,
+  me,
 }: {
   sessionId: string;
   title: string;
   initialLive: LiveState | null;
   initialCurrent: CurrentInteractionResponse;
+  /** nome e avatar escolhidos ao entrar */
+  me: { name: string | null; avatar: string | null };
 }) {
   const [current, setCurrent] = useState<CurrentInteractionResponse>(initialCurrent);
   const [submitting, setSubmitting] = useState(false);
@@ -124,7 +127,12 @@ export function ParticipateView({
     body = <Screen title="Sessão pausada" text="Fique por aqui, já voltamos." />;
   } else if (!current.interaction || current.status !== "live") {
     body = (
-      <Screen title="Você está dentro!" text="Aguardando a próxima interação…">
+      <Screen title={me.name ? `Você está dentro, ${me.name}!` : "Você está dentro!"} text="Aguardando a próxima interação…">
+        {me.avatar ? (
+          <span aria-hidden className="order-first grid size-24 place-items-center rounded-full bg-muted text-6xl leading-none">
+            {me.avatar}
+          </span>
+        ) : null}
         <span className="mt-4 size-3 animate-ping rounded-full bg-primary" aria-hidden />
       </Screen>
     );
@@ -153,7 +161,14 @@ export function ParticipateView({
     <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 py-5">
       <header className="flex items-center justify-between gap-3">
         <Logo className="text-sm" />
-        <span className="truncate text-sm text-muted-foreground">{title}</span>
+        <span className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
+          <span className="truncate">{title}</span>
+          {me.avatar ? (
+            <span className="shrink-0 text-lg leading-none" title={me.name ?? undefined} aria-hidden>
+              {me.avatar}
+            </span>
+          ) : null}
+        </span>
       </header>
       <main className="flex flex-1 flex-col justify-center py-6" aria-live="polite">
         {error ? <Alert className="mb-4">{error}</Alert> : null}

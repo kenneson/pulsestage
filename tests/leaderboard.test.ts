@@ -9,8 +9,8 @@ const answer = (participantId: string, interactionId: string, points: number): L
 });
 
 const participants = [
-  { id: "aaaaaaaa-1", display_name: "Ana" },
-  { id: "bbbbbbbb-2", display_name: "Bruno" },
+  { id: "aaaaaaaa-1", display_name: "Ana", avatar: "raposa" },
+  { id: "bbbbbbbb-2", display_name: "Bruno", avatar: "chave-antiga" },
   { id: "cccccccc-3", display_name: null },
 ];
 
@@ -32,6 +32,11 @@ test("ranking atual com a posição de antes do último quiz", () => {
     ],
   );
   assert.equal(board[0]?.key, "bbbbbbbb");
+  // Avatar vira emoji; chave desconhecida ou ausente, sem avatar.
+  assert.deepEqual(
+    board.map((e) => e.avatar),
+    [null, "🦊", null],
+  );
 });
 
 test("respostas inválidas são ignoradas e o limite corta o ranking", () => {

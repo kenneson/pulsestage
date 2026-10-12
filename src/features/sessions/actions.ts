@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { optionImagesOf, removeUnusedOptionImages } from "@/lib/data/option-images";
 import { removeSlideFiles } from "@/lib/data/slides";
 import { getOwnedSession } from "@/lib/data/sessions";
 import { getSpeakerProfile } from "@/lib/data/profile";
@@ -177,10 +178,12 @@ export async function deleteSessionAction(sessionId: string): Promise<ActionResu
   const supabase = await createClient();
   const session = await getOwnedSession(supabase, sessionId);
   if (!session) return fail("Sessão não encontrada.");
+  const images = await optionImagesOf(supabase, { sessionId });
   const { error } = await supabase.from("sessions").delete().eq("id", sessionId);
   if (error) return fail("Não foi possível excluir a sessão.");
-  // Os slides ficam no Storage, fora do cascade do banco.
+  // Slides e imagens das alternativas ficam no Storage, fora do cascade do banco.
   await removeSlideFiles(supabase, `${session.speaker_id}/${sessionId}`);
+  await removeUnusedOptionImages(supabase, images);
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/sessions");
   return ok(null);

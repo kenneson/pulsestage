@@ -2,11 +2,28 @@ import type { PublicInteraction } from "@/lib/domain/interactions";
 import { optionBars, ratingBars, ratingStats, wordList, type Bar, type ResultsSnapshot } from "@/lib/domain/results";
 import { formatInt, formatPercent, formatScore, plural } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { ShapeGlyph, shapeBg, shapeText } from "@/components/option-shape";
+import { optionImageSrc } from "@/lib/option-images/url";
 import { WordCloud } from "./word-cloud";
 
 type Variant = "compact" | "display";
 
-function Bars({ bars, variant, highlightKey }: { bars: Bar[]; variant: Variant; highlightKey?: string | null }) {
+/** Forma (posição) e imagem de cada alternativa, pela chave da barra (id da opção). */
+type Decor = { index: number; imagePath: string | null };
+
+function Bars({
+  bars,
+  variant,
+  highlightKey,
+  decor,
+  shapes = false,
+}: {
+  bars: Bar[];
+  variant: Variant;
+  highlightKey?: string | null;
+  decor?: Map<string, Decor>;
+  shapes?: boolean;
+}) {
   const big = variant === "display";
   const max = Math.max(...bars.map((b) => b.pct), 0);
   return (
@@ -14,12 +31,25 @@ function Bars({ bars, variant, highlightKey }: { bars: Bar[]; variant: Variant; 
       {bars.map((bar) => {
         const leading = bar.pct > 0 && bar.pct === max;
         const correct = highlightKey === bar.key;
+        const d = decor?.get(bar.key);
+        const revealed = highlightKey !== undefined && highlightKey !== null;
         return (
-          <li key={bar.key} className="grid gap-1.5">
-            <div className={cn("flex items-baseline justify-between gap-4", big ? "text-3xl" : "text-sm")}>
-              <span className={cn("font-medium", correct && "text-primary")}>
-                {bar.label}
-                {correct ? " ✓" : ""}
+          <li key={bar.key} className={cn("grid gap-1.5", revealed && !correct && shapes && "opacity-50")}>
+            <div className={cn("flex items-center justify-between gap-4", big ? "text-3xl" : "text-sm")}>
+              <span className={cn("flex min-w-0 items-center font-medium", big ? "gap-4" : "gap-2", correct && "text-primary")}>
+                {shapes && d ? <ShapeGlyph index={d.index} className={cn(shapeText(d.index), big ? "size-9" : "size-4")} /> : null}
+                {d?.imagePath ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- imagem pública do Storage
+                  <img
+                    src={optionImageSrc(d.imagePath)}
+                    alt=""
+                    className={cn("shrink-0 rounded-md border bg-muted object-cover", big ? "size-20" : "size-8")}
+                  />
+                ) : null}
+                <span className="min-w-0">
+                  {bar.label}
+                  {correct ? " ✓" : ""}
+                </span>
               </span>
               <span className="tabular-nums text-muted-foreground">
                 {formatPercent(bar.pct)}
@@ -30,7 +60,13 @@ function Bars({ bars, variant, highlightKey }: { bars: Bar[]; variant: Variant; 
               <div
                 className={cn(
                   "h-full rounded-full transition-[width] duration-700 ease-out",
-                  correct ? "bg-primary" : leading ? "bg-foreground" : "bg-foreground/35",
+                  shapes && d
+                    ? shapeBg(d.index)
+                    : correct
+                      ? "bg-primary"
+                      : leading
+                        ? "bg-foreground"
+                        : "bg-foreground/35",
                 )}
                 style={{ width: `${Math.round(bar.pct * 100)}%` }}
               />
@@ -91,7 +127,15 @@ export function ResultsView({
   switch (interaction.type) {
     case "multiple_choice":
     case "quiz":
-      return <Bars bars={optionBars(interaction.options, snapshot)} variant={variant} highlightKey={correctOptionId} />;
+      return (
+        <Bars
+          bars={optionBars(interaction.options, snapshot)}
+          variant={variant}
+          highlightKey={correctOptionId}
+          shapes={settings.optionStyle === "shapes"}
+          decor={new Map(interaction.options.map((o, index) => [o.id, { index, imagePath: o.imagePath }]))}
+        />
+      );
     case "rating": {
       const stats = ratingStats(settings.min, settings.max, snapshot);
       return (

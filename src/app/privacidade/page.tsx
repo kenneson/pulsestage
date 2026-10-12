@@ -47,6 +47,10 @@ export default function PrivacyPage() {
               “Participante” seguido de um código.
             </li>
             <li>
+              <strong className="text-foreground">Avatar (opcional).</strong> Um desenho escolhido de uma lista fixa
+              (nada de foto), mostrado ao lado do nome no ranking do quiz.
+            </li>
+            <li>
               <strong className="text-foreground">Respostas e avaliação.</strong> O que você responde nas interações e
               no feedback pós-evento.
             </li>
@@ -69,6 +73,12 @@ export default function PrivacyPage() {
             Se você enviar os slides de uma apresentação, o PDF é convertido em imagens no seu próprio navegador e só
             essas imagens são guardadas, num armazenamento privado. Elas aparecem para a plateia apenas na tela do
             projetor, por links temporários.
+          </p>
+          <p>
+            Imagens que você anexa às alternativas de enquetes e quizzes são reduzidas no seu navegador (sem os
+            metadados do arquivo, como a localização da foto) e guardadas num armazenamento público com endereço
+            impossível de adivinhar, porque precisam abrir no celular de quem participa. Elas são apagadas quando nenhuma
+            pergunta usa mais a imagem ou quando você exclui a conta.
           </p>
         </Section>
 

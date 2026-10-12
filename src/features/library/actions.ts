@@ -28,7 +28,7 @@ async function copyInteractions(
 ): Promise<number> {
   const { data: sources, error } = await supabase
     .from("interactions")
-    .select("type, title, description, settings, position, after_slide, id, interaction_options(label, position, is_correct, points)")
+    .select("type, title, description, settings, position, after_slide, id, interaction_options(label, position, is_correct, points, image_path)")
     .in("id", sourceIds);
   if (error) throw new Error(error.message);
   if (sources.length === 0) return 0;
@@ -65,6 +65,8 @@ async function copyInteractions(
       position: o.position,
       is_correct: o.is_correct,
       points: o.points,
+      // Mesmo arquivo: só é apagado quando nenhuma alternativa usa mais.
+      image_path: o.image_path,
     })),
   );
   if (options.length > 0) {

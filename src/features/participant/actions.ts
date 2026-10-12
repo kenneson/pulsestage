@@ -23,6 +23,7 @@ import {
 import { MAX_PARTICIPANTS_PER_SESSION, normalizeJoinCode } from "@/lib/domain/session";
 import { normalizeTerm } from "@/lib/domain/words";
 import { parseSurveyAnswers } from "@/lib/domain/survey";
+import { avatarKeySchema, quizPoints } from "@/lib/domain/gamification";
 import { fail, firstIssue, formValues, isUuid, ok, type ActionResult } from "@/lib/action-result";
 
 // ---------------------------------------------------------------------------
@@ -34,6 +35,7 @@ export type JoinFormState = { error?: string };
 const joinSchema = z
   .object({
     name: z.string().trim().max(60, "Nome muito longo.").optional(),
+    avatar: avatarKeySchema.optional(),
     email: z.email({ error: "E-mail inválido." }).max(254).optional(),
     phone: z
       .string()
@@ -47,7 +49,7 @@ const joinSchema = z
   });
 
 export async function joinSessionAction(code: string, _prev: JoinFormState, formData: FormData): Promise<JoinFormState> {
-  const values = formValues(formData, ["name", "email", "phone"] as const);
+  const values = formValues(formData, ["name", "avatar", "email", "phone"] as const);
   const parsed = joinSchema.safeParse({ ...values, consent: formData.get("consent") === "on" });
   if (!parsed.success) return { error: firstIssue(parsed.error) };
 
@@ -68,7 +70,7 @@ export async function joinSessionAction(code: string, _prev: JoinFormState, form
   const name = parsed.data.name || null;
   const created = await admin
     .from("participants")
-    .insert({ session_id: session.id, display_name: name, anonymous: name === null })
+    .insert({ session_id: session.id, display_name: name, anonymous: name === null, avatar: parsed.data.avatar ?? null })
     .select("id")
     .single();
   if (created.error) return { error: "Não foi possível entrar agora. Tente de novo." };
@@ -136,7 +138,9 @@ async function buildResponse(
         value: {
           optionId: option.id,
           isCorrect: option.is_correct,
-          points: option.is_correct ? option.points : 0,
+          points: option.is_correct
+            ? quizPoints(option.points, responseTimeMs, settings.timerSeconds, settings.speedBonus)
+            : 0,
           responseTimeMs,
         },
         aggregateKey: option.id,

@@ -6,6 +6,7 @@ import { joinSessionAction, type JoinFormState } from "@/features/participant/ac
 import { Button } from "@/components/ui/button";
 import { Field, Input, Label } from "@/components/ui/input";
 import { Alert } from "@/components/ui/misc";
+import { AVATARS } from "@/lib/domain/gamification";
 
 const initial: JoinFormState = {};
 
@@ -19,6 +20,24 @@ export function JoinForm({ code }: { code: string }) {
         <Input id="name" name="name" maxLength={60} autoComplete="given-name" placeholder="Pode participar sem nome" />
         <p className="text-xs text-muted-foreground">Aparece só no ranking do quiz, que pode ser mostrado no telão. Em branco, você fica anônimo.</p>
       </Field>
+
+      <fieldset className="flex flex-col gap-2">
+        <legend className="mb-2 text-sm font-medium">Escolha um avatar (opcional)</legend>
+        <div className="grid grid-cols-6 gap-2">
+          {AVATARS.map((avatar) => (
+            <label key={avatar.key} title={avatar.label} className="cursor-pointer">
+              <input type="radio" name="avatar" value={avatar.key} className="peer sr-only" aria-label={avatar.label} />
+              <span
+                aria-hidden
+                className="grid aspect-square place-items-center rounded-xl border-2 border-border text-3xl leading-none transition-[transform,border-color] peer-checked:scale-110 peer-checked:border-primary peer-checked:bg-primary/10 peer-focus-visible:ring-2 peer-focus-visible:ring-ring hover:border-primary/40"
+              >
+                {avatar.emoji}
+              </span>
+            </label>
+          ))}
+        </div>
+        <p className="text-xs text-muted-foreground">Aparece ao lado do seu nome no ranking do quiz.</p>
+      </fieldset>
 
       <details className="rounded-lg border px-3 py-2 text-sm">
         <summary className="cursor-pointer font-medium">Quero receber o material (opcional)</summary>

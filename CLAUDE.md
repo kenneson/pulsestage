@@ -69,6 +69,14 @@
   O projetor busca `/api/session/[id]/leaderboard` (secret key, só enquanto o ranking está no telão; nome escolhido ou
   “Participante XXXX”, pontos e posições). `lib/domain/leaderboard.ts` calcula a posição atual e a de antes do último
   quiz; `components/display/quiz-leaderboard.tsx` anima (linhas deslizam, pontos sobem). Também vira trecho na linha do tempo.
+- **Gamificação** (migration `20261012000000_gamification.sql`): `participants.avatar` (chave de `AVATARS` em
+  `lib/domain/gamification.ts`, escolhida na entrada; vira emoji no ranking do telão, no analytics e no celular).
+  `settings.optionStyle` (`text`|`shapes`) em enquete e quiz: forma + cor por posição (`optionShape`, tokens `--shape-1..8`,
+  `components/option-shape.tsx`); a forma e o texto sempre acompanham a cor. `interaction_options.image_path` aponta para o
+  bucket público `option-images` (`{speaker}/{uuid}.webp`, reduzida a 800 px no navegador em `lib/option-images/upload.ts`);
+  o servidor só aceita imagens da pasta do próprio speaker e apaga do Storage só a imagem que nenhuma alternativa usa mais
+  (`lib/data/option-images.ts`; duplicar reaproveita o arquivo). Quiz com `settings.speedBonus` e tempo: `quizPoints()`
+  dá de 100% a 50% dos pontos conforme o tempo, calculado no servidor.
 - **Realtime resistente**: `useLiveState` relê `session_live_state` ao conectar (e 3 s depois), expõe `refresh()` (a sala
   ao vivo chama após cada ação) e aceita `pollMs` (só o projetor, 10 s). Nunca usar `pollMs` para participantes.
 - **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta

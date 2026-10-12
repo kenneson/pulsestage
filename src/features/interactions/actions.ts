@@ -8,6 +8,8 @@ import { getOwnedSession } from "@/lib/data/sessions";
 import { hasDbErrorCode } from "@/lib/supabase/errors";
 import { hasOptions, interactionInputSchema, type ParsedInteractionInput } from "@/lib/domain/interactions";
 import { insertAfterItem, MAX_SLIDES } from "@/lib/domain/deck";
+import { droppedImages, imageOwner } from "@/lib/domain/gamification";
+import { optionImagesOf, removeUnusedOptionImages } from "@/lib/data/option-images";
 import { getAIProvider, suggestInteractions } from "@/lib/ai";
 import { AIProviderError } from "@/lib/ai/types";
 import { fail, firstIssue, isUuid, ok, type ActionResult } from "@/lib/action-result";
@@ -25,6 +27,11 @@ async function responseCount(supabase: ServerSupabase, interactionId: string): P
   return count ?? 0;
 }
 
+/** Imagem de alternativa só da pasta do próprio speaker (as de outros poderiam sumir sem aviso). */
+function foreignImage(input: ParsedInteractionInput, speakerId: string): boolean {
+  return "options" in input && input.options.some((o) => o.imagePath && imageOwner(o.imagePath) !== speakerId);
+}
+
 function optionRows(interactionId: string, input: ParsedInteractionInput) {
   if (!("options" in input)) return [];
   return input.options.map((o, index) => ({
@@ -34,6 +41,7 @@ function optionRows(interactionId: string, input: ParsedInteractionInput) {
     position: index,
     is_correct: input.type === "quiz" ? o.isCorrect : false,
     points: input.type === "quiz" && o.isCorrect ? o.points : 0,
+    image_path: o.imagePath ?? null,
   }));
 }
 
@@ -92,6 +100,7 @@ export async function saveInteractionAction(
   const session = await getOwnedSession(supabase, sessionId);
   if (!session) return fail("Sessão não encontrada.");
   if (session.status === "completed") return fail("A sessão já foi encerrada.");
+  if (foreignImage(input, session.speaker_id)) return fail("Imagem inválida.");
 
   const fields = {
     type: input.type,
@@ -154,6 +163,14 @@ export async function saveInteractionAction(
     if (error) return fail("Não foi possível atualizar as alternativas.");
   }
 
+  await removeUnusedOptionImages(
+    supabase,
+    droppedImages(
+      currentOptions.map((o) => o.image_path),
+      rows.map((r) => r.image_path),
+    ),
+  );
+
   revalidateSession(sessionId);
   return ok({ id: interactionId });
 }
@@ -212,8 +229,10 @@ export async function deleteInteractionAction(sessionId: string, interactionId: 
   if (!interaction) return fail("Interação não encontrada.");
   if (interaction.is_active) return fail("Encerre a interação antes de excluí-la.");
 
+  const images = await optionImagesOf(supabase, { interactionId });
   const { error } = await supabase.from("interactions").delete().eq("id", interactionId);
   if (error) return fail("Não foi possível excluir a interação.");
+  await removeUnusedOptionImages(supabase, images);
 
   revalidateSession(sessionId);
   return ok(null);
@@ -295,6 +314,7 @@ export async function addLiveInteractionAction(
   if (!session) return fail("Sessão não encontrada.");
   if (session.status === "completed") return fail("A sessão já foi encerrada.");
   if (placement.data.launch && session.status !== "live") return fail("Retome a sessão para lançar a pergunta.");
+  if (foreignImage(parsed.data, session.speaker_id)) return fail("Imagem inválida.");
 
   const created = await createInteraction(supabase, sessionId, parsed.data);
   if (!created.ok) return created;

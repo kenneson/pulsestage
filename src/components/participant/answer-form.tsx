@@ -5,6 +5,9 @@ import type { AnswerPayload, PublicInteraction } from "@/lib/domain/interactions
 import { Button } from "@/components/ui/button";
 import { Input, Textarea } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { CheckIcon } from "@/components/icons";
+import { ShapeGlyph, shapeBg } from "@/components/option-shape";
+import { optionImageSrc } from "@/lib/option-images/url";
 
 type Props = {
   interaction: PublicInteraction;
@@ -31,6 +34,69 @@ function QuizTimer({ activatedAt, seconds }: { activatedAt: string | null; secon
         />
       </div>
       <span className="w-10 text-right text-sm font-semibold tabular-nums">{remaining}s</span>
+    </div>
+  );
+}
+
+/**
+ * Alternativas em blocos (estilo Kahoot): forma e cor e/ou imagem. Duas colunas no celular.
+ * A forma e o texto sempre acompanham a cor; a escolhida ganha contorno e um ✓.
+ */
+function OptionTiles({
+  interaction,
+  selected,
+  onSelect,
+  disabled,
+}: {
+  interaction: PublicInteraction;
+  selected: string | null;
+  onSelect: (id: string) => void;
+  disabled: boolean;
+}) {
+  const shapes = interaction.settings.optionStyle === "shapes";
+  return (
+    <div role="radiogroup" aria-label={interaction.title} className="grid grid-cols-2 gap-3">
+      {interaction.options.map((option, index) => {
+        const isSelected = selected === option.id;
+        return (
+          <button
+            key={option.id}
+            type="button"
+            role="radio"
+            aria-checked={isSelected}
+            disabled={disabled}
+            onClick={() => onSelect(option.id)}
+            className={cn(
+              "relative flex min-h-24 flex-col rounded-xl border-2 text-left text-base font-semibold transition-[transform,box-shadow]",
+              shapes ? cn(shapeBg(index), "border-transparent text-white") : "border-border bg-card",
+              // Sem esmaecer as outras: o texto branco precisa manter o contraste para trocar de ideia.
+              isSelected
+                ? "scale-[1.02] ring-4 ring-foreground ring-offset-2 ring-offset-background"
+                : !shapes && "hover:border-primary/40",
+              !shapes && isSelected && "border-primary",
+            )}
+          >
+            {option.imagePath ? (
+              // eslint-disable-next-line @next/next/no-img-element -- imagem pública do Storage
+              <img
+                src={optionImageSrc(option.imagePath)}
+                alt=""
+                className="aspect-[4/3] w-full rounded-t-[10px] bg-muted object-cover"
+                loading="eager"
+              />
+            ) : null}
+            <span className="flex flex-1 items-center gap-2 px-3 py-3 leading-snug">
+              {shapes ? <ShapeGlyph index={index} className="size-6 text-white" /> : null}
+              <span className="min-w-0 break-words">{option.label}</span>
+            </span>
+            {isSelected ? (
+              <span className="absolute -right-2 -top-2 grid size-7 place-items-center rounded-full bg-foreground text-background shadow">
+                <CheckIcon width={16} height={16} />
+              </span>
+            ) : null}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -78,7 +144,15 @@ export function AnswerForm({ interaction, onSubmit, submitting = false, preview 
         <QuizTimer activatedAt={preview ? null : interaction.activatedAt} seconds={settings.timerSeconds} />
       ) : null}
 
-      {interaction.type === "multiple_choice" || interaction.type === "quiz" ? (
+      {(interaction.type === "multiple_choice" || interaction.type === "quiz") &&
+      (settings.optionStyle === "shapes" || interaction.options.some((o) => o.imagePath)) ? (
+        <OptionTiles
+          interaction={interaction}
+          selected={optionId}
+          onSelect={setOptionId}
+          disabled={submitting}
+        />
+      ) : interaction.type === "multiple_choice" || interaction.type === "quiz" ? (
         <div role="radiogroup" aria-label={interaction.title} className="flex flex-col gap-3">
           {interaction.options.map((option, index) => {
             const selected = optionId === option.id;

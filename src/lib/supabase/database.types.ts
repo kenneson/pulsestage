@@ -135,6 +135,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          image_path: string | null
           interaction_id: string
           is_correct: boolean
           label: string
@@ -144,6 +145,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          image_path?: string | null
           interaction_id: string
           is_correct?: boolean
           label: string
@@ -153,6 +155,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          image_path?: string | null
           interaction_id?: string
           is_correct?: boolean
           label?: string
@@ -308,6 +311,7 @@ export type Database = {
       participants: {
         Row: {
           anonymous: boolean
+          avatar: string | null
           created_at: string
           display_name: string | null
           id: string
@@ -315,6 +319,7 @@ export type Database = {
         }
         Insert: {
           anonymous?: boolean
+          avatar?: string | null
           created_at?: string
           display_name?: string | null
           id?: string
@@ -322,6 +327,7 @@ export type Database = {
         }
         Update: {
           anonymous?: boolean
+          avatar?: string | null
           created_at?: string
           display_name?: string | null
           id?: string

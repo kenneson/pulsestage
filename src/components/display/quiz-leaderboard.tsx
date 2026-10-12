@@ -11,6 +11,7 @@ import { formatInt } from "@/lib/format";
 const entrySchema = z.object({
   key: z.string(),
   name: z.string(),
+  avatar: z.string().nullable().catch(null),
   rank: z.number(),
   points: z.number(),
   correct: z.number(),
@@ -76,6 +77,15 @@ function Row({ entry, settled, total, variant }: { entry: Entry; settled: boolea
     >
       <span className={cn("w-12 shrink-0 font-script font-bold tabular-nums", !big && "w-6", leader && "text-primary")}>
         {entry.rank}º
+      </span>
+      <span
+        aria-hidden
+        className={cn(
+          "grid shrink-0 place-items-center rounded-full bg-background leading-none",
+          big ? "size-14 text-4xl" : "size-8 text-lg",
+        )}
+      >
+        {entry.avatar ?? <span className="font-script text-muted-foreground">{entry.name.charAt(0).toUpperCase()}</span>}
       </span>
       <span className={cn("min-w-0 flex-1 truncate font-semibold", leader && "text-primary")}>{entry.name}</span>
       {settled && moved !== null && moved !== 0 ? (

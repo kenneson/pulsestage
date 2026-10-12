@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { saveInteractionAction } from "@/features/interactions/actions";
 import {
@@ -14,10 +14,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Field, Input, Label, Select, Textarea } from "@/components/ui/input";
 import { Alert } from "@/components/ui/misc";
-import { PlusIcon, TrashIcon } from "@/components/icons";
+import { ImageIcon, PlusIcon, TrashIcon, XIcon } from "@/components/icons";
+import { ShapeGlyph, shapeText } from "@/components/option-shape";
+import { optionImageSrc } from "@/lib/option-images/url";
+import { OptionImageError, uploadOptionImage } from "@/lib/option-images/upload";
 import type { ActionResult } from "@/lib/action-result";
 
-export type EditableOption = { id?: string; label: string; isCorrect: boolean; points: number };
+export type EditableOption = { id?: string; label: string; isCorrect: boolean; points: number; imagePath: string | null };
+
+const newOption = (isCorrect = false): EditableOption => ({ label: "", isCorrect, points: 100, imagePath: null });
 
 export type InteractionDraft = {
   id: string | null;
@@ -42,25 +47,34 @@ export function emptyDraft(type: InteractionType): InteractionDraft {
       maxLength: type === "word_cloud" ? 30 : 280,
       showOnDisplay: true,
       timerSeconds: type === "quiz" ? 30 : null,
+      // Quiz novo já nasce no estilo Kahoot; enquete continua em texto.
+      optionStyle: type === "quiz" ? "shapes" : "text",
+      speedBonus: type === "quiz",
     },
-    options: hasOptions(type)
-      ? [
-          { label: "", isCorrect: type === "quiz", points: 100 },
-          { label: "", isCorrect: false, points: 100 },
-        ]
-      : [],
+    options: hasOptions(type) ? [newOption(type === "quiz"), newOption()] : [],
   };
 }
 
 function toInput(draft: InteractionDraft): InteractionInput {
   const base = { title: draft.title, description: draft.description || undefined };
-  const options = draft.options.map((o) => ({ id: o.id, label: o.label, isCorrect: o.isCorrect, points: o.points }));
+  const options = draft.options.map((o) => ({
+    id: o.id,
+    label: o.label,
+    isCorrect: o.isCorrect,
+    points: o.points,
+    imagePath: o.imagePath,
+  }));
   const s = draft.settings;
   switch (draft.type) {
     case "multiple_choice":
-      return { type: "multiple_choice", ...base, settings: {}, options };
+      return { type: "multiple_choice", ...base, settings: { optionStyle: s.optionStyle }, options };
     case "quiz":
-      return { type: "quiz", ...base, settings: { timerSeconds: s.timerSeconds }, options };
+      return {
+        type: "quiz",
+        ...base,
+        settings: { timerSeconds: s.timerSeconds, optionStyle: s.optionStyle, speedBonus: s.speedBonus },
+        options,
+      };
     case "rating":
       return {
         type: "rating",
@@ -72,6 +86,80 @@ function toInput(draft: InteractionDraft): InteractionInput {
     case "open_text":
       return { type: "open_text", ...base, settings: { maxLength: s.maxLength, showOnDisplay: s.showOnDisplay } };
   }
+}
+
+/** Imagem opcional da alternativa: miniatura com "remover" ou botão para escolher o arquivo. */
+function OptionImagePicker({
+  path,
+  index,
+  onChange,
+  onBusy,
+}: {
+  path: string | null;
+  index: number;
+  onChange: (path: string | null) => void;
+  onBusy: (busy: boolean) => void;
+}) {
+  const input = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  async function pick(file: File) {
+    setUploading(true);
+    onBusy(true);
+    try {
+      onChange(await uploadOptionImage(file));
+    } catch (e) {
+      toast.error(e instanceof OptionImageError ? e.message : "Falha ao enviar a imagem.");
+    } finally {
+      setUploading(false);
+      onBusy(false);
+    }
+  }
+
+  if (path) {
+    return (
+      <span className="relative shrink-0">
+        {/* eslint-disable-next-line @next/next/no-img-element -- imagem pública do Storage */}
+        <img src={optionImageSrc(path)} alt="" className="size-10 rounded-md border object-cover" />
+        <button
+          type="button"
+          aria-label={`Remover imagem da alternativa ${index + 1}`}
+          onClick={() => onChange(null)}
+          className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full border bg-background text-muted-foreground hover:text-foreground"
+        >
+          <XIcon width={12} height={12} />
+        </button>
+      </span>
+    );
+  }
+
+  return (
+    <>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label={`Adicionar imagem à alternativa ${index + 1}`}
+        title="Adicionar imagem"
+        disabled={uploading}
+        onClick={() => input.current?.click()}
+      >
+        {uploading ? <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" /> : <ImageIcon />}
+      </Button>
+      <input
+        ref={input}
+        type="file"
+        accept="image/png,image/jpeg,image/webp,image/gif"
+        className="sr-only"
+        tabIndex={-1}
+        aria-hidden
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          e.target.value = "";
+          if (file) void pick(file);
+        }}
+      />
+    </>
+  );
 }
 
 /** Botão de salvar alternativo (ex.: sala ao vivo: "Lançar agora" e "Deixar como próxima"). */
@@ -123,6 +211,9 @@ export function InteractionForm({
   };
   const formActions = actions ?? [defaultAction];
   const [running, setRunning] = useState<string | null>(null);
+  // Imagens subindo: salvar agora perderia a imagem.
+  const [uploads, setUploads] = useState(0);
+  const onBusy = (busy: boolean) => setUploads((n) => n + (busy ? 1 : -1));
 
   function save(action: InteractionFormAction) {
     const input = toInput(draft);
@@ -173,10 +264,25 @@ export function InteractionForm({
       </Field>
 
       {hasOptions(draft.type) ? (
+        <Field className="max-w-xs">
+          <Label htmlFor="option-style">Aparência das alternativas</Label>
+          <Select
+            id="option-style"
+            value={draft.settings.optionStyle}
+            onChange={(e) => setSettings({ optionStyle: e.target.value === "shapes" ? "shapes" : "text" })}
+          >
+            <option value="text">Texto</option>
+            <option value="shapes">Formas e cores</option>
+          </Select>
+        </Field>
+      ) : null}
+
+      {hasOptions(draft.type) ? (
         <div className="flex flex-col gap-2">
           <Label>Alternativas{draft.type === "quiz" ? " (marque a correta)" : ""}</Label>
           {draft.options.map((option, index) => (
             <div key={option.id ?? `new-${index}`} className="flex items-center gap-2">
+              {draft.settings.optionStyle === "shapes" ? <ShapeGlyph index={index} className={shapeText(index)} /> : null}
               {draft.type === "quiz" ? (
                 <input
                   type="radio"
@@ -191,8 +297,15 @@ export function InteractionForm({
               <Input
                 value={option.label}
                 onChange={(e) => setOption(index, { label: e.target.value })}
-                placeholder={`Alternativa ${index + 1}`}
+                placeholder={option.imagePath ? "Descreva a imagem" : `Alternativa ${index + 1}`}
+                aria-label={`Alternativa ${index + 1}`}
                 maxLength={200}
+              />
+              <OptionImagePicker
+                path={option.imagePath}
+                index={index}
+                onChange={(imagePath) => setOption(index, { imagePath })}
+                onBusy={onBusy}
               />
               {draft.type === "quiz" ? (
                 <Input
@@ -224,12 +337,15 @@ export function InteractionForm({
               size="sm"
               disabled={locked || draft.options.length >= (draft.type === "quiz" ? 6 : 8)}
               onClick={() =>
-                setDraft({ ...draft, options: [...draft.options, { label: "", isCorrect: false, points: 100 }] })
+                setDraft({ ...draft, options: [...draft.options, newOption()] })
               }
             >
               <PlusIcon /> Alternativa
             </Button>
           </div>
+          <p className="text-xs text-muted-foreground">
+            Com imagem, o texto da alternativa aparece embaixo dela e serve de descrição para leitores de tela.
+          </p>
           {locked ? (
             <p className="text-xs text-muted-foreground">
               Já existem respostas: você pode corrigir o texto, mas não adicionar, remover ou trocar a correta.
@@ -239,21 +355,38 @@ export function InteractionForm({
       ) : null}
 
       {draft.type === "quiz" ? (
-        <Field className="max-w-xs">
-          <Label htmlFor="quiz-timer">Tempo para responder</Label>
-          <Select
-            id="quiz-timer"
-            value={draft.settings.timerSeconds ?? 0}
-            onChange={(e) => setSettings({ timerSeconds: Number(e.target.value) || null })}
-          >
-            <option value={0}>Sem limite</option>
-            {[10, 15, 20, 30, 45, 60, 90].map((s) => (
-              <option key={s} value={s}>
-                {s} segundos
-              </option>
-            ))}
-          </Select>
-        </Field>
+        <div className="flex flex-wrap items-end gap-4">
+          <Field className="w-full max-w-xs">
+            <Label htmlFor="quiz-timer">Tempo para responder</Label>
+            <Select
+              id="quiz-timer"
+              value={draft.settings.timerSeconds ?? 0}
+              onChange={(e) => setSettings({ timerSeconds: Number(e.target.value) || null })}
+            >
+              <option value={0}>Sem limite</option>
+              {[10, 15, 20, 30, 45, 60, 90].map((s) => (
+                <option key={s} value={s}>
+                  {s} segundos
+                </option>
+              ))}
+            </Select>
+          </Field>
+          <label className="flex items-center gap-2 pb-2 text-sm">
+            <input
+              type="checkbox"
+              checked={draft.settings.speedBonus && draft.settings.timerSeconds !== null}
+              disabled={draft.settings.timerSeconds === null || locked}
+              onChange={(e) => setSettings({ speedBonus: e.target.checked })}
+              className="size-4"
+            />
+            Bônus de velocidade
+          </label>
+          <p className="w-full text-xs text-muted-foreground">
+            {draft.settings.timerSeconds === null
+              ? "O bônus de velocidade precisa de tempo para responder."
+              : "Com bônus, quem acerta na hora leva os pontos cheios; no fim do tempo, a metade."}
+          </p>
+        </div>
       ) : null}
 
       {draft.type === "rating" ? (
@@ -333,7 +466,7 @@ export function InteractionForm({
             key={action.label}
             variant={action.variant ?? "default"}
             onClick={() => save(action)}
-            disabled={pending || action.disabled}
+            disabled={pending || action.disabled || uploads > 0}
           >
             {pending && running === action.label ? action.pendingLabel : action.label}
           </Button>

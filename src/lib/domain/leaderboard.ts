@@ -3,14 +3,17 @@
 // para o telão animar quem subiu. Pontos e acerto já vêm calculados pelo servidor (seção 0.3).
 
 import { participantLabel, parseQuizValue } from "./metrics.ts";
+import { avatarOf } from "./gamification.ts";
 
 export type LeaderboardResponse = { participantId: string; interactionId: string; value: unknown };
-export type LeaderboardParticipant = { id: string; display_name: string | null };
+export type LeaderboardParticipant = { id: string; display_name: string | null; avatar?: string | null };
 
 export type LeaderboardEntry = {
   /** chave estável para a animação (não é o id do participante) */
   key: string;
   name: string;
+  /** emoji do avatar escolhido ao entrar; null = sem avatar */
+  avatar: string | null;
   rank: number;
   points: number;
   correct: number;
@@ -57,10 +60,12 @@ export function leaderboard(
     .slice(0, limit)
     .map((id, index) => {
       const current = now.get(id)!;
+      const participant = byId.get(id);
       const previousIndex = beforeOrder.indexOf(id);
       return {
         key: id.slice(0, 8),
-        name: participantLabel(byId.get(id), id),
+        name: participantLabel(participant, id),
+        avatar: avatarOf(participant?.avatar)?.emoji ?? null,
         rank: index + 1,
         points: current.points,
         correct: current.correct,

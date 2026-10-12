@@ -47,6 +47,16 @@
   /* Linha do tempo da palestra: par validado (CVD e visão normal) contra o card claro. */
   --timeline-slide: #2a78d6;
   --timeline-question: #eb6834;
+  /* Alternativas com forma e cor (Kahoot). Texto branco por cima com contraste >= 5:1 e >= 3:1 contra o
+     fundo escuro: os mesmos valores servem aos dois temas. A forma sempre acompanha a cor. */
+  --shape-1: #c4162a;
+  --shape-2: #1d5fbf;
+  --shape-3: #946200;
+  --shape-4: #2b7a0b;
+  --shape-5: #7c41c0;
+  --shape-6: #0b7477;
+  --shape-7: #b4470c;
+  --shape-8: #b22669;
   color-scheme: light;
 }
 
@@ -129,6 +139,14 @@
   --color-rev-gold-ink: var(--rev-gold-ink);
   --color-timeline-slide: var(--timeline-slide);
   --color-timeline-question: var(--timeline-question);
+  --color-shape-1: var(--shape-1);
+  --color-shape-2: var(--shape-2);
+  --color-shape-3: var(--shape-3);
+  --color-shape-4: var(--shape-4);
+  --color-shape-5: var(--shape-5);
+  --color-shape-6: var(--shape-6);
+  --color-shape-7: var(--shape-7);
+  --color-shape-8: var(--shape-8);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

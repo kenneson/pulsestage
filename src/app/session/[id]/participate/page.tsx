@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getCurrentForParticipant, getLiveState, getPublicSession } from "@/lib/data/public";
+import { getCurrentForParticipant, getLiveState, getParticipantBadge, getPublicSession } from "@/lib/data/public";
 import { getParticipantIdFromCookie } from "@/lib/participant/token";
 import { liveStateSchema } from "@/lib/realtime/schemas";
 import { isUuid } from "@/lib/action-result";
@@ -22,7 +22,11 @@ export default async function ParticipatePage({ params }: { params: Promise<{ id
     redirect(session.status === "completed" ? `/feedback/${id}` : `/join/${session.joinCode}`);
   }
 
-  const [live, current] = await Promise.all([getLiveState(admin, id), getCurrentForParticipant(admin, id, participantId)]);
+  const [live, current, me] = await Promise.all([
+    getLiveState(admin, id),
+    getCurrentForParticipant(admin, id, participantId),
+    getParticipantBadge(admin, participantId),
+  ]);
   const initialLive = liveStateSchema.safeParse(live);
 
   return (
@@ -31,6 +35,7 @@ export default async function ParticipatePage({ params }: { params: Promise<{ id
       title={session.title}
       initialLive={initialLive.success ? initialLive.data : null}
       initialCurrent={current}
+      me={me}
     />
   );
 }

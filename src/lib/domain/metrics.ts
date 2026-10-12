@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { InteractionRow, ParticipantRow, ResponseRow, SessionRow } from "@/lib/supabase/types";
+import { avatarOf } from "./gamification.ts";
 import {
   dimensionScores,
   headlineScore,
@@ -183,7 +184,7 @@ export function quizStats(responses: readonly ResponseRow[]): QuizStats {
   };
 }
 
-export type RankingEntry = { participantId: string; name: string; points: number; correct: number };
+export type RankingEntry = { participantId: string; name: string; avatar: string | null; points: number; correct: number };
 
 export function participantLabel(p: Pick<ParticipantRow, "id" | "display_name"> | undefined, id: string): string {
   return p?.display_name || `Participante ${id.slice(0, 4).toUpperCase()}`;
@@ -202,6 +203,7 @@ export function quizRanking(
     const entry = totals.get(r.participant_id) ?? {
       participantId: r.participant_id,
       name: participantLabel(byId.get(r.participant_id), r.participant_id),
+      avatar: avatarOf(byId.get(r.participant_id)?.avatar)?.emoji ?? null,
       points: 0,
       correct: 0,
     };
