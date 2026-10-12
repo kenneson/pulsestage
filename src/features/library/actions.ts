@@ -124,7 +124,7 @@ async function copySlides(supabase: ServerSupabase, source: SessionRow, targetSe
   if (error) throw new Error(error.message);
 }
 
-/** Nova sessão em rascunho com as mesmas informações, perguntas, slides e pesquisa. */
+/** Nova sessão em rascunho com as mesmas informações, perguntas, slides, pesquisa e prêmios do sorteio. */
 export async function duplicateSessionAction(sessionId: string): Promise<ActionResult> {
   if (!isUuid(sessionId)) return fail("Sessão inválida.");
   const supabase = await createClient();
@@ -141,6 +141,7 @@ export async function duplicateSessionAction(sessionId: string): Promise<ActionR
         description: source.description,
         estimated_duration_minutes: source.estimated_duration_minutes,
         survey_template_id: source.survey_template_id,
+        raffle_eligibility: source.raffle_eligibility,
         join_code: generateJoinCode(),
       })
       .select("id")
@@ -162,6 +163,18 @@ export async function duplicateSessionAction(sessionId: string): Promise<ActionR
   } catch {
     await supabase.from("sessions").delete().eq("id", createdId);
     return fail("Não foi possível copiar as perguntas da sessão.");
+  }
+  // Prêmios do sorteio (sem números nem ganhadores).
+  const { data: prizes } = await supabase
+    .from("raffle_prizes")
+    .select("position, name, description, kind, quantity, winner_message")
+    .eq("session_id", sessionId);
+  if (prizes && prizes.length > 0) {
+    const copied = await supabase.from("raffle_prizes").insert(prizes.map((p) => ({ ...p, session_id: createdId })));
+    if (copied.error) {
+      await supabase.from("sessions").delete().eq("id", createdId);
+      return fail("Não foi possível copiar os prêmios do sorteio.");
+    }
   }
   try {
     await copySlides(supabase, source, createdId);

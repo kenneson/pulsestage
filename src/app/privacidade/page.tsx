@@ -51,6 +51,12 @@ export default function PrivacyPage() {
               (nada de foto), mostrado ao lado do nome no ranking do quiz.
             </li>
             <li>
+              <strong className="text-foreground">Número do sorteio.</strong> Se a sessão tiver sorteio, quem concorre
+              recebe um número aleatório. Quem for sorteado tem nome (ou “Participante” e um código), número e avatar
+              mostrados no telão; a mensagem do prêmio aparece só no celular de quem ganhou. Números e ganhadores são
+              apagados junto com a sessão.
+            </li>
+            <li>
               <strong className="text-foreground">Respostas e avaliação.</strong> O que você responde nas interações e
               no feedback pós-evento.
             </li>

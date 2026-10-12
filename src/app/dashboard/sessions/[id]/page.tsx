@@ -22,18 +22,30 @@ import { joinUrl } from "@/lib/env";
 import { InteractionsEditor, type EditorItem } from "@/components/builder/interactions-editor";
 import { SlidesEditor, type SlideDeckInteraction } from "@/components/slides/slides-editor";
 import { getSlideUrls } from "@/lib/data/slides";
+import { getRaffleState } from "@/lib/data/raffle";
+import { RaffleEditor } from "@/components/raffle/raffle-editor";
 
 export const metadata: Metadata = { title: "Editar sessão" };
 
-export default async function SessionBuilderPage({ params }: { params: Promise<{ id: string }> }) {
+const TAB_ALIASES: Record<string, string> = { sorteio: "raffle", slides: "slides", informacoes: "info" };
+
+export default async function SessionBuilderPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ aba?: string | string[] }>;
+}) {
   const { id } = await params;
+  const { aba } = await searchParams;
+  const initialTab = (typeof aba === "string" && TAB_ALIASES[aba]) || "interactions";
   if (!isUuid(id)) notFound();
 
   const supabase = await createClient();
   const session = await getOwnedSession(supabase, id);
   if (!session) notFound();
 
-  const [interactions, responses, templates, snapshot, slideUrls] = await Promise.all([
+  const [interactions, responses, templates, snapshot, slideUrls, raffle] = await Promise.all([
     getSessionInteractions(supabase, id),
     fetchAllRows<{ interaction_id: string }>((from, to) =>
       supabase.from("responses").select("interaction_id").eq("session_id", id).range(from, to),
@@ -41,6 +53,7 @@ export default async function SessionBuilderPage({ params }: { params: Promise<{
     listSurveyTemplates(supabase),
     supabase.from("session_surveys").select("name").eq("session_id", id).maybeSingle(),
     getSlideUrls(supabase, session),
+    getRaffleState(supabase, id, session.raffle_eligibility),
   ]);
   // Biblioteca sem as perguntas que já estão nesta sessão.
   const ownIds = new Set(interactions.map((i) => i.id));
@@ -111,6 +124,11 @@ export default async function SessionBuilderPage({ params }: { params: Promise<{
               Abrir sala ao vivo
             </Link>
           ) : null}
+          {status === "completed" && session.raffle_eligibility ? (
+            <Link href={`/dashboard/sessions/${id}/live`} className={buttonVariants({ variant: "outline" })}>
+              Sala do sorteio
+            </Link>
+          ) : null}
           {status === "completed" ? (
             <Link href={`/dashboard/sessions/${id}/analytics`} className={buttonVariants()}>
               Ver analytics
@@ -120,7 +138,7 @@ export default async function SessionBuilderPage({ params }: { params: Promise<{
       </div>
 
       <Tabs
-        defaultTab="interactions"
+        defaultTab={initialTab}
         tabs={[
           {
             id: "interactions",
@@ -165,6 +183,23 @@ export default async function SessionBuilderPage({ params }: { params: Promise<{
                     interactions={deckInteractions}
                     readOnly={status === "completed"}
                   />
+                </CardContent>
+              </Card>
+            ),
+          },
+          {
+            id: "raffle",
+            label: raffle.eligibility ? `Sorteio (${raffle.prizes.length})` : "Sorteio",
+            content: (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Sorteio</CardTitle>
+                  <CardDescription>
+                    Opcional. Sorteie prêmios entre quem respondeu a pesquisa ou entre todos que entraram na sessão.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <RaffleEditor sessionId={id} state={raffle} />
                 </CardContent>
               </Card>
             ),

@@ -15,6 +15,8 @@ import { cn } from "@/lib/utils";
 import { ResultsView } from "@/components/results/results-view";
 import type { DeckItem } from "@/lib/domain/deck";
 import { QuizLeaderboard } from "./quiz-leaderboard";
+import { RaffleStage } from "./raffle-stage";
+import { useAudioUnlock } from "@/lib/raffle/use-audio-unlock";
 import { lastActivatedOf, useDeckControls } from "@/components/live/use-deck-controls";
 
 const joinHost = (url: string) => url.replace(/^https?:\/\//, "").replace(/\/join\/.*/, "");
@@ -60,6 +62,7 @@ export function DisplayView({
   const { state } = useLiveState(session.id, initialLive, undefined, 10_000);
   const results = useInteractionResults(session.id, initialResults);
   const online = usePresence(session.id, "observer");
+  const soundOn = useAudioUnlock();
   const status = toSessionStatus(state?.status ?? "draft");
   const active = interactions.find((i) => i.id === state?.active_interaction_id) ?? null;
   const snapshot = active ? (results[active.id] ?? EMPTY_SNAPSHOT) : EMPTY_SNAPSHOT;
@@ -86,8 +89,20 @@ export function DisplayView({
     if (missingId) router.refresh();
   }, [missingId, router]);
 
+  const raffleOn = Boolean(state?.show_raffle) && status !== "draft";
   let body: React.ReactNode;
-  if (status === "completed") {
+  if (raffleOn) {
+    // O sorteio vale também depois de encerrar (modo "quem responder a pesquisa").
+    body = (
+      <RaffleStage
+        sessionId={session.id}
+        version={state?.raffle_at ?? null}
+        drawnAt={state?.raffle_drawn_at ?? null}
+        feedbackUrl={feedbackUrl}
+        soundOn={soundOn}
+      />
+    );
+  } else if (status === "completed") {
     body = (
       <div className="flex flex-col items-center gap-8 text-center">
         <h1 className="text-6xl font-semibold">Obrigado pela participação!</h1>

@@ -387,6 +387,141 @@ export type Database = {
           },
         ]
       }
+      raffle_entries: {
+        Row: {
+          created_at: string
+          number: number
+          participant_id: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          number: number
+          participant_id: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          number?: number
+          participant_id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "raffle_entries_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: true
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "raffle_entries_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      raffle_prizes: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          kind: string
+          name: string
+          position: number
+          quantity: number
+          session_id: string
+          winner_message: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: string
+          name: string
+          position?: number
+          quantity?: number
+          session_id: string
+          winner_message?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: string
+          name?: string
+          position?: number
+          quantity?: number
+          session_id?: string
+          winner_message?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "raffle_prizes_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      raffle_winners: {
+        Row: {
+          delivered_at: string | null
+          drawn_at: string
+          forfeited_at: string | null
+          id: string
+          number: number
+          participant_id: string
+          prize_id: string
+          session_id: string
+        }
+        Insert: {
+          delivered_at?: string | null
+          drawn_at?: string
+          forfeited_at?: string | null
+          id?: string
+          number: number
+          participant_id: string
+          prize_id: string
+          session_id: string
+        }
+        Update: {
+          delivered_at?: string | null
+          drawn_at?: string
+          forfeited_at?: string | null
+          id?: string
+          number?: number
+          participant_id?: string
+          prize_id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "raffle_winners_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "raffle_winners_prize_id_fkey"
+            columns: ["prize_id"]
+            isOneToOne: false
+            referencedRelation: "raffle_prizes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "raffle_winners_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       responses: {
         Row: {
           aggregate_key: string | null
@@ -495,8 +630,13 @@ export type Database = {
           current_slide_changed_at: string | null
           leaderboard_at: string | null
           participant_count: number
+          raffle_at: string | null
+          raffle_drawn_at: string | null
+          raffle_prize_id: string | null
+          raffle_winner_id: string | null
           session_id: string
           show_leaderboard: boolean
+          show_raffle: boolean
           status: string
           updated_at: string
         }
@@ -507,8 +647,13 @@ export type Database = {
           current_slide_changed_at?: string | null
           leaderboard_at?: string | null
           participant_count?: number
+          raffle_at?: string | null
+          raffle_drawn_at?: string | null
+          raffle_prize_id?: string | null
+          raffle_winner_id?: string | null
           session_id: string
           show_leaderboard?: boolean
+          show_raffle?: boolean
           status: string
           updated_at?: string
         }
@@ -519,8 +664,13 @@ export type Database = {
           current_slide_changed_at?: string | null
           leaderboard_at?: string | null
           participant_count?: number
+          raffle_at?: string | null
+          raffle_drawn_at?: string | null
+          raffle_prize_id?: string | null
+          raffle_winner_id?: string | null
           session_id?: string
           show_leaderboard?: boolean
+          show_raffle?: boolean
           status?: string
           updated_at?: string
         }
@@ -628,6 +778,7 @@ export type Database = {
           join_code: string
           paused_at: string | null
           paused_seconds: number
+          raffle_eligibility: string | null
           scheduled_at: string | null
           slide_count: number
           slides_batch: string | null
@@ -648,6 +799,7 @@ export type Database = {
           join_code?: string
           paused_at?: string | null
           paused_seconds?: number
+          raffle_eligibility?: string | null
           scheduled_at?: string | null
           slide_count?: number
           slides_batch?: string | null
@@ -668,6 +820,7 @@ export type Database = {
           join_code?: string
           paused_at?: string | null
           paused_seconds?: number
+          raffle_eligibility?: string | null
           scheduled_at?: string | null
           slide_count?: number
           slides_batch?: string | null
@@ -857,8 +1010,18 @@ export type Database = {
         Returns: undefined
       }
       convert_legacy_feedback: { Args: never; Returns: undefined }
+      draw_raffle: {
+        Args: { p_prize_id: string; p_session_id: string }
+        Returns: string
+      }
+      forfeit_raffle_winner: { Args: { p_winner_id: string }; Returns: undefined }
       generate_join_code: { Args: { len?: number }; Returns: string }
       is_session_owner: { Args: { p_session_id: string }; Returns: boolean }
+      raffle_is_eligible: {
+        Args: { p_mode: string; p_participant_id: string; p_session_id: string }
+        Returns: boolean
+      }
+      raffle_ticket: { Args: { p_participant_id: string }; Returns: number }
       reorder_interactions: {
         Args: { p_ids: string[]; p_session_id: string }
         Returns: undefined
@@ -868,6 +1031,10 @@ export type Database = {
         Returns: undefined
       }
       show_leaderboard: {
+        Args: { p_session_id: string; p_show: boolean }
+        Returns: undefined
+      }
+      show_raffle: {
         Args: { p_session_id: string; p_show: boolean }
         Returns: undefined
       }

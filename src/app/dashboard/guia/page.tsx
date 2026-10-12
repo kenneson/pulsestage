@@ -14,7 +14,8 @@ const SECTIONS = [
   { id: "ao-vivo", title: "4. Apresentar ao vivo" },
   { id: "participantes", title: "5. O que a audiência vê" },
   { id: "encerrar", title: "6. Encerrar e aplicar a pesquisa" },
-  { id: "analytics", title: "7. Analisar os resultados" },
+  { id: "sorteio", title: "7. Fazer um sorteio" },
+  { id: "analytics", title: "8. Analisar os resultados" },
   { id: "dicas", title: "Dicas" },
 ];
 
@@ -215,7 +216,41 @@ export default function GuidePage() {
             </p>
           </Section>
 
-          <Section id="analytics" title="7. Analisar os resultados">
+          <Section id="sorteio" title="7. Fazer um sorteio">
+            <p>
+              Opcional. Na página da sessão, abra a aba <strong>“Sorteio”</strong>, marque{" "}
+              <strong>“Fazer sorteio nesta sessão”</strong> e escolha <strong>“Quem concorre”</strong>:
+            </p>
+            <ul className="flex flex-col gap-1">
+              <li>
+                <strong>Quem responder a pesquisa:</strong> ao enviar a pesquisa pós-evento, a pessoa recebe um número da
+                sorte no celular. Quem não responde não concorre. Como a pesquisa abre ao encerrar, o sorteio acontece
+                depois de <strong>“Encerrar sessão”</strong>: a sala ao vivo continua aberta para isso.
+              </li>
+              <li>
+                <strong>Todos que entrarem na sessão:</strong> cada pessoa recebe o número ao entrar, mesmo sem responder a
+                pesquisa.
+              </li>
+            </ul>
+            <p>
+              Em <strong>“Prêmio”</strong>, cadastre o que será sorteado: nome, tipo (físico ou digital), quantos
+              ganhadores e, se quiser, uma <strong>mensagem para quem ganhar</strong> (código do cupom, link, onde
+              retirar), que aparece só no celular do ganhador.
+            </p>
+            <p>
+              Na sala ao vivo, o card <strong>“Sorteio”</strong> mostra quantas pessoas estão concorrendo.{" "}
+              <strong>“Mostrar sorteio”</strong> leva ao telão os prêmios e, no modo da pesquisa, o QR Code dela.{" "}
+              <strong>“Sortear”</strong> escolhe um ganhador por vez: o telão gira a roleta de números, desacelera até o
+              sorteado e revela nome, número e avatar com som e confete. Para ter som, clique uma vez na tela do projetor
+              antes. Se a pessoa não estiver na sala, <strong>“Ausente?”</strong> sorteia outra para o mesmo prêmio.
+            </p>
+            <p>
+              Cada pessoa ganha no máximo um prêmio. Em <strong>“Sorteios”</strong>, no menu, você acompanha os ganhadores
+              de todas as sessões e marca o que já foi <strong>entregue</strong>.
+            </p>
+          </Section>
+
+          <Section id="analytics" title="8. Analisar os resultados">
             <p>
               No <strong>analytics da sessão</strong> você encontra:
             </p>

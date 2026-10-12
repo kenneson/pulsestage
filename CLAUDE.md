@@ -77,6 +77,16 @@
   o servidor só aceita imagens da pasta do próprio speaker e apaga do Storage só a imagem que nenhuma alternativa usa mais
   (`lib/data/option-images.ts`; duplicar reaproveita o arquivo). Quiz com `settings.speedBonus` e tempo: `quizPoints()`
   dá de 100% a 50% dos pontos conforme o tempo, calculado no servidor.
+- **Sorteio** (migration `20261013000000_raffles.sql`): opcional por sessão (`sessions.raffle_eligibility`: `survey` = quem
+  respondeu a pesquisa, `everyone` = todos; null = sem sorteio). Prêmios em `raffle_prizes` (físico/digital, quantidade,
+  mensagem só para o ganhador). Números em `raffle_entries` (criados por `raffle_ticket()` quando a pessoa passa a concorrer;
+  o celular busca `/api/participant/[id]/raffle`). `draw_raffle()` sorteia no banco (`gen_random_uuid()`, uma vitória por
+  pessoa, trava a sessão) e liga `session_live_state.show_raffle/raffle_drawn_at`; `forfeit_raffle_winner()` tira o ausente.
+  Tempos em `lib/domain/raffle.ts`: o telão (`components/display/raffle-stage.tsx`) gira a roleta até
+  `RAFFLE_SUSPENSE_MS`, quando `/api/session/[id]/raffle` passa a entregar o ganhador, desacelera e revela (som em
+  `lib/raffle/sound.ts`, Web Audio, liberado no primeiro clique); celulares e sala ao vivo só sabem após `RAFFLE_REVEAL_MS`.
+  Com sorteio, encerrar a sessão não sai da sala ao vivo (card `components/live/raffle-panel.tsx`). Gestão na aba “Sorteio”
+  e em `/dashboard/sorteios` (entrega via coluna `delivered_at`, único update permitido ao speaker).
 - **Realtime resistente**: `useLiveState` relê `session_live_state` ao conectar (e 3 s depois), expõe `refresh()` (a sala
   ao vivo chama após cada ação) e aceita `pollMs` (só o projetor, 10 s). Nunca usar `pollMs` para participantes.
 - **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta

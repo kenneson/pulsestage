@@ -21,7 +21,7 @@ export async function GET() {
   const all = <T,>(page: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: { message: string } | null }>) =>
     ids.length === 0 ? Promise.resolve([] as T[]) : fetchAllRows(page);
 
-  const [interactions, participants, responses, surveys, surveyQuestions, surveyResponses, insights] = await Promise.all([
+  const [interactions, participants, responses, surveys, surveyQuestions, surveyResponses, insights, prizes, entries, winners] = await Promise.all([
     all((f, t) => supabase.from("interactions").select("*, interaction_options(*)").in("session_id", ids).range(f, t)),
     all((f, t) => supabase.from("participants").select("*, participant_contacts(*)").in("session_id", ids).range(f, t)),
     all((f, t) => supabase.from("responses").select("*").in("session_id", ids).range(f, t)),
@@ -29,6 +29,9 @@ export async function GET() {
     all((f, t) => supabase.from("session_survey_questions").select("*").in("session_id", ids).range(f, t)),
     all((f, t) => supabase.from("survey_responses").select("*, survey_answers(*)").in("session_id", ids).range(f, t)),
     all((f, t) => supabase.from("insights").select("*").in("session_id", ids).range(f, t)),
+    all((f, t) => supabase.from("raffle_prizes").select("*").in("session_id", ids).range(f, t)),
+    all((f, t) => supabase.from("raffle_entries").select("*").in("session_id", ids).range(f, t)),
+    all((f, t) => supabase.from("raffle_winners").select("*").in("session_id", ids).range(f, t)),
   ]);
 
   const body = {
@@ -44,6 +47,9 @@ export async function GET() {
     session_survey_questions: surveyQuestions,
     survey_responses: surveyResponses,
     insights,
+    raffle_prizes: prizes,
+    raffle_entries: entries,
+    raffle_winners: winners,
   };
 
   const date = new Date().toISOString().slice(0, 10);

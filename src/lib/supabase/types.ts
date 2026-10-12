@@ -18,3 +18,6 @@ export type SessionSurveyRow = Tables["session_surveys"]["Row"];
 export type SessionSurveyQuestionRow = Tables["session_survey_questions"]["Row"];
 export type SurveyResponseRow = Tables["survey_responses"]["Row"];
 export type SurveyAnswerRow = Tables["survey_answers"]["Row"];
+export type RafflePrizeRow = Tables["raffle_prizes"]["Row"];
+export type RaffleEntryRow = Tables["raffle_entries"]["Row"];
+export type RaffleWinnerRow = Tables["raffle_winners"]["Row"];

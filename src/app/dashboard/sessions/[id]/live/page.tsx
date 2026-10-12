@@ -11,6 +11,7 @@ import { ControlRoom, type ControlRoomInteraction } from "@/components/live/cont
 import { getSlideUrls } from "@/lib/data/slides";
 import { buildDeck } from "@/lib/domain/deck";
 import { sessionClock } from "@/lib/domain/timing";
+import { getRaffleState } from "@/lib/data/raffle";
 
 export const metadata: Metadata = { title: "Sala ao vivo" };
 
@@ -22,11 +23,12 @@ export default async function LivePage({ params }: { params: Promise<{ id: strin
   const session = await getOwnedSession(supabase, id);
   if (!session) notFound();
 
-  const [interactions, liveResult, resultsResult, slideUrls] = await Promise.all([
+  const [interactions, liveResult, resultsResult, slideUrls, raffle] = await Promise.all([
     getSessionInteractions(supabase, id),
     supabase.from("session_live_state").select("*").eq("session_id", id).maybeSingle(),
     supabase.from("interaction_results").select("*").eq("session_id", id),
     getSlideUrls(supabase, session),
+    session.raffle_eligibility ? getRaffleState(supabase, id, session.raffle_eligibility) : Promise.resolve(null),
   ]);
 
   const controlInteractions: ControlRoomInteraction[] = interactions.flatMap((row) => {
@@ -47,6 +49,7 @@ export default async function LivePage({ params }: { params: Promise<{ id: strin
       joinUrl={joinUrl(session.join_code)}
       clock={sessionClock(session)}
       plannedMinutes={session.estimated_duration_minutes}
+      raffle={raffle}
     />
   );
 }

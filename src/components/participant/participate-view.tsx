@@ -16,6 +16,7 @@ import { Alert } from "@/components/ui/misc";
 import { CheckIcon } from "@/components/icons";
 import { Logo } from "@/components/logo";
 import { AnswerForm } from "./answer-form";
+import { RaffleTicketCard } from "./raffle-ticket";
 
 async function fetchCurrent(sessionId: string): Promise<CurrentInteractionResponse | null> {
   const res = await fetch(`/api/participant/${sessionId}/current`, { cache: "no-store" });
@@ -113,6 +114,8 @@ export function ParticipateView({
   }
 
   const status = live?.status ?? current.status;
+  // O número do sorteio aparece fora das perguntas (respondendo, a atenção fica na pergunta).
+  let showTicket = true;
   let body: React.ReactNode;
 
   if (status === "completed") {
@@ -145,6 +148,7 @@ export function ParticipateView({
       </Screen>
     );
   } else {
+    showTicket = false;
     const interaction = current.interaction;
     body = (
       <div className="flex flex-col gap-5">
@@ -173,6 +177,7 @@ export function ParticipateView({
       <main className="flex flex-1 flex-col justify-center py-6" aria-live="polite">
         {error ? <Alert className="mb-4">{error}</Alert> : null}
         {body}
+        {showTicket ? <RaffleTicketCard sessionId={sessionId} drawnAt={live?.raffle_drawn_at ?? null} className="mt-6" /> : null}
       </main>
     </div>
   );

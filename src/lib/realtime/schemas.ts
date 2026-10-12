@@ -14,6 +14,12 @@ export const liveStateSchema = z.object({
   // Ranking do quiz no telão.
   show_leaderboard: z.boolean().default(false),
   leaderboard_at: z.string().nullable().default(null),
+  // Sorteio no telão: prêmio da vez e o último ganhador (os dados vêm do servidor).
+  show_raffle: z.boolean().default(false),
+  raffle_at: z.string().nullable().default(null),
+  raffle_prize_id: z.string().nullable().default(null),
+  raffle_winner_id: z.string().nullable().default(null),
+  raffle_drawn_at: z.string().nullable().default(null),
   updated_at: z.string(),
 });
 

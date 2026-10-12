@@ -12,6 +12,7 @@ import { buttonVariants } from "@/components/ui/button";
 import {
   BookIcon,
   ClipboardIcon,
+  GiftIcon,
   HomeIcon,
   LibraryIcon,
   LogOutIcon,
@@ -28,6 +29,7 @@ const LINKS = [
   { href: "/dashboard/sessions", label: "Sessões", exact: false, icon: PresentationIcon },
   { href: "/dashboard/pesquisas", label: "Pesquisas", exact: false, icon: ClipboardIcon },
   { href: "/dashboard/biblioteca", label: "Biblioteca", exact: false, icon: LibraryIcon },
+  { href: "/dashboard/sorteios", label: "Sorteios", exact: true, icon: GiftIcon },
   { href: "/dashboard/analytics", label: "Evolução", exact: true, icon: TrendingUpIcon },
   { href: "/dashboard/guia", label: "Guia", exact: true, icon: BookIcon },
 ];

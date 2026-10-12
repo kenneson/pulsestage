@@ -62,7 +62,16 @@ function Choice({ question }: { question: SurveyQuestion }) {
   );
 }
 
-export function SurveyForm({ sessionId, questions }: { sessionId: string; questions: SurveyQuestion[] }) {
+export function SurveyForm({
+  sessionId,
+  questions,
+  after,
+}: {
+  sessionId: string;
+  questions: SurveyQuestion[];
+  /** mostrado depois do envio (ex.: número do sorteio) */
+  after?: React.ReactNode;
+}) {
   const [state, action, pending] = useActionState(submitSurveyAction.bind(null, sessionId), initial);
 
   if (state.done) {
@@ -73,6 +82,7 @@ export function SurveyForm({ sessionId, questions }: { sessionId: string; questi
         </span>
         <h2 className="text-2xl font-semibold">Obrigado!</h2>
         <p className="text-muted-foreground">Suas respostas foram enviadas e vão ajudar a próxima apresentação.</p>
+        {after}
       </div>
     );
   }

@@ -42,6 +42,8 @@ import { TalkTimer } from "./talk-timer";
 import { QuizLeaderboard } from "@/components/display/quiz-leaderboard";
 import { showLeaderboardAction } from "@/features/live/actions";
 import type { SessionClock } from "@/lib/domain/timing";
+import type { RaffleState } from "@/lib/data/raffle";
+import { RafflePanel } from "./raffle-panel";
 
 export type ControlRoomInteraction = PublicInteraction & { correctOptionId: string | null };
 
@@ -57,6 +59,8 @@ type Props = {
   /** início, fim e pausas da sessão, para o cronômetro */
   clock: SessionClock;
   plannedMinutes: number | null;
+  /** null = sessão sem sorteio */
+  raffle: RaffleState | null;
 };
 
 export function ControlRoom({
@@ -69,6 +73,7 @@ export function ControlRoom({
   joinUrl,
   clock,
   plannedMinutes,
+  raffle,
 }: Props) {
   const router = useRouter();
   const [statusPending, startTransition] = useTransition();
@@ -124,7 +129,8 @@ export function ControlRoom({
         return;
       }
       await refreshLive();
-      if (to === "completed") router.push(`/dashboard/sessions/${session.id}/analytics`);
+      // Com sorteio, a sala continua aberta: o sorteio costuma vir depois da pesquisa.
+      if (to === "completed" && !raffle) router.push(`/dashboard/sessions/${session.id}/analytics`);
     });
 
   function itemLabel(item: DeckItem): string {
@@ -136,6 +142,7 @@ export function ControlRoom({
   const participantCount = live?.participant_count ?? 0;
   const hasQuiz = interactions.some((i) => i.type === "quiz");
   const leaderboardOn = status === "live" && Boolean(live?.show_leaderboard);
+  const raffleOn = raffle !== null && status !== "draft" && Boolean(live?.show_raffle);
   const toggleLeaderboard = (show: boolean) =>
     startTransition(async () => {
       const result = await showLeaderboardAction(session.id, show);
@@ -192,7 +199,9 @@ export function ControlRoom({
               onClick={async () => {
                 const confirmed = await confirm({
                   title: "Encerrar a sessão?",
-                  description: "Os participantes verão o link de avaliação. Não dá para reabrir.",
+                  description: raffle
+                    ? "Os participantes verão o link de avaliação. Não dá para reabrir. O sorteio continua nesta sala."
+                    : "Os participantes verão o link de avaliação. Não dá para reabrir.",
                   confirmLabel: "Encerrar",
                   destructive: true,
                 });
@@ -214,7 +223,12 @@ export function ControlRoom({
         <Card>
           <CardHeader className="flex-row flex-wrap items-start justify-between gap-4">
             <div className="min-w-0">
-              {leaderboardOn ? (
+              {raffleOn ? (
+                <>
+                  <p className="font-script text-xs font-bold uppercase tracking-wider text-muted-foreground">No telão</p>
+                  <CardTitle className="mt-1 text-xl">Sorteio</CardTitle>
+                </>
+              ) : leaderboardOn ? (
                 <>
                   <p className="font-script text-xs font-bold uppercase tracking-wider text-muted-foreground">No telão</p>
                   <CardTitle className="mt-1 text-xl">Ranking do quiz</CardTitle>
@@ -274,7 +288,11 @@ export function ControlRoom({
             </div>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            {leaderboardOn ? (
+            {raffleOn ? (
+              <p className="py-10 text-center text-muted-foreground">
+                O sorteio está no telão. Sorteie pelo card “Sorteio”; o nome aparece lá depois que o telão revela.
+              </p>
+            ) : leaderboardOn ? (
               <QuizLeaderboard sessionId={session.id} version={live?.leaderboard_at ?? null} variant="compact" />
             ) : active ? (
               <ResultsView
@@ -318,6 +336,9 @@ export function ControlRoom({
         </Card>
 
         <div className="flex flex-col gap-6">
+          {raffle ? (
+            <RafflePanel sessionId={session.id} initial={raffle} status={status} live={live} onChanged={refreshLive} />
+          ) : null}
           <Card className="items-center text-center">
             <CardContent className="flex flex-col items-center gap-3">
               <div className="rounded-xl bg-white p-3">
