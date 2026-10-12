@@ -12,10 +12,11 @@ export async function GET() {
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
 
-  const [profile, sessions, templates] = await Promise.all([
+  const [profile, sessions, templates, contacts] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
     supabase.from("sessions").select("*").order("created_at"),
     supabase.from("survey_templates").select("*, survey_template_questions(*)").eq("owner_id", user.id),
+    fetchAllRows((f, t) => supabase.from("contact_requests").select("*").order("created_at").range(f, t)),
   ]);
   const ids = (sessions.data ?? []).map((s) => s.id);
   const all = <T,>(page: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: { message: string } | null }>) =>
@@ -50,6 +51,7 @@ export async function GET() {
     raffle_prizes: prizes,
     raffle_entries: entries,
     raffle_winners: winners,
+    contact_requests: contacts,
   };
 
   const date = new Date().toISOString().slice(0, 10);

@@ -133,7 +133,7 @@ export default async function AccountPage() {
           <div className="max-w-md">
             <p className="font-medium">Exportar meus dados</p>
             <p className="text-sm text-muted-foreground">
-              Um arquivo JSON com seu perfil, sessões, perguntas, respostas, pesquisas e insights.
+              Um arquivo JSON com seu perfil, sessões, perguntas, respostas, pesquisas, insights e convites recebidos.
             </p>
           </div>
           <a href="/dashboard/conta/exportar" className={buttonVariants({ variant: "outline" })} download>
@@ -144,7 +144,7 @@ export default async function AccountPage() {
           <div>
             <p className="font-semibold text-destructive">Excluir conta</p>
             <p className="text-sm text-muted-foreground">
-              Apaga para sempre seu perfil, todas as sessões, respostas, pesquisas, insights e os contatos de participantes.
+              Apaga para sempre seu perfil (inclusive o público), todas as sessões, respostas, pesquisas, insights, convites recebidos e os contatos de participantes.
               Não dá para desfazer.
             </p>
           </div>

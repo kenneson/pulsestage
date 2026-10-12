@@ -7,6 +7,8 @@ import { isUuid } from "@/lib/action-result";
 import { Logo } from "@/components/logo";
 import { SurveyForm } from "@/components/participant/survey-form";
 import { RaffleTicketLive } from "@/components/participant/raffle-ticket";
+import { getSurveyPromo } from "@/lib/data/speaker-profile";
+import { SpeakerPromoCard } from "@/components/speaker-profile/speaker-promo-card";
 
 export const metadata: Metadata = { title: "Pesquisa da sessão", robots: { index: false } };
 
@@ -18,9 +20,10 @@ export default async function FeedbackPage({ params }: { params: Promise<{ id: s
   const session = await getPublicSession(admin, id);
   if (!session) notFound();
 
-  const [survey, raffle] = await Promise.all([
+  const [survey, raffle, promo] = await Promise.all([
     session.status === "completed" ? getSessionSurvey(admin, id) : Promise.resolve(null),
     admin.from("sessions").select("raffle_eligibility").eq("id", id).maybeSingle(),
+    session.status === "completed" ? getSurveyPromo(admin, id) : Promise.resolve(null),
   ]);
   const raffleMode = raffle.data?.raffle_eligibility ?? null;
   let alreadySent = await hasSentFeedback(id);
@@ -35,6 +38,14 @@ export default async function FeedbackPage({ params }: { params: Promise<{ id: s
   }
 
   const ticket = raffleMode && participantId ? <RaffleTicketLive sessionId={id} className="mt-4 w-full" /> : null;
+  // Depois de responder (nunca antes, para não influenciar a avaliação).
+  const afterSurvey =
+    ticket || promo ? (
+      <>
+        {ticket}
+        {promo ? <SpeakerPromoCard promo={promo} className="mt-4 w-full" /> : null}
+      </>
+    ) : null;
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-6 px-5 py-8">
@@ -50,7 +61,7 @@ export default async function FeedbackPage({ params }: { params: Promise<{ id: s
       ) : alreadySent ? (
         <>
           <p className="rounded-lg bg-muted p-4">Você já respondeu esta pesquisa. Obrigado!</p>
-          {ticket}
+          {afterSurvey}
         </>
       ) : (
         survey && survey.questions.length > 0 ? (
@@ -62,7 +73,7 @@ export default async function FeedbackPage({ params }: { params: Promise<{ id: s
                   : "Tem sorteio, mas ele vale só para quem entrou na sessão pelo celular, com o código ou o QR Code."}
               </p>
             ) : null}
-            <SurveyForm sessionId={id} questions={survey.questions} after={ticket} />
+            <SurveyForm sessionId={id} questions={survey.questions} after={afterSurvey} />
           </>
         ) : (
           <p className="rounded-lg bg-muted p-4 text-muted-foreground">A pesquisa desta sessão não está disponível.</p>

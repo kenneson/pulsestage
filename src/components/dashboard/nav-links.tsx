@@ -14,6 +14,8 @@ import {
   ClipboardIcon,
   GiftIcon,
   HomeIcon,
+  IdCardIcon,
+  InboxIcon,
   LibraryIcon,
   LogOutIcon,
   MenuIcon,
@@ -31,6 +33,8 @@ const LINKS = [
   { href: "/dashboard/biblioteca", label: "Biblioteca", exact: false, icon: LibraryIcon },
   { href: "/dashboard/sorteios", label: "Sorteios", exact: true, icon: GiftIcon },
   { href: "/dashboard/analytics", label: "Evolução", exact: true, icon: TrendingUpIcon },
+  { href: "/dashboard/perfil-publico", label: "Perfil público", exact: true, icon: IdCardIcon },
+  { href: "/dashboard/convites", label: "Convites", exact: true, icon: InboxIcon },
   { href: "/dashboard/guia", label: "Guia", exact: true, icon: BookIcon },
 ];
 
@@ -45,10 +49,12 @@ export function DashboardSidebar({
   name,
   email,
   avatarUrl,
+  unreadInvites = 0,
 }: {
   name: string | null;
   email: string;
   avatarUrl: string | null;
+  unreadInvites?: number;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -89,6 +95,14 @@ export function DashboardSidebar({
               >
                 <link.icon className={active ? "text-primary" : undefined} />
                 {link.label}
+                {link.href === "/dashboard/convites" && unreadInvites > 0 ? (
+                  <span
+                    className="ml-auto min-w-5 rounded-full bg-primary px-1.5 text-center text-xs font-semibold leading-5 text-primary-foreground tabular-nums"
+                    aria-label={`${unreadInvites} ${unreadInvites === 1 ? "convite novo" : "convites novos"}`}
+                  >
+                    {unreadInvites > 99 ? "99+" : unreadInvites}
+                  </span>
+                ) : null}
               </Link>
             );
           })}

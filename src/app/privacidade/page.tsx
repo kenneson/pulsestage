@@ -4,7 +4,8 @@ import { Logo } from "@/components/logo";
 export const metadata: Metadata = { title: "Privacidade" };
 
 // Mantenha este texto alinhado ao código: cookies em lib/participant/token.ts, contatos em
-// participant_contacts (seção 0.4 da spec) e entrada da IA em lib/ai/build-input.ts.
+// participant_contacts (seção 0.4 da spec), entrada da IA em lib/ai/build-input.ts e perfil público/convites
+// em lib/data/speaker-profile.ts e features/speaker-profile/actions.ts.
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -21,7 +22,7 @@ export default function PrivacyPage() {
       <Logo />
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Política de privacidade</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Última atualização: 2 de outubro de 2026</p>
+        <p className="mt-1 text-sm text-muted-foreground">Última atualização: 12 de outubro de 2026</p>
       </div>
 
       <div className="flex flex-col gap-8 text-muted-foreground [&_li]:ml-5 [&_li]:list-disc">
@@ -86,6 +87,25 @@ export default function PrivacyPage() {
             impossível de adivinhar, porque precisam abrir no celular de quem participa. Elas são apagadas quando nenhuma
             pergunta usa mais a imagem ou quando você exclui a conta.
           </p>
+          <p>
+            <strong className="text-foreground">Perfil público (opcional).</strong> Só existe se você publicar. Mostra
+            nome, foto, mini-bio e o que você preencher (título, temas, cidade, formatos, públicos, experiência
+            declarada e links), além de números calculados das suas sessões encerradas: quantidade de sessões
+            verificadas, total de participantes, nota média da pesquisa (que você pode ocultar) e, nas sessões que
+            você escolher, título, data e faixa de público. Nenhum dado de participante aparece. Ao desligar o perfil,
+            ele sai do ar e do diretório na hora.
+          </p>
+        </Section>
+
+        <Section title="Convites pelo perfil público">
+          <p id="convites" className="scroll-mt-6">
+            Quem usa “Convidar para palestrar” informa nome, e-mail, mensagem e, se quiser, instituição, data e cidade
+            do evento. Esses dados vão só para o palestrante convidado, que é quem decide como responder (controlador);
+            o e-mail do palestrante não é mostrado a quem convida. Para limitar abuso, guardamos junto com o convite um
+            código derivado do endereço IP (um hash com segredo do servidor, sem o IP em si). Quando o aviso por
+            e-mail está configurado, o convite também é enviado ao palestrante pelo serviço de e-mail (Resend). O convite é
+            apagado quando o palestrante o exclui ou exclui a conta.
+          </p>
         </Section>
 
         <Section title="Cookies e armazenamento no navegador">
@@ -113,7 +133,8 @@ export default function PrivacyPage() {
           <ul className="flex flex-col gap-1">
             <li>
               <strong className="text-foreground">Infraestrutura:</strong> Supabase (banco de dados e autenticação) e
-              Vercel (hospedagem), que processam os dados apenas para operar o serviço.
+              Vercel (hospedagem), que processam os dados apenas para operar o serviço. Quando configurado, o Resend
+              entrega os avisos de convite por e-mail.
             </li>
             <li>
               <strong className="text-foreground">Inteligência artificial:</strong> quando o palestrante pede insights,

@@ -16,6 +16,7 @@ const SECTIONS = [
   { id: "encerrar", title: "6. Encerrar e aplicar a pesquisa" },
   { id: "sorteio", title: "7. Fazer um sorteio" },
   { id: "analytics", title: "8. Analisar os resultados" },
+  { id: "perfil-publico", title: "9. Perfil público e convites" },
   { id: "dicas", title: "Dicas" },
 ];
 
@@ -296,6 +297,43 @@ export default function GuidePage() {
               Na aba <strong>“Evolução”</strong>, compare suas avaliações entre sessões encerradas e veja se as mudanças
               surtiram efeito. Para compartilhar, use <strong>“Exportar”</strong> no analytics: relatório em PDF para o
               organizador ou cliente, e CSV das respostas e da pesquisa para planilhas.
+            </p>
+          </Section>
+
+          <Section id="perfil-publico" title="9. Perfil público e convites">
+            <p>
+              Em <strong>“Perfil público”</strong>, no menu, você monta um portfólio com números que o PulseStage confere:
+              sessões realizadas, pessoas na plateia e a nota da pesquisa (0 a 10). Conta só a sessão encerrada com pelo
+              menos 5 pessoas respondendo e 10 minutos de apresentação; ninguém edita esses números.
+            </p>
+            <ol className="flex flex-col gap-1">
+              <li>
+                Escolha o <strong>endereço do perfil</strong>, o título profissional, os temas (separados por vírgula),
+                cidade, formatos e públicos. Nome, foto e mini-bio vêm de <strong>Configurações</strong>.
+              </li>
+              <li>
+                Marque <strong>“Publicar meu perfil”</strong> e clique em <strong>“Salvar perfil público”</strong>. Use{" "}
+                <strong>“Copiar link”</strong> para divulgar.
+              </li>
+              <li>
+                Em <strong>“Sessões no perfil”</strong>, marque quais sessões verificadas aparecem na página (título, data,
+                faixa de público e nota).
+              </li>
+            </ol>
+            <p>
+              Com uma sessão verificada, o perfil entra no{" "}
+              <Link href="/palestrantes" className="font-medium text-primary hover:underline">
+                diretório de palestrantes
+              </Link>
+              , com filtros por tema, estado, formato e público. A <strong>experiência anterior</strong> que você escrever
+              aparece separada, com o rótulo “declarada”.
+            </p>
+            <p>
+              Instituições e empresas usam <strong>“Convidar para palestrar”</strong> no seu perfil. Os pedidos chegam em{" "}
+              <strong>“Convites”</strong>, no menu (o número mostra os não lidos); seu e-mail nunca aparece para quem
+              convida. Abra um convite para ler, use <strong>“Responder”</strong> para escrever do seu e-mail, ou{" "}
+              <strong>“Arquivar”</strong> e <strong>“Excluir”</strong>. Com <strong>“Divulgar o perfil depois da
+              pesquisa”</strong>, quem responde a pesquisa das suas sessões vê um card com o link do perfil.
             </p>
           </Section>
 

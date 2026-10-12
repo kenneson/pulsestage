@@ -95,6 +95,17 @@
 - **Landing** (`src/app/page.tsx`, contrato em `.impeccable/surfaces/`): manchete na largura toda e palco de demonstração
   (`components/landing/stage-demo.tsx`, 4 cenas simuladas: enquete, nuvem, quiz e ranking, sorteio; texto do telão em
   `cqw` para escalar com a tela). Seções de slides e de gamificação/sorteio. Só fatos do produto, nunca números de uso.
+- **Perfil público e diretório** (migration `20261014000000_speaker_profiles.sql`): colunas de perfil público em `profiles`
+  (`public_enabled`, `public_slug`, título, temas, cidade/UF, formatos, públicos, experiência declarada, links e as opções
+  `contact_enabled/show_ratings/promote_on_survey`), `sessions.public_listed` e `contact_requests` (gravada só pelo servidor).
+  `speaker_session_facts()` entrega os fatos de cada sessão encerrada; o critério de verificação (5 pessoas respondendo,
+  10 min de palestra), notas, faixas de público, slug, temas e filtros do diretório ficam em `lib/domain/speaker-profile.ts`.
+  O trigger `lock_session_timing` impede o speaker de mexer em início/fim/pausas pelo cliente (sessão nova nasce rascunho).
+  Painel: `/dashboard/perfil-publico` e `/dashboard/convites` (selo de não lidos). Público: `/p/[slug]` (com OG image),
+  `/palestrantes` e `/palestrantes/tema/[tema]` (filtros por GET, lidos com a secret key em `lib/data/speaker-profile.ts`),
+  `sitemap.ts` e `robots.ts`. Convite: honeypot, até 3 por hora por hash de IP e 30 por dia por palestrante; e-mail opcional
+  via Resend (`RESEND_API_KEY`, `CONTACT_EMAIL_FROM`). Card “Conheça o palestrante” depois da pesquisa. Sem feed, curtidas
+  ou seguidores: é portfólio, não rede social.
 - **Realtime resistente**: `useLiveState` relê `session_live_state` ao conectar (e 3 s depois), expõe `refresh()` (a sala
   ao vivo chama após cada ação) e aceita `pollMs` (só o projetor, 10 s). Nunca usar `pollMs` para participantes.
 - **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta

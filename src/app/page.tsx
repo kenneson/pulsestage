@@ -235,6 +235,9 @@ export default function Home() {
             <a href="#recursos" className={cn(buttonVariants({ variant: "ghost" }), "hidden md:inline-flex")}>
               Recursos
             </a>
+            <Link href="/palestrantes" className={cn(buttonVariants({ variant: "ghost" }), "hidden md:inline-flex")}>
+              Palestrantes
+            </Link>
             <ThemeToggle />
             <Link href="/login" className={buttonVariants({ variant: "ghost" })}>
               Entrar
@@ -660,9 +663,14 @@ export default function Home() {
       <footer className="border-t">
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-6 text-sm text-muted-foreground md:px-6">
           <span>PulseStage · interação ao vivo para palestras e aulas</span>
-          <Link href="/privacidade" className="underline-offset-4 hover:text-foreground hover:underline">
-            Privacidade
-          </Link>
+          <span className="flex gap-4">
+            <Link href="/palestrantes" className="underline-offset-4 hover:text-foreground hover:underline">
+              Encontre um palestrante
+            </Link>
+            <Link href="/privacidade" className="underline-offset-4 hover:text-foreground hover:underline">
+              Privacidade
+            </Link>
+          </span>
         </div>
       </footer>
     </div>

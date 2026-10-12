@@ -21,3 +21,4 @@ export type SurveyAnswerRow = Tables["survey_answers"]["Row"];
 export type RafflePrizeRow = Tables["raffle_prizes"]["Row"];
 export type RaffleEntryRow = Tables["raffle_entries"]["Row"];
 export type RaffleWinnerRow = Tables["raffle_winners"]["Row"];
+export type ContactRequestRow = Tables["contact_requests"]["Row"];

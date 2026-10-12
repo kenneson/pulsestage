@@ -99,7 +99,7 @@ export function ProfileForm({ name, email, bio }: { name: string | null; email: 
       <Field>
         <Label htmlFor="bio">Mini-bio</Label>
         <Textarea id="bio" name="bio" defaultValue={bio ?? ""} maxLength={400} placeholder="Ex.: Palestrante sobre IA no trabalho e produtividade." />
-        <p className="text-xs text-muted-foreground">Aparece para a plateia na tela de entrada da sessão e no relatório em PDF.</p>
+        <p className="text-xs text-muted-foreground">Aparece para a plateia na tela de entrada da sessão, no relatório em PDF e no seu perfil público.</p>
       </Field>
       {feedback}
       <div>

@@ -8,6 +8,9 @@ const schema = z.object({
   AI_PROVIDER: z.string().optional(),
   AI_API_KEY: z.string().optional(),
   AI_MODEL: z.string().optional(),
+  // Opcional: avisa o palestrante por e-mail quando chega um convite (Resend). Sem elas, só a caixa do painel.
+  RESEND_API_KEY: z.string().optional(),
+  CONTACT_EMAIL_FROM: z.string().optional(),
 });
 
 export type ServerEnv = z.infer<typeof schema>;
@@ -24,6 +27,8 @@ export function serverEnv(): ServerEnv {
     AI_PROVIDER: process.env.AI_PROVIDER,
     AI_API_KEY: process.env.AI_API_KEY,
     AI_MODEL: process.env.AI_MODEL,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    CONTACT_EMAIL_FROM: process.env.CONTACT_EMAIL_FROM,
   };
   const cleaned = Object.fromEntries(
     Object.entries(raw).map(([key, value]) => {

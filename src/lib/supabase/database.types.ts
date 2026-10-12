@@ -15,6 +15,62 @@ export type Database = {
   }
   public: {
     Tables: {
+      contact_requests: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          email: string
+          event_city: string | null
+          event_date: string | null
+          id: string
+          ip_hash: string | null
+          message: string
+          name: string
+          org_kind: string | null
+          organization: string | null
+          read_at: string | null
+          speaker_id: string
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          email: string
+          event_city?: string | null
+          event_date?: string | null
+          id?: string
+          ip_hash?: string | null
+          message: string
+          name: string
+          org_kind?: string | null
+          organization?: string | null
+          read_at?: string | null
+          speaker_id: string
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          email?: string
+          event_city?: string | null
+          event_date?: string | null
+          id?: string
+          ip_hash?: string | null
+          message?: string
+          name?: string
+          org_kind?: string | null
+          organization?: string | null
+          read_at?: string | null
+          speaker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_requests_speaker_id_fkey"
+            columns: ["speaker_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feedback: {
         Row: {
           applicability_rating: number | null
@@ -345,37 +401,79 @@ export type Database = {
       }
       profiles: {
         Row: {
+          audiences: string[]
           avatar_url: string | null
           bio: string | null
+          city: string | null
+          contact_enabled: boolean
           created_at: string
           default_duration_minutes: number | null
           default_survey_template_id: string | null
+          experience: string | null
+          formats: string[]
+          headline: string | null
           id: string
+          linkedin_url: string | null
           name: string | null
+          promote_on_survey: boolean
+          public_enabled: boolean
+          public_slug: string | null
+          show_ratings: boolean
+          state: string | null
           time_zone: string
+          topics: string[]
           updated_at: string
+          website_url: string | null
         }
         Insert: {
+          audiences?: string[]
           avatar_url?: string | null
           bio?: string | null
+          city?: string | null
+          contact_enabled?: boolean
           created_at?: string
           default_duration_minutes?: number | null
           default_survey_template_id?: string | null
+          experience?: string | null
+          formats?: string[]
+          headline?: string | null
           id: string
+          linkedin_url?: string | null
           name?: string | null
+          promote_on_survey?: boolean
+          public_enabled?: boolean
+          public_slug?: string | null
+          show_ratings?: boolean
+          state?: string | null
           time_zone?: string
+          topics?: string[]
           updated_at?: string
+          website_url?: string | null
         }
         Update: {
+          audiences?: string[]
           avatar_url?: string | null
           bio?: string | null
+          city?: string | null
+          contact_enabled?: boolean
           created_at?: string
           default_duration_minutes?: number | null
           default_survey_template_id?: string | null
+          experience?: string | null
+          formats?: string[]
+          headline?: string | null
           id?: string
+          linkedin_url?: string | null
           name?: string | null
+          promote_on_survey?: boolean
+          public_enabled?: boolean
+          public_slug?: string | null
+          show_ratings?: boolean
+          state?: string | null
           time_zone?: string
+          topics?: string[]
           updated_at?: string
+          website_url?: string | null
         }
         Relationships: [
           {
@@ -778,6 +876,7 @@ export type Database = {
           join_code: string
           paused_at: string | null
           paused_seconds: number
+          public_listed: boolean
           raffle_eligibility: string | null
           scheduled_at: string | null
           slide_count: number
@@ -799,6 +898,7 @@ export type Database = {
           join_code?: string
           paused_at?: string | null
           paused_seconds?: number
+          public_listed?: boolean
           raffle_eligibility?: string | null
           scheduled_at?: string | null
           slide_count?: number
@@ -820,6 +920,7 @@ export type Database = {
           join_code?: string
           paused_at?: string | null
           paused_seconds?: number
+          public_listed?: boolean
           raffle_eligibility?: string | null
           scheduled_at?: string | null
           slide_count?: number
@@ -1041,6 +1142,23 @@ export type Database = {
       show_slide: {
         Args: { p_session_id: string; p_slide?: number }
         Returns: undefined
+      }
+      speaker_session_facts: {
+        Args: { p_speaker_ids: string[] }
+        Returns: {
+          ended_at: string
+          participants: number
+          public_listed: boolean
+          rating_count: number
+          rating_sum: number
+          responders: number
+          session_id: string
+          speaker_id: string
+          started_at: string
+          survey_responses: number
+          talk_seconds: number
+          title: string
+        }[]
       }
       take_survey_snapshot: {
         Args: { p_session_id: string }

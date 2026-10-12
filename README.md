@@ -93,6 +93,7 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
 | Ranking do quiz animado no telão (“Mostrar ranking”) | ✅ |
 | Gamificação: avatares, alternativas com formas/cores e imagens, bônus de velocidade | ✅ |
 | Sorteio de prêmios (pesquisa ou todos), número da sorte, telão com suspense e som, controle de entrega | ✅ |
+| Perfil público verificado do palestrante, diretório `/palestrantes` (filtros e páginas por tema) e convites | ✅ |
 | Realtime resistente a eventos perdidos (releitura ao conectar, após ações e no projetor) | ✅ |
 | Testes unitários do domínio (sessão, palavras, datas, resultados, métricas) | ✅ |
 | Testes de integração e E2E | ⏳ |
