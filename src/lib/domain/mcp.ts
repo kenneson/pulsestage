@@ -1,0 +1,291 @@
+// Integração por MCP (Claude, ChatGPT e outros assistentes). Regras puras (sem I/O).
+// O assistente lê a apresentação (PDF) no próprio chat e manda perguntas num formato simples,
+// com "depois de qual slide" cada uma entra. Aqui esse formato vira a mesma entrada do builder
+// (interactionInputSchema), e o roteiro é reordenado sem perder as posições planejadas,
+// mesmo antes de o PDF ser enviado na aba Slides.
+
+import { z } from "zod";
+import {
+  INTERACTION_TYPE_META,
+  INTERACTION_TYPES,
+  interactionInputSchema,
+  type InteractionType,
+  type ParsedInteractionInput,
+} from "./interactions.ts";
+import { MAX_SLIDES, type Arrangement, type DeckInteraction } from "./deck.ts";
+
+/** Perguntas por chamada de add_interactions. */
+export const MCP_MAX_BATCH = 30;
+
+export const afterSlideSchema = z
+  .number()
+  .int()
+  .min(0)
+  .max(MAX_SLIDES)
+  .nullable()
+  .describe(
+    "Depois de qual slide a pergunta entra: 1 = depois do slide 1, 0 = antes do primeiro slide, null = no fim da apresentação. Use a numeração de páginas do PDF.",
+  );
+
+/** Formato simples para assistentes de IA (campos planos, com nomes explícitos). */
+export const mcpInteractionShape = {
+  type: z
+    .enum(INTERACTION_TYPES)
+    .describe(
+      "multiple_choice = enquete (uma escolha, sem resposta certa); quiz = pergunta com uma resposta certa e pontos; rating = nota numa escala; word_cloud = nuvem de palavras (respostas curtas); open_text = pergunta aberta.",
+    ),
+  question: z.string().trim().min(1).max(300).describe("Texto da pergunta, como a plateia vai ler."),
+  description: z.string().trim().max(1000).optional().describe("Texto de apoio opcional, abaixo da pergunta."),
+  options: z
+    .array(z.string().trim().min(1).max(200))
+    .min(2)
+    .max(8)
+    .optional()
+    .describe("Alternativas (obrigatório em multiple_choice, de 2 a 8, e quiz, de 2 a 6)."),
+  correct_option: z
+    .number()
+    .int()
+    .min(1)
+    .max(8)
+    .optional()
+    .describe("Só quiz: número da alternativa correta, começando em 1."),
+  points: z.number().int().min(0).max(10000).optional().describe("Só quiz: pontos de quem acerta (padrão 100)."),
+  timer_seconds: z.number().int().min(5).max(300).optional().describe("Só quiz: tempo para responder, em segundos."),
+  speed_bonus: z
+    .boolean()
+    .optional()
+    .describe("Só quiz com timer_seconds: quem responde mais rápido ganha mais pontos (de 100% a 50%)."),
+  shapes: z
+    .boolean()
+    .optional()
+    .describe("Enquete e quiz: alternativas com forma e cor (estilo jogo), boas para telão."),
+  scale_min: z.number().int().min(0).max(1).optional().describe("Só rating: início da escala, 0 ou 1 (padrão 1)."),
+  scale_max: z.number().int().min(2).max(10).optional().describe("Só rating: fim da escala, de 2 a 10 (padrão 5)."),
+  min_label: z.string().trim().max(40).optional().describe("Só rating: legenda do menor valor."),
+  max_label: z.string().trim().max(40).optional().describe("Só rating: legenda do maior valor."),
+  max_length: z
+    .number()
+    .int()
+    .optional()
+    .describe("word_cloud: tamanho máximo da resposta (5 a 50, padrão 30); open_text: 20 a 500, padrão 280."),
+  show_on_display: z.boolean().optional().describe("Só open_text: mostrar as respostas no telão (padrão sim)."),
+  after_slide: afterSlideSchema.optional(),
+};
+
+export const mcpInteractionSchema = z.object(mcpInteractionShape);
+export type McpInteraction = z.infer<typeof mcpInteractionSchema>;
+
+type Converted = { ok: true; input: ParsedInteractionInput; afterSlide: number | null } | { ok: false; error: string };
+
+/** Converte para a entrada do builder e valida com as mesmas regras do painel. */
+export function toInteractionInput(item: McpInteraction): Converted {
+  const base = { title: item.question, description: item.description };
+  const optionStyle = item.shapes ? "shapes" : "text";
+  let raw: unknown;
+  switch (item.type) {
+    case "multiple_choice":
+      raw = { ...base, type: item.type, settings: { optionStyle }, options: (item.options ?? []).map((label) => ({ label })) };
+      break;
+    case "quiz": {
+      if (item.correct_option === undefined) return { ok: false, error: "Informe correct_option (a alternativa certa)." };
+      const options = item.options ?? [];
+      if (item.correct_option > options.length) {
+        return { ok: false, error: `correct_option ${item.correct_option} não existe (há ${options.length} alternativas).` };
+      }
+      raw = {
+        ...base,
+        type: item.type,
+        settings: {
+          timerSeconds: item.timer_seconds ?? null,
+          optionStyle,
+          speedBonus: Boolean(item.speed_bonus && item.timer_seconds),
+        },
+        options: options.map((label, i) => ({ label, isCorrect: i === item.correct_option! - 1, points: item.points ?? 100 })),
+      };
+      break;
+    }
+    case "rating":
+      raw = {
+        ...base,
+        type: item.type,
+        settings: {
+          min: item.scale_min ?? 1,
+          max: item.scale_max ?? 5,
+          minLabel: item.min_label,
+          maxLabel: item.max_label,
+        },
+      };
+      break;
+    case "word_cloud":
+      raw = { ...base, type: item.type, settings: { maxLength: item.max_length ?? 30 } };
+      break;
+    case "open_text":
+      raw = {
+        ...base,
+        type: item.type,
+        settings: { maxLength: item.max_length ?? 280, showOnDisplay: item.show_on_display ?? true },
+      };
+      break;
+  }
+  const parsed = interactionInputSchema.safeParse(raw);
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0];
+    const where = issue?.path.length ? ` (${issue.path.join(".")})` : "";
+    return { ok: false, error: `${issue?.message ?? "Dados inválidos."}${where}` };
+  }
+  return { ok: true, input: parsed.data, afterSlide: item.after_slide ?? null };
+}
+
+/** Valida um lote inteiro antes de gravar qualquer coisa: ou entram todas, ou nenhuma. */
+export function convertBatch(
+  items: readonly McpInteraction[],
+): { ok: true; items: { input: ParsedInteractionInput; afterSlide: number | null }[] } | { ok: false; error: string } {
+  const out: { input: ParsedInteractionInput; afterSlide: number | null }[] = [];
+  for (const [index, item] of items.entries()) {
+    const converted = toInteractionInput(item);
+    if (!converted.ok) return { ok: false, error: `Interação ${index + 1} (“${item.question.slice(0, 60)}”): ${converted.error}` };
+    out.push({ input: converted.input, afterSlide: converted.afterSlide });
+  }
+  return { ok: true, items: out };
+}
+
+// ---------------------------------------------------------------------------
+// Ordem do roteiro
+// ---------------------------------------------------------------------------
+
+const keyOf = (afterSlide: number | null) => (afterSlide === null ? Number.POSITIVE_INFINITY : afterSlide);
+
+/**
+ * Ordena pelo ponto da apresentação (sem limitar ao número de slides: a posição planejada vale
+ * quando o PDF chegar). Empates mantêm a ordem recebida.
+ */
+function byAnchor(items: readonly DeckInteraction[]): Arrangement {
+  const ordered = items
+    .map((item, order) => ({ item, order }))
+    .sort((a, b) => keyOf(a.item.afterSlide) - keyOf(b.item.afterSlide) || a.order - b.order)
+    .map((e) => e.item);
+  return { ids: ordered.map((i) => i.id), afterSlides: ordered.map((i) => i.afterSlide) };
+}
+
+/** Perguntas novas entram no roteiro existente, cada uma no seu ponto (depois das que já estão lá). */
+export function mergeArrangement(existing: readonly DeckInteraction[], added: readonly DeckInteraction[]): Arrangement {
+  return byAnchor([...existing, ...added]);
+}
+
+/** Muda uma pergunta de lugar: vai para o fim do ponto escolhido. null quando ela não existe. */
+export function relocate(
+  interactions: readonly DeckInteraction[],
+  id: string,
+  afterSlide: number | null,
+): Arrangement | null {
+  if (!interactions.some((i) => i.id === id)) return null;
+  return byAnchor([...interactions.filter((i) => i.id !== id), { id, afterSlide }]);
+}
+
+// ---------------------------------------------------------------------------
+// Visão para o assistente
+// ---------------------------------------------------------------------------
+
+export type McpInteractionView = {
+  id: string;
+  type: InteractionType;
+  type_label: string;
+  question: string;
+  description: string | null;
+  after_slide: number | null;
+  position_label: string;
+  options?: { label: string; correct?: boolean; points?: number }[];
+  settings: Record<string, unknown>;
+};
+
+/** "Antes do 1º slide", "Depois do slide 4" ou "No fim" (sem depender do PDF já estar enviado). */
+export function positionLabel(afterSlide: number | null, slideCount: number): string {
+  if (afterSlide === null) return "No fim";
+  if (afterSlide === 0) return "Antes do 1º slide";
+  if (slideCount > 0 && afterSlide >= slideCount) return "No fim (depois do último slide)";
+  return `Depois do slide ${afterSlide}`;
+}
+
+export function toInteractionView(
+  row: {
+    id: string;
+    type: InteractionType;
+    title: string;
+    description: string | null;
+    after_slide: number | null;
+    settings: unknown;
+    options: { label: string; is_correct: boolean; points: number; position: number }[];
+  },
+  slideCount: number,
+): McpInteractionView {
+  const options = [...row.options].sort((a, b) => a.position - b.position);
+  return {
+    id: row.id,
+    type: row.type,
+    type_label: INTERACTION_TYPE_META[row.type].label,
+    question: row.title,
+    description: row.description,
+    after_slide: row.after_slide,
+    position_label: positionLabel(row.after_slide, slideCount),
+    ...(options.length > 0
+      ? {
+          options: options.map((o) =>
+            row.type === "quiz" ? { label: o.label, correct: o.is_correct, points: o.points } : { label: o.label },
+          ),
+        }
+      : {}),
+    settings: typeof row.settings === "object" && row.settings !== null ? (row.settings as Record<string, unknown>) : {},
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Textos para o assistente
+// ---------------------------------------------------------------------------
+
+export const MCP_INSTRUCTIONS = `PulseStage cria interações ao vivo (enquete, quiz, escala, nuvem de palavras e pergunta aberta) para aulas, palestras e treinamentos. A plateia responde pelo celular e os resultados aparecem no telão.
+
+Fluxo recomendado quando a pessoa anexar uma apresentação (PDF) no chat:
+1. Leia os slides e entenda o tema, o público e a sequência.
+2. Proponha um roteiro curto antes de gravar: para cada pergunta, o tipo, o texto, as alternativas e depois de qual slide ela entra (numeração das páginas do PDF). Espere a confirmação.
+3. Crie a sessão com create_session (ou use uma existente) e grave tudo de uma vez com add_interactions, informando after_slide.
+4. Diga à pessoa para abrir o link da aba Slides e enviar o mesmo PDF: as perguntas já aparecem nos lugares certos.
+
+Boas práticas: uma interação a cada 5 a 8 slides (cerca de 1 a cada 5 a 10 minutos); abrir com algo leve (enquete ou nuvem sobre a experiência da plateia); quiz logo depois de um conteúdo explicado, com distratores plausíveis; escala para medir confiança ou concordância; terminar com pergunta aberta ou nuvem. Perguntas curtas, que caibam no celular. Não invente dados que não estão nos slides.
+
+O MCP não inicia nem encerra sessões ao vivo: isso é feito no app. Sessões encerradas não podem ser editadas, mas get_session_results traz os resultados para análise.`;
+
+export function planPromptText(args: { audience?: string; duration?: string; goal?: string }): string {
+  const context = [
+    args.audience ? `Público: ${args.audience}.` : null,
+    args.duration ? `Duração: ${args.duration}.` : null,
+    args.goal ? `Objetivo: ${args.goal}.` : null,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  return `Use a apresentação (PDF) que anexei para planejar interações no PulseStage. ${context}
+
+1. Resuma em poucas linhas a sequência dos slides (número da página e assunto).
+2. Proponha entre 4 e 8 interações: tipo, pergunta, alternativas (no quiz, marque a certa) e depois de qual slide entra (after_slide = número da página do PDF). Varie os tipos e explique em uma linha por que cada uma ajuda naquele ponto.
+3. Espere eu aprovar ou ajustar.
+4. Depois de aprovado: crie a sessão (create_session) ou pergunte se devo usar uma existente (list_sessions), grave com add_interactions e me passe o link da aba Slides para eu enviar o PDF.`;
+}
+
+/** Pedidos de exemplo (página Integrações, guia e landing). */
+export const MCP_EXAMPLE_PROMPTS = [
+  {
+    title: "A partir dos slides",
+    text: "Anexei minha apresentação. Use o PulseStage para planejar 5 interações para esta palestra de 50 minutos para professores do ensino médio. Me mostre a proposta antes de criar.",
+  },
+  {
+    title: "Uma aula do zero",
+    text: "Crie no PulseStage a sessão “Frações – 6º ano” para amanhã às 10h, com uma nuvem de palavras para abrir e um quiz de 4 perguntas com tempo de 20 segundos.",
+  },
+  {
+    title: "Ajustar o roteiro",
+    text: "Na minha sessão “Liderança em equipes remotas”, troque a pergunta depois do slide 8 por um quiz mais difícil e mova a escala para o fim.",
+  },
+  {
+    title: "Depois da palestra",
+    text: "Analise os resultados da minha última sessão no PulseStage: o que funcionou, onde a plateia errou mais e o que mudar na próxima vez.",
+  },
+] as const;

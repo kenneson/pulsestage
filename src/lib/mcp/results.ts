@@ -1,0 +1,95 @@
+import "server-only";
+import type { SessionAnalyticsBundle } from "@/lib/data/analytics";
+import { computeOverview, quizStats } from "@/lib/domain/metrics";
+import { isInteractionType, normalizeSettings, INTERACTION_TYPE_META } from "@/lib/domain/interactions";
+import { ratingStats, snapshotFromResponses, wordList } from "@/lib/domain/results";
+import { sessionClock, talkSeconds } from "@/lib/domain/timing";
+
+// Resumo dos resultados de uma sessão para o assistente analisar. Só números agregados e textos das
+// respostas abertas e da pesquisa; nunca nomes, e-mails ou telefones de quem participou.
+
+const MAX_TEXTS = 30;
+const round = (n: number | null, digits = 2) => (n === null ? null : Math.round(n * 10 ** digits) / 10 ** digits);
+
+export function summarizeForAssistant(bundle: SessionAnalyticsBundle) {
+  const { session } = bundle;
+  const overview = computeOverview(bundle);
+  const seconds = talkSeconds(sessionClock(session), Date.now());
+
+  const interactions = bundle.interactionsWithOptions
+    .filter((i) => isInteractionType(i.type))
+    .map((i) => {
+      const type = isInteractionType(i.type) ? i.type : "open_text";
+      const responses = bundle.responses.filter((r) => r.interaction_id === i.id);
+      const snapshot = snapshotFromResponses(responses);
+      const options = [...i.options].sort((a, b) => a.position - b.position);
+      const base = { question: i.title, type, type_label: INTERACTION_TYPE_META[type].label, responses: responses.length };
+      switch (type) {
+        case "multiple_choice":
+          return {
+            ...base,
+            results: options.map((o) => ({ option: o.label, votes: snapshot.counts[o.id] ?? 0 })),
+          };
+        case "quiz": {
+          const stats = quizStats(responses);
+          return {
+            ...base,
+            correct_rate: round(stats.correctRate),
+            avg_response_seconds: round(stats.avgResponseMs === null ? null : stats.avgResponseMs / 1000, 1),
+            results: options.map((o) => ({ option: o.label, correct: o.is_correct, votes: snapshot.counts[o.id] ?? 0 })),
+          };
+        }
+        case "rating": {
+          const settings = normalizeSettings(type, i.settings);
+          const stats = ratingStats(settings.min, settings.max, snapshot);
+          return {
+            ...base,
+            scale: `${settings.min} a ${settings.max}`,
+            mean: round(stats.mean),
+            median: stats.median,
+            distribution: Object.fromEntries(
+              Array.from({ length: settings.max - settings.min + 1 }, (_, k) => {
+                const v = settings.min + k;
+                return [String(v), snapshot.counts[String(v)] ?? 0];
+              }),
+            ),
+          };
+        }
+        case "word_cloud":
+          return { ...base, top_words: wordList(snapshot, 20) };
+        case "open_text":
+          return { ...base, answers: snapshot.recent.slice(0, MAX_TEXTS).map((e) => e.text) };
+      }
+    });
+
+  const survey = overview.survey;
+  const comments = bundle.survey.answers
+    .map((a) => a.value_text?.trim())
+    .filter((t): t is string => Boolean(t))
+    .slice(0, MAX_TEXTS);
+
+  return {
+    session: {
+      title: session.title,
+      status: session.status,
+      started_at: session.started_at,
+      ended_at: session.ended_at,
+      talk_minutes: seconds === null ? null : Math.round(seconds / 60),
+      planned_minutes: session.estimated_duration_minutes,
+    },
+    overview: {
+      participants: overview.participants,
+      people_who_answered: overview.uniqueResponders,
+      total_answers: overview.totalResponses,
+      response_rate: round(overview.responseRate),
+      participation_rate: round(overview.participationRate),
+    },
+    survey: {
+      responses: survey.count,
+      overall_score_0_10: round(survey.headline, 1),
+      dimensions: survey.dimensions.map((d) => ({ dimension: d.label, mean: round(d.mean), max: d.max, answers: d.count })),
+      comments,
+    },
+    interactions,
+  };
+}

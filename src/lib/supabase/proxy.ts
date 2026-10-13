@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { publicEnv } from "@/lib/env";
+import { safeNextPath } from "@/lib/action-result";
 import type { Database } from "./database.types";
 
 const AUTH_PAGES = ["/login", "/signup"];
@@ -39,10 +40,9 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (user && AUTH_PAGES.includes(path)) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
-    url.search = "";
-    return NextResponse.redirect(url);
+    // Já logado: segue para onde ia (ex.: consentimento de um assistente de IA) ou para o painel.
+    const next = new URL(safeNextPath(request.nextUrl.searchParams.get("next")), request.nextUrl.origin);
+    return NextResponse.redirect(next);
   }
 
   return response;

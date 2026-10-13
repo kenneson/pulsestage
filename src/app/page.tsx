@@ -163,6 +163,33 @@ const AUDIENCES = [
   },
 ];
 
+// Conversa de exemplo da seção de IA (dados simulados, rotulados).
+const AI_PLAN = [
+  { where: "Depois do slide 2", paper: "bg-rev-yellow", type: "Nuvem de palavras", text: "Em uma palavra: o que você espera da IA na escola?" },
+  { where: "Depois do slide 7", paper: "bg-rev-gold", type: "Quiz", text: "O que é um modelo de linguagem?" },
+  { where: "Depois do slide 12", paper: "bg-rev-pink", type: "Escala", text: "Quanto você se sente pronto para usar IA em aula?" },
+  { where: "No fim", paper: "bg-rev-green", type: "Pergunta aberta", text: "Que dúvida ficou?" },
+];
+
+const AI_POINTS = [
+  {
+    title: "Seus slides viram roteiro",
+    text: "Anexe o PDF da apresentação no chat. O assistente lê os slides e sugere a pergunta certa para cada momento.",
+  },
+  {
+    title: "Cada pergunta no lugar certo",
+    text: "As perguntas já chegam marcadas com o slide em que entram. Envie o mesmo PDF na sessão e está tudo encaixado.",
+  },
+  {
+    title: "Você aprova antes",
+    text: "O assistente mostra a proposta e só grava quando você confirmar. Depois, ajuste no PulseStage como sempre.",
+  },
+  {
+    title: "Análise depois da palestra",
+    text: "Peça um balanço da sessão: o assistente lê os resultados e a pesquisa, sem nomes nem contatos da plateia.",
+  },
+];
+
 const FAQ = [
   {
     q: "A plateia precisa baixar algum aplicativo?",
@@ -179,6 +206,10 @@ const FAQ = [
   {
     q: "Como funciona o sorteio?",
     a: "Você cadastra os prêmios e escolhe quem concorre: todos que entraram ou só quem respondeu a pesquisa no fim. Cada pessoa recebe um número no celular. O ganhador é escolhido pelo servidor e revelado no telão com animação; a mensagem do prêmio, como um cupom, aparece só no celular de quem ganhou.",
+  },
+  {
+    q: "Funciona com o Claude ou o ChatGPT?",
+    a: "Sim. O PulseStage tem um servidor MCP: você conecta sua conta ao Claude, ao ChatGPT ou a outro assistente compatível, anexa os slides no chat e pede as perguntas. O assistente cria a sessão e coloca cada pergunta depois do slide certo. Ele não inicia a sessão ao vivo; isso continua com você.",
   },
   {
     q: "Quantas pessoas podem participar?",
@@ -234,6 +265,9 @@ export default function Home() {
             </a>
             <a href="#recursos" className={cn(buttonVariants({ variant: "ghost" }), "hidden md:inline-flex")}>
               Recursos
+            </a>
+            <a href="#ia" className={cn(buttonVariants({ variant: "ghost" }), "hidden lg:inline-flex")}>
+              Com IA
             </a>
             <Link href="/palestrantes" className={cn(buttonVariants({ variant: "ghost" }), "hidden md:inline-flex")}>
               Palestrantes
@@ -491,6 +525,69 @@ export default function Home() {
                 </div>
               ))}
             </dl>
+          </div>
+        </section>
+
+        {/* IA: Claude, ChatGPT e outros assistentes via MCP. */}
+        <section id="ia" className="border-t">
+          <div className="mx-auto grid w-full max-w-6xl gap-12 px-4 py-20 md:px-6 md:py-24 lg:grid-cols-[5fr_6fr] lg:items-center lg:gap-16">
+            <div className="flex flex-col gap-8">
+              <SectionHeading title="Monte as perguntas conversando com o Claude ou o ChatGPT">
+                Já tem a apresentação pronta? Conecte o PulseStage ao seu assistente de IA, anexe os slides e peça as
+                interações. Ele cria a sessão com cada pergunta no ponto certo da apresentação.
+              </SectionHeading>
+              <dl className="grid gap-x-8 gap-y-6 sm:grid-cols-2">
+                {AI_POINTS.map((point, index) => (
+                  <div key={point.title} className="reveal flex flex-col gap-1 border-t pt-4" style={stagger(index % 2)}>
+                    <dt className="font-display text-lg font-bold">{point.title}</dt>
+                    <dd className="leading-relaxed text-muted-foreground">{point.text}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="reveal text-sm text-muted-foreground">
+                Funciona com o Claude, o ChatGPT e outros assistentes compatíveis com MCP (Model Context Protocol). Você
+                conecta uma vez, pelo painel, em Integrações.
+              </p>
+            </div>
+
+            <figure className={cn("reveal flex flex-col gap-4 rounded-sm bg-card p-5 dark:border sm:p-6", paperShadow)}>
+              <div className="ml-auto flex max-w-[85%] flex-col items-end gap-2">
+                <span className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm">
+                  <span className="grid size-8 place-items-center rounded-md bg-destructive/15 text-[10px] font-bold text-destructive">
+                    PDF
+                  </span>
+                  <span className="flex flex-col leading-tight">
+                    <span className="font-medium">ia-na-escola.pdf</span>
+                    <span className="text-xs text-muted-foreground">18 páginas</span>
+                  </span>
+                </span>
+                <p className="rounded-2xl rounded-tr-sm bg-primary px-4 py-2.5 text-sm text-primary-foreground">
+                  Crie no PulseStage as interações desta palestra de 50 minutos para professores.
+                </p>
+              </div>
+
+              <div className="flex max-w-[92%] flex-col gap-3 rounded-2xl rounded-tl-sm bg-muted px-4 py-3 text-sm">
+                <p>Proposta para os seus slides:</p>
+                <ol className="flex flex-col gap-2">
+                  {AI_PLAN.map((item) => (
+                    <li key={item.where} className={cn("flex flex-col gap-0.5 rounded-md px-3 py-2 text-rev-foreground", item.paper)}>
+                      <span className="text-[11px] font-semibold uppercase tracking-wide opacity-80">
+                        {item.where} · {item.type}
+                      </span>
+                      <span className="font-medium leading-snug">{item.text}</span>
+                    </li>
+                  ))}
+                </ol>
+                <p>Posso gravar?</p>
+              </div>
+
+              <p className="ml-auto rounded-2xl rounded-tr-sm bg-primary px-4 py-2.5 text-sm text-primary-foreground">Pode!</p>
+
+              <p className="inline-flex w-fit items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium">
+                <CheckIcon className="text-primary" /> PulseStage · 4 perguntas gravadas na sessão
+              </p>
+              <figcaption className="text-xs text-muted-foreground">Exemplo de conversa com um assistente de IA</figcaption>
+            </figure>
           </div>
         </section>
 

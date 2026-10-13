@@ -16,6 +16,7 @@ import {
   HomeIcon,
   IdCardIcon,
   InboxIcon,
+  PlugIcon,
   LibraryIcon,
   LogOutIcon,
   MenuIcon,
@@ -35,6 +36,7 @@ const LINKS = [
   { href: "/dashboard/analytics", label: "Evolução", exact: true, icon: TrendingUpIcon },
   { href: "/dashboard/perfil-publico", label: "Perfil público", exact: true, icon: IdCardIcon },
   { href: "/dashboard/convites", label: "Convites", exact: true, icon: InboxIcon },
+  { href: "/dashboard/integracoes", label: "Integrações", exact: true, icon: PlugIcon },
   { href: "/dashboard/guia", label: "Guia", exact: true, icon: BookIcon },
 ];
 

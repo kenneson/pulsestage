@@ -31,7 +31,7 @@ reduzido mostra o estado final sem autoplay). Fecha com a ficha do código do pa
 
 SECTIONS: fatos do produto (limites e recursos reais: 0 apps, 2.000 pessoas por sessão, 5 tipos, 1 tela), Como
 funciona, Cinco tipos (papéis de revisão), Slides e perguntas numa sequência só, Quiz/ranking/sorteio (gamificação),
-Relatório, Para quem, Perguntas frequentes, chamada final na faixa escura ("Sua próxima aula ou palestra começa aqui."). "Para quem": universidades, escolas, empresas e palestrantes.
+Com IA (Claude e ChatGPT via MCP: conversa de exemplo rotulada, `#ia`), Relatório, Para quem, Perguntas frequentes, chamada final na faixa escura ("Sua próxima aula ou palestra começa aqui."). "Para quem": universidades, escolas, empresas e palestrantes.
 
 FORM: Campus (universitário e corporativo, acolhedor para escolas), escolha do dono em 2026-10-12; substitui "Roteiro com deixas".
 

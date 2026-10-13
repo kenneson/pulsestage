@@ -17,6 +17,7 @@ const SECTIONS = [
   { id: "sorteio", title: "7. Fazer um sorteio" },
   { id: "analytics", title: "8. Analisar os resultados" },
   { id: "perfil-publico", title: "9. Perfil público e convites" },
+  { id: "assistentes", title: "10. Criar perguntas com o Claude ou o ChatGPT" },
   { id: "dicas", title: "Dicas" },
 ];
 
@@ -334,6 +335,36 @@ export default function GuidePage() {
               convida. Abra um convite para ler, use <strong>“Responder”</strong> para escrever do seu e-mail, ou{" "}
               <strong>“Arquivar”</strong> e <strong>“Excluir”</strong>. Com <strong>“Divulgar o perfil depois da
               pesquisa”</strong>, quem responde a pesquisa das suas sessões vê um card com o link do perfil.
+            </p>
+          </Section>
+
+          <Section id="assistentes" title="10. Criar perguntas com o Claude ou o ChatGPT">
+            <p>
+              Com a apresentação pronta, um assistente de IA pode montar as perguntas para você. Abra{" "}
+              <Link href="/dashboard/integracoes" className="font-medium text-primary hover:underline">
+                Integrações
+              </Link>
+              , copie o <strong>endereço do servidor MCP</strong> e siga o passo a passo do seu assistente (Claude,
+              ChatGPT, Claude Code ou outro). Na primeira vez, ele abre o PulseStage: entre e clique em{" "}
+              <strong>“Permitir acesso”</strong>.
+            </p>
+            <ol className="flex flex-col gap-1">
+              <li>Anexe o PDF da apresentação na conversa e diga o público e a duração.</li>
+              <li>
+                O assistente propõe as perguntas e depois de qual slide cada uma entra (pela numeração das páginas do
+                PDF). Ajuste e aprove.
+              </li>
+              <li>Ele cria a sessão (ou usa uma que você indicar) e grava as perguntas.</li>
+              <li>
+                Na sessão, abra a aba <strong>“Slides”</strong> e envie o mesmo PDF: as perguntas aparecem entre os
+                slides certos.
+              </li>
+            </ol>
+            <p>
+              O assistente também edita, move e exclui perguntas e lê os resultados de sessões já apresentadas para
+              analisar com você. Ele não inicia nem encerra a sessão ao vivo. Em <strong>Integrações</strong>, a lista{" "}
+              <strong>“Assistentes conectados”</strong> mostra quem tem acesso; <strong>“Revogar”</strong> corta o
+              acesso na hora.
             </p>
           </Section>
 

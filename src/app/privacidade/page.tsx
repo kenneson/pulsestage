@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: "Privacidade" };
 
 // Mantenha este texto alinhado ao código: cookies em lib/participant/token.ts, contatos em
 // participant_contacts (seção 0.4 da spec), entrada da IA em lib/ai/build-input.ts e perfil público/convites
-// em lib/data/speaker-profile.ts e features/speaker-profile/actions.ts.
+// em lib/data/speaker-profile.ts e features/speaker-profile/actions.ts; assistentes (MCP) em lib/mcp/.
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -22,7 +22,7 @@ export default function PrivacyPage() {
       <Logo />
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Política de privacidade</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Última atualização: 12 de outubro de 2026</p>
+        <p className="mt-1 text-sm text-muted-foreground">Última atualização: 13 de outubro de 2026</p>
       </div>
 
       <div className="flex flex-col gap-8 text-muted-foreground [&_li]:ml-5 [&_li]:list-disc">
@@ -127,6 +127,18 @@ export default function PrivacyPage() {
             </li>
           </ul>
           <p>Todos são necessários para o funcionamento; não usamos cookies de análise ou publicidade.</p>
+        </Section>
+
+        <Section title="Assistentes de IA conectados (Claude, ChatGPT e outros)">
+          <p id="assistentes" className="scroll-mt-6">
+            O palestrante pode conectar a própria conta a um assistente de IA pelo protocolo MCP. A conexão só acontece
+            depois que ele entra no PulseStage e clica em “Permitir acesso”, e pode ser revogada a qualquer momento em
+            Integrações. O assistente age como o palestrante: pelas ferramentas do PulseStage, lê e cria sessões e
+            perguntas e, quando o palestrante pede, recebe os resultados de uma sessão (números agregados, respostas
+            abertas e comentários da pesquisa). Nomes, e-mails e telefones de participantes nunca são enviados por essas
+            ferramentas. O que o assistente faz com esses dados segue a política da empresa dele (por exemplo, Anthropic
+            ou OpenAI). O PDF da apresentação anexado no chat fica com o assistente; o PulseStage recebe só as perguntas.
+          </p>
         </Section>
 
         <Section title="Com quem compartilhamos">

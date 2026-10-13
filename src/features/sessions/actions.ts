@@ -10,9 +10,9 @@ import { getOwnedSession } from "@/lib/data/sessions";
 import { getSpeakerProfile } from "@/lib/data/profile";
 import { hasDbErrorCode, isUniqueViolation } from "@/lib/supabase/errors";
 import { zonedToUtcIso } from "@/lib/datetime";
+import { insertSession, isVisibleTemplate } from "./core";
 import {
   canTransition,
-  generateJoinCode,
   isSessionStatus,
   JOIN_CODE_REGEX,
   normalizeJoinCode,
@@ -79,13 +79,6 @@ function parseSessionForm(
   };
 }
 
-/** O modelo precisa ser visível ao speaker (RLS: da plataforma ou dele). */
-async function isVisibleTemplate(supabase: Awaited<ReturnType<typeof createClient>>, id: string | null) {
-  if (!id) return true;
-  const { data } = await supabase.from("survey_templates").select("id").eq("id", id).maybeSingle();
-  return data !== null;
-}
-
 export async function createSessionAction(_prev: SessionFormState, formData: FormData): Promise<SessionFormState> {
   const parsed = parseSessionForm(formData, (await getSpeakerProfile()).timeZone);
   if (!parsed.ok) return { error: parsed.error };
@@ -98,32 +91,9 @@ export async function createSessionAction(_prev: SessionFormState, formData: For
   if (!user) redirect("/login");
   if (!(await isVisibleTemplate(supabase, values.surveyTemplateId))) return { error: "Modelo de pesquisa inválido." };
 
-  let createdId: string | null = null;
-  for (let attempt = 0; attempt < 4 && !createdId; attempt++) {
-    const result = await supabase
-      .from("sessions")
-      .insert({
-        speaker_id: user.id,
-        title: values.title,
-        description: values.description,
-        scheduled_at: values.scheduledAt,
-        estimated_duration_minutes: values.duration,
-        join_code: values.joinCode ?? generateJoinCode(),
-        survey_template_id: values.surveyTemplateId,
-      })
-      .select("id")
-      .single();
-
-    if (!result.error) {
-      createdId = result.data.id;
-    } else if (isUniqueViolation(result.error)) {
-      if (values.joinCode) return { error: "Esse código já está em uso por outra sessão ativa." };
-    } else {
-      return { error: "Não foi possível criar a sessão." };
-    }
-  }
-
-  if (!createdId) return { error: "Não foi possível gerar um código único. Tente novamente." };
+  const created = await insertSession(supabase, { speakerId: user.id, ...values });
+  if (!created.ok) return { error: created.error };
+  const createdId = created.data.id;
 
   revalidatePath("/dashboard");
   redirect(`/dashboard/sessions/${createdId}`);

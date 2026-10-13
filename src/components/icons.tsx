@@ -85,3 +85,4 @@ export const BadgeCheckIcon = (p: IconProps) => <Icon {...p}><path d="M12 2l2.4 
 export const MapPinIcon = (p: IconProps) => <Icon {...p}><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z" /><circle cx="12" cy="10" r="2.5" /></Icon>;
 export const LinkIcon = (p: IconProps) => <Icon {...p}><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" /></Icon>;
 export const ArchiveIcon = (p: IconProps) => <Icon {...p}><rect x="2" y="4" width="20" height="5" rx="1" /><path d="M4 9v10a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9M10 13h4" /></Icon>;
+export const PlugIcon = (p: IconProps) => <Icon {...p}><path d="M9 2v6M15 2v6M6 8h12v4a6 6 0 0 1-12 0zM12 18v4" /></Icon>;

@@ -106,6 +106,17 @@
   `sitemap.ts` e `robots.ts`. Convite: honeypot, até 3 por hora por hash de IP e 30 por dia por palestrante; e-mail opcional
   via Resend (`RESEND_API_KEY`, `CONTACT_EMAIL_FROM`). Card “Conheça o palestrante” depois da pesquisa. Sem feed, curtidas
   ou seguidores: é portfólio, não rede social.
+- **MCP para assistentes de IA** (Claude, ChatGPT, Claude Code…): `/api/mcp` (SDK `@modelcontextprotocol/sdk`,
+  `WebStandardStreamableHTTPServerTransport` sem estado, um `McpServer` por requisição em `lib/mcp/server.ts`). Login
+  pelo servidor OAuth 2.1 do Supabase (registro dinâmico; consentimento em `/oauth/consent`, ações em
+  `features/integrations/actions.ts`); `lib/mcp/auth.ts` valida o token com `auth.getUser` e consulta como o usuário
+  (RLS). Metadados em `/.well-known/oauth-protected-resource[/api/mcp]` e cópia do AS em
+  `/.well-known/oauth-authorization-server`. Ferramentas: list/get/create/update session, add/update/move/delete
+  interaction, list_survey_templates, get_session_results (sem dados pessoais), prompt `plan_from_slides`. O assistente
+  lê o PDF no chat e manda `after_slide` (página do PDF); `lib/domain/mcp.ts` converte para `interactionInputSchema` e
+  ordena sem limitar ao número de slides (a posição vale quando o PDF chegar). Escrita compartilhada com o painel em
+  `features/interactions/core.ts` e `features/sessions/core.ts`. Painel: `/dashboard/integracoes` (passo a passo,
+  pedidos de exemplo, assistentes conectados com revogar). Não inicia/encerra sessão ao vivo de propósito.
 - **Realtime resistente**: `useLiveState` relê `session_live_state` ao conectar (e 3 s depois), expõe `refresh()` (a sala
   ao vivo chama após cada ação) e aceita `pollMs` (só o projetor, 10 s). Nunca usar `pollMs` para participantes.
 - **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta

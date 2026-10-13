@@ -28,7 +28,12 @@ Supabase (Auth, Postgres, RLS, Realtime) · Zod · Recharts · Vercel.
    - **Login com Google (opcional):** no Google Cloud, crie um ID do cliente OAuth (Aplicativo da Web) com a URI
      de redirecionamento `https://<projeto>.supabase.co/auth/v1/callback`. Cole o Client ID e o Client Secret em
      *Authentication → Sign In / Providers → Google* no Supabase. Nenhuma variável de ambiente é necessária.
-7. `npm run dev` → http://localhost:3000
+7. **Assistentes de IA (MCP, opcional):** para conectar o Claude, o ChatGPT e outros clientes MCP, ligue o servidor
+   OAuth do Supabase em *Authentication → OAuth Server*: ative o OAuth 2.1, use `/oauth/consent` como
+   *Authorization Path* e ligue o *Dynamic client registration*. O *Site URL* (em *URL Configuration*) precisa ser o
+   domínio público do app, porque o consentimento abre em Site URL + `/oauth/consent`. Local: em `supabase/config.toml`,
+   `[auth.oauth_server] enabled = true` e `allow_dynamic_registration = true`. O servidor MCP fica em `/api/mcp`.
+8. `npm run dev` → http://localhost:3000
 
 Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arquivo escrito à mão.
 
@@ -44,6 +49,8 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
    Ao vivo, use **Nova pergunta** para criar uma pergunta e lançá-la na hora ou deixá-la como a próxima.
 6. **Encerrar sessão** → o celular e o projetor mostram o link de avaliação. Envie alguns feedbacks.
 7. Abra o analytics da sessão e, com `AI_PROVIDER`/`AI_API_KEY` configurados, gere os insights.
+8. MCP: em **Integrações**, copie o endereço e conecte um assistente (ou `claude mcp add --transport http pulsestage
+   <endereço>`). Anexe um PDF, peça as perguntas, confira a sessão criada e envie o mesmo PDF na aba **Slides**.
 
 ## Scripts
 
@@ -66,6 +73,9 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
 - **RLS** garante que o speaker só vê as próprias sessões.
 - **LGPD:** contato do participante fica em `participant_contacts`, separado e com consentimento.
   A IA recebe só dados agregados, sem nomes ou contatos.
+- **MCP (assistentes de IA):** `/api/mcp` (Streamable HTTP, sem estado) aceita o access token do servidor OAuth
+  do Supabase (consentimento em `/oauth/consent`) e roda as ferramentas como o próprio palestrante, com RLS.
+  O assistente lê o PDF no chat; o PulseStage recebe só as perguntas com `after_slide`.
 - **Métricas:** “sinal de participação” = respostas ÷ participantes presentes em cada interação.
   Mede participação, não atenção.
 
@@ -94,6 +104,7 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
 | Gamificação: avatares, alternativas com formas/cores e imagens, bônus de velocidade | ✅ |
 | Sorteio de prêmios (pesquisa ou todos), número da sorte, telão com suspense e som, controle de entrega | ✅ |
 | Perfil público verificado do palestrante, diretório `/palestrantes` (filtros e páginas por tema) e convites | ✅ |
+| Servidor MCP (Claude, ChatGPT e outros): criar sessões e perguntas a partir dos slides, OAuth, página Integrações | ✅ |
 | Realtime resistente a eventos perdidos (releitura ao conectar, após ações e no projetor) | ✅ |
 | Testes unitários do domínio (sessão, palavras, datas, resultados, métricas) | ✅ |
 | Testes de integração e E2E | ⏳ |
