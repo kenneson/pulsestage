@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
-import { formatInt } from "@/lib/format";
 
 // Ranking do quiz animado. As linhas aparecem na posição de antes do último quiz e deslizam até a
 // posição atual enquanto os pontos sobem; quem entrou agora sobe do fim da lista.
@@ -55,6 +55,7 @@ function useCountUp(from: number, to: number, run: boolean): number {
 }
 
 function Row({ entry, settled, total, variant }: { entry: Entry; settled: boolean; total: number; variant: Variant }) {
+  const t = useTranslations("display.leaderboard");
   const big = variant === "display";
   const startRank = entry.previousRank !== null && entry.previousRank <= total ? entry.previousRank : total + 1;
   const position = (settled ? entry.rank : startRank) - 1;
@@ -76,7 +77,7 @@ function Row({ entry, settled, total, variant }: { entry: Entry; settled: boolea
       }}
     >
       <span className={cn("w-12 shrink-0 font-display font-bold tabular-nums", !big && "w-6", leader && "text-primary")}>
-        {entry.rank}º
+        {t("rank", { rank: entry.rank })}
       </span>
       <span
         aria-hidden
@@ -94,9 +95,9 @@ function Row({ entry, settled, total, variant }: { entry: Entry; settled: boolea
         </span>
       ) : null}
       {settled && entry.previousRank === null ? (
-        <span className={cn("shrink-0 text-muted-foreground", big ? "text-xl" : "text-xs")}>novo</span>
+        <span className={cn("shrink-0 text-muted-foreground", big ? "text-xl" : "text-xs")}>{t("new")}</span>
       ) : null}
-      <span className="shrink-0 font-display font-bold tabular-nums">{formatInt(points)} pts</span>
+      <span className="shrink-0 font-display font-bold tabular-nums">{t("points", { points })}</span>
     </li>
   );
 }
@@ -111,6 +112,7 @@ export function QuizLeaderboard({
   version: string | null;
   variant?: Variant;
 }) {
+  const t = useTranslations("display.leaderboard");
   const [state, setState] = useState<{ version: string | null; entries: Entry[] | null; failed: boolean }>({
     version: null,
     entries: null,
@@ -145,17 +147,17 @@ export function QuizLeaderboard({
 
   return (
     <div className={cn("flex w-full flex-col", big ? "max-w-4xl gap-8" : "gap-3")}>
-      {big ? <h1 className="text-center text-6xl font-semibold">Ranking do quiz</h1> : null}
+      {big ? <h1 className="text-center text-6xl font-semibold">{t("title")}</h1> : null}
       {entries === null ? (
         <p className={cn("text-center text-muted-foreground", big ? "text-3xl" : "text-sm")}>
-          {state.failed ? "Não foi possível carregar o ranking." : "Carregando o ranking…"}
+          {state.failed ? t("loadFailed") : t("loading")}
         </p>
       ) : entries.length === 0 ? (
         <p className={cn("text-center text-muted-foreground", big ? "text-3xl" : "text-sm")}>
-          Ninguém respondeu ao quiz ainda.
+          {t("empty")}
         </p>
       ) : (
-        <ol className="relative" style={{ height: entries.length * ROW[variant] }} aria-label="Ranking do quiz">
+        <ol className="relative" style={{ height: entries.length * ROW[variant] }} aria-label={t("title")}>
           {entries.map((entry) => (
             <Row key={entry.key} entry={entry} settled={settled} total={entries.length} variant={variant} />
           ))}

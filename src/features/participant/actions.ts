@@ -233,35 +233,30 @@ export async function submitAnswerAction(
   interactionId: string,
   rawPayload: unknown,
 ): Promise<AnswerResult> {
-  if (!isUuid(sessionId) || !isUuid(interactionId)) return fail("Dados inválidos.");
-
-  const participantId = await getParticipantIdFromCookie(sessionId);
-  if (!participantId) return fail("Entre na sessão novamente.", "no_participant");
-
-  const payload = answerPayloadSchema.safeParse(rawPayload);
-  if (!payload.success) return fail(firstIssue(payload.error));
+  if (!isUuid(sessionId) || !isUuid(interactionId)) return fail((await texts()).tr.message("errors.invalidData"));
 
   const admin = createAdminClient();
-  const { data: interaction } = await admin
-    .from("interactions")
-    .select("*")
-    .eq("id", interactionId)
-    .eq("session_id", sessionId)
-    .maybeSingle();
-  if (!interaction) return fail("Interação não encontrada.", "not_found");
-  if (!interaction.is_active) return fail("Esta interação foi encerrada.", "closed");
+  const participantId = await getParticipantIdFromCookie(sessionId);
+  if (!participantId) return fail((await texts(await sessionLocale(admin, sessionId))).t("rejoin"), "no_participant");
 
-  const { data: session } = await admin
-    .from("sessions")
-    .select("profanity_filter, moderate_open_text, locale")
-    .eq("id", sessionId)
-    .maybeSingle();
+  const payload = answerPayloadSchema.safeParse(rawPayload);
+  if (!payload.success) return fail((await texts(await sessionLocale(admin, sessionId))).tr.issue(payload.error));
+
+  // Interação e regras da sessão em paralelo: o idioma vem junto, sem leitura a mais.
+  const [{ data: interaction }, { data: session }] = await Promise.all([
+    admin.from("interactions").select("*").eq("id", interactionId).eq("session_id", sessionId).maybeSingle(),
+    admin.from("sessions").select("profanity_filter, moderate_open_text, locale").eq("id", sessionId).maybeSingle(),
+  ]);
+  const { tr, t } = await texts(session ? localeOrDefault(session.locale) : null);
+  if (!interaction) return fail(tr.message("core.interactionNotFound"), "not_found");
+  if (!interaction.is_active) return fail(t("interactionClosed"), "closed");
+
   const built = await buildResponse(admin, interaction, payload.data, {
     profanityFilter: session?.profanity_filter ?? true,
     moderateOpenText: session?.moderate_open_text ?? false,
     locale: localeOrDefault(session?.locale),
   });
-  if (!built.ok) return fail(built.error, built.code);
+  if (!built.ok) return fail(tr.message(built.error), built.code);
 
   const { error } = await admin.from("responses").insert({
     interaction_id: interactionId,
@@ -274,12 +269,12 @@ export async function submitAnswerAction(
   });
 
   if (error) {
-    if (isUniqueViolation(error)) return fail("Você já respondeu esta interação.", "duplicate");
-    if (hasDbErrorCode(error, "interaction_not_open")) return fail("Esta interação foi encerrada.", "closed");
+    if (isUniqueViolation(error)) return fail(t("alreadyAnswered"), "duplicate");
+    if (hasDbErrorCode(error, "interaction_not_open")) return fail(t("interactionClosed"), "closed");
     if (hasDbErrorCode(error, "participant_not_in_session") || isForeignKeyViolation(error)) {
-      return fail("Entre na sessão novamente.", "no_participant");
+      return fail(t("rejoin"), "no_participant");
     }
-    return fail("Não foi possível enviar. Tente de novo.");
+    return fail(t("sendFailed"));
   }
 
   return ok({ status: "recorded" });
@@ -296,24 +291,25 @@ export async function submitSurveyAction(
   _prev: SurveyFormState,
   formData: FormData,
 ): Promise<SurveyFormState> {
-  if (!isUuid(sessionId)) return { error: "Sessão inválida." };
+  if (!isUuid(sessionId)) return { error: (await texts()).t("invalidSession") };
 
   const participantId = await getParticipantIdFromCookie(sessionId);
   if (!participantId && (await hasSentFeedback(sessionId))) return { done: true };
 
   const admin = createAdminClient();
-  const { data: session } = await admin.from("sessions").select("status").eq("id", sessionId).maybeSingle();
-  if (!session) return { error: "Sessão não encontrada." };
-  if (session.status !== "completed") return { error: "A pesquisa abre quando a sessão terminar." };
+  const { data: session } = await admin.from("sessions").select("status, locale").eq("id", sessionId).maybeSingle();
+  const { tr, t } = await texts(session ? localeOrDefault(session.locale) : null);
+  if (!session) return { error: t("sessionNotFound") };
+  if (session.status !== "completed") return { error: t("surveyNotOpen") };
 
   const survey = await getSessionSurvey(admin, sessionId);
-  if (!survey || survey.questions.length === 0) return { error: "A pesquisa desta sessão não está disponível." };
+  if (!survey || survey.questions.length === 0) return { error: t("surveyUnavailable") };
 
   const parsed = parseSurveyAnswers(survey.questions, (field) => {
     const value = formData.get(field);
     return typeof value === "string" ? value : undefined;
   });
-  if (!parsed.ok) return { error: parsed.error };
+  if (!parsed.ok) return { error: tr.message(parsed.error) };
 
   const created = await admin
     .from("survey_responses")
@@ -325,7 +321,7 @@ export async function submitSurveyAction(
       await markFeedbackSent(sessionId);
       return { done: true };
     }
-    return { error: "Não foi possível enviar. Tente de novo." };
+    return { error: t("sendFailed") };
   }
 
   const { error } = await admin.from("survey_answers").insert(
@@ -339,7 +335,7 @@ export async function submitSurveyAction(
   if (error) {
     // Sem transação no cliente: desfaz a resposta para não deixar uma pesquisa vazia contada.
     await admin.from("survey_responses").delete().eq("id", created.data.id);
-    return { error: "Não foi possível enviar. Tente de novo." };
+    return { error: t("sendFailed") };
   }
 
   await markFeedbackSent(sessionId);
@@ -350,28 +346,33 @@ export async function submitSurveyAction(
 // Perguntas da plateia
 // ---------------------------------------------------------------------------
 
-/** Sessão em andamento (ao vivo ou pausada) com perguntas ligadas. */
+/**
+ * Sessão em andamento (ao vivo ou pausada) com perguntas ligadas (`open`, senão null) e o idioma da sessão
+ * (null se ela não existe), para as mensagens.
+ */
 async function openForQuestions(admin: AdminSupabase, sessionId: string) {
   const { data } = await admin
     .from("sessions")
     .select("status, qa_enabled, qa_moderated, profanity_filter, locale")
     .eq("id", sessionId)
     .maybeSingle();
-  if (!data || !data.qa_enabled || (data.status !== "live" && data.status !== "paused")) return null;
-  return data;
+  const open = data && data.qa_enabled && (data.status === "live" || data.status === "paused") ? data : null;
+  return { open, locale: data ? localeOrDefault(data.locale) : null };
 }
 
 export async function askQuestionAction(sessionId: string, raw: unknown): Promise<ActionResult<{ pending: boolean }>> {
-  if (!isUuid(sessionId)) return fail("Dados inválidos.");
+  if (!isUuid(sessionId)) return fail((await texts()).tr.message("errors.invalidData"));
+  const admin = createAdminClient();
+  const { open: session, locale } = await openForQuestions(admin, sessionId);
+  const { tr, t } = await texts(locale);
+
   const parsed = askQuestionSchema.safeParse(raw);
-  if (!parsed.success) return fail(firstIssue(parsed.error));
+  if (!parsed.success) return fail(tr.issue(parsed.error));
 
   const participantId = await getParticipantIdFromCookie(sessionId);
-  if (!participantId) return fail("Entre na sessão novamente.", "no_participant");
+  if (!participantId) return fail(t("rejoin"), "no_participant");
 
-  const admin = createAdminClient();
-  const session = await openForQuestions(admin, sessionId);
-  if (!session) return fail("As perguntas não estão abertas nesta sessão.", "closed");
+  if (!session) return fail(t("questionsClosed"), "closed");
 
   const since = new Date(Date.now() - QUESTION_WINDOW_MS).toISOString();
   const { count } = await admin
@@ -379,7 +380,7 @@ export async function askQuestionAction(sessionId: string, raw: unknown): Promis
     .select("id", { count: "exact", head: true })
     .eq("participant_id", participantId)
     .gte("created_at", since);
-  if ((count ?? 0) >= QUESTION_LIMIT) return fail("Você enviou várias perguntas seguidas. Espere alguns minutos.");
+  if ((count ?? 0) >= QUESTION_LIMIT) return fail(t("tooManyQuestions"));
 
   let author: string | null = null;
   if (parsed.data.withName) {
@@ -399,32 +400,36 @@ export async function askQuestionAction(sessionId: string, raw: unknown): Promis
     filtered,
   });
   if (error) {
-    if (isForeignKeyViolation(error)) return fail("Entre na sessão novamente.", "no_participant");
-    return fail("Não foi possível enviar a pergunta. Tente de novo.");
+    if (isForeignKeyViolation(error)) return fail(t("rejoin"), "no_participant");
+    return fail(t("questionSendFailed"));
   }
   return ok({ pending: status !== "visible" });
 }
 
 export async function voteQuestionAction(sessionId: string, questionId: string, vote: boolean): Promise<ActionResult> {
-  if (!isUuid(sessionId) || !isUuid(questionId) || typeof vote !== "boolean") return fail("Dados inválidos.");
-  const participantId = await getParticipantIdFromCookie(sessionId);
-  if (!participantId) return fail("Entre na sessão novamente.", "no_participant");
-
+  if (!isUuid(sessionId) || !isUuid(questionId) || typeof vote !== "boolean") {
+    return fail((await texts()).tr.message("errors.invalidData"));
+  }
   const admin = createAdminClient();
-  if (!(await openForQuestions(admin, sessionId))) return fail("As perguntas não estão abertas nesta sessão.", "closed");
+  const participantId = await getParticipantIdFromCookie(sessionId);
+  if (!participantId) return fail((await texts(await sessionLocale(admin, sessionId))).t("rejoin"), "no_participant");
+
+  const { open, locale } = await openForQuestions(admin, sessionId);
+  const { t } = await texts(locale);
+  if (!open) return fail(t("questionsClosed"), "closed");
   const { data: question } = await admin
     .from("audience_questions")
     .select("id, participant_id, status")
     .eq("id", questionId)
     .eq("session_id", sessionId)
     .maybeSingle();
-  if (!question || question.status !== "visible") return fail("Esta pergunta não está aberta.");
-  if (question.participant_id === participantId) return fail("Você não pode curtir a própria pergunta.");
+  if (!question || question.status !== "visible") return fail(t("questionNotOpen"));
+  if (question.participant_id === participantId) return fail(t("ownQuestion"));
 
   const { error } = vote
     ? await admin.from("audience_question_votes").insert({ question_id: questionId, participant_id: participantId })
     : await admin.from("audience_question_votes").delete().eq("question_id", questionId).eq("participant_id", participantId);
-  if (error && !isUniqueViolation(error)) return fail("Não foi possível registrar. Tente de novo.");
+  if (error && !isUniqueViolation(error)) return fail(t("voteFailed"));
   return ok(null);
 }
 
@@ -437,19 +442,25 @@ const reactionTimes = new Map<string, number[]>();
 
 export async function sendReactionAction(sessionId: string, kind: unknown): Promise<ActionResult> {
   const parsed = reactionKindSchema.safeParse(kind);
-  if (!isUuid(sessionId) || !parsed.success) return fail("Dados inválidos.");
+  if (!isUuid(sessionId) || !parsed.success) return fail((await texts()).tr.message("errors.invalidData"));
+  const admin = createAdminClient();
   const participantId = await getParticipantIdFromCookie(sessionId);
-  if (!participantId) return fail("Entre na sessão novamente.", "no_participant");
+  if (!participantId) return fail((await texts(await sessionLocale(admin, sessionId))).t("rejoin"), "no_participant");
 
   const allowed = allowReaction(reactionTimes.get(participantId) ?? [], Date.now());
-  if (!allowed) return fail("Calma! Muitas reações seguidas.", "rate_limited");
+  // Idioma da requisição de propósito: o limite existe para poupar o banco, e o celular não mostra esta mensagem.
+  if (!allowed) return fail((await texts()).t("tooManyReactions"), "rate_limited");
   reactionTimes.set(participantId, allowed);
 
-  const admin = createAdminClient();
-  const { data: session } = await admin.from("sessions").select("status, reactions_enabled").eq("id", sessionId).maybeSingle();
-  if (!session || session.status !== "live" || !session.reactions_enabled) return fail("Reações desligadas agora.", "closed");
+  const { data: session } = await admin
+    .from("sessions")
+    .select("status, reactions_enabled, locale")
+    .eq("id", sessionId)
+    .maybeSingle();
+  const { t } = await texts(session ? localeOrDefault(session.locale) : null);
+  if (!session || session.status !== "live" || !session.reactions_enabled) return fail(t("reactionsOff"), "closed");
 
   const { error } = await admin.from("reactions").insert({ session_id: sessionId, participant_id: participantId, kind: parsed.data });
-  if (error) return fail("Não foi possível reagir.");
+  if (error) return fail(t("reactionFailed"));
   return ok(null);
 }

@@ -2,10 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import { useTranslations } from "next-intl";
 import {
   formatTicket,
   landingSchedule,
-  PRIZE_KIND_LABEL,
   RAFFLE_LANDING_MS,
   RAFFLE_SUSPENSE_MS,
   raffleDisplaySchema,
@@ -14,7 +14,6 @@ import {
   type RaffleWinnerView,
 } from "@/lib/domain/raffle";
 import { playFanfare, playThump, playTick } from "@/lib/raffle/sound";
-import { formatInt, plural } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { VolumeIcon } from "@/components/icons";
 
@@ -123,6 +122,8 @@ export function RaffleStage({
   feedbackUrl: string;
   soundOn: boolean;
 }) {
+  const t = useTranslations("display.raffle");
+  const tDomain = useTranslations("domain");
   const [data, setData] = useState<RaffleDisplay | null>(null);
   const [failed, setFailed] = useState(false);
   const [phase, setPhase] = useState<Phase>({ kind: "waiting" });
@@ -209,18 +210,18 @@ export function RaffleStage({
   if (!data) {
     return (
       <p className="text-center text-3xl text-muted-foreground">
-        {failed ? "Não foi possível carregar o sorteio." : "Carregando o sorteio…"}
+        {failed ? t("loadFailed") : t("loading")}
       </p>
     );
   }
 
-  const prizeName = (id: string) => data.prizes.find((p) => p.id === id)?.name ?? "Prêmio";
+  const prizeName = (id: string) => data.prizes.find((p) => p.id === id)?.name ?? t("prizeFallback");
   const maxNumber = Math.max(999, ...data.numbers, shown ?? 0);
   const digits = maxNumber > 999 ? 4 : 3;
   const current = latest && phase.kind !== "waiting" && phase.drawnAt === latest.drawnAt ? phase : null;
   const soundHint = !soundOn ? (
     <p className="fixed bottom-16 right-10 flex items-center gap-2 text-lg text-muted-foreground">
-      <VolumeIcon width={20} height={20} /> Clique na tela para ativar o som
+      <VolumeIcon width={20} height={20} /> {t("soundHint")}
     </p>
   ) : null;
 
@@ -228,11 +229,11 @@ export function RaffleStage({
   if (latest && (!current || current.kind === "rolling" || current.kind === "landing")) {
     return (
       <div className="flex flex-col items-center gap-10 text-center" aria-live="polite">
-        <p className="text-3xl text-muted-foreground">Sorteando</p>
+        <p className="text-3xl text-muted-foreground">{t("drawing")}</p>
         <h1 className="max-w-5xl text-6xl font-semibold leading-tight">{prizeName(latest.prizeId)}</h1>
         <Ticket value={shown === null ? "?".repeat(digits) : formatTicket(shown, maxNumber)} digits={digits} spinning={current?.kind !== "landing"} />
         <p className="text-2xl text-muted-foreground">
-          {plural(data.entrants + 1, "pessoa concorrendo", "pessoas concorrendo")}
+          {t("entrants", { count: data.entrants + 1 })}
         </p>
         {soundHint}
       </div>
@@ -248,8 +249,10 @@ export function RaffleStage({
         <p className="text-3xl text-muted-foreground">{prizeName(latest.prizeId)}</p>
         <AvatarBubble winner={winner} className="raffle-pop size-48 text-[8rem]" />
         <h1 className="raffle-pop max-w-5xl text-7xl font-semibold leading-tight">{winner.name}</h1>
-        <p className="font-display text-6xl font-bold tabular-nums text-primary">nº {formatTicket(winner.number, maxNumber)}</p>
-        <p className="text-4xl">Parabéns! 🎉</p>
+        <p className="font-display text-6xl font-bold tabular-nums text-primary">
+          {t("ticket", { number: formatTicket(winner.number, maxNumber) })}
+        </p>
+        <p className="text-4xl">{t("congrats")}</p>
         {soundHint}
       </div>
     );
@@ -260,12 +263,12 @@ export function RaffleStage({
   const surveyOpen = data.status === "completed";
   return (
     <div className="flex w-full max-w-6xl flex-col items-center gap-10 text-center">
-      <h1 className="text-7xl font-semibold">Sorteio</h1>
+      <h1 className="text-7xl font-semibold">{t("title")}</h1>
       <ul className="flex flex-wrap justify-center gap-5">
         {data.prizes.map((prize) => (
           <li key={prize.id} className="flex min-w-72 max-w-md flex-col gap-2 rounded-2xl border bg-card px-7 py-5 text-left">
             <span className="text-lg text-muted-foreground">
-              {PRIZE_KIND_LABEL[prize.kind]} · {plural(prize.quantity, "ganhador", "ganhadores")}
+              {t("prizeMeta", { kind: tDomain(`prizeKinds.${prize.kind}`), quantity: prize.quantity })}
             </span>
             <span className="text-3xl font-semibold leading-snug">{prize.name}</span>
             {prize.description ? <span className="text-xl text-muted-foreground">{prize.description}</span> : null}
@@ -275,7 +278,9 @@ export function RaffleStage({
                   <li key={w.id} className="flex items-center gap-3 text-xl">
                     <AvatarBubble winner={w} className="size-10 text-2xl" />
                     <span className="min-w-0 flex-1 truncate">{w.name}</span>
-                    <span className="font-display font-bold tabular-nums">nº {formatTicket(w.number, maxNumber)}</span>
+                    <span className="font-display font-bold tabular-nums">
+                      {t("ticket", { number: formatTicket(w.number, maxNumber) })}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -291,15 +296,17 @@ export function RaffleStage({
         ) : null}
         <div className="flex flex-col gap-3 text-left">
           <p className="text-5xl">
-            <span className="font-display font-bold tabular-nums text-primary">{formatInt(data.entrants)}</span>{" "}
-            {data.entrants === 1 ? "pessoa concorrendo" : "pessoas concorrendo"}
+            {t.rich("entrantsBig", {
+              count: data.entrants,
+              num: (chunks) => <span className="font-display font-bold tabular-nums text-primary">{chunks}</span>,
+            })}
           </p>
           <p className="max-w-xl text-2xl text-muted-foreground">
             {survey
               ? surveyOpen
-                ? "Responda a pesquisa e receba seu número da sorte no celular."
-                : "Ao final, responda a pesquisa para receber seu número da sorte."
-              : "Seu número da sorte está no seu celular."}
+                ? t("hintSurveyOpen")
+                : t("hintSurveyLater")
+              : t("hintEveryone")}
           </p>
         </div>
       </div>

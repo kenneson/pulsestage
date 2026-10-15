@@ -7,8 +7,8 @@ import { formatScore } from "@/lib/format";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-// Texto alternativo fixo: o Next exige `alt` estático (generateImageMetadata mudaria a URL da imagem).
-export const alt = "PulseStage";
+// Texto alternativo fixo em português: o Next exige `alt` estático (generateImageMetadata mudaria a URL da imagem).
+export const alt = "Perfil de palestrante no PulseStage";
 
 // Cores fixas da identidade (azul-marinho, azul acadêmico e amarelo marca-texto).
 const NAVY = "#0d1324";

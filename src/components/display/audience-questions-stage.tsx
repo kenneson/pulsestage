@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { z } from "zod";
-import { formatInt, plural } from "@/lib/format";
+import { formatInt } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 // Perguntas da plateia no telão: uma em destaque ou as mais curtidas. Busca no servidor
@@ -25,6 +26,8 @@ type Data = z.infer<typeof responseSchema>;
 const POLL_MS = 3000;
 
 export function AudienceQuestionsStage({ sessionId, version, joinHost }: { sessionId: string; version: string | null; joinHost: string }) {
+  const t = useTranslations("display.questions");
+  const locale = useLocale();
   const [data, setData] = useState<Data | null>(null);
 
   useEffect(() => {
@@ -51,10 +54,10 @@ export function AudienceQuestionsStage({ sessionId, version, joinHost }: { sessi
     const q = data.highlight;
     return (
       <div className="flex w-full max-w-5xl flex-col items-center gap-10 text-center">
-        <p className="font-display text-2xl font-bold uppercase tracking-widest text-primary">Pergunta da plateia</p>
+        <p className="font-display text-2xl font-bold uppercase tracking-widest text-primary">{t("eyebrow")}</p>
         <blockquote className="text-balance text-6xl font-semibold leading-tight">“{q.body}”</blockquote>
         <p className="text-3xl text-muted-foreground">
-          {q.author ?? "Anônima"} · 👍 {formatInt(q.upvotes)}
+          {q.author ?? t("anonymous")} · 👍 {formatInt(q.upvotes, locale)}
         </p>
       </div>
     );
@@ -64,14 +67,14 @@ export function AudienceQuestionsStage({ sessionId, version, joinHost }: { sessi
   return (
     <div className="flex w-full max-w-6xl flex-col gap-8">
       <div className="flex flex-wrap items-baseline justify-between gap-4">
-        <h1 className="text-5xl font-semibold">Perguntas da plateia</h1>
+        <h1 className="text-5xl font-semibold">{t("title")}</h1>
         <p className="text-2xl text-muted-foreground">
-          {data ? plural(data.total, "pergunta aberta", "perguntas abertas") : ""}
+          {data ? t("openCount", { count: data.total }) : ""}
         </p>
       </div>
       {list.length === 0 ? (
         <p className="py-10 text-center text-4xl text-muted-foreground">
-          Mande sua pergunta pelo celular em <span className="font-semibold text-foreground">{joinHost}</span>
+          {t.rich("empty", { host: joinHost, b: (chunks) => <span className="font-semibold text-foreground">{chunks}</span> })}
         </p>
       ) : (
         <ol className="flex flex-col gap-4">
@@ -82,11 +85,11 @@ export function AudienceQuestionsStage({ sessionId, version, joinHost }: { sessi
             >
               <span className="flex w-24 shrink-0 flex-col items-center font-display text-4xl font-bold tabular-nums">
                 👍
-                <span>{formatInt(q.upvotes)}</span>
+                <span>{formatInt(q.upvotes, locale)}</span>
               </span>
               <div className="min-w-0 flex-1">
                 <p className="text-3xl leading-snug">{q.body}</p>
-                <p className="mt-1 text-xl text-muted-foreground">{q.author ?? "Anônima"}</p>
+                <p className="mt-1 text-xl text-muted-foreground">{q.author ?? t("anonymous")}</p>
               </div>
             </li>
           ))}
