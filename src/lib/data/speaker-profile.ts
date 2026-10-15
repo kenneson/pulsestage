@@ -98,7 +98,8 @@ export type PublicProfile = {
   linkedinUrl: string | null;
   contactEnabled: boolean;
   stats: ProfileStats;
-  sessions: PublicSession[];
+  /** `participants` só alimenta a faixa de público traduzida no servidor (audienceRangeText); não vai para o navegador. */
+  sessions: (PublicSession & { participants: number })[];
   /** Aparece no diretório (e pode ser indexado por buscadores). */
   listed: boolean;
 };
@@ -134,7 +135,10 @@ export const getPublicProfile = cache(async (admin: AdminSupabase, slug: string)
     linkedinUrl: data.linkedin_url,
     contactEnabled: data.contact_enabled,
     stats,
-    sessions: publicSessions(facts, data.show_ratings),
+    sessions: publicSessions(facts, data.show_ratings).map((s) => ({
+      ...s,
+      participants: facts.find((f) => f.sessionId === s.id)?.participants ?? 0,
+    })),
     listed: inDirectory(stats),
   };
 });

@@ -1,22 +1,25 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { sendReactionAction } from "@/features/participant/actions";
 import { REACTIONS } from "@/lib/domain/reactions";
 import { FloatingEmojis, useFloatingEmojis } from "@/components/reactions/floating-emojis";
 
 /** Reações ao vivo no celular: o emoji sobe na hora (sem esperar o servidor) e vai para o telão. */
 export function ReactionBar({ sessionId }: { sessionId: string }) {
+  const t = useTranslations("participant.reactions");
+  const tDomain = useTranslations("domain");
   const { floats, spawn, remove } = useFloatingEmojis({ rise: 220, size: 30 });
   return (
     <div className="relative">
       <FloatingEmojis floats={floats} onDone={remove} className="inset-x-0 top-auto bottom-full h-56" />
-      <div role="group" aria-label="Reagir" className="flex justify-between gap-1">
+      <div role="group" aria-label={t("label")} className="flex justify-between gap-1">
         {REACTIONS.map((r, index) => (
           <button
             key={r.key}
             type="button"
-            aria-label={r.label}
-            title={r.label}
+            aria-label={tDomain(`reactions.${r.key}`)}
+            title={tDomain(`reactions.${r.key}`)}
             onClick={() => {
               spawn(r.emoji, 1, 10 + index * 20);
               void sendReactionAction(sessionId, r.key);

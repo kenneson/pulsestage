@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { formatClock, talkSeconds, versusPlanned, type SessionClock } from "@/lib/domain/timing";
 import { cn } from "@/lib/utils";
 import { ClockIcon } from "@/components/icons";
@@ -20,6 +21,7 @@ export function TalkTimer({
   running: boolean;
   paused: boolean;
 }) {
+  const t = useTranslations("live.talkTimer");
   // Calculado só no navegador: o relógio do servidor geraria diferença na hidratação.
   const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
@@ -39,7 +41,11 @@ export function TalkTimer({
   return (
     <span
       role="timer"
-      aria-label={`Tempo de palestra: ${formatClock(seconds)}${plannedMinutes ? ` de ${plannedMinutes} minutos previstos` : ""}`}
+      aria-label={
+        plannedMinutes
+          ? t("labelPlanned", { time: formatClock(seconds), planned: plannedMinutes })
+          : t("label", { time: formatClock(seconds) })
+      }
       className={cn(
         "inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-sm",
         versus?.over ? "border-transparent bg-standby text-standby-foreground" : "text-foreground",
@@ -52,7 +58,7 @@ export function TalkTimer({
           / {formatClock(plannedMinutes * 60)}
         </span>
       ) : null}
-      {paused ? <span className="text-xs opacity-80">pausado</span> : null}
+      {paused ? <span className="text-xs opacity-80">{t("paused")}</span> : null}
     </span>
   );
 }

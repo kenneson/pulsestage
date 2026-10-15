@@ -3,7 +3,7 @@
     "title": "Proyector"
   },
   "join": {
-    "prompt": "Entra a <host>{host}</host> y usa el código"
+    "prompt": "Entra a <b>{host}</b> y usa el código"
   },
   "completed": {
     "title": "¡Gracias por participar!",
@@ -19,14 +19,14 @@
     "responses": "{count, plural, one {# respuesta} other {# respuestas}}",
     "participants": "{count, plural, one {# participante} other {# participantes}}",
     "connected": "{count, plural, one {# conectado} other {# conectados}}",
-    "code": "Código <code>{code}</code>"
+    "code": "Código <b>{code}</b>"
   },
   "questions": {
     "eyebrow": "Pregunta del público",
     "title": "Preguntas del público",
     "anonymous": "Anónima",
     "openCount": "{count, plural, one {# pregunta abierta} other {# preguntas abiertas}}",
-    "empty": "Envía tu pregunta desde el celular en <host>{host}</host>"
+    "empty": "Envía tu pregunta desde el celular en <b>{host}</b>"
   },
   "leaderboard": {
     "title": "Tabla de posiciones del quiz",

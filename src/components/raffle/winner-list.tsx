@@ -2,12 +2,14 @@
 
 import { useOptimistic, useTransition } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { setPrizeDeliveredAction } from "@/features/raffle/actions";
 import type { RaffleWinnerAdmin } from "@/lib/data/raffle";
 import { formatTicket } from "@/lib/domain/raffle";
 import { cn } from "@/lib/utils";
 
 function DeliveredToggle({ winner }: { winner: RaffleWinnerAdmin }) {
+  const t = useTranslations("dashboard.winnerList");
   const [pending, startTransition] = useTransition();
   const [delivered, setDelivered] = useOptimistic(winner.deliveredAt !== null);
   return (
@@ -26,7 +28,7 @@ function DeliveredToggle({ winner }: { winner: RaffleWinnerAdmin }) {
           });
         }}
       />
-      Entregue
+      {t("delivered")}
     </label>
   );
 }
@@ -42,6 +44,7 @@ export function WinnerList({
   /** botões extras por ganhador (ex.: "Ausente? Sortear outro" na sala ao vivo) */
   actions?: (winner: RaffleWinnerAdmin) => React.ReactNode;
 }) {
+  const t = useTranslations("dashboard.winnerList");
   if (winners.length === 0) return null;
 
   return (
@@ -52,9 +55,9 @@ export function WinnerList({
             {w.avatar ?? <span className="font-display text-sm">{w.name.charAt(0).toUpperCase()}</span>}
           </span>
           <span className={cn("min-w-0 flex-1 truncate font-medium", w.forfeitedAt && "line-through")}>{w.name}</span>
-          <span className="font-display font-bold tabular-nums">nº {formatTicket(w.number)}</span>
+          <span className="font-display font-bold tabular-nums">{t("ticket", { number: formatTicket(w.number) })}</span>
           {w.forfeitedAt ? (
-            <span className="text-xs">ausente</span>
+            <span className="text-xs">{t("absent")}</span>
           ) : canDeliver ? (
             <DeliveredToggle winner={w} />
           ) : null}

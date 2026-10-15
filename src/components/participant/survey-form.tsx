@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslations } from "next-intl";
 import { submitSurveyAction, type SurveyFormState } from "@/features/participant/actions";
 import { answerFieldName, RANGE, TEXT_MAX_LENGTH, type SurveyQuestion } from "@/lib/domain/survey";
 import { Button } from "@/components/ui/button";
@@ -73,6 +74,8 @@ export function SurveyForm({
   after?: React.ReactNode;
 }) {
   const [state, action, pending] = useActionState(submitSurveyAction.bind(null, sessionId), initial);
+  const t = useTranslations("participant.survey");
+  const tActions = useTranslations("common.actions");
 
   if (state.done) {
     return (
@@ -80,8 +83,8 @@ export function SurveyForm({
         <span className="grid size-14 place-items-center rounded-full bg-primary/15 text-primary">
           <CheckIcon width={28} height={28} />
         </span>
-        <h2 className="text-2xl font-semibold">Obrigado!</h2>
-        <p className="text-muted-foreground">Suas respostas foram enviadas e vão ajudar a próxima apresentação.</p>
+        <h2 className="text-2xl font-semibold">{t("thanksTitle")}</h2>
+        <p className="text-muted-foreground">{t("thanksText")}</p>
         {after}
       </div>
     );
@@ -111,10 +114,11 @@ export function SurveyForm({
 
       {state.error ? <Alert>{state.error}</Alert> : null}
       <Button type="submit" size="xl" disabled={pending}>
-        {pending ? "Enviando…" : "Enviar respostas"}
+        {pending ? tActions("sending") : t("submit")}
       </Button>
       <p className="text-center text-xs text-muted-foreground">
-        {questions.some((q) => q.required) ? "* obrigatória · " : ""}Seu nome não aparece junto das suas respostas.
+        {questions.some((q) => q.required) ? `${t("requiredNote")} · ` : ""}
+        {t("anonymityNote")}
       </p>
     </form>
   );

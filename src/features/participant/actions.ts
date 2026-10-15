@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createAdminClient, type AdminSupabase } from "@/lib/supabase/admin";
 import { findSessionByCode, getSessionSurvey } from "@/lib/data/public";
 import {
@@ -29,7 +30,28 @@ import { containsProfanity } from "@/lib/domain/profanity";
 import { localeOrDefault, type Locale } from "@/lib/domain/locale";
 import { askQuestionSchema, QUESTION_LIMIT, QUESTION_WINDOW_MS } from "@/lib/domain/questions";
 import { allowReaction, reactionKindSchema } from "@/lib/domain/reactions";
-import { fail, firstIssue, formValues, isUuid, ok, type ActionResult } from "@/lib/action-result";
+import { fail, formValues, isUuid, ok, type ActionResult } from "@/lib/action-result";
+import { getMessageTranslator } from "@/i18n/server";
+
+// Mensagens para a plateia: sempre no idioma da sessão (o mesmo dos botões no celular). Sem sessão válida,
+// no idioma da requisição.
+
+/** `tr`: chaves que viajam como texto (validation.*, core.*, participant.errors.*); `t`: erros desta área. */
+async function texts(locale?: Locale | null) {
+  const resolved = locale ?? (await getLocale());
+  const [tr, t] = await Promise.all([
+    getMessageTranslator(resolved),
+    getTranslations({ locale: resolved, namespace: "participant.errors" }),
+  ]);
+  return { tr, t };
+}
+
+/** Idioma da sessão, para erros que acontecem antes de a ação ler a sessão. */
+async function sessionLocale(admin: AdminSupabase, sessionId: string): Promise<Locale | null> {
+  if (!isUuid(sessionId)) return null;
+  const { data } = await admin.from("sessions").select("locale").eq("id", sessionId).maybeSingle();
+  return data ? localeOrDefault(data.locale) : null;
+}
 
 // ---------------------------------------------------------------------------
 // Entrar na sessão
@@ -39,30 +61,31 @@ export type JoinFormState = { error?: string };
 
 const joinSchema = z
   .object({
-    name: z.string().trim().max(60, "Nome muito longo.").optional(),
+    name: z.string().trim().max(60, "validation.nameTooLong").optional(),
     avatar: avatarKeySchema.optional(),
-    email: z.email({ error: "E-mail inválido." }).max(254).optional(),
+    email: z.email({ error: "participant.errors.invalidEmail" }).max(254).optional(),
     phone: z
       .string()
       .trim()
-      .regex(/^[0-9+()\s-]{8,32}$/, "Telefone inválido.")
+      .regex(/^[0-9+()\s-]{8,32}$/, "participant.errors.invalidPhone")
       .optional(),
     consent: z.boolean(),
   })
   .refine((v) => (!v.email && !v.phone) || v.consent, {
-    error: "Para guardar seu contato, marque a autorização.",
+    error: "participant.errors.consentRequired",
   });
 
 export async function joinSessionAction(code: string, _prev: JoinFormState, formData: FormData): Promise<JoinFormState> {
   const values = formValues(formData, ["name", "avatar", "email", "phone"] as const);
   const parsed = joinSchema.safeParse({ ...values, consent: formData.get("consent") === "on" });
-  if (!parsed.success) return { error: firstIssue(parsed.error) };
 
   const admin = createAdminClient();
   const session = await findSessionByCode(admin, normalizeJoinCode(code));
-  if (!session) return { error: "Sessão não encontrada. Confira o código." };
+  const { tr, t } = await texts(session?.locale);
+  if (!parsed.success) return { error: tr.issue(parsed.error) };
+  if (!session) return { error: t("sessionNotFoundCheckCode") };
   if (session.status === "completed") redirect(`/feedback/${session.id}`);
-  if (session.status === "draft") return { error: "Essa sessão ainda não começou." };
+  if (session.status === "draft") return { error: t("notStarted") };
 
   if (await getParticipantIdFromCookie(session.id)) redirect(`/session/${session.id}/participate`);
 
@@ -70,7 +93,7 @@ export async function joinSessionAction(code: string, _prev: JoinFormState, form
     .from("participants")
     .select("id", { count: "exact", head: true })
     .eq("session_id", session.id);
-  if ((count ?? 0) >= MAX_PARTICIPANTS_PER_SESSION) return { error: "Essa sessão atingiu o limite de participantes." };
+  if ((count ?? 0) >= MAX_PARTICIPANTS_PER_SESSION) return { error: t("sessionFull") };
 
   const name = parsed.data.name || null;
   const created = await admin
@@ -78,7 +101,7 @@ export async function joinSessionAction(code: string, _prev: JoinFormState, form
     .insert({ session_id: session.id, display_name: name, anonymous: name === null, avatar: parsed.data.avatar ?? null })
     .select("id")
     .single();
-  if (created.error) return { error: "Não foi possível entrar agora. Tente de novo." };
+  if (created.error) return { error: t("joinFailed") };
 
   if (parsed.data.email || parsed.data.phone) {
     // LGPD: contato separado das respostas, com consentimento registrado.
@@ -105,7 +128,7 @@ type Moderation = "visible" | "pending" | "hidden";
 
 type BuiltResponse =
   | { ok: true; value: Json; aggregateKey: string | null; moderation: Moderation; filtered?: boolean }
-  | { ok: false; error: string; code?: string };
+  | { ok: false; /** chave de mensagem (traduzida no idioma da sessão) */ error: string; code?: string };
 
 type SessionRules = { profanityFilter: boolean; moderateOpenText: boolean; locale: Locale };
 
@@ -127,23 +150,23 @@ async function buildResponse(
   rules: SessionRules,
 ): Promise<BuiltResponse> {
   if (!isInteractionType(interaction.type) || payload.type !== interaction.type) {
-    return { ok: false, error: "Tipo de resposta inválido." };
+    return { ok: false, error: "participant.errors.invalidAnswerType" };
   }
   const settings = normalizeSettings(interaction.type, interaction.settings);
 
   switch (payload.type) {
     case "multiple_choice": {
       const option = await loadOption(admin, interaction.id, payload.optionId);
-      if (!option) return { ok: false, error: "Alternativa inválida." };
+      if (!option) return { ok: false, error: "participant.errors.invalidOption" };
       return { ok: true, value: { optionId: option.id }, aggregateKey: option.id, moderation: "visible" };
     }
     case "quiz": {
       const option = await loadOption(admin, interaction.id, payload.optionId);
-      if (!option) return { ok: false, error: "Alternativa inválida." };
+      if (!option) return { ok: false, error: "participant.errors.invalidOption" };
       const activatedAt = interaction.activated_at ? Date.parse(interaction.activated_at) : Date.now();
       const responseTimeMs = Math.max(0, Date.now() - activatedAt);
       if (settings.timerSeconds && responseTimeMs > settings.timerSeconds * 1000 + QUIZ_GRACE_MS) {
-        return { ok: false, error: "O tempo acabou.", code: "timeout" };
+        return { ok: false, error: "participant.errors.timeUp", code: "timeout" };
       }
       return {
         ok: true,
@@ -161,14 +184,14 @@ async function buildResponse(
     }
     case "rating": {
       if (payload.value < settings.min || payload.value > settings.max) {
-        return { ok: false, error: "Nota fora da escala." };
+        return { ok: false, error: "participant.errors.ratingOutOfRange" };
       }
       return { ok: true, value: { value: payload.value }, aggregateKey: String(payload.value), moderation: "visible" };
     }
     case "word_cloud": {
-      if (payload.text.length > settings.maxLength) return { ok: false, error: "Resposta muito longa." };
+      if (payload.text.length > settings.maxLength) return { ok: false, error: "validation.answerTooLong" };
       const normalized = normalizeTerm(payload.text, rules.locale);
-      if (!normalized) return { ok: false, error: "Tente uma palavra mais específica." };
+      if (!normalized) return { ok: false, error: "participant.errors.moreSpecificWord" };
       const value = { text: payload.text, normalized };
       // Palavrão: entra oculto (o palestrante vê e pode liberar). Sem aviso, para não ensinar a burlar.
       if (rules.profanityFilter && containsProfanity(payload.text, rules.locale)) {
@@ -184,7 +207,7 @@ async function buildResponse(
       return { ok: true, value, aggregateKey: normalized, moderation: (count ?? 0) > 0 ? "hidden" : "visible" };
     }
     case "open_text": {
-      if (payload.text.length > settings.maxLength) return { ok: false, error: "Resposta muito longa." };
+      if (payload.text.length > settings.maxLength) return { ok: false, error: "validation.answerTooLong" };
       const value = { text: payload.text };
       if (rules.profanityFilter && containsProfanity(payload.text, rules.locale)) {
         return { ok: true, value, aggregateKey: null, moderation: "hidden", filtered: true };
@@ -194,7 +217,7 @@ async function buildResponse(
     case "ranking": {
       const { data: options } = await admin.from("interaction_options").select("id").eq("interaction_id", interaction.id);
       const ids = (options ?? []).map((o) => o.id);
-      if (!isValidRanking(payload.order, ids)) return { ok: false, error: "Ordene todas as alternativas." };
+      if (!isValidRanking(payload.order, ids)) return { ok: false, error: "validation.rankAllOptions" };
       return {
         ok: true,
         value: { order: payload.order, points: bordaPoints(payload.order) },

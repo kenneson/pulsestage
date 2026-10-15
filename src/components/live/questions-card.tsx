@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { listQuestionsAction, moderateQuestionAction, showQuestionsAction } from "@/features/engagement/actions";
 import type { SpeakerQuestion } from "@/lib/data/engagement";
@@ -16,11 +17,12 @@ import { cn } from "@/lib/utils";
 const POLL_MS = 4000;
 
 type Tab = "open" | "pending" | "answered" | "hidden";
-const TABS: { key: Tab; label: string; statuses: QuestionStatus[] }[] = [
-  { key: "open", label: "Abertas", statuses: ["visible"] },
-  { key: "pending", label: "Aguardando", statuses: ["pending"] },
-  { key: "answered", label: "Respondidas", statuses: ["answered"] },
-  { key: "hidden", label: "Ocultas", statuses: ["hidden"] },
+// Rótulos das abas em live.questionsCard.tabs (no plural: "Abertas", "Respondidas"…).
+const TABS: { key: Tab; statuses: QuestionStatus[] }[] = [
+  { key: "open", statuses: ["visible"] },
+  { key: "pending", statuses: ["pending"] },
+  { key: "answered", statuses: ["answered"] },
+  { key: "hidden", statuses: ["hidden"] },
 ];
 
 /** Perguntas da plateia na sala ao vivo: aprovar, destacar no telão, marcar como respondida, ocultar. */
@@ -37,6 +39,8 @@ export function QuestionsCard({
   enabled: boolean;
   onChanged?: () => void;
 }) {
+  const t = useTranslations("live.questionsCard");
+  const tCommon = useTranslations("common");
   const [questions, setQuestions] = useState<SpeakerQuestion[]>([]);
   const [tab, setTab] = useState<Tab>("open");
   const [pending, startTransition] = useTransition();
@@ -69,15 +73,15 @@ export function QuestionsCard({
     });
 
   const counts = Object.fromEntries(
-    TABS.map((t) => [t.key, questions.filter((q) => t.statuses.includes(q.status)).length]),
+    TABS.map((tab) => [tab.key, questions.filter((q) => tab.statuses.includes(q.status)).length]),
   ) as Record<Tab, number>;
-  const visible = questions.filter((q) => TABS.find((t) => t.key === tab)?.statuses.includes(q.status));
+  const visible = questions.filter((q) => TABS.find((item) => item.key === tab)?.statuses.includes(q.status));
 
   return (
     <Card>
       <CardHeader className="flex-row flex-wrap items-center justify-between gap-2">
         <CardTitle className="flex items-center gap-2">
-          <MessageQuestionIcon /> Perguntas da plateia
+          <MessageQuestionIcon /> {t("title")}
         </CardTitle>
         {enabled ? (
           <Button
@@ -86,39 +90,39 @@ export function QuestionsCard({
             disabled={pending || !isLive}
             onClick={() => run(() => showQuestionsAction(sessionId, !(onScreen && !highlighted), null))}
           >
-            {onScreen && !highlighted ? "Ocultar do telão" : "Mostrar no telão"}
+            {onScreen && !highlighted ? t("hideFromScreen") : t("showOnScreen")}
           </Button>
         ) : null}
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         {!enabled ? (
           <p className="text-sm text-muted-foreground">
-            Desligadas nesta sessão. Ligue em “Participação”, abaixo, para a plateia poder perguntar.
+            {t("disabled")}
           </p>
         ) : (
           <>
-            <div role="tablist" aria-label="Perguntas" className="flex flex-wrap gap-1">
-              {TABS.filter((t) => t.key !== "pending" || counts.pending > 0 || tab === "pending").map((t) => (
+            <div role="tablist" aria-label={t("tabsLabel")} className="flex flex-wrap gap-1">
+              {TABS.filter((item) => item.key !== "pending" || counts.pending > 0 || tab === "pending").map((item) => (
                 <button
-                  key={t.key}
+                  key={item.key}
                   type="button"
                   role="tab"
-                  aria-selected={tab === t.key}
-                  onClick={() => setTab(t.key)}
+                  aria-selected={tab === item.key}
+                  onClick={() => setTab(item.key)}
                   className={cn(
                     "rounded-md px-2.5 py-1 text-xs font-medium",
-                    tab === t.key ? "bg-primary/10 text-foreground" : "text-muted-foreground hover:bg-muted",
-                    t.key === "pending" && counts.pending > 0 && "text-standby-foreground bg-standby/20",
+                    tab === item.key ? "bg-primary/10 text-foreground" : "text-muted-foreground hover:bg-muted",
+                    item.key === "pending" && counts.pending > 0 && "text-standby-foreground bg-standby/20",
                   )}
                 >
-                  {t.label} ({counts[t.key]})
+                  {t("tab", { label: t(`tabs.${item.key}`), count: counts[item.key] })}
                 </button>
               ))}
             </div>
 
             {visible.length === 0 ? (
               <p className="py-4 text-center text-sm text-muted-foreground">
-                {tab === "open" ? "Nenhuma pergunta aberta. A plateia pergunta pelo celular." : "Nada por aqui."}
+                {tab === "open" ? t("emptyOpen") : tCommon("states.empty")}
               </p>
             ) : (
               <ul className="flex max-h-[26rem] flex-col gap-2 overflow-y-auto pr-1">
@@ -129,14 +133,14 @@ export function QuestionsCard({
                       <p className="min-w-0 flex-1 whitespace-pre-line break-words text-sm">{q.body}</p>
                     </div>
                     <p className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                      {q.author ?? "Anônima"}
-                      {q.filtered ? " · barrada pelo filtro" : ""}
-                      {highlighted === q.id ? <Badge variant="live">No telão</Badge> : null}
+                      {q.author ?? t("anonymous")}
+                      {q.filtered ? ` · ${t("filtered")}` : ""}
+                      {highlighted === q.id ? <Badge variant="live">{t("onScreen")}</Badge> : null}
                     </p>
                     <div className="flex flex-wrap items-center gap-1.5">
                       {q.status === "pending" || q.status === "hidden" ? (
                         <Button size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateQuestionAction(q.id, "visible"))}>
-                          {q.status === "pending" ? "Aprovar" : "Mostrar"}
+                          {q.status === "pending" ? t("approve") : tCommon("actions.show")}
                         </Button>
                       ) : null}
                       {q.status === "visible" || q.status === "answered" ? (
@@ -147,22 +151,22 @@ export function QuestionsCard({
                           disabled={pending || !isLive}
                           onClick={() => run(() => showQuestionsAction(sessionId, highlighted !== q.id, highlighted === q.id ? null : q.id))}
                         >
-                          {highlighted === q.id ? "Tirar do telão" : "Destacar"}
+                          {highlighted === q.id ? t("removeFromScreen") : t("highlight")}
                         </Button>
                       ) : null}
                       {q.status === "visible" ? (
                         <Button variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateQuestionAction(q.id, "answered"))}>
-                          Respondida
+                          {t("markAnswered")}
                         </Button>
                       ) : null}
                       {q.status === "answered" ? (
                         <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateQuestionAction(q.id, "visible"))}>
-                          Reabrir
+                          {t("reopen")}
                         </Button>
                       ) : null}
                       {q.status !== "hidden" ? (
                         <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateQuestionAction(q.id, "hidden"))}>
-                          Ocultar
+                          {tCommon("actions.hide")}
                         </Button>
                       ) : null}
                     </div>

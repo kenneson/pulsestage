@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import type { SessionRow } from "@/lib/supabase/types";
 import { formatDateTime } from "@/lib/datetime";
 import { toSessionStatus } from "@/lib/domain/session";
@@ -40,6 +41,9 @@ export function SessionList({
   /** botão "Duplicar" em cada linha */
   duplicable?: boolean;
 }) {
+  // Hooks do next-intl: funcionam em Server Component síncrono e no cliente.
+  const t = useTranslations("dashboard.sessionList");
+  const locale = useLocale();
   return (
     <ul className="divide-y rounded-md bg-card shadow-[0_10px_28px_-18px_color-mix(in_oklch,var(--foreground)_32%,transparent)] dark:border">
       {sessions.map((s) => (
@@ -51,8 +55,11 @@ export function SessionList({
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium">{s.title}</p>
               <p className="text-sm text-muted-foreground">
-                {formatDateTime(s.scheduled_at ?? s.started_at ?? s.created_at, timeZone)} · código{" "}
-                <span className="font-display">{s.join_code}</span>
+                {t.rich("meta", {
+                  date: formatDateTime(s.scheduled_at ?? s.started_at ?? s.created_at, timeZone, locale),
+                  code: s.join_code,
+                  b: (chunks) => <span className="font-display">{chunks}</span>,
+                })}
               </p>
             </div>
             <StatusBadge status={s.status} />

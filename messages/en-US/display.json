@@ -3,7 +3,7 @@
     "title": "Projector"
   },
   "join": {
-    "prompt": "Go to <host>{host}</host> and enter the code"
+    "prompt": "Go to <b>{host}</b> and enter the code"
   },
   "completed": {
     "title": "Thanks for joining in!",
@@ -19,14 +19,14 @@
     "responses": "{count, plural, one {# response} other {# responses}}",
     "participants": "{count, plural, one {# participant} other {# participants}}",
     "connected": "{count, plural, one {# connected} other {# connected}}",
-    "code": "Code <code>{code}</code>"
+    "code": "Code <b>{code}</b>"
   },
   "questions": {
     "eyebrow": "Audience question",
     "title": "Audience Q&A",
     "anonymous": "Anonymous",
     "openCount": "{count, plural, one {# open question} other {# open questions}}",
-    "empty": "Send your question from your phone at <host>{host}</host>"
+    "empty": "Send your question from your phone at <b>{host}</b>"
   },
   "leaderboard": {
     "title": "Quiz leaderboard",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import type { AnswerPayload, PublicInteraction } from "@/lib/domain/interactions";
 import { Button } from "@/components/ui/button";
 import { Input, Textarea } from "@/components/ui/input";
@@ -18,6 +19,7 @@ type Props = {
 };
 
 function QuizTimer({ activatedAt, seconds }: { activatedAt: string | null; seconds: number }) {
+  const t = useTranslations("participant.answer");
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 250);
@@ -33,7 +35,7 @@ function QuizTimer({ activatedAt, seconds }: { activatedAt: string | null; secon
           style={{ width: `${(remaining / seconds) * 100}%` }}
         />
       </div>
-      <span className="w-10 text-right text-sm font-semibold tabular-nums">{remaining}s</span>
+      <span className="w-10 text-right text-sm font-semibold tabular-nums">{t("secondsLeft", { seconds: remaining })}</span>
     </div>
   );
 }
@@ -113,6 +115,7 @@ function RankingPicker({
   onChange: (order: string[]) => void;
   disabled: boolean;
 }) {
+  const t = useTranslations("participant.answer");
   const byId = new Map(interaction.options.map((o) => [o.id, o]));
   const remaining = interaction.options.filter((o) => !order.includes(o.id));
   return (
@@ -120,9 +123,9 @@ function RankingPicker({
       {order.length > 0 ? (
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="font-medium">Sua ordem</span>
+            <span className="font-medium">{t("yourOrder")}</span>
             <button type="button" className="text-muted-foreground underline" disabled={disabled} onClick={() => onChange([])}>
-              Recomeçar
+              {t("restart")}
             </button>
           </div>
           <ol className="flex flex-col gap-2">
@@ -132,11 +135,11 @@ function RankingPicker({
                   type="button"
                   disabled={disabled}
                   onClick={() => onChange(order.filter((x) => x !== id))}
-                  aria-label={`${index + 1}º: ${byId.get(id)?.label ?? ""}. Toque para tirar.`}
+                  aria-label={t("rankedItem", { position: index + 1, label: byId.get(id)?.label ?? "" })}
                   className="flex min-h-14 w-full items-center gap-3 rounded-xl border-2 border-primary bg-primary/5 px-4 py-3 text-left text-base font-medium"
                 >
                   <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary font-display text-sm font-bold text-primary-foreground">
-                    {index + 1}º
+                    {t("position", { position: index + 1 })}
                   </span>
                   <span className="min-w-0 flex-1 break-words">{byId.get(id)?.label}</span>
                   <XIcon className="shrink-0 text-muted-foreground" />
@@ -149,7 +152,7 @@ function RankingPicker({
       {remaining.length > 0 ? (
         <div className="flex flex-col gap-2">
           <p className="text-sm text-muted-foreground">
-            {order.length === 0 ? "Toque primeiro na sua preferida, depois na seguinte…" : `Toque na sua ${order.length + 1}ª opção`}
+            {order.length === 0 ? t("rankFirst") : t("rankNext", { position: order.length + 1 })}
           </p>
           <ul className="flex flex-col gap-2">
             {remaining.map((option) => (
@@ -175,6 +178,8 @@ function RankingPicker({
 }
 
 export function AnswerForm({ interaction, onSubmit, submitting = false, preview = false }: Props) {
+  const t = useTranslations("participant.answer");
+  const tActions = useTranslations("common.actions");
   const [optionId, setOptionId] = useState<string | null>(null);
   const [order, setOrder] = useState<string[]>([]);
   const [rating, setRating] = useState<number | null>(null);
@@ -298,8 +303,8 @@ export function AnswerForm({ interaction, onSubmit, submitting = false, preview 
           value={text}
           onChange={(e) => setText(e.target.value)}
           maxLength={settings.maxLength}
-          placeholder="Uma palavra ou expressão curta"
-          aria-label="Sua resposta"
+          placeholder={t("wordPlaceholder")}
+          aria-label={t("yourAnswer")}
           disabled={submitting}
           className="h-14 text-lg"
           autoComplete="off"
@@ -312,8 +317,8 @@ export function AnswerForm({ interaction, onSubmit, submitting = false, preview 
             value={text}
             onChange={(e) => setText(e.target.value)}
             maxLength={settings.maxLength}
-            placeholder="Escreva sua resposta"
-            aria-label="Sua resposta"
+            placeholder={t("textPlaceholder")}
+            aria-label={t("yourAnswer")}
             disabled={submitting}
             className="min-h-28 text-base"
           />
@@ -324,7 +329,7 @@ export function AnswerForm({ interaction, onSubmit, submitting = false, preview 
       ) : null}
 
       <Button type="submit" size="xl" disabled={!ready || disabled} className="w-full">
-        {preview ? "Enviar (pré-visualização)" : submitting ? "Enviando…" : "Enviar resposta"}
+        {preview ? t("submitPreview") : submitting ? tActions("sending") : t("submit")}
       </Button>
     </form>
   );

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { loadSpeakerHistory } from "@/lib/data/analytics";
 import { getSpeakerProfile } from "@/lib/data/profile";
 import { joinUrl } from "@/lib/env";
 import { average } from "@/lib/domain/metrics";
-import { STATUS_LABEL, toSessionStatus } from "@/lib/domain/session";
-import { formatPercent, formatScore, plural } from "@/lib/format";
+import { toSessionStatus } from "@/lib/domain/session";
+import { formatInt, formatPercent, formatScore } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/misc";
@@ -27,11 +28,21 @@ import {
   UsersIcon,
 } from "@/components/icons";
 
-export const metadata: Metadata = { title: "Visão geral" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("dashboard.home");
+  return { title: t("metaTitle") };
+}
 
 export default async function DashboardPage() {
   const supabase = await createClient();
-  const [{ sessions, history }, profile] = await Promise.all([loadSpeakerHistory(supabase), getSpeakerProfile()]);
+  const [{ sessions, history }, profile, t, tDomain, locale] = await Promise.all([
+    loadSpeakerHistory(supabase),
+    getSpeakerProfile(),
+    getTranslations("dashboard.home"),
+    getTranslations("domain"),
+    getLocale(),
+  ]);
+  const tActions = await getTranslations("common.actions");
   const [interactions, customTemplates] = await Promise.all([
     supabase.from("interactions").select("session_id"),
     supabase.from("survey_templates").select("id", { count: "exact", head: true }).eq("owner_id", profile.id),
@@ -54,11 +65,11 @@ export default async function DashboardPage() {
   const nextQuestions = next ? (questionsBySession.get(next.id) ?? 0) : 0;
 
   const steps = [
-    { done: sessions.length > 0, label: "Criar a primeira sessão", href: "/dashboard/sessions/new" },
-    { done: questionsBySession.size > 0, label: "Adicionar perguntas", href: next ? `/dashboard/sessions/${next.id}` : "/dashboard/sessions" },
-    { done: sessions.some((s) => s.started_at !== null), label: "Apresentar ao vivo", href: "/dashboard/guia#ao-vivo" },
-    { done: Boolean(profile.bio || profile.avatarUrl), label: "Completar o perfil", href: "/dashboard/conta#perfil" },
-    { done: (customTemplates.count ?? 0) > 0, label: "Criar um modelo de pesquisa", href: "/dashboard/pesquisas/nova" },
+    { done: sessions.length > 0, label: t("steps.createSession"), href: "/dashboard/sessions/new" },
+    { done: questionsBySession.size > 0, label: t("steps.addQuestions"), href: next ? `/dashboard/sessions/${next.id}` : "/dashboard/sessions" },
+    { done: sessions.some((s) => s.started_at !== null), label: t("steps.presentLive"), href: "/dashboard/guia#ao-vivo" },
+    { done: Boolean(profile.bio || profile.avatarUrl), label: t("steps.completeProfile"), href: "/dashboard/conta#perfil" },
+    { done: (customTemplates.count ?? 0) > 0, label: t("steps.createTemplate"), href: "/dashboard/pesquisas/nova" },
   ];
   const doneCount = steps.filter((s) => s.done).length;
   const firstName = profile.name?.split(/\s+/)[0];
@@ -67,11 +78,11 @@ export default async function DashboardPage() {
     <div className="flex flex-col gap-7">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{firstName ? `Olá, ${firstName}` : "Visão geral"}</h1>
-          <p className="text-muted-foreground">Criar, apresentar, analisar, melhorar.</p>
+          <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{firstName ? t("greeting", { name: firstName }) : t("title")}</h1>
+          <p className="text-muted-foreground">{t("tagline")}</p>
         </div>
         <Link href="/dashboard/sessions/new" className={buttonVariants()}>
-          <PlusIcon /> Nova sessão
+          <PlusIcon /> {t("newSession")}
         </Link>
       </div>
 
@@ -92,10 +103,13 @@ export default async function DashboardPage() {
                   nextStatus === "paused" && "border-transparent bg-standby text-standby-foreground",
                 )}
               >
-                {STATUS_LABEL[nextStatus]}
+                {tDomain(`sessionStatus.${nextStatus}`)}
               </span>
-              código <strong className="font-display text-foreground">{next.join_code}</strong> ·{" "}
-              {plural(nextQuestions, "pergunta", "perguntas")}
+              {t.rich("nextMeta", {
+                code: next.join_code,
+                count: nextQuestions,
+                b: (chunks) => <strong className="font-display text-foreground">{chunks}</strong>,
+              })}
             </p>
             <h2 id="next-session" className="font-display text-2xl font-bold tracking-tight text-balance break-words">
               {next.title}
@@ -107,47 +121,47 @@ export default async function DashboardPage() {
             {nextStatus === "draft" ? (
               <>
                 <Link href={`/dashboard/sessions/${next.id}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
-                  <EditIcon /> Editar
+                  <EditIcon /> {tActions("edit")}
                 </Link>
                 <StartSessionButton sessionId={next.id} hasInteractions={nextQuestions > 0} />
               </>
             ) : (
               <Link href={`/dashboard/sessions/${next.id}/live`} className={buttonVariants()}>
-                Abrir sala ao vivo
+                {t("openLive")}
               </Link>
             )}
           </div>
         </section>
       ) : null}
 
-      <section aria-label="Resumo" className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <section aria-label={t("summary")} className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
-          label="Sessões"
-          value={String(sessions.length)}
-          hint={`${history.length} encerradas`}
+          label={t("stats.sessions")}
+          value={formatInt(sessions.length, locale)}
+          hint={t("stats.sessionsHint", { count: history.length })}
           icon={<PresentationIcon />}
           paper="bg-rev-blue"
         />
         <StatCard
-          label="Nota geral"
-          value={formatScore(overall)}
+          label={t("stats.overall")}
+          value={formatScore(overall, locale)}
           suffix="/10"
-          hint="Utilidade, satisfação ou recomendação"
+          hint={t("stats.overallHint")}
           icon={<StarIcon />}
           paper="bg-rev-green"
         />
         <StatCard
-          label="Média das dimensões"
-          value={formatScore(dimensions)}
+          label={t("stats.dimensions")}
+          value={formatScore(dimensions, locale)}
           suffix="/5"
-          hint="Perguntas de 1 a 5 das pesquisas"
+          hint={t("stats.dimensionsHint")}
           icon={<BarChartIcon />}
           paper="bg-rev-gold"
         />
         <StatCard
-          label="Participação média"
+          label={t("stats.participation")}
           value={formatPercent(participation)}
-          hint="Quem respondeu algo ÷ quem entrou"
+          hint={t("stats.participationHint")}
           icon={<UsersIcon />}
           paper="bg-rev-pink"
         />
@@ -157,23 +171,23 @@ export default async function DashboardPage() {
         <section aria-labelledby="recent" className="flex min-w-0 flex-[2_1_480px] flex-col gap-3">
           <div className="flex items-center justify-between">
             <h2 id="recent" className="font-semibold">
-              Sessões recentes
+              {t("recent")}
             </h2>
             <Link href="/dashboard/sessions" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
-              Ver todas <ChevronRightIcon />
+              {t("seeAll")} <ChevronRightIcon />
             </Link>
           </div>
           {sessions.length === 0 ? (
             <EmptyState
-              title="Nenhuma sessão ainda"
-              description="Crie sua primeira sessão, adicione interações e compartilhe o código com a audiência."
+              title={t("emptyTitle")}
+              description={t("emptyDescription")}
               action={
                 <div className="flex flex-wrap justify-center gap-2">
                   <Link href="/dashboard/sessions/new" className={buttonVariants()}>
-                    Criar sessão
+                    {t("createSession")}
                   </Link>
                   <Link href="/dashboard/guia" className={buttonVariants({ variant: "outline" })}>
-                    Ver o guia
+                    {t("seeGuide")}
                   </Link>
                 </div>
               }
@@ -190,7 +204,7 @@ export default async function DashboardPage() {
           >
             <div className="flex items-baseline justify-between">
               <h2 id="steps" className="font-semibold">
-                Primeiros passos
+                {t("steps.title")}
               </h2>
               <span className="font-display text-sm font-bold tabular-nums">
                 {doneCount}/{steps.length}
@@ -206,7 +220,7 @@ export default async function DashboardPage() {
                     <>
                       <CircleCheckIcon className="text-primary" aria-hidden />
                       <span className="text-muted-foreground line-through">{step.label}</span>
-                      <span className="sr-only">(feito)</span>
+                      <span className="sr-only">{t("steps.done")}</span>
                     </>
                   ) : (
                     <>

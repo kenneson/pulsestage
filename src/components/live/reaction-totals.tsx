@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { reactionTotalsAction } from "@/features/engagement/actions";
 import { REACTIONS, type ReactionTally } from "@/lib/domain/reactions";
 import { formatInt } from "@/lib/format";
@@ -9,6 +10,9 @@ const POLL_MS = 8000;
 
 /** Total de reações da sessão, por emoji (atualiza enquanto a sessão está no ar). */
 export function ReactionTotals({ sessionId, running }: { sessionId: string; running: boolean }) {
+  const t = useTranslations("live.reactionTotals");
+  const tDomain = useTranslations("domain");
+  const locale = useLocale();
   const [tally, setTally] = useState<ReactionTally | null>(null);
 
   useEffect(() => {
@@ -29,10 +33,10 @@ export function ReactionTotals({ sessionId, running }: { sessionId: string; runn
   const total = tally ? Object.values(tally).reduce((a, b) => a + b, 0) : 0;
   if (!tally || total === 0) return null;
   return (
-    <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground" aria-label="Reações da plateia">
+    <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground" aria-label={t("label")}>
       {REACTIONS.filter((r) => tally[r.key] > 0).map((r) => (
-        <span key={r.key} title={r.label}>
-          <span aria-hidden>{r.emoji}</span> <span className="tabular-nums">{formatInt(tally[r.key])}</span>
+        <span key={r.key} title={tDomain(`reactions.${r.key}`)}>
+          <span aria-hidden>{r.emoji}</span> <span className="tabular-nums">{formatInt(tally[r.key], locale)}</span>
         </span>
       ))}
     </p>

@@ -1,11 +1,13 @@
+import { useTranslations } from "next-intl";
 import { Skeleton } from "@/components/ui/misc";
 
 // Mostrado dentro do layout (o cabeçalho continua visível) enquanto a página do dashboard carrega.
 export default function DashboardLoading() {
+  const t = useTranslations("common.actions");
   return (
     <div className="flex flex-col gap-8" aria-busy="true">
       <span className="sr-only" role="status">
-        Carregando…
+        {t("loading")}
       </span>
       <div className="flex flex-col gap-2">
         <Skeleton className="h-8 w-56" />

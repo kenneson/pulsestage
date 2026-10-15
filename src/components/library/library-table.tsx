@@ -3,6 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { copyToSessionAction } from "@/features/library/actions";
 import type { LibraryItem } from "@/lib/domain/library";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,8 @@ import { PlusIcon, XIcon } from "@/components/icons";
 type OpenSession = { id: string; title: string };
 
 export function LibraryTable({ items, sessions }: { items: LibraryItem[]; sessions: OpenSession[] }) {
+  const t = useTranslations("dashboard.libraryTable");
+  const tActions = useTranslations("common.actions");
   const filter = useLibraryFilter(items);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [choice, setChoice] = useState<LibraryItem | null>(null);
@@ -33,8 +36,8 @@ export function LibraryTable({ items, sessions }: { items: LibraryItem[]; sessio
         toast.error(result.error);
         return;
       }
-      const name = sessions.find((s) => s.id === target)?.title ?? "a sessão";
-      toast.success(`Pergunta adicionada a “${name}”.`);
+      const name = sessions.find((s) => s.id === target)?.title;
+      toast.success(name ? t("added", { name }) : t("addedGeneric"));
       dialogRef.current?.close();
     });
   }
@@ -44,7 +47,7 @@ export function LibraryTable({ items, sessions }: { items: LibraryItem[]; sessio
       <LibraryFilters {...filter} />
 
       {filter.filtered.length === 0 ? (
-        <EmptyState title="Nenhuma pergunta encontrada" description="Ajuste a busca ou o filtro de tipo." />
+        <EmptyState title={t("emptyTitle")} description={t("emptyDescription")} />
       ) : (
         <ul className="divide-y rounded-md bg-card shadow-[0_10px_28px_-18px_color-mix(in_oklch,var(--foreground)_32%,transparent)] dark:border">
           {filter.filtered.map((item) => (
@@ -53,7 +56,7 @@ export function LibraryTable({ items, sessions }: { items: LibraryItem[]; sessio
                 <LibraryItemSummary item={item} />
               </div>
               <Button variant="outline" size="sm" onClick={() => open(item)} disabled={sessions.length === 0}>
-                <PlusIcon /> Usar em uma sessão
+                <PlusIcon /> {t("useInSession")}
               </Button>
             </li>
           ))}
@@ -68,11 +71,11 @@ export function LibraryTable({ items, sessions }: { items: LibraryItem[]; sessio
         <div className="flex flex-col gap-4">
           <div className="flex items-start justify-between gap-3">
             <h2 id="use-in-session-title" className="text-lg font-semibold">
-              Usar em uma sessão
+              {t("useInSession")}
             </h2>
             <button
               type="button"
-              aria-label="Fechar"
+              aria-label={tActions("close")}
               onClick={() => dialogRef.current?.close()}
               className="grid size-9 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-muted"
             >
@@ -81,7 +84,7 @@ export function LibraryTable({ items, sessions }: { items: LibraryItem[]; sessio
           </div>
           {choice ? <p className="text-sm">“{choice.title}”</p> : null}
           <label className="flex flex-col gap-2 text-sm font-medium">
-            Sessão de destino
+            {t("targetSession")}
             <Select value={target} onChange={(e) => setTarget(e.target.value)}>
               {sessions.map((s) => (
                 <option key={s.id} value={s.id}>
@@ -89,19 +92,25 @@ export function LibraryTable({ items, sessions }: { items: LibraryItem[]; sessio
                 </option>
               ))}
             </Select>
-            <span className="text-xs font-normal text-muted-foreground">A pergunta entra no fim do roteiro.</span>
+            <span className="text-xs font-normal text-muted-foreground">{t("entersAtEnd")}</span>
           </label>
           <div className="flex flex-wrap justify-end gap-2">
             <Button variant="outline" onClick={() => dialogRef.current?.close()}>
-              Cancelar
+              {tActions("cancel")}
             </Button>
             <Button onClick={confirm} disabled={pending || !target}>
-              {pending ? "Adicionando…" : "Adicionar"}
+              {pending ? t("adding") : tActions("add")}
             </Button>
           </div>
           {sessions.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              Nenhuma sessão aberta. <Link href="/dashboard/sessions/new" className="text-primary hover:underline">Crie uma sessão</Link>.
+              {t.rich("noOpenSessions", {
+                link: (chunks) => (
+                  <Link href="/dashboard/sessions/new" className="text-primary hover:underline">
+                    {chunks}
+                  </Link>
+                ),
+              })}
             </p>
           ) : null}
         </div>

@@ -3,11 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { signOutAction } from "@/features/auth/actions";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import { Avatar } from "@/components/avatar";
 import { ThemeToggle } from "@/components/theme";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 import { buttonVariants } from "@/components/ui/button";
 import {
   BookIcon,
@@ -27,18 +29,19 @@ import {
   XIcon,
 } from "@/components/icons";
 
+// `label`: chave de dashboard.nav.
 const LINKS = [
-  { href: "/dashboard", label: "Visão geral", exact: true, icon: HomeIcon },
-  { href: "/dashboard/sessions", label: "Sessões", exact: false, icon: PresentationIcon },
-  { href: "/dashboard/pesquisas", label: "Pesquisas", exact: false, icon: ClipboardIcon },
-  { href: "/dashboard/biblioteca", label: "Biblioteca", exact: false, icon: LibraryIcon },
-  { href: "/dashboard/sorteios", label: "Sorteios", exact: true, icon: GiftIcon },
-  { href: "/dashboard/analytics", label: "Evolução", exact: true, icon: TrendingUpIcon },
-  { href: "/dashboard/perfil-publico", label: "Perfil público", exact: true, icon: IdCardIcon },
-  { href: "/dashboard/convites", label: "Convites", exact: true, icon: InboxIcon },
-  { href: "/dashboard/integracoes", label: "Integrações", exact: true, icon: PlugIcon },
-  { href: "/dashboard/guia", label: "Guia", exact: true, icon: BookIcon },
-];
+  { href: "/dashboard", label: "overview", exact: true, icon: HomeIcon },
+  { href: "/dashboard/sessions", label: "sessions", exact: false, icon: PresentationIcon },
+  { href: "/dashboard/pesquisas", label: "surveys", exact: false, icon: ClipboardIcon },
+  { href: "/dashboard/biblioteca", label: "library", exact: false, icon: LibraryIcon },
+  { href: "/dashboard/sorteios", label: "raffles", exact: true, icon: GiftIcon },
+  { href: "/dashboard/analytics", label: "evolution", exact: true, icon: TrendingUpIcon },
+  { href: "/dashboard/perfil-publico", label: "publicProfile", exact: true, icon: IdCardIcon },
+  { href: "/dashboard/convites", label: "invites", exact: true, icon: InboxIcon },
+  { href: "/dashboard/integracoes", label: "integrations", exact: true, icon: PlugIcon },
+  { href: "/dashboard/guia", label: "guide", exact: true, icon: BookIcon },
+] as const;
 
 const linkClass = (active: boolean) =>
   cn(
@@ -58,6 +61,7 @@ export function DashboardSidebar({
   avatarUrl: string | null;
   unreadInvites?: number;
 }) {
+  const t = useTranslations("dashboard.nav");
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const isActive = (href: string, exact: boolean) => (exact ? pathname === href : pathname.startsWith(href));
@@ -70,7 +74,7 @@ export function DashboardSidebar({
         <button
           type="button"
           className="grid size-10 place-items-center rounded-md text-muted-foreground hover:bg-muted md:hidden"
-          aria-label={open ? "Fechar menu" : "Abrir menu"}
+          aria-label={open ? t("closeMenu") : t("openMenu")}
           aria-expanded={open}
           aria-controls="dashboard-nav"
           onClick={() => setOpen((v) => !v)}
@@ -81,10 +85,10 @@ export function DashboardSidebar({
 
       <div id="dashboard-nav" className={cn("flex-1 flex-col gap-6 overflow-y-auto px-3 pb-4 md:flex md:px-4", open ? "flex" : "hidden")}>
         <Link href="/dashboard/sessions/new" onClick={close} className={buttonVariants({ className: "w-full" })}>
-          <PlusIcon /> Nova sessão
+          <PlusIcon /> {t("newSession")}
         </Link>
 
-        <nav aria-label="Navegação principal" className="flex flex-col gap-0.5">
+        <nav aria-label={t("mainNav")} className="flex flex-col gap-0.5">
           {LINKS.map((link) => {
             const active = isActive(link.href, link.exact);
             return (
@@ -96,11 +100,11 @@ export function DashboardSidebar({
                 className={linkClass(active)}
               >
                 <link.icon className={active ? "text-primary" : undefined} />
-                {link.label}
+                {t(link.label)}
                 {link.href === "/dashboard/convites" && unreadInvites > 0 ? (
                   <span
                     className="ml-auto min-w-5 rounded-full bg-primary px-1.5 text-center text-xs font-semibold leading-5 text-primary-foreground tabular-nums"
-                    aria-label={`${unreadInvites} ${unreadInvites === 1 ? "convite novo" : "convites novos"}`}
+                    aria-label={t("unreadInvites", { count: unreadInvites })}
                   >
                     {unreadInvites > 99 ? "99+" : unreadInvites}
                   </span>
@@ -118,22 +122,23 @@ export function DashboardSidebar({
             className={linkClass(isActive("/dashboard/conta", false))}
           >
             <SettingsIcon className={isActive("/dashboard/conta", false) ? "text-primary" : undefined} />
-            Configurações
+            {t("settings")}
           </Link>
           <div className="flex items-center gap-2 px-1 pt-2">
             <Link href="/dashboard/conta" onClick={close} className="flex min-w-0 flex-1 items-center gap-2.5 rounded-md p-2 hover:bg-muted">
               <Avatar src={avatarUrl} name={name} email={email} size={30} />
               <span className="flex min-w-0 flex-col leading-tight">
                 <span className="truncate text-sm font-medium">{name ?? email}</span>
-                <span className="truncate text-xs text-muted-foreground">Perfil e conta</span>
+                <span className="truncate text-xs text-muted-foreground">{t("profileAndAccount")}</span>
               </span>
             </Link>
+            <LocaleSwitcher compact />
             <ThemeToggle />
             <form action={signOutAction}>
               <button
                 type="submit"
-                aria-label="Sair"
-                title="Sair"
+                aria-label={t("signOut")}
+                title={t("signOut")}
                 className="grid size-9 place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
               >
                 <LogOutIcon />

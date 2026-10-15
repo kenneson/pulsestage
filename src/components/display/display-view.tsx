@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
+import { useTranslations } from "next-intl";
 import type { PublicInteraction } from "@/lib/domain/interactions";
 import { EMPTY_SNAPSHOT, type ResultsMap } from "@/lib/domain/results";
 import { toSessionStatus } from "@/lib/domain/session";
@@ -10,7 +11,6 @@ import type { LiveState } from "@/lib/realtime/schemas";
 import { useLiveState } from "@/lib/realtime/use-live-state";
 import { useInteractionResults } from "@/lib/realtime/use-interaction-results";
 import { usePresence } from "@/lib/realtime/use-presence";
-import { formatInt, plural } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { ResultsView } from "@/components/results/results-view";
 import type { DeckItem } from "@/lib/domain/deck";
@@ -25,14 +25,17 @@ import { lastActivatedOf, useDeckControls } from "@/components/live/use-deck-con
 const joinHost = (url: string) => url.replace(/^https?:\/\//, "").replace(/\/join\/.*/, "");
 
 function JoinPanel({ code, joinUrl, size = 260 }: { code: string; joinUrl: string; size?: number }) {
+  const t = useTranslations("display.join");
   return (
     <div className="flex flex-col items-center gap-6">
       <div className="rounded-3xl bg-white p-5">
         <QRCodeSVG value={joinUrl} size={size} marginSize={0} />
       </div>
       <p className="text-2xl text-muted-foreground">
-        Acesse <span className="font-semibold text-foreground">{joinHost(joinUrl)}</span>{" "}
-        e use o código
+        {t.rich("prompt", {
+          host: joinHost(joinUrl),
+          b: (chunks) => <span className="font-semibold text-foreground">{chunks}</span>,
+        })}
       </p>
       <p className="font-display text-8xl font-bold tracking-[0.2em]">{code}</p>
     </div>
@@ -61,6 +64,7 @@ export function DisplayView({
   /** o dono da sessão, logado neste navegador, pode avançar pelo teclado ou passador aqui mesmo */
   canControl: boolean;
 }) {
+  const t = useTranslations("display");
   // Um projetor por sessão: a releitura periódica cobre eventos do realtime que se percam.
   const { state } = useLiveState(session.id, initialLive, undefined, 10_000);
   const results = useInteractionResults(session.id, initialResults);
@@ -108,8 +112,8 @@ export function DisplayView({
   } else if (status === "completed") {
     body = (
       <div className="flex flex-col items-center gap-8 text-center">
-        <h1 className="text-6xl font-semibold">Obrigado pela participação!</h1>
-        <p className="text-3xl text-muted-foreground">Leva 1 minuto: avalie a sessão.</p>
+        <h1 className="text-6xl font-semibold">{t("completed.title")}</h1>
+        <p className="text-3xl text-muted-foreground">{t("completed.subtitle")}</p>
         <div className="rounded-3xl bg-white p-5">
           <QRCodeSVG value={feedbackUrl} size={280} marginSize={0} />
         </div>
@@ -118,8 +122,8 @@ export function DisplayView({
   } else if (status === "paused") {
     body = (
       <div className="flex flex-col items-center gap-6 text-center">
-        <h1 className="text-6xl font-semibold">Sessão pausada</h1>
-        <p className="text-3xl text-muted-foreground">Voltamos em instantes.</p>
+        <h1 className="text-6xl font-semibold">{t("paused.title")}</h1>
+        <p className="text-3xl text-muted-foreground">{t("paused.subtitle")}</p>
       </div>
     );
   } else if (state?.show_leaderboard) {
@@ -141,7 +145,7 @@ export function DisplayView({
   } else if (slideUrl) {
     body = (
       // eslint-disable-next-line @next/next/no-img-element -- URL assinada do Storage, já em 1920 px
-      <img src={slideUrl} alt={`Slide ${(slideIndex ?? 0) + 1}`} className="max-h-full max-w-full object-contain" />
+      <img src={slideUrl} alt={t("slideAlt", { slide: (slideIndex ?? 0) + 1 })} className="max-h-full max-w-full object-contain" />
     );
   } else {
     body = (
@@ -166,14 +170,17 @@ export function DisplayView({
       >
         <span>
           {slideUrl
-            ? `Participe em ${joinHost(joinUrl)}`
+            ? t("footer.joinAt", { host: joinHost(joinUrl) })
             : active
-              ? plural(snapshot.total, "resposta", "respostas")
-              : `${formatInt(state?.participant_count ?? 0)} participantes`}
-          {online > 0 && !slideUrl ? ` · ${formatInt(online)} conectados` : ""}
+              ? t("footer.responses", { count: snapshot.total })
+              : t("footer.participants", { count: state?.participant_count ?? 0 })}
+          {online > 0 && !slideUrl ? ` · ${t("footer.connected", { count: online })}` : ""}
         </span>
         <span>
-          Código <span className="font-display font-bold text-foreground">{session.joinCode}</span>
+          {t.rich("footer.code", {
+            code: session.joinCode,
+            b: (chunks) => <span className="font-display font-bold text-foreground">{chunks}</span>,
+          })}
         </span>
       </footer>
     </div>

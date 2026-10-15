@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { cache } from "react";
+import { getLocale, getTranslations } from "next-intl/server";
 import { SessionIntl } from "@/i18n/session-intl";
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -12,7 +14,16 @@ import { feedbackUrl, joinUrl } from "@/lib/env";
 import { isUuid } from "@/lib/action-result";
 import { DisplayView } from "@/components/display/display-view";
 
-export const metadata: Metadata = { title: "Projetor", robots: { index: false } };
+// Uma leitura da sessão por requisição, compartilhada entre os metadados e a página.
+const loadSession = cache((id: string) => getPublicSession(createAdminClient(), id));
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const session = isUuid(id) ? await loadSession(id) : null;
+  // Título no idioma da sessão (o do telão); sem sessão, o da requisição.
+  const t = await getTranslations({ locale: session?.locale ?? (await getLocale()), namespace: "display" });
+  return { title: t("meta.title"), robots: { index: false } };
+}
 
 // Tela pública do projetor: o id (UUID) funciona como link não-adivinhável.
 export default async function DisplayPage({ params }: { params: Promise<{ id: string }> }) {
@@ -20,7 +31,7 @@ export default async function DisplayPage({ params }: { params: Promise<{ id: st
   if (!isUuid(id)) notFound();
 
   const admin = createAdminClient();
-  const session = await getPublicSession(admin, id);
+  const session = await loadSession(id);
   if (!session) notFound();
 
   const [interactions, live, results, deckSession, user] = await Promise.all([

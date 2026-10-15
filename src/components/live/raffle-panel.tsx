@@ -2,12 +2,12 @@
 
 import { useCallback, useEffect, useState, useTransition } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { drawRaffleAction, raffleStateAction, redrawRaffleAction, showRaffleAction } from "@/features/raffle/actions";
 import type { RaffleState } from "@/lib/data/raffle";
 import { prizeProgress, RAFFLE_REVEAL_MS, winnerRevealed } from "@/lib/domain/raffle";
 import type { LiveState } from "@/lib/realtime/schemas";
-import { plural } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useConfirm } from "@/components/ui/confirm-dialog";
@@ -33,6 +33,7 @@ export function RafflePanel({
   live: LiveState | null;
   onChanged?: () => void;
 }) {
+  const t = useTranslations("live.rafflePanel");
   const [state, setState] = useState(initial);
   const [pending, startTransition] = useTransition();
   const [confirm, confirmDialog] = useConfirm();
@@ -84,7 +85,7 @@ export function RafflePanel({
       {confirmDialog}
       <CardHeader className="flex-row items-center justify-between gap-2">
         <CardTitle className="flex items-center gap-2">
-          <GiftIcon /> Sorteio
+          <GiftIcon /> {t("title")}
         </CardTitle>
         <Button
           variant={onScreen ? "default" : "outline"}
@@ -92,35 +93,42 @@ export function RafflePanel({
           disabled={pending || !started}
           onClick={() => run(() => showRaffleAction(sessionId, !onScreen))}
         >
-          {onScreen ? "Ocultar sorteio" : "Mostrar sorteio"}
+          {onScreen ? t("hide") : t("show")}
         </Button>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <p className="text-sm text-muted-foreground">
-          <span className="font-display font-bold tabular-nums text-foreground">{state.entrants}</span>{" "}
-          {state.entrants === 1 ? "pessoa concorrendo" : "pessoas concorrendo"}
-          {state.eligibility === "survey"
-            ? status === "completed"
-              ? " (quem respondeu a pesquisa)."
-              : ". Só quem responder a pesquisa concorre: ela abre quando você encerra a sessão."
-            : "."}
+          {t.rich(
+            state.eligibility === "survey"
+              ? status === "completed"
+                ? "entrantsSurveyDone"
+                : "entrantsSurveyPending"
+              : "entrantsEveryone",
+            {
+              count: state.entrants,
+              num: (chunks) => <span className="font-display font-bold tabular-nums text-foreground">{chunks}</span>,
+            },
+          )}
         </p>
 
         {suspense ? (
           <p className="rounded-md bg-standby/15 px-3 py-2 text-sm" role="status">
-            Sorteando… o telão revela em{" "}
-            <span className="font-display font-bold tabular-nums">
-              {Math.max(0, Math.ceil((Date.parse(drawnAt!) + RAFFLE_REVEAL_MS - now) / 1000))}s
-            </span>
+            {t.rich("suspense", {
+              seconds: Math.max(0, Math.ceil((Date.parse(drawnAt!) + RAFFLE_REVEAL_MS - now) / 1000)),
+              num: (chunks) => <span className="font-display font-bold tabular-nums">{chunks}</span>,
+            })}
           </p>
         ) : null}
 
         {state.prizes.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Nenhum prêmio cadastrado.{" "}
-            <Link href={`/dashboard/sessions/${sessionId}?aba=sorteio`} className="underline hover:text-foreground">
-              Cadastrar
-            </Link>
+            {t.rich("noPrizes", {
+              link: (chunks) => (
+                <Link href={`/dashboard/sessions/${sessionId}?aba=sorteio`} className="underline hover:text-foreground">
+                  {chunks}
+                </Link>
+              ),
+            })}
           </p>
         ) : (
           <ol className="flex flex-col gap-4">
@@ -133,7 +141,7 @@ export function RafflePanel({
                     <div className="min-w-0">
                       <p className="font-medium leading-snug">{prize.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {drawn} de {plural(prize.quantity, "ganhador", "ganhadores")}
+                        {t("progress", { drawn, quantity: prize.quantity })}
                       </p>
                     </div>
                     <Button
@@ -141,7 +149,7 @@ export function RafflePanel({
                       disabled={pending || suspense || !started || remaining === 0 || state.entrants === 0}
                       onClick={() => run(() => drawRaffleAction(sessionId, prize.id))}
                     >
-                      Sortear
+                      {t("draw")}
                     </Button>
                   </div>
                   <WinnerList
@@ -155,14 +163,14 @@ export function RafflePanel({
                         disabled={pending || suspense}
                         onClick={async () => {
                           const ok = await confirm({
-                            title: `${winner.name} não está presente?`,
-                            description: "A pessoa sai do sorteio e outra é sorteada para o mesmo prêmio, com animação no telão.",
-                            confirmLabel: "Sortear outra pessoa",
+                            title: t("absentConfirm.title", { name: winner.name }),
+                            description: t("absentConfirm.description"),
+                            confirmLabel: t("absentConfirm.confirm"),
                           });
                           if (ok) run(() => redrawRaffleAction(sessionId, winner.id));
                         }}
                       >
-                        Ausente?
+                        {t("absent")}
                       </Button>
                     )}
                   />
@@ -171,7 +179,7 @@ export function RafflePanel({
             })}
           </ol>
         )}
-        {!started ? <p className="text-xs text-muted-foreground">Inicie a sessão para sortear.</p> : null}
+        {!started ? <p className="text-xs text-muted-foreground">{t("startToDraw")}</p> : null}
       </CardContent>
     </Card>
   );

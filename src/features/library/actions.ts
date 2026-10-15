@@ -4,11 +4,14 @@ import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { getTranslations } from "next-intl/server";
 import { createClient, type ServerSupabase } from "@/lib/supabase/server";
 import { getOwnedSession } from "@/lib/data/sessions";
 import { generateJoinCode } from "@/lib/domain/session";
 import { isUniqueViolation } from "@/lib/supabase/errors";
-import { fail, firstIssue, isUuid, ok, type ActionResult } from "@/lib/action-result";
+import { fail, isUuid, ok, type ActionResult } from "@/lib/action-result";
+import { getMessageTranslator } from "@/i18n/server";
+import { messageKey } from "@/lib/domain/message-key";
 import { removeSlideFiles, slidePaths, SLIDES_BUCKET } from "@/lib/data/slides";
 import { isSlideFormat } from "@/lib/domain/deck";
 import type { SessionRow } from "@/lib/supabase/types";
@@ -82,28 +85,29 @@ async function copyInteractions(
 }
 
 const copySchema = z.object({
-  targetSessionId: z.uuid({ error: "Sessão inválida." }),
-  interactionIds: z.array(z.uuid()).min(1, "Escolha pelo menos uma pergunta.").max(MAX_COPY, `No máximo ${MAX_COPY} por vez.`),
+  targetSessionId: z.uuid({ error: "builder.library.errors.invalidSession" }),
+  interactionIds: z.array(z.uuid()).min(1, "builder.library.errors.chooseAtLeastOne").max(MAX_COPY, messageKey("builder.library.errors.maxPerCopy", { max: MAX_COPY })),
 });
 
 /** "Usar em uma sessão" / "Da biblioteca": copia perguntas para o fim do roteiro. */
 export async function copyToSessionAction(raw: unknown): Promise<ActionResult<{ copied: number }>> {
+  const [tr, t] = await Promise.all([getMessageTranslator(), getTranslations("builder.library.errors")]);
   const parsed = copySchema.safeParse(raw);
-  if (!parsed.success) return fail(firstIssue(parsed.error));
+  if (!parsed.success) return fail(tr.issue(parsed.error));
   const { targetSessionId, interactionIds } = parsed.data;
 
   const supabase = await createClient();
   const target = await getOwnedSession(supabase, targetSessionId);
-  if (!target) return fail("Sessão não encontrada.");
-  if (target.status === "completed") return fail("Essa sessão já foi encerrada.");
+  if (!target) return fail(t("sessionNotFound"));
+  if (target.status === "completed") return fail(t("sessionEnded"));
 
   try {
     const copied = await copyInteractions(supabase, [...new Set(interactionIds)], targetSessionId);
-    if (copied === 0) return fail("Perguntas não encontradas.");
+    if (copied === 0) return fail(t("questionsNotFound"));
     revalidatePath(`/dashboard/sessions/${targetSessionId}`, "layout");
     return ok({ copied });
   } catch {
-    return fail("Não foi possível copiar as perguntas.");
+    return fail(t("copyFailed"));
   }
 }
 
@@ -127,15 +131,15 @@ async function copySlides(supabase: ServerSupabase, source: SessionRow, targetSe
 }
 
 const duplicateSchema = z.object({
-  title: z.string().trim().min(1, "Dê um nome à nova sessão.").max(200, "Nome muito longo.").optional(),
+  title: z.string().trim().min(1, "builder.library.errors.titleRequired").max(200, "builder.library.errors.titleTooLong").optional(),
   date: z
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida.")
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "builder.library.errors.invalidDate")
     .optional()
     .or(z.literal("")),
   time: z
     .string()
-    .regex(/^\d{2}:\d{2}$/, "Horário inválido.")
+    .regex(/^\d{2}:\d{2}$/, "builder.library.errors.invalidTime")
     .optional()
     .or(z.literal("")),
 });
@@ -145,17 +149,18 @@ const duplicateSchema = z.object({
  * Nome e data opcionais (sem nome: "… (cópia)"; sem data: sem agendamento).
  */
 export async function duplicateSessionAction(sessionId: string, raw: unknown = {}): Promise<ActionResult> {
-  if (!isUuid(sessionId)) return fail("Sessão inválida.");
+  const [tr, t] = await Promise.all([getMessageTranslator(), getTranslations("builder.library")]);
+  if (!isUuid(sessionId)) return fail(t("errors.invalidSession"));
   const options = duplicateSchema.safeParse(raw);
-  if (!options.success) return fail(firstIssue(options.error));
+  if (!options.success) return fail(tr.issue(options.error));
   const supabase = await createClient();
   const source = await getOwnedSession(supabase, sessionId);
-  if (!source) return fail("Sessão não encontrada.");
+  if (!source) return fail(t("errors.sessionNotFound"));
 
   let scheduledAt: string | null = null;
   if (options.data.date) {
     scheduledAt = zonedToUtcIso(options.data.date, options.data.time || "00:00", (await getSpeakerProfile()).timeZone);
-    if (!scheduledAt) return fail("Data ou horário inválidos.");
+    if (!scheduledAt) return fail(t("errors.invalidDateTime"));
   }
 
   let createdId: string | null = null;
@@ -164,7 +169,8 @@ export async function duplicateSessionAction(sessionId: string, raw: unknown = {
       .from("sessions")
       .insert({
         speaker_id: source.speaker_id,
-        title: options.data.title ?? `${source.title} (cópia)`.slice(0, 200),
+        // Sufixo no idioma do painel de quem duplica.
+        title: options.data.title ?? t("copySuffix", { title: source.title }).slice(0, 200),
         scheduled_at: scheduledAt,
         description: source.description,
         estimated_duration_minutes: source.estimated_duration_minutes,
@@ -181,9 +187,9 @@ export async function duplicateSessionAction(sessionId: string, raw: unknown = {
       .select("id")
       .single();
     if (!created.error) createdId = created.data.id;
-    else if (!isUniqueViolation(created.error)) return fail("Não foi possível duplicar a sessão.");
+    else if (!isUniqueViolation(created.error)) return fail(t("errors.duplicateFailed"));
   }
-  if (!createdId) return fail("Não foi possível gerar um código único. Tente novamente.");
+  if (!createdId) return fail(tr.message("core.joinCodeExhausted"));
 
   const { data: interactions } = await supabase
     .from("interactions")
@@ -196,7 +202,7 @@ export async function duplicateSessionAction(sessionId: string, raw: unknown = {
     }
   } catch {
     await supabase.from("sessions").delete().eq("id", createdId);
-    return fail("Não foi possível copiar as perguntas da sessão.");
+    return fail(t("errors.copyQuestionsFailed"));
   }
   // Prêmios do sorteio (sem números nem ganhadores).
   const { data: prizes } = await supabase
@@ -207,7 +213,7 @@ export async function duplicateSessionAction(sessionId: string, raw: unknown = {
     const copied = await supabase.from("raffle_prizes").insert(prizes.map((p) => ({ ...p, session_id: createdId })));
     if (copied.error) {
       await supabase.from("sessions").delete().eq("id", createdId);
-      return fail("Não foi possível copiar os prêmios do sorteio.");
+      return fail(t("errors.copyPrizesFailed"));
     }
   }
   try {
@@ -215,7 +221,7 @@ export async function duplicateSessionAction(sessionId: string, raw: unknown = {
   } catch {
     await removeSlideFiles(supabase, `${source.speaker_id}/${createdId}`);
     await supabase.from("sessions").delete().eq("id", createdId);
-    return fail("Não foi possível copiar os slides da sessão.");
+    return fail(t("errors.copySlidesFailed"));
   }
 
   revalidatePath("/dashboard", "layout");

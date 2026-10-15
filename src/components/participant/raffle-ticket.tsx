@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { formatTicket, PRIZE_KIND_LABEL, raffleTicketSchema, type RaffleTicket } from "@/lib/domain/raffle";
+import { useLocale, useTranslations } from "next-intl";
+import { formatInt } from "@/lib/format";
+import { formatTicket, raffleTicketSchema, type RaffleTicket } from "@/lib/domain/raffle";
 import { useLiveState } from "@/lib/realtime/use-live-state";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +31,8 @@ export function RaffleTicketCard({
   drawnAt: string | null;
   className?: string;
 }) {
+  const t = useTranslations("participant.raffle");
+  const locale = useLocale();
   const [ticket, setTicket] = useState<RaffleTicket | null>(null);
   const [recheck, setRecheck] = useState(0);
 
@@ -56,29 +60,29 @@ export function RaffleTicketCard({
         <span className="text-5xl" aria-hidden>
           🎉
         </span>
-        <p className="text-xl font-semibold">Você ganhou!</p>
+        <p className="text-xl font-semibold">{t("won")}</p>
         <p className="text-lg">{ticket.won.prize}</p>
         {ticket.won.message ? (
           <p className="whitespace-pre-line break-words rounded-lg bg-background px-3 py-2 text-sm">{ticket.won.message}</p>
         ) : (
           <p className="text-sm text-muted-foreground">
-            {ticket.won.kind === "physical" ? "Procure o palestrante para retirar o prêmio." : "O palestrante vai combinar a entrega com você."}
+            {ticket.won.kind === "physical" ? t("pickUpPhysical") : t("deliveryDigital")}
           </p>
         )}
-        <span className="text-xs text-muted-foreground">Prêmio {PRIZE_KIND_LABEL[ticket.won.kind].toLowerCase()}</span>
+        <span className="text-xs text-muted-foreground">{t("prizeKind", { kind: ticket.won.kind })}</span>
       </div>
     );
   }
 
-  const prizes = ticket.prizes.map((p) => (p.quantity > 1 ? `${p.name} (${p.quantity})` : p.name)).join(", ");
+  const prizes = ticket.prizes.map((p) => (p.quantity > 1 ? `${p.name} (${formatInt(p.quantity, locale)})` : p.name)).join(", ");
 
   if (ticket.ticket !== null) {
     return (
       <div className={cn("flex flex-col items-center gap-1 rounded-2xl border-2 border-dashed border-primary/60 p-5 text-center", className)}>
-        <p className="text-sm text-muted-foreground">Seu número da sorte</p>
+        <p className="text-sm text-muted-foreground">{t("luckyNumber")}</p>
         <p className="font-display text-5xl font-bold tabular-nums text-primary">{formatTicket(ticket.ticket)}</p>
-        {prizes ? <p className="mt-1 text-sm">Concorrendo a: {prizes}</p> : null}
-        <p className="text-xs text-muted-foreground">Fique de olho no telão.</p>
+        {prizes ? <p className="mt-1 text-sm">{t("competingFor", { prizes })}</p> : null}
+        <p className="text-xs text-muted-foreground">{t("watchScreen")}</p>
       </div>
     );
   }
@@ -86,8 +90,8 @@ export function RaffleTicketCard({
   // Modo "quem responder a pesquisa", antes de responder.
   return (
     <div className={cn("rounded-2xl border border-dashed p-4 text-center text-sm", className)}>
-      <p className="font-medium">Tem sorteio{prizes ? `: ${prizes}` : ""}!</p>
-      <p className="text-muted-foreground">Responda a pesquisa no final da sessão para receber seu número da sorte.</p>
+      <p className="font-medium">{prizes ? t("teaserWithPrizes", { prizes }) : t("teaser")}</p>
+      <p className="text-muted-foreground">{t("answerSurvey")}</p>
     </div>
   );
 }

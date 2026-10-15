@@ -1,12 +1,14 @@
 import { ImageResponse } from "next/og";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getPublicProfile } from "@/lib/data/speaker-profile";
 import { SLUG_RE } from "@/lib/domain/speaker-profile";
-import { formatInt, formatScore } from "@/lib/format";
+import { formatScore } from "@/lib/format";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "Perfil de palestrante no PulseStage";
+// Texto alternativo fixo: o Next exige `alt` estático (generateImageMetadata mudaria a URL da imagem).
+export const alt = "PulseStage";
 
 // Cores fixas da identidade (azul-marinho, azul acadêmico e amarelo marca-texto).
 const NAVY = "#0d1324";
@@ -16,13 +18,14 @@ const YELLOW = "#f4e04d";
 export default async function OpenGraphImage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const profile = SLUG_RE.test(slug) ? await getPublicProfile(createAdminClient(), slug) : null;
-  const name = profile?.name ?? "Palestrante";
+  const [t, locale] = await Promise.all([getTranslations("profile.og"), getLocale()]);
+  const name = profile?.name ?? t("fallbackName");
   const stats = profile?.stats;
   const facts = stats
     ? [
-        stats.verifiedSessions > 0 ? `${formatInt(stats.verifiedSessions)} ${stats.verifiedSessions === 1 ? "sessão" : "sessões"}` : null,
-        stats.peopleReached > 0 ? `${formatInt(stats.peopleReached)} pessoas` : null,
-        stats.rating !== null ? `nota ${formatScore(stats.rating)}` : null,
+        stats.verifiedSessions > 0 ? t("sessions", { count: stats.verifiedSessions }) : null,
+        stats.peopleReached > 0 ? t("people", { count: stats.peopleReached }) : null,
+        stats.rating !== null ? t("rating", { rating: formatScore(stats.rating, locale) }) : null,
       ].filter((f): f is string => f !== null)
     : [];
 
@@ -59,7 +62,7 @@ export default async function OpenGraphImage({ params }: { params: Promise<{ slu
           ) : null}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 30, color: BLUE, fontWeight: 600 }}>
-          {facts.length > 0 ? `Dados verificados: ${facts.join(" · ")}` : "Perfil de palestrante"}
+          {facts.length > 0 ? t("verified", { facts: facts.join(" · ") }) : t("profile")}
         </div>
       </div>
     ),
