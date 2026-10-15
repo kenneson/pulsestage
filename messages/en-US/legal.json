@@ -1,1 +1,65 @@
-{}
+{
+  "meta": {
+    "title": "Privacy",
+    "description": "How PulseStage collects, uses, and stores data from participants and speakers."
+  },
+  "title": "Privacy policy",
+  "updated": "Last updated: {date, date, long}",
+  "intro": "PulseStage lets speakers run live polls, quizzes, and questions and get feedback after their presentation. We collect the minimum needed for this to work, and you can take part without identifying yourself.",
+  "controller": {
+    "title": "Who decides about your data",
+    "text": "When you take part in a session, the speaker or organizer of that session decides how to use your answers and any contact info you provide (data controller). PulseStage stores and processes that data on their behalf (data processor). For the speaker's account, PulseStage is the controller."
+  },
+  "participants": {
+    "title": "What we collect from participants",
+    "name": "<b>Name (optional).</b> Shown only on the quiz leaderboard, which the speaker can display on the room's big screen. Without a name, you take part anonymously and appear as “Participant” followed by a code.",
+    "avatar": "<b>Avatar (optional).</b> A drawing chosen from a fixed list (never a photo), shown next to your name on the quiz leaderboard.",
+    "raffle": "<b>Giveaway number.</b> If the session has a giveaway, everyone entered gets a random number. The winner's name (or “Participant” and a code), number, and avatar are shown on the big screen; the prize message appears only on the winner's phone. Numbers and winners are deleted along with the session.",
+    "answers": "<b>Answers and ratings.</b> What you answer in the interactions and in the post-event survey.",
+    "questions": "<b>Questions for the speaker (optional).</b> The text of your question and, only if you check the box, your name. Questions are shown to the audience and may go up on the big screen; upvotes are counted without showing who upvoted.",
+    "reactions": "<b>Reactions.</b> The emoji you tap and the time, for the big screen and so the speaker knows which moments got the most reactions. No one sees who reacted.",
+    "contact": "<b>Email and phone (optional).</b> Saved only if you check the consent box, so the speaker can send you materials and updates about that session. They're stored separately from your answers.",
+    "noTracking": "We don't ask you to sign up, we don't show ads, and we don't track you across websites."
+  },
+  "speakers": {
+    "title": "What we collect from speakers",
+    "account": "Your account name, email, and password (the password is stored by the authentication service, never in plain text). If you sign in with Google, we receive only your name, email, and profile photo from Google, with no access to anything else in your account. We also store the sessions, interactions, and results you create.",
+    "slides": "If you upload a presentation's slides, the PDF is converted into images in your own browser and only those images are stored, in private storage. The audience sees them only on the projector screen, through temporary links.",
+    "optionImages": "Images you attach to poll and quiz options are resized in your browser (with file metadata such as photo location removed) and stored in public storage at an address that's impossible to guess, because they need to open on participants' phones. They're deleted when no question uses the image anymore or when you delete your account.",
+    "publicProfile": "<b>Public profile (optional).</b> It exists only if you publish it. It shows your name, photo, short bio, and whatever you fill in (title, topics, city, formats, audiences, stated experience, and links), plus figures calculated from your ended sessions: number of verified sessions, total participants, average survey rating (which you can hide), and, for the sessions you choose, title, date, and audience size range. No participant data appears. When you turn off your profile, it goes offline and leaves the directory immediately."
+  },
+  "invites": {
+    "title": "Speaking requests through the public profile",
+    "text": "Anyone who uses “Invite to speak” provides their name, email, a message, and, optionally, the organization, date, and city of the event. This information goes only to the invited speaker, who decides how to respond (data controller); the speaker's email isn't shown to the person making the request. To limit abuse, we store with each request a code derived from the IP address (a hash using a server secret, not the IP itself). When email notifications are set up, the request is also sent to the speaker through our email service (Resend). The request is deleted when the speaker deletes it or deletes their account."
+  },
+  "moderation": {
+    "title": "Filtering and moderation",
+    "text": "If the speaker leaves the profanity filter on, answers and questions containing profanity are stored but don't appear on the big screen or to the audience; the speaker can see them and release them. The speaker can also hide or approve answers and questions before they appear."
+  },
+  "cookies": {
+    "title": "Cookies and browser storage",
+    "participation": "<b>Participation</b> (<code>ps_p_…</code>, 30 days): identifies you within a session to prevent duplicate answers. It's signed and contains no personal data.",
+    "feedback": "<b>Rating submitted</b> (<code>ps_fb_…</code>, 30 days): prevents the same rating from being submitted twice.",
+    "login": "<b>Login</b>: keeps the speaker signed in.",
+    "language": "<b>Language</b> (<code>NEXT_LOCALE</code>, 1 year): remembers the language you use the site in.",
+    "theme": "<b>Theme</b> (local storage): remembers whether you chose light or dark mode.",
+    "necessary": "All of them are needed for the service to work; we don't use analytics or advertising cookies."
+  },
+  "assistants": {
+    "title": "Connected AI assistants (Claude, ChatGPT, and others)",
+    "text": "Speakers can connect their own account to an AI assistant through the MCP protocol. The connection happens only after they sign in to PulseStage and click “Allow access”, and it can be revoked at any time in Integrations. The assistant acts as the speaker: through PulseStage's tools, it reads and creates sessions and questions and, when the speaker asks, receives a session's results (aggregated numbers, open-ended answers, audience questions without the asker's name, and survey comments). Participants' names, emails, and phone numbers are never sent through these tools. What the assistant does with this data is governed by its company's policy (for example, Anthropic or OpenAI). The presentation PDF attached in the chat stays with the assistant; PulseStage receives only the questions."
+  },
+  "sharing": {
+    "title": "Who we share data with",
+    "infrastructure": "<b>Infrastructure:</b> Supabase (database and authentication) and Vercel (hosting), which process data only to operate the service. When set up, Resend delivers speaking request notifications by email.",
+    "ai": "<b>Artificial intelligence:</b> when the speaker asks for insights, we send the configured AI provider only aggregated results and excerpts of open-ended answers and survey comments. When they ask for question suggestions, we send only the session's title, description, duration, and questions, with nothing from the audience. Names, emails, and phone numbers are never sent."
+  },
+  "retention": {
+    "title": "How long we keep data",
+    "text": "A session's data is kept for as long as the session exists. When the speaker deletes the session, all of its answers, participants, contacts, ratings, insights, and slides are permanently deleted."
+  },
+  "rights": {
+    "title": "Your rights",
+    "text": "Under the LGPD (Brazil's General Data Protection Law), you can request access to, correction of, or deletion of your data, and withdraw your consent to be contacted. For a session's data, contact its speaker or organizer, who can delete the entire session at any time."
+  }
+}
