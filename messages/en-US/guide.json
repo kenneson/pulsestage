@@ -1,1 +1,144 @@
-{}
+{
+  "metaTitle": "Guide",
+  "title": "User guide",
+  "subtitle": "From setting up your session to analyzing it after the talk.",
+  "newSession": "New session",
+  "navLabel": "Guide sections",
+  "numbered": "{number}. {title}",
+  "create": {
+    "title": "Create the session",
+    "steps": {
+      "newSession": "Click <b>“New session”</b>.",
+      "fields": "Fill in the title, description, date, time, and estimated duration. Only the title is required.",
+      "joinCode": "<b>Join code (optional):</b> pick a code that's easy to say out loud, like <code>AI2026</code>. If you leave it blank, one is generated automatically. Once the session starts, the code doesn't change."
+    }
+  },
+  "languages": {
+    "title": "Choose the language",
+    "intro": "PulseStage works in Portuguese, Spanish, and English. The dashboard, the public pages, and each session have their own language.",
+    "items": {
+      "dashboard": "<b>Dashboard:</b> use the language switcher (the globe with PT, ES, and EN) at the bottom of the menu, next to the theme button. Your choice is saved under <b>“Language”</b> in <b>Settings</b> → <b>“Preferences”</b>, and it applies to the dashboard, new sessions, and emails. Analytics insights come out in your dashboard language.",
+      "public": "<b>Public pages:</b> the home page, the join page, your public profile, and the speaker directory have the same switcher at the top. Spanish addresses start with <code>/es</code> and English ones with <code>/en</code>.",
+      "session": "<b>“Session language”</b>, in the session form: the audience's phones and the big screen use this language, whatever your dashboard is set to. The profanity filter, the word cloud, <b>“Generate with AI”</b> suggestions, and the default survey template also follow the session language. New sessions start in the language from your preferences."
+    }
+  },
+  "lineup": {
+    "title": "Build the lineup",
+    "intro": "On the session page, add your interactions in the order you'll use them in the presentation.",
+    "types": {
+      "poll": "<b>Poll:</b> a single choice among options. Great for opening the talk and getting to know the audience.",
+      "scale": "<b>Scale:</b> a rating between a minimum and a maximum (e.g., 1 to 5), with optional labels at each end.",
+      "cloud": "<b>Word cloud:</b> short answers grouped by frequency. Repeated words grow on screen.",
+      "open": "<b>Open-ended:</b> free-form answers. You read them in the live room.",
+      "quiz": "<b>Quiz:</b> mark the correct option, set the points and, if you want, a time limit. It builds a leaderboard. With a time limit, the <b>“Speed bonus”</b> gives full points to people who get it right instantly and half to those who get it right at the last second.",
+      "ranking": "<b>Ranking:</b> the audience orders the options from favorite to least favorite by tapping them in order. The result shows the group's order and each option's average position."
+    },
+    "optionStyle": "In polls and quizzes, <b>“Option style”</b> swaps plain text for <b>“Shapes and colors”</b>: each option gets a shape (triangle, diamond, circle, square…) and a color, on phones and on the big screen. The image icon next to each option attaches a photo or illustration; the text is still required and appears below it.",
+    "tools": "Use the eye icon to <b>preview</b> how participants will see each question, the arrows to <b>move up or down</b> in the order, and the pencil to edit. To reuse questions from other sessions, click <b>“From library”</b>; to repeat a whole talk, use <b>“Duplicate”</b> (at the top of the session, in analytics, or with the copy icon in the session list): you choose the name and date, and the copy opens as a draft with questions, slides, survey, and prizes, ready to edit. Out of ideas? <b>“Generate with AI”</b> suggests questions based on the title and description: review them and use <b>“Add to lineup”</b> on the ones that work."
+  },
+  "slides": {
+    "title": "Present with your slides",
+    "upload": "Optional, but it saves you from switching windows on stage: in the session's <b>“Slides”</b> tab, click <b>“Choose PDF”</b> and upload your presentation as a PDF (in PowerPoint: File → Export → PDF; in Google Slides: File → Download → PDF). The PDF is converted in your browser and only the slide images are uploaded. Animations, transitions, and videos aren't kept.",
+    "position": "Drag each question to the point where it should come in (drop it on the left half of a slide to place it before, on the right half to place it after), or pick from the selector: <em>Before slide 1</em>, <em>After slide 3</em>, and so on. In the live room, the lineup becomes a single sequence: slide, question, next slide. Use <b>“Replace PDF”</b> to upload a new version; the questions stay at the same points."
+  },
+  "live": {
+    "title": "Present live",
+    "steps": {
+      "start": "Click <b>“Start session”</b>. You'll go to the <b>live room</b>, your control panel during the talk.",
+      "projector": "Click <b>“Projector screen”</b>. It opens in another tab: drag it to the projector or shared screen and go full screen (<kbd>F11</kbd>). With no active interaction, it shows the QR code and the join code.",
+      "launch": "To launch a question, click it in the list or click <b>“Next”</b>. The <kbd>→</kbd> arrow and <kbd>PageDown</kbd> (the keys a slide clicker sends) also work while the live room is in focus.",
+      "deck": "With slides uploaded, <b>“Next”</b> steps through slides and questions in lineup order and <b>“Previous”</b> (<kbd>←</kbd> or <kbd>PageUp</kbd>) goes back to the previous slide. When you close a question, the big screen goes back to the slide behind it. <b>“Show on the big screen”</b>, next to the QR code, shows the join code again.",
+      "mirror": "Using a single screen mirrored to the projector? Open the projector screen while signed in to your account: there, the clicker and the arrow keys also advance the presentation, and anyone with the link who isn't signed in can only watch.",
+      "results": "Results show up in real time on the projector and in the live room. Click <b>“Close”</b> to stop accepting answers for that interaction.",
+      "addQuestion": "A question came up that wasn't in the lineup? Click <b>“New question”</b>, next to Lineup, pick the type, and write it. <b>“Launch now”</b> opens it to the audience right away; <b>“Keep as next”</b> places it right after what's on the big screen, for the next <kbd>→</kbd>. With slides, it goes in at that same point of the presentation.",
+      "answer": "In a quiz, <b>“Show answer”</b> highlights the correct option in your live room, so you can talk through the result with the audience.",
+      "leaderboard": "With at least one quiz in the lineup, <b>“Show leaderboard”</b> puts the top 10 on the big screen (and closes the open question). Each person appears where they stood before the last quiz and slides to their new spot as the points count up. <b>“Hide leaderboard”</b> or the next <kbd>→</kbd> takes the leaderboard off the big screen. People who joined without a name appear as “Participant” plus a code."
+    },
+    "pause": "<b>“Pause”</b> freezes the session (no one can answer) and <b>“Resume”</b> brings it back. The “connected now” number is approximate; the participants who actually joined appear in the total next to it.",
+    "timer": "Next to the status is the <b>talk timer</b>: the time since “Start session”, not counting pauses, compared with the duration you planned in the session details. It turns amber when you go over. The actual duration is recorded in analytics and in the report."
+  },
+  "audience": {
+    "title": "What the audience sees",
+    "items": {
+      "join": "Participants join with the QR code or the join code, without creating an account. Name and avatar (a little animal or drawing) are optional; the avatar appears next to the name on the quiz leaderboard.",
+      "active": "The active question shows up on their phone on its own and changes when you move ahead. No need to reload.",
+      "once": "Each person answers once per interaction.",
+      "contact": "Participants can leave an email or phone number to get materials, only with explicit consent. That contact info is kept separate from their answers."
+    }
+  },
+  "engagement": {
+    "title": "Audience Q&A, reactions, and moderation",
+    "intro": "In the session's <b>“Engagement”</b> tab (and the card of the same name in the live room) you turn each feature on or off. Everything starts on, except approvals.",
+    "items": {
+      "qa": "<b>Audience Q&A:</b> phones show <b>“Ask the speaker”</b>. People write a question, choose whether to show their name, and upvote other people's questions. In the live room, the <b>“Audience Q&A”</b> card lists the most upvoted: <b>“Feature”</b> puts one on the big screen, <b>“Show on the big screen”</b> shows the most upvoted ones, <b>“Answered”</b> takes it out of the queue, and <b>“Hide”</b> hides it. With <b>“Approve questions before they appear”</b>, new ones wait in <b>“Waiting”</b> until you approve them.",
+      "reactions": "<b>Live reactions:</b> 👏 ❤️ 😂 😮 🤔 sit at the bottom of the phone screen during the session. The emojis float up on the big screen and the total shows in the live room. In analytics, you can see the minutes with the most reactions.",
+      "profanity": "<b>Profanity filter:</b> word cloud entries, open-ended answers, and questions with profanity don't go to the big screen. The sender isn't told (so they don't try to get around it). You can see what was blocked and let it through.",
+      "moderation": "<b>Live moderation:</b> in a word cloud, open <b>“Moderate words”</b> and click the × to take a word off the big screen (future submissions of it are left out too). In an open-ended question, <b>“Moderate responses”</b> hides answers; with <b>“Approve open-ended answers before the big screen”</b>, each one waits for your <b>“Approve”</b>."
+    }
+  },
+  "survey": {
+    "title": "End the session and run the survey",
+    "end": "When you're done, click <b>“End session”</b>. Phones show the survey link and the projector displays a QR code for it. Leave that screen up for a minute.",
+    "template": "The survey is about the talk or class as a whole. Pick the template under <b>“Post-event survey”</b> in the session form: <em>General feedback</em> (default), <em>Satisfaction and NPS</em>, <em>Attention and engagement</em>, <em>Teaching (classes)</em>, <em>Corporate training</em>, or one of your own.",
+    "templates": "In <b>“Surveys”</b>, in the menu, you can create your own templates from scratch or duplicate a ready-made one. Questions can be a 1–5 scale, a 0–10 score, multiple choice, or free text. Tag each rating question with a dimension (clarity, attention, teaching, etc.) so it counts toward the scorecard and your progress. An ended session can't be reopened, and editing a template later doesn't change past reports."
+  },
+  "raffle": {
+    "title": "Run a giveaway",
+    "intro": "Optional. On the session page, open the <b>“Giveaway”</b> tab, check <b>“Run a giveaway in this session”</b>, and choose <b>“Who's entered”</b>:",
+    "eligibility": {
+      "survey": "<b>People who answer the survey:</b> when they submit the post-event survey, they get a lucky number on their phone. People who don't answer aren't entered. Since the survey opens when the session ends, the drawing happens after <b>“End session”</b>: the live room stays open for it.",
+      "everyone": "<b>Everyone who joins the session:</b> each person gets a number when they join, even without answering the survey."
+    },
+    "prize": "Under <b>“Prize”</b>, add what you're giving away: name, type (physical or digital), how many winners and, if you want, a <b>message for the winner</b> (coupon code, link, where to pick it up), shown only on the winner's phone.",
+    "live": "In the live room, the <b>“Giveaway”</b> card shows how many people are entered. <b>“Show giveaway”</b> puts the prizes on the big screen and, in survey mode, the survey's QR code. <b>“Draw”</b> picks one winner at a time: the big screen spins the number wheel, slows down to the winning number, and reveals the name, number, and avatar with sound and confetti. For sound, click the projector screen once beforehand. If the person isn't in the room, <b>“Not here?”</b> draws someone else for the same prize.",
+    "winners": "Each person can win at most one prize. In <b>“Giveaways”</b>, in the menu, you can track winners from all your sessions and mark what's been <b>delivered</b>."
+  },
+  "analytics": {
+    "title": "Analyze the results",
+    "intro": "In the <b>session analytics</b> you'll find:",
+    "items": {
+      "time": "<b>Talk time:</b> right below the title, the actual duration (without pauses) and the difference from the planned duration.",
+      "participation": "<b>Participation:</b> people who answered something divided by people who joined.",
+      "timeline": "<b>Talk timeline:</b> what was on the big screen at each moment (slides, questions, QR code, and pauses) and the slides you spent the most time on. Hover over a segment to see the time and duration. It shows where the time went, not how much attention the audience paid.",
+      "pulse": "<b>Participation signal:</b> for each interaction, answers divided by the participants present at that moment. It shows where the audience engaged the most. It measures participation, not attention.",
+      "results": "<b>Results by interaction</b>, the <b>quiz leaderboard</b>, and open-ended answers, with search.",
+      "scorecard": "<b>Scorecard:</b> your strongest points and areas to improve, according to the survey, and the average for each dimension.",
+      "survey": "<b>Survey results:</b> each question with its answer distribution, NPS for 0–10 scores, and comments, with search.",
+      "insights": "<b>Insights:</b> click <b>“Generate insights”</b> for an AI analysis (strengths, areas to watch, and recommendations). It only gets aggregated data and excerpts from answers, never names or contact info. With fewer than 10 responses, the confidence shown is low."
+    },
+    "evolution": "In <b>“Progress”</b>, in the menu, compare your ratings across ended sessions and see whether your changes paid off. To share, use <b>“Export”</b> in analytics: a PDF report for the organizer or client, and CSV files of the answers and survey for spreadsheets."
+  },
+  "publicProfile": {
+    "title": "Public profile and speaking requests",
+    "intro": "In <b>“Public profile”</b>, in the menu, you build a portfolio with numbers PulseStage verifies: sessions delivered, people in the audience, and the survey rating (0 to 10). Only ended sessions with at least 5 people answering and 10 minutes of presentation count; no one can edit these numbers.",
+    "steps": {
+      "address": "Choose your <b>profile address</b>, professional headline, topics (separated by commas), city, formats, and audiences. Name, photo, and short bio come from <b>Settings</b>.",
+      "publish": "Check <b>“Publish my profile”</b> and click <b>“Save public profile”</b>. Use <b>“Copy link”</b> to share it.",
+      "sessions": "Under <b>“Sessions on your profile”</b>, check which verified sessions appear on the page (title, date, audience size range, and rating)."
+    },
+    "directory": "Once you have a verified session, your profile joins the <directory>speaker directory</directory>, with filters by topic, state, format, and audience. Any <b>past experience</b> you write shows up separately, labeled “self-reported”.",
+    "invites": "Schools, universities, and companies use <b>“Invite to speak”</b> on your profile. Requests arrive in <b>“Speaking requests”</b>, in the menu (the number shows unread ones); your email is never shown to the person asking. Open a request to read it, use <b>“Reply”</b> to write back from your email, or <b>“Archive”</b> and <b>“Delete”</b>. With <b>“Promote your profile after the survey”</b>, people who answer your sessions' survey see a card with a link to your profile."
+  },
+  "assistants": {
+    "title": "Create questions with Claude or ChatGPT",
+    "intro": "Once your presentation is ready, an AI assistant can draft the questions for you. Open <integrations>Integrations</integrations>, copy the <b>MCP server address</b>, and follow the steps for your assistant (Claude, ChatGPT, Claude Code, or another). The first time, it opens PulseStage: sign in and click <b>“Allow access”</b>.",
+    "steps": {
+      "attach": "Attach your presentation PDF in the chat and say who the audience is and how long the talk runs.",
+      "propose": "The assistant proposes the questions and which slide each one comes after (using the PDF's page numbers). Adjust and approve.",
+      "create": "It creates the session (or uses one you point it to) and saves the questions.",
+      "upload": "In the session, open the <b>“Slides”</b> tab and upload the same PDF: the questions appear between the right slides."
+    },
+    "more": "The assistant can also edit, move, and delete questions, and read results from sessions you've already presented to analyze them with you. It doesn't start or end the live session. In <b>Integrations</b>, the <b>“Connected assistants”</b> list shows who has access; <b>“Revoke”</b> cuts off access immediately."
+  },
+  "tips": {
+    "title": "Tips",
+    "items": {
+      "rehearse": "Do a rehearsal: start the session and answer from a private window or your phone. Then create a new session for the real thing.",
+      "icebreaker": "Start with an easy question (a poll or word cloud) to break the ice.",
+      "pace": "One interaction every 10 to 15 minutes keeps the audience engaged without breaking your rhythm.",
+      "qr": "Keep the QR code visible for the first few minutes so latecomers can join too.",
+      "powerpoint": "Prefer presenting from PowerPoint or Google Slides, with animations? Click <b>“Download QR code”</b> (on the session page or in the live room) and paste the image on a slide. When it's time for each question, switch from your slides to the projector screen with <kbd>Alt</kbd>+<kbd>Tab</kbd>. To skip switching windows, just upload the PDF in the <b>“Slides”</b> tab.",
+      "survey": "Ask people to answer the survey while they're still in the room. The response rate drops sharply once the audience leaves."
+    }
+  }
+}

@@ -26,3 +26,8 @@ test("arquivo com BOM, cabeçalho e CRLF; nome de arquivo sem acento", () => {
   assert.equal(csvFileName("Comunicação para líderes!", "pesquisa"), "comunicacao-para-lideres-pesquisa.csv");
   assert.equal(csvFileName("???", "x"), "sessao-x.csv");
 });
+
+test("CSV em inglês americano usa vírgula como separador e ponto decimal", () => {
+  const csv = toCsv(["a", "b"], [[1.5, "x, y"], [true, null]], { yes: "yes", no: "no", separator: ",", decimal: "." });
+  assert.equal(csv, '﻿a,b\r\n1.5,"x, y"\r\nyes,\r\n');
+});

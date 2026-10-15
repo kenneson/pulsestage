@@ -53,7 +53,7 @@
     "lineup": "Lineup",
     "active": "Active",
     "noInteractions": "No interactions.",
-    "participation": "Participation"
+    "participation": "Engagement"
   },
   "moderation": {
     "moderateWords": "Moderate words",
@@ -73,7 +73,7 @@
     "title": "Audience Q&A",
     "showOnScreen": "Show on the big screen",
     "hideFromScreen": "Hide from the big screen",
-    "disabled": "Turned off for this session. Turn it on under “Participation” below so the audience can ask questions.",
+    "disabled": "Turned off for this session. Turn it on under “Engagement” below so the audience can ask questions.",
     "tabsLabel": "Questions",
     "tabs": {
       "open": "Open",

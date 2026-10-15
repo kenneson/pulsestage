@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { fetchAllRows } from "@/lib/supabase/fetch-all";
 import { loadSessionAnalytics } from "@/lib/data/analytics";
@@ -60,7 +60,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const tz = profile.timeZone;
   const people = new Map(data.participants.map((p) => [p.id, p]));
   const anonymousParticipant = tDomain("anonymousParticipant");
-  const labels = { yes: tDomain("yes"), no: tDomain("no") };
+  // Excel em inglês americano espera "," e ponto decimal; em português e espanhol, ";" e vírgula.
+  const us = (await getLocale()) === "en-US";
+  const labels = { yes: tDomain("yes"), no: tDomain("no"), separator: us ? "," : ";", decimal: us ? "." : "," } as const;
 
   if (kind === "interacoes") {
     const interactions = new Map(data.interactionsWithOptions.map((i) => [i.id, i]));

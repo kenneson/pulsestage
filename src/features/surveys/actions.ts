@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { getMessageTranslator } from "@/i18n/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSurveyTemplate } from "@/lib/data/surveys";
@@ -48,7 +48,7 @@ export async function saveSurveyTemplateAction(
     if ((count ?? 0) >= MAX_TEMPLATES_PER_SPEAKER) return fail(t("limitReached", { max: MAX_TEMPLATES_PER_SPEAKER }));
     const created = await supabase
       .from("survey_templates")
-      .insert({ owner_id: userId, name: draft.name, description: draft.description || null })
+      .insert({ owner_id: userId, name: draft.name, description: draft.description || null, locale: await getLocale() })
       .select("id")
       .single();
     if (created.error) return fail(t("createFailed"));

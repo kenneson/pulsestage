@@ -173,8 +173,7 @@ export default async function Home() {
             <Link href={href("/palestrantes")} className={cn(buttonVariants({ variant: "ghost" }), "hidden md:inline-flex")}>
               {t("nav.speakers")}
             </Link>
-            <LocaleSwitcher compact className="sm:hidden" />
-            <LocaleSwitcher className="hidden sm:inline-flex" />
+            <LocaleSwitcher compact />
             <ThemeToggle />
             <Link href={href("/login")} className={buttonVariants({ variant: "ghost" })}>
               {t("nav.signIn")}

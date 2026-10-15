@@ -1,1 +1,144 @@
-{}
+{
+  "metaTitle": "Guía",
+  "title": "Guía de uso",
+  "subtitle": "Desde el registro de la sesión hasta el análisis después de la presentación.",
+  "newSession": "Nueva sesión",
+  "navLabel": "Secciones de la guía",
+  "numbered": "{number}. {title}",
+  "create": {
+    "title": "Crear la sesión",
+    "steps": {
+      "newSession": "Haz clic en <b>“Nueva sesión”</b>.",
+      "fields": "Completa el título, la descripción, la fecha, la hora y la duración estimada. Solo el título es obligatorio.",
+      "joinCode": "<b>Código de acceso (opcional):</b> elige un código fácil de dictar, como <code>IA2026</code>. Si lo dejas en blanco, el sistema genera uno automáticamente. Una vez que la sesión empieza, el código no cambia."
+    }
+  },
+  "languages": {
+    "title": "Elegir el idioma",
+    "intro": "PulseStage funciona en portugués, español e inglés. El panel, las páginas públicas y cada sesión tienen su propio idioma.",
+    "items": {
+      "dashboard": "<b>Panel:</b> usa el selector de idioma (el globo con PT, ES y EN) al pie del menú, junto al botón de tema. Tu elección queda guardada en <b>“Idioma”</b>, en <b>Configuración</b> → <b>“Preferencias”</b>, y se aplica al panel, a las sesiones nuevas y a los correos electrónicos. Los insights del análisis salen en el idioma de tu panel.",
+      "public": "<b>Páginas públicas:</b> la página de inicio, el acceso a la sesión, tu perfil público y el directorio de presentadores tienen el mismo selector arriba. Las direcciones en español empiezan con <code>/es</code> y las direcciones en inglés, con <code>/en</code>.",
+      "session": "<b>“Idioma de la sesión”</b>, en el formulario de la sesión: el celular del público y la pantalla se muestran en ese idioma, sea cual sea el de tu panel. El filtro de groserías, la nube de palabras, las sugerencias de <b>“Generar con IA”</b> y la plantilla de encuesta predeterminada también siguen el idioma de la sesión. Una sesión nueva empieza en el idioma de tus preferencias."
+    }
+  },
+  "lineup": {
+    "title": "Armar el guion",
+    "intro": "En la página de la sesión, agrega las interacciones en el orden en que las vas a usar en la presentación.",
+    "types": {
+      "poll": "<b>Votación:</b> una elección entre varias opciones. Ideal para abrir la charla y conocer al público.",
+      "scale": "<b>Escala:</b> una calificación entre un mínimo y un máximo (p. ej.: del 1 al 5), con etiquetas opcionales en los extremos.",
+      "cloud": "<b>Nube de palabras:</b> respuestas cortas agrupadas por frecuencia. Las palabras repetidas crecen en la pantalla.",
+      "open": "<b>Pregunta abierta:</b> respuesta libre. Lees las respuestas en la sala en vivo.",
+      "quiz": "<b>Quiz:</b> marca la opción correcta, define los puntos y, si quieres, el tiempo para responder. Genera una tabla de posiciones. Con tiempo definido, el <b>“Bono por velocidad”</b> da todos los puntos a quien acierta de inmediato y la mitad a quien acierta al final del tiempo.",
+      "ranking": "<b>Ranking:</b> el público ordena las opciones de la favorita a la menos preferida, tocándolas en orden. El resultado muestra el orden del grupo y la posición promedio de cada opción."
+    },
+    "optionStyle": "En votaciones y quizzes, <b>“Apariencia de las opciones”</b> cambia el texto simple por <b>“Formas y colores”</b>: cada opción recibe una forma (triángulo, rombo, círculo, cuadrado…) y un color, en el celular y en la pantalla. El ícono de imagen junto a cada opción adjunta una foto o ilustración; el texto sigue siendo obligatorio y aparece debajo de ella.",
+    "tools": "Usa el ícono del ojo para ver la <b>vista previa</b> de cómo el participante verá cada pregunta, las flechas para <b>subir o bajar</b> en el orden y el lápiz para editar. Para reutilizar preguntas de otras sesiones, haz clic en <b>“De la biblioteca”</b>; para repetir una charla completa, usa <b>“Duplicar”</b> (arriba en la sesión, en el análisis o en el ícono de copia de la lista de sesiones): eliges el nombre y la fecha, y la copia se abre como borrador con preguntas, diapositivas, encuesta y premios, lista para editar. ¿Sin ideas? <b>“Generar con IA”</b> sugiere preguntas a partir del título y la descripción: revísalas y usa <b>“Agregar al guion”</b> en las que te sirvan."
+  },
+  "slides": {
+    "title": "Presentar con tus diapositivas",
+    "upload": "Es opcional, pero evita cambiar de ventana en el escenario: en la pestaña <b>“Diapositivas”</b> de la sesión, haz clic en <b>“Elegir PDF”</b> y sube el PDF de la presentación (en PowerPoint: Archivo → Exportar → PDF; en Google Slides: Archivo → Descargar → PDF). El PDF se convierte en tu navegador y solo se suben las imágenes de las diapositivas. No se conservan animaciones, transiciones ni videos.",
+    "position": "Arrastra cada pregunta al punto donde debe entrar (suéltala en la mitad izquierda de una diapositiva para que quede antes, en la derecha para que quede después), o elige en el selector: <em>Antes de la 1.ª diapositiva</em>, <em>Después de la diapositiva 3</em>, etc. En la sala en vivo, el guion se vuelve una sola secuencia: diapositiva, pregunta, siguiente diapositiva. Usa <b>“Cambiar PDF”</b> para subir una versión nueva; las preguntas se quedan en los mismos puntos."
+  },
+  "live": {
+    "title": "Presentar en vivo",
+    "steps": {
+      "start": "Haz clic en <b>“Iniciar sesión”</b>. Pasas a la <b>sala en vivo</b>, tu panel de control durante la presentación.",
+      "projector": "Haz clic en <b>“Pantalla del proyector”</b>. Se abre en otra pestaña: arrástrala al proyector o a la pantalla compartida y ponla en pantalla completa (<kbd>F11</kbd>). Sin una interacción activa, muestra el código QR y el código de acceso.",
+      "launch": "Para lanzar una pregunta, haz clic en ella en la lista o en <b>“Siguiente”</b>. También funcionan la flecha <kbd>→</kbd> y <kbd>PageDown</kbd> (las teclas del control de diapositivas) con la sala en vivo en primer plano.",
+      "deck": "Con diapositivas subidas, <b>“Siguiente”</b> recorre diapositivas y preguntas en el orden del guion y <b>“Anterior”</b> (<kbd>←</kbd> o <kbd>PageUp</kbd>) vuelve a la diapositiva anterior. Al cerrar una pregunta, la pantalla vuelve a la diapositiva que estaba detrás. <b>“Mostrar en pantalla”</b>, junto al código QR, vuelve a mostrar el código de acceso.",
+      "mirror": "¿Vas a usar una sola pantalla, duplicada en el proyector? Abre la pantalla del proyector con tu cuenta iniciada: ahí, el control de diapositivas y las flechas también avanzan la presentación, y quien tenga el enlace sin haber iniciado sesión solo puede mirar.",
+      "results": "Los resultados aparecen en tiempo real en el proyector y en la sala. Haz clic en <b>“Cerrar”</b> para dejar de recibir respuestas de esa interacción.",
+      "addQuestion": "¿Surgió una pregunta que no estaba en el guion? Haz clic en <b>“Nueva pregunta”</b>, junto a Guion, elige el tipo y escríbela. <b>“Lanzar ahora”</b> la abre al público de inmediato; <b>“Dejar como siguiente”</b> pone la pregunta justo después de lo que está en la pantalla, para la próxima <kbd>→</kbd>. Con diapositivas, entra en ese mismo punto de la presentación.",
+      "answer": "En el quiz, <b>“Mostrar respuesta”</b> resalta la opción correcta en tu sala en vivo, para que comentes el resultado con el público.",
+      "leaderboard": "Con al menos un quiz en el guion, <b>“Mostrar tabla de posiciones”</b> lleva el top 10 a la pantalla (y cierra la pregunta abierta). Cada persona aparece en la posición que tenía antes del último quiz y se desliza hasta la nueva, con los puntos subiendo. <b>“Ocultar tabla de posiciones”</b> o la próxima <kbd>→</kbd> quitan la tabla de la pantalla. Quien entró sin nombre aparece como “Participante” y un código."
+    },
+    "pause": "<b>“Pausar”</b> congela la sesión (nadie responde) y <b>“Reanudar”</b> la devuelve a la normalidad. El número de “conectados ahora” es aproximado; los participantes que realmente entraron aparecen en el total de al lado.",
+    "timer": "Junto al estado está el <b>cronómetro de la presentación</b>: el tiempo desde “Iniciar sesión”, sin contar las pausas, comparado con la duración que previste en la información de la sesión. Se pone ámbar cuando pasa de lo previsto. La duración real queda registrada en el análisis y en el informe."
+  },
+  "audience": {
+    "title": "Lo que ve el público",
+    "items": {
+      "join": "Quien participa entra con el código QR o con el código, sin crear una cuenta. El nombre y el avatar (un animalito o un dibujo) son opcionales; el avatar aparece junto al nombre en la tabla de posiciones del quiz.",
+      "active": "La pregunta activa aparece sola en el celular y cambia cuando avanzas. No hace falta recargar.",
+      "once": "Cada persona responde una vez por interacción.",
+      "contact": "El participante puede dejar su correo electrónico o teléfono para recibir materiales, solo con autorización explícita. Ese contacto se guarda aparte de las respuestas."
+    }
+  },
+  "engagement": {
+    "title": "Preguntas del público, reacciones y moderación",
+    "intro": "En la pestaña <b>“Participación”</b> de la sesión (y en la tarjeta <b>“Participación”</b> de la sala en vivo) activas o desactivas cada función. Todo empieza activado, menos las aprobaciones.",
+    "items": {
+      "qa": "<b>Preguntas del público:</b> en el celular aparece <b>“Preguntar al presentador”</b>. La persona escribe, elige si muestra su nombre y da me gusta a las preguntas de los demás. En la sala en vivo, la tarjeta <b>“Preguntas del público”</b> muestra las que tienen más me gusta: <b>“Destacar”</b> pone una en la pantalla, <b>“Mostrar en pantalla”</b> muestra las que tienen más me gusta, <b>“Respondida”</b> la saca de la fila y <b>“Ocultar”</b> la esconde. Con <b>“Aprobar las preguntas antes de que aparezcan”</b>, las nuevas esperan en <b>“Pendientes”</b> hasta que las apruebes.",
+      "reactions": "<b>Reacciones en vivo:</b> 👏 ❤️ 😂 😮 🤔 quedan al pie de la pantalla del celular durante la sesión. Los emojis suben en la pantalla y el total aparece en la sala en vivo. En el análisis, ves los minutos con más reacciones.",
+      "profanity": "<b>Filtro de groserías:</b> las palabras de la nube, las respuestas abiertas y las preguntas con groserías no van a la pantalla. A quien las envió no se le avisa (para que no intente burlar el filtro). Tú ves lo que se bloqueó y puedes liberarlo.",
+      "moderation": "<b>Moderación en vivo:</b> en una nube de palabras, abre <b>“Moderar palabras”</b> y haz clic en la × para quitar una palabra de la pantalla (los próximos envíos de esa palabra también quedan fuera). En una pregunta abierta, <b>“Moderar respuestas”</b> oculta respuestas; con <b>“Aprobar respuestas abiertas antes de la pantalla”</b>, cada una espera tu <b>“Aprobar”</b>."
+    }
+  },
+  "survey": {
+    "title": "Finalizar y aplicar la encuesta",
+    "end": "Al final, haz clic en <b>“Finalizar sesión”</b>. Los celulares muestran el enlace de la encuesta y el proyector muestra un código QR para ella. Deja esa pantalla visible durante un minuto.",
+    "template": "La encuesta es sobre la charla o la clase en su conjunto. Elige la plantilla en <b>“Encuesta posterior al evento”</b>, en el formulario de la sesión: <em>Evaluación general</em> (predeterminada), <em>Satisfacción y NPS</em>, <em>Atención y participación</em>, <em>Didáctica (clases)</em>, <em>Capacitación corporativa</em> o una plantilla tuya.",
+    "templates": "En <b>“Encuestas”</b>, en el menú, creas tus plantillas desde cero o duplicas una lista para usar. Las preguntas pueden ser escala del 1 al 5, nota del 0 al 10, opción múltiple o texto libre. Marca cada pregunta de calificación con una dimensión (claridad, atención, didáctica, etc.) para que entre en la evaluación y en la evolución. Una sesión finalizada no se puede reabrir, y editar una plantilla después no cambia los informes anteriores."
+  },
+  "raffle": {
+    "title": "Hacer un sorteo",
+    "intro": "Es opcional. En la página de la sesión, abre la pestaña <b>“Sorteo”</b>, marca <b>“Hacer un sorteo en esta sesión”</b> y elige <b>“Quién participa”</b>:",
+    "eligibility": {
+      "survey": "<b>Quienes respondan la encuesta:</b> al enviar la encuesta posterior al evento, la persona recibe un número de la suerte en el celular. Quien no responde no participa. Como la encuesta se abre al finalizar, el sorteo se hace después de <b>“Finalizar sesión”</b>: la sala en vivo sigue abierta para eso.",
+      "everyone": "<b>Todos los que entren a la sesión:</b> cada persona recibe su número al entrar, aunque no responda la encuesta."
+    },
+    "prize": "En <b>“Premio”</b>, registra lo que se va a sortear: nombre, tipo (físico o digital), cuántos ganadores y, si quieres, un <b>mensaje para quien gane</b> (código del cupón, enlace, dónde retirarlo), que aparece solo en el celular del ganador.",
+    "live": "En la sala en vivo, la tarjeta <b>“Sorteo”</b> muestra cuántas personas están participando. <b>“Mostrar sorteo”</b> lleva a la pantalla los premios y, en el modo de encuesta, su código QR. <b>“Sortear”</b> elige un ganador a la vez: la pantalla gira la ruleta de números, desacelera hasta el número sorteado y revela el nombre, el número y el avatar con sonido y confeti. Para tener sonido, haz clic una vez en la pantalla del proyector antes. Si la persona no está en la sala, <b>“¿Ausente?”</b> sortea a otra para el mismo premio.",
+    "winners": "Cada persona gana como máximo un premio. En <b>“Sorteos”</b>, en el menú, sigues a los ganadores de todas las sesiones y marcas lo que ya fue <b>entregado</b>."
+  },
+  "analytics": {
+    "title": "Analizar los resultados",
+    "intro": "En el <b>análisis de la sesión</b> encuentras:",
+    "items": {
+      "time": "<b>Tiempo de presentación:</b> justo debajo del título, la duración real (sin las pausas) y la diferencia con la duración prevista.",
+      "participation": "<b>Participación:</b> quienes respondieron algo divididos entre quienes entraron.",
+      "timeline": "<b>Línea de tiempo de la presentación:</b> lo que estuvo en la pantalla en cada momento (diapositivas, preguntas, código QR y pausas) y las diapositivas en las que más te quedaste. Pasa el mouse por un tramo para ver la hora y la duración. Muestra a dónde se fue el tiempo, no la atención del público.",
+      "pulse": "<b>Señal de participación:</b> para cada interacción, las respuestas divididas entre los participantes presentes en ese momento. Muestra dónde el público se involucró más. Mide participación, no atención.",
+      "results": "<b>Resultados por interacción</b>, la <b>tabla de posiciones del quiz</b> y las respuestas abiertas, con búsqueda.",
+      "scorecard": "<b>Evaluación:</b> tus puntos más fuertes y los puntos por mejorar, según la encuesta, y el promedio de cada dimensión.",
+      "survey": "<b>Resultados de la encuesta:</b> cada pregunta con la distribución de las respuestas, el NPS en las notas del 0 al 10 y los comentarios, con búsqueda.",
+      "insights": "<b>Insights:</b> haz clic en <b>“Generar insights”</b> para obtener un análisis con IA (puntos fuertes, puntos de atención y recomendaciones). La IA recibe solo datos agregados y fragmentos de respuestas, nunca nombres ni contactos. Con menos de 10 respuestas, la confianza indicada es baja."
+    },
+    "evolution": "En <b>“Evolución”</b>, en el menú, compara tus evaluaciones entre sesiones finalizadas y comprueba si los cambios dieron resultado. Para compartir, usa <b>“Exportar”</b> en el análisis: un informe en PDF para el organizador o el cliente, y un CSV de las respuestas y de la encuesta para hojas de cálculo."
+  },
+  "publicProfile": {
+    "title": "Perfil público e invitaciones",
+    "intro": "En <b>“Perfil público”</b>, en el menú, armas un portafolio con cifras que PulseStage comprueba: sesiones realizadas, personas en el público y la calificación de la encuesta (0 a 10). Solo cuenta la sesión finalizada con al menos 5 personas que respondieron y 10 minutos de presentación; nadie puede editar esas cifras.",
+    "steps": {
+      "address": "Elige la <b>dirección del perfil</b>, el título profesional, los temas (separados por comas), la ciudad, los formatos y los públicos. El nombre, la foto y la minibiografía vienen de <b>Configuración</b>.",
+      "publish": "Marca <b>“Publicar mi perfil”</b> y haz clic en <b>“Guardar perfil público”</b>. Usa <b>“Copiar enlace”</b> para difundirlo.",
+      "sessions": "En <b>“Sesiones en el perfil”</b>, marca qué sesiones verificadas aparecen en la página (título, fecha, rango de público y calificación)."
+    },
+    "directory": "Con una sesión verificada, el perfil entra en el <directory>directorio de presentadores</directory>, con filtros por tema, estado, formato y público. La <b>experiencia previa</b> que escribas aparece aparte, con la etiqueta “declarada”.",
+    "invites": "Instituciones y empresas usan <b>“Invitar a dar una charla”</b> en tu perfil. Las solicitudes llegan a <b>“Invitaciones”</b>, en el menú (el número muestra las no leídas); quien te invita nunca ve tu correo electrónico. Abre una invitación para leerla, usa <b>“Responder”</b> para escribir desde tu correo, o <b>“Archivar”</b> y <b>“Eliminar”</b>. Con <b>“Mostrar el perfil después de la encuesta”</b>, quien responde la encuesta de tus sesiones ve una tarjeta con el enlace de tu perfil."
+  },
+  "assistants": {
+    "title": "Crear preguntas con Claude o ChatGPT",
+    "intro": "Con la presentación lista, un asistente de IA puede armar las preguntas por ti. Abre <integrations>Integraciones</integrations>, copia la <b>dirección del servidor MCP</b> y sigue el paso a paso de tu asistente (Claude, ChatGPT, Claude Code u otro). La primera vez, abre PulseStage: inicia sesión y haz clic en <b>“Permitir acceso”</b>.",
+    "steps": {
+      "attach": "Adjunta el PDF de la presentación en la conversación e indica el público y la duración.",
+      "propose": "El asistente propone las preguntas y después de qué diapositiva entra cada una (según la numeración de las páginas del PDF). Ajústalas y apruébalas.",
+      "create": "Crea la sesión (o usa una que le indiques) y guarda las preguntas.",
+      "upload": "En la sesión, abre la pestaña <b>“Diapositivas”</b> y sube el mismo PDF: las preguntas aparecen entre las diapositivas correctas."
+    },
+    "more": "El asistente también edita, mueve y elimina preguntas, y lee los resultados de sesiones ya presentadas para analizarlos contigo. No inicia ni finaliza la sesión en vivo. En <b>Integraciones</b>, la lista <b>“Asistentes conectados”</b> muestra quién tiene acceso; <b>“Revocar”</b> corta el acceso de inmediato."
+  },
+  "tips": {
+    "title": "Consejos",
+    "items": {
+      "rehearse": "Haz un ensayo: inicia la sesión y responde desde una ventana de incógnito o desde el celular. Después crea una sesión nueva para la presentación real.",
+      "icebreaker": "Empieza con una pregunta fácil (votación o nube de palabras) para romper el hielo.",
+      "pace": "Una interacción cada 10 o 15 minutos mantiene al público involucrado sin cortar el ritmo.",
+      "qr": "Deja el código QR visible durante los primeros minutos: así también entra quien llega tarde.",
+      "powerpoint": "¿Prefieres presentar con PowerPoint o Google Slides, con animaciones? Haz clic en <b>“Descargar código QR”</b> (en la página de la sesión o en la sala en vivo) y pega la imagen en una diapositiva. En el momento de cada pregunta, cambia de las diapositivas a la pantalla del proyector con <kbd>Alt</kbd>+<kbd>Tab</kbd>. Para no cambiar de ventana, sube el PDF en la pestaña <b>“Diapositivas”</b>.",
+      "survey": "Pide que respondan la encuesta todavía en la sala. La tasa de respuesta cae mucho después de que el público se va."
+    }
+  }
+}
