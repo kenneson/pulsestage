@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { saveInteractionAction } from "@/features/interactions/actions";
 import {
   hasOptions,
+  hasOptionStyle,
   INTERACTION_TYPE_META,
   interactionInputSchema,
   type InteractionInput,
@@ -85,6 +86,8 @@ function toInput(draft: InteractionDraft): InteractionInput {
       return { type: "word_cloud", ...base, settings: { maxLength: s.maxLength } };
     case "open_text":
       return { type: "open_text", ...base, settings: { maxLength: s.maxLength, showOnDisplay: s.showOnDisplay } };
+    case "ranking":
+      return { type: "ranking", ...base, settings: {}, options };
   }
 }
 
@@ -263,7 +266,7 @@ export function InteractionForm({
         />
       </Field>
 
-      {hasOptions(draft.type) ? (
+      {hasOptionStyle(draft.type) ? (
         <Field className="max-w-xs">
           <Label htmlFor="option-style">Aparência das alternativas</Label>
           <Select
@@ -279,7 +282,10 @@ export function InteractionForm({
 
       {hasOptions(draft.type) ? (
         <div className="flex flex-col gap-2">
-          <Label>Alternativas{draft.type === "quiz" ? " (marque a correta)" : ""}</Label>
+          <Label>
+            Alternativas
+            {draft.type === "quiz" ? " (marque a correta)" : draft.type === "ranking" ? " (a plateia vai ordenar)" : ""}
+          </Label>
           {draft.options.map((option, index) => (
             <div key={option.id ?? `new-${index}`} className="flex items-center gap-2">
               {draft.settings.optionStyle === "shapes" ? <ShapeGlyph index={index} className={shapeText(index)} /> : null}

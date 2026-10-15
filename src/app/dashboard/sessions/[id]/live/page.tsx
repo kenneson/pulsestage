@@ -50,6 +50,13 @@ export default async function LivePage({ params }: { params: Promise<{ id: strin
       clock={sessionClock(session)}
       plannedMinutes={session.estimated_duration_minutes}
       raffle={raffle}
+      engagement={{
+        qa_enabled: session.qa_enabled,
+        qa_moderated: session.qa_moderated,
+        reactions_enabled: session.reactions_enabled,
+        profanity_filter: session.profanity_filter,
+        moderate_open_text: session.moderate_open_text,
+      }}
     />
   );
 }

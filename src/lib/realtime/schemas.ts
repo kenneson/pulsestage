@@ -20,6 +20,10 @@ export const liveStateSchema = z.object({
   raffle_prize_id: z.string().nullable().default(null),
   raffle_winner_id: z.string().nullable().default(null),
   raffle_drawn_at: z.string().nullable().default(null),
+  // Perguntas da plateia no telão (lista ou uma em destaque).
+  show_questions: z.boolean().default(false),
+  questions_at: z.string().nullable().default(null),
+  question_id: z.string().nullable().default(null),
   updated_at: z.string(),
 });
 

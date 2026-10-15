@@ -13,7 +13,12 @@ import { isUuid } from "@/lib/action-result";
 //   ?tipo=interacoes  respostas às perguntas ao vivo, uma linha por resposta
 //   ?tipo=pesquisa    pesquisa pós-evento, uma linha por pesquisa e uma coluna por pergunta
 
-const valueSchema = z.object({ optionId: z.string().optional(), value: z.number().optional(), text: z.string().optional() });
+const valueSchema = z.object({
+  optionId: z.string().optional(),
+  value: z.number().optional(),
+  text: z.string().optional(),
+  order: z.array(z.string()).optional(),
+});
 
 function localTime(iso: string, timeZone: string): string {
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -61,9 +66,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         const interaction = interactions.get(r.interaction_id);
         const parsed = valueSchema.safeParse(r.value);
         const v = parsed.success ? parsed.data : {};
+        const labelOf = (id: string) => interaction?.options.find((o) => o.id === id)?.label ?? "?";
         const answer = v.optionId
-          ? interaction?.options.find((o) => o.id === v.optionId)?.label
-          : (v.text ?? (v.value !== undefined ? v.value : null));
+          ? labelOf(v.optionId)
+          : v.order
+            ? v.order.map(labelOf).join(" > ")
+            : (v.text ?? (v.value !== undefined ? v.value : null));
         const quiz = interaction?.type === "quiz" ? parseQuizValue(r.value) : null;
         return [
           order.get(r.interaction_id) ?? null,

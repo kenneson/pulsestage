@@ -14,6 +14,7 @@ export const EMPTY_SNAPSHOT: ResultsSnapshot = { total: 0, counts: {}, recent: [
 const countsSchema = z.record(z.string(), z.number());
 const recentSchema = z.array(z.object({ id: z.string(), text: z.string(), at: z.string() }));
 const textValueSchema = z.object({ text: z.string() });
+const rankingValueSchema = z.object({ points: z.record(z.string(), z.number()) });
 
 /** Converte uma linha de interaction_results (JSONB) num snapshot tipado. */
 export function snapshotFromRow(
@@ -29,18 +30,28 @@ export function snapshotFromRow(
   };
 }
 
-/** Recalcula o snapshot a partir das respostas brutas (usado no analytics). */
+/**
+ * Recalcula o snapshot a partir das respostas brutas (usado no analytics), com as mesmas regras do banco:
+ * o total conta todas; contagens e textos só as visíveis (moderação); ranking soma os pontos de cada resposta.
+ */
 export function snapshotFromResponses(
-  responses: readonly { id: string; aggregate_key: string | null; value: unknown; created_at: string }[],
+  responses: readonly { id: string; aggregate_key: string | null; value: unknown; created_at: string; moderation?: string }[],
 ): ResultsSnapshot {
   const counts: Record<string, number> = {};
   const recent: OpenTextEntry[] = [];
   for (const r of responses) {
-    if (r.aggregate_key) counts[r.aggregate_key] = (counts[r.aggregate_key] ?? 0) + 1;
-    else {
-      const parsed = textValueSchema.safeParse(r.value);
-      if (parsed.success) recent.push({ id: r.id, text: parsed.data.text, at: r.created_at });
+    if (r.moderation !== undefined && r.moderation !== "visible") continue;
+    if (r.aggregate_key) {
+      counts[r.aggregate_key] = (counts[r.aggregate_key] ?? 0) + 1;
+      continue;
     }
+    const ranking = rankingValueSchema.safeParse(r.value);
+    if (ranking.success) {
+      for (const [key, points] of Object.entries(ranking.data.points)) counts[key] = (counts[key] ?? 0) + points;
+      continue;
+    }
+    const parsed = textValueSchema.safeParse(r.value);
+    if (parsed.success) recent.push({ id: r.id, text: parsed.data.text, at: r.created_at });
   }
   recent.sort((a, b) => b.at.localeCompare(a.at));
   return { total: responses.length, counts, recent };

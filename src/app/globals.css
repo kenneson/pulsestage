@@ -34,12 +34,14 @@
   --rev-yellow: oklch(0.95 0.08 100);
   --rev-green: oklch(0.92 0.055 152);
   --rev-gold: oklch(0.88 0.09 78);
+  --rev-violet: oklch(0.9 0.05 300);
   --rev-foreground: oklch(0.22 0.012 260);
   --rev-blue-ink: oklch(0.46 0.13 245);
   --rev-pink-ink: oklch(0.48 0.17 8);
   --rev-yellow-ink: oklch(0.46 0.1 95);
   --rev-green-ink: oklch(0.46 0.12 152);
   --rev-gold-ink: oklch(0.48 0.11 65);
+  --rev-violet-ink: oklch(0.47 0.15 300);
   --chart-1: oklch(0.5 0.13 245);
   --chart-2: oklch(0.55 0.17 8);
   --chart-3: oklch(0.52 0.13 152);
@@ -87,12 +89,14 @@
   --rev-yellow: oklch(0.36 0.07 100);
   --rev-green: oklch(0.33 0.07 152);
   --rev-gold: oklch(0.36 0.08 75);
+  --rev-violet: oklch(0.34 0.07 300);
   --rev-foreground: oklch(0.95 0.004 250);
   --rev-blue-ink: oklch(0.74 0.12 240);
   --rev-pink-ink: oklch(0.75 0.14 8);
   --rev-yellow-ink: oklch(0.86 0.14 100);
   --rev-green-ink: oklch(0.78 0.14 152);
   --rev-gold-ink: oklch(0.82 0.14 78);
+  --rev-violet-ink: oklch(0.8 0.12 300);
   --chart-1: oklch(0.74 0.12 240);
   --chart-2: oklch(0.75 0.14 8);
   --chart-3: oklch(0.78 0.14 152);
@@ -131,12 +135,14 @@
   --color-rev-yellow: var(--rev-yellow);
   --color-rev-green: var(--rev-green);
   --color-rev-gold: var(--rev-gold);
+  --color-rev-violet: var(--rev-violet);
   --color-rev-foreground: var(--rev-foreground);
   --color-rev-blue-ink: var(--rev-blue-ink);
   --color-rev-pink-ink: var(--rev-pink-ink);
   --color-rev-yellow-ink: var(--rev-yellow-ink);
   --color-rev-green-ink: var(--rev-green-ink);
   --color-rev-gold-ink: var(--rev-gold-ink);
+  --color-rev-violet-ink: var(--rev-violet-ink);
   --color-timeline-slide: var(--timeline-slide);
   --color-timeline-question: var(--timeline-question);
   --color-shape-1: var(--shape-1);
@@ -252,6 +258,34 @@ html {
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
+  }
+}
+
+/* Reações: o emoji sobe e some (celular e telão). --drift = desvio lateral, --rise = altura. */
+@keyframes reaction-float {
+  0% {
+    transform: translate(0, 0) scale(0.6);
+    opacity: 0;
+  }
+  12% {
+    transform: translate(calc(var(--drift, 0px) * 0.2), calc(var(--rise, 160px) * -0.12)) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--drift, 0px), calc(var(--rise, 160px) * -1)) scale(1);
+    opacity: 0;
+  }
+}
+
+.reaction-float {
+  animation: reaction-float var(--duration, 1600ms) ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reaction-float {
+    animation-duration: 600ms;
+    --rise: 24px;
+    --drift: 0px;
   }
 }
 

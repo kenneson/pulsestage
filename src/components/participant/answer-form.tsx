@@ -5,7 +5,7 @@ import type { AnswerPayload, PublicInteraction } from "@/lib/domain/interactions
 import { Button } from "@/components/ui/button";
 import { Input, Textarea } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { CheckIcon } from "@/components/icons";
+import { CheckIcon, XIcon } from "@/components/icons";
 import { ShapeGlyph, shapeBg } from "@/components/option-shape";
 import { optionImageSrc } from "@/lib/option-images/url";
 
@@ -101,8 +101,82 @@ function OptionTiles({
   );
 }
 
+/** Ranking no celular: toca na preferida, depois na seguinte… Toque numa já escolhida para tirá-la. */
+function RankingPicker({
+  interaction,
+  order,
+  onChange,
+  disabled,
+}: {
+  interaction: PublicInteraction;
+  order: string[];
+  onChange: (order: string[]) => void;
+  disabled: boolean;
+}) {
+  const byId = new Map(interaction.options.map((o) => [o.id, o]));
+  const remaining = interaction.options.filter((o) => !order.includes(o.id));
+  return (
+    <div className="flex flex-col gap-4">
+      {order.length > 0 ? (
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between text-sm">
+            <span className="font-medium">Sua ordem</span>
+            <button type="button" className="text-muted-foreground underline" disabled={disabled} onClick={() => onChange([])}>
+              Recomeçar
+            </button>
+          </div>
+          <ol className="flex flex-col gap-2">
+            {order.map((id, index) => (
+              <li key={id}>
+                <button
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => onChange(order.filter((x) => x !== id))}
+                  aria-label={`${index + 1}º: ${byId.get(id)?.label ?? ""}. Toque para tirar.`}
+                  className="flex min-h-14 w-full items-center gap-3 rounded-xl border-2 border-primary bg-primary/5 px-4 py-3 text-left text-base font-medium"
+                >
+                  <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary font-display text-sm font-bold text-primary-foreground">
+                    {index + 1}º
+                  </span>
+                  <span className="min-w-0 flex-1 break-words">{byId.get(id)?.label}</span>
+                  <XIcon className="shrink-0 text-muted-foreground" />
+                </button>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ) : null}
+      {remaining.length > 0 ? (
+        <div className="flex flex-col gap-2">
+          <p className="text-sm text-muted-foreground">
+            {order.length === 0 ? "Toque primeiro na sua preferida, depois na seguinte…" : `Toque na sua ${order.length + 1}ª opção`}
+          </p>
+          <ul className="flex flex-col gap-2">
+            {remaining.map((option) => (
+              <li key={option.id}>
+                <button
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => onChange([...order, option.id])}
+                  className="flex min-h-14 w-full items-center gap-3 rounded-xl border-2 border-border px-4 py-3 text-left text-base font-medium transition-colors hover:border-primary/40"
+                >
+                  <span className="grid size-8 shrink-0 place-items-center rounded-full border-2 border-dashed text-sm text-muted-foreground">
+                    ?
+                  </span>
+                  <span className="min-w-0 flex-1 break-words">{option.label}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export function AnswerForm({ interaction, onSubmit, submitting = false, preview = false }: Props) {
   const [optionId, setOptionId] = useState<string | null>(null);
+  const [order, setOrder] = useState<string[]>([]);
   const [rating, setRating] = useState<number | null>(null);
   const [text, setText] = useState("");
   const { settings } = interaction;
@@ -122,6 +196,9 @@ export function AnswerForm({ interaction, onSubmit, submitting = false, preview 
       case "open_text":
         if (text.trim()) onSubmit({ type: interaction.type, text: text.trim() });
         return;
+      case "ranking":
+        if (order.length === interaction.options.length) onSubmit({ type: "ranking", order });
+        return;
     }
   }
 
@@ -130,7 +207,9 @@ export function AnswerForm({ interaction, onSubmit, submitting = false, preview 
       ? optionId !== null
       : interaction.type === "rating"
         ? rating !== null
-        : text.trim().length > 0;
+        : interaction.type === "ranking"
+          ? order.length === interaction.options.length
+          : text.trim().length > 0;
 
   return (
     <form
@@ -208,6 +287,10 @@ export function AnswerForm({ interaction, onSubmit, submitting = false, preview 
             </div>
           ) : null}
         </div>
+      ) : null}
+
+      {interaction.type === "ranking" ? (
+        <RankingPicker interaction={interaction} order={order} onChange={setOrder} disabled={submitting} />
       ) : null}
 
       {interaction.type === "word_cloud" ? (

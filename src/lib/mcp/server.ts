@@ -28,6 +28,8 @@ import { optionImagesOf, removeUnusedOptionImages } from "@/lib/data/option-imag
 import type { SessionRow } from "@/lib/supabase/types";
 import type { McpContext } from "./auth";
 import { summarizeForAssistant } from "./results";
+import { listSessionQuestions, loadReactions } from "@/lib/data/engagement";
+import { tallyReactions } from "@/lib/domain/reactions";
 
 // Servidor MCP do PulseStage: um por requisição (sem estado), já com o usuário autenticado.
 
@@ -200,7 +202,7 @@ export function buildMcpServer(ctx: McpContext): McpServer {
     {
       title: "Resultados da sessão",
       description:
-        "Resultados de uma sessão já apresentada: participação, respostas de cada interação (votos, acertos do quiz, médias, palavras, respostas abertas) e a pesquisa pós-evento (nota 0 a 10, dimensões e comentários). Sem dados pessoais.",
+        "Resultados de uma sessão já apresentada: participação, respostas de cada interação (votos, acertos do quiz, médias, palavras, respostas abertas, ordem do ranking), perguntas da plateia com curtidas, reações e a pesquisa pós-evento (nota 0 a 10, dimensões e comentários). Sem dados pessoais.",
       inputSchema: { session_id: sessionIdSchema },
       annotations: { readOnlyHint: true, openWorldHint: false },
     },
@@ -208,7 +210,11 @@ export function buildMcpServer(ctx: McpContext): McpServer {
       const bundle = await loadSessionAnalytics(ctx.supabase, session_id);
       if (!bundle) return error("Sessão não encontrada (confira o id com list_sessions).");
       if (bundle.session.status === "draft") return error("A sessão ainda não foi apresentada: não há resultados.");
-      return json(summarizeForAssistant(bundle));
+      const [questions, reactions] = await Promise.all([
+        listSessionQuestions(ctx.supabase, session_id),
+        loadReactions(ctx.supabase, session_id),
+      ]);
+      return json(summarizeForAssistant(bundle, { questions, reactions: tallyReactions(reactions) }));
     },
   );
 

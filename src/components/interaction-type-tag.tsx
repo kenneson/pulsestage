@@ -8,6 +8,7 @@ export const TYPE_PAPER: Record<InteractionType, string> = {
   word_cloud: "bg-rev-yellow",
   open_text: "bg-rev-green",
   quiz: "bg-rev-gold",
+  ranking: "bg-rev-violet",
 };
 
 export function TypeTag({ type, className }: { type: InteractionType; className?: string }) {

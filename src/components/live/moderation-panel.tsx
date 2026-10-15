@@ -1,0 +1,166 @@
+"use client";
+
+import { useCallback, useEffect, useState, useTransition } from "react";
+import { toast } from "sonner";
+import { moderateResponseAction, moderationQueueAction, setTermVisibilityAction } from "@/features/engagement/actions";
+import type { ModerationQueue } from "@/lib/data/engagement";
+import { wordList, type ResultsSnapshot } from "@/lib/domain/results";
+import { Button } from "@/components/ui/button";
+import { XIcon } from "@/components/icons";
+
+const POLL_MS = 4000;
+
+/**
+ * Moderação da pergunta de texto no ar (nuvem ou aberta): ocultar o que não deve ir ao telão,
+ * aprovar o que espera e liberar o que o filtro barrou. O telão só mostra o que está visível.
+ */
+export function ModerationPanel({
+  interactionId,
+  type,
+  snapshot,
+}: {
+  interactionId: string;
+  type: "word_cloud" | "open_text";
+  snapshot: ResultsSnapshot;
+}) {
+  const [queue, setQueue] = useState<ModerationQueue>({ responses: [], hiddenTerms: [] });
+  const [pending, startTransition] = useTransition();
+
+  const reload = useCallback(async () => {
+    const result = await moderationQueueAction(interactionId);
+    if (result.ok) setQueue(result.data);
+  }, [interactionId]);
+
+  useEffect(() => {
+    // Primeira leitura logo em seguida; depois, de tempos em tempos.
+    const first = window.setTimeout(() => void reload(), 0);
+    const id = window.setInterval(() => void reload(), POLL_MS);
+    return () => {
+      window.clearTimeout(first);
+      window.clearInterval(id);
+    };
+  }, [reload]);
+
+  const run = (task: () => Promise<{ ok: boolean; error?: string }>) =>
+    startTransition(async () => {
+      const result = await task();
+      if (!result.ok && result.error) toast.error(result.error);
+      await reload();
+    });
+
+  if (type === "word_cloud") {
+    const words = wordList(snapshot, 30);
+    return (
+      <details className="rounded-lg border px-3 py-2 text-sm">
+        <summary className="cursor-pointer font-medium">
+          Moderar palavras{queue.hiddenTerms.length > 0 ? ` · ${queue.hiddenTerms.length} oculta(s)` : ""}
+        </summary>
+        <div className="mt-3 flex flex-col gap-3">
+          {words.length > 0 ? (
+            <div className="flex flex-col gap-1.5">
+              <p className="text-xs text-muted-foreground">No telão. Clique no × para ocultar a palavra (e os próximos envios dela).</p>
+              <ul className="flex flex-wrap gap-1.5">
+                {words.map((w) => (
+                  <li key={w.word}>
+                    <button
+                      type="button"
+                      disabled={pending}
+                      onClick={() => run(() => setTermVisibilityAction(interactionId, w.word, false))}
+                      className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs hover:border-destructive hover:text-destructive"
+                      aria-label={`Ocultar “${w.word}”`}
+                    >
+                      {w.word} <span className="text-muted-foreground">{w.count}</span> <XIcon className="size-3" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {queue.hiddenTerms.length > 0 ? (
+            <div className="flex flex-col gap-1.5">
+              <p className="text-xs text-muted-foreground">Fora do telão</p>
+              <ul className="flex flex-col gap-1">
+                {queue.hiddenTerms.map((t) => (
+                  <li key={t.term} className="flex items-center justify-between gap-2">
+                    <span className="min-w-0 truncate">
+                      {t.term} <span className="text-muted-foreground">· {t.count}{t.filtered ? " · filtro de palavrões" : ""}</span>
+                    </span>
+                    <Button variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => setTermVisibilityAction(interactionId, t.term, true))}>
+                      Mostrar
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {words.length === 0 && queue.hiddenTerms.length === 0 ? <p className="text-xs text-muted-foreground">Nenhuma palavra ainda.</p> : null}
+        </div>
+      </details>
+    );
+  }
+
+  const waiting = queue.responses.filter((r) => r.moderation === "pending");
+  const hidden = queue.responses.filter((r) => r.moderation === "hidden");
+  return (
+    <details className="rounded-lg border px-3 py-2 text-sm" open={waiting.length > 0}>
+      <summary className="cursor-pointer font-medium">
+        Moderar respostas
+        {waiting.length > 0 ? ` · ${waiting.length} aguardando` : ""}
+        {hidden.length > 0 ? ` · ${hidden.length} oculta(s)` : ""}
+      </summary>
+      <div className="mt-3 flex flex-col gap-3">
+        {waiting.length > 0 ? (
+          <ul className="flex max-h-72 flex-col gap-1.5 overflow-y-auto pr-1">
+            {waiting.map((r) => (
+              <li key={r.id} className="flex items-start gap-2 rounded-md bg-standby/10 p-2">
+                <p className="min-w-0 flex-1 break-words">{r.text}</p>
+                <Button size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateResponseAction(r.id, true))}>
+                  Aprovar
+                </Button>
+                <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateResponseAction(r.id, false))}>
+                  Ocultar
+                </Button>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        {snapshot.recent.length > 0 ? (
+          <div className="flex flex-col gap-1.5">
+            <p className="text-xs text-muted-foreground">No telão</p>
+            <ul className="flex max-h-56 flex-col gap-1 overflow-y-auto pr-1">
+              {snapshot.recent.map((r) => (
+                <li key={r.id} className="flex items-start gap-2">
+                  <p className="min-w-0 flex-1 break-words">{r.text}</p>
+                  <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateResponseAction(r.id, false))}>
+                    Ocultar
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+        {hidden.length > 0 ? (
+          <div className="flex flex-col gap-1.5">
+            <p className="text-xs text-muted-foreground">Fora do telão</p>
+            <ul className="flex max-h-56 flex-col gap-1 overflow-y-auto pr-1">
+              {hidden.map((r) => (
+                <li key={r.id} className="flex items-start gap-2 text-muted-foreground">
+                  <p className="min-w-0 flex-1 break-words">
+                    {r.text}
+                    {r.filtered ? <span className="text-xs"> · filtro de palavrões</span> : null}
+                  </p>
+                  <Button variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateResponseAction(r.id, true))}>
+                    Mostrar
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+        {waiting.length === 0 && hidden.length === 0 && snapshot.recent.length === 0 ? (
+          <p className="text-xs text-muted-foreground">Nenhuma resposta ainda.</p>
+        ) : null}
+      </div>
+    </details>
+  );
+}

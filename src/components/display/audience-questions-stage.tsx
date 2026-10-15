@@ -1,0 +1,97 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { z } from "zod";
+import { formatInt, plural } from "@/lib/format";
+import { cn } from "@/lib/utils";
+
+// Perguntas da plateia no telão: uma em destaque ou as mais curtidas. Busca no servidor
+// (só responde enquanto o palestrante mostra as perguntas) e atualiza a cada poucos segundos.
+
+const questionSchema = z.object({
+  id: z.string(),
+  body: z.string(),
+  author: z.string().nullable(),
+  upvotes: z.number(),
+  answered: z.boolean(),
+});
+const responseSchema = z.object({
+  highlight: questionSchema.nullable(),
+  questions: z.array(questionSchema),
+  total: z.number(),
+});
+type Data = z.infer<typeof responseSchema>;
+
+const POLL_MS = 3000;
+
+export function AudienceQuestionsStage({ sessionId, version, joinHost }: { sessionId: string; version: string | null; joinHost: string }) {
+  const [data, setData] = useState<Data | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const res = await fetch(`/api/session/${sessionId}/questions`, { cache: "no-store" });
+        if (!res.ok) return;
+        const parsed = responseSchema.safeParse(await res.json());
+        if (parsed.success && !cancelled) setData(parsed.data);
+      } catch {
+        // tenta de novo no próximo ciclo
+      }
+    };
+    void load();
+    const id = window.setInterval(() => void load(), POLL_MS);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, [sessionId, version]);
+
+  if (data?.highlight) {
+    const q = data.highlight;
+    return (
+      <div className="flex w-full max-w-5xl flex-col items-center gap-10 text-center">
+        <p className="font-display text-2xl font-bold uppercase tracking-widest text-primary">Pergunta da plateia</p>
+        <blockquote className="text-balance text-6xl font-semibold leading-tight">“{q.body}”</blockquote>
+        <p className="text-3xl text-muted-foreground">
+          {q.author ?? "Anônima"} · 👍 {formatInt(q.upvotes)}
+        </p>
+      </div>
+    );
+  }
+
+  const list = data?.questions ?? [];
+  return (
+    <div className="flex w-full max-w-6xl flex-col gap-8">
+      <div className="flex flex-wrap items-baseline justify-between gap-4">
+        <h1 className="text-5xl font-semibold">Perguntas da plateia</h1>
+        <p className="text-2xl text-muted-foreground">
+          {data ? plural(data.total, "pergunta aberta", "perguntas abertas") : ""}
+        </p>
+      </div>
+      {list.length === 0 ? (
+        <p className="py-10 text-center text-4xl text-muted-foreground">
+          Mande sua pergunta pelo celular em <span className="font-semibold text-foreground">{joinHost}</span>
+        </p>
+      ) : (
+        <ol className="flex flex-col gap-4">
+          {list.map((q, index) => (
+            <li
+              key={q.id}
+              className={cn("flex items-center gap-6 rounded-2xl border px-6 py-5", index === 0 ? "border-primary bg-primary/10" : "bg-muted/40")}
+            >
+              <span className="flex w-24 shrink-0 flex-col items-center font-display text-4xl font-bold tabular-nums">
+                👍
+                <span>{formatInt(q.upvotes)}</span>
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-3xl leading-snug">{q.body}</p>
+                <p className="mt-1 text-xl text-muted-foreground">{q.author ?? "Anônima"}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
+  );
+}

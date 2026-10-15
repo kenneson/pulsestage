@@ -170,6 +170,11 @@ export async function duplicateSessionAction(sessionId: string, raw: unknown = {
         estimated_duration_minutes: source.estimated_duration_minutes,
         survey_template_id: source.survey_template_id,
         raffle_eligibility: source.raffle_eligibility,
+        qa_enabled: source.qa_enabled,
+        qa_moderated: source.qa_moderated,
+        reactions_enabled: source.reactions_enabled,
+        profanity_filter: source.profanity_filter,
+        moderate_open_text: source.moderate_open_text,
         join_code: generateJoinCode(),
       })
       .select("id")

@@ -6,7 +6,7 @@ import { optionImagePathSchema, optionStyleSchema } from "./gamification.ts";
 // Tipos
 // ---------------------------------------------------------------------------
 
-export const INTERACTION_TYPES = ["multiple_choice", "rating", "word_cloud", "open_text", "quiz"] as const;
+export const INTERACTION_TYPES = ["multiple_choice", "rating", "word_cloud", "open_text", "quiz", "ranking"] as const;
 export type InteractionType = (typeof INTERACTION_TYPES)[number];
 export const interactionTypeSchema = z.enum(INTERACTION_TYPES);
 
@@ -14,7 +14,12 @@ export function isInteractionType(value: string): value is InteractionType {
   return (INTERACTION_TYPES as readonly string[]).includes(value);
 }
 
-export function hasOptions(type: InteractionType): type is "multiple_choice" | "quiz" {
+export function hasOptions(type: InteractionType): type is "multiple_choice" | "quiz" | "ranking" {
+  return type === "multiple_choice" || type === "quiz" || type === "ranking";
+}
+
+/** Enquete e quiz podem ter alternativas com forma e cor. */
+export function hasOptionStyle(type: InteractionType): type is "multiple_choice" | "quiz" {
   return type === "multiple_choice" || type === "quiz";
 }
 
@@ -24,6 +29,7 @@ export const INTERACTION_TYPE_META: Record<InteractionType, { label: string; des
   word_cloud: { label: "Nuvem de palavras", description: "Respostas curtas agrupadas por frequência." },
   open_text: { label: "Pergunta aberta", description: "Resposta livre em uma frase." },
   quiz: { label: "Quiz", description: "Pergunta com resposta correta e pontuação." },
+  ranking: { label: "Ranking", description: "A plateia ordena as alternativas por preferência." },
 };
 
 // ---------------------------------------------------------------------------
@@ -59,6 +65,9 @@ export const quizSettingsSchema = z.object({
   /** quem responde antes ganha mais (só com tempo limite) */
   speedBonus: z.boolean().default(false),
 });
+
+/** Ranking não tem ajustes próprios (as alternativas bastam). */
+export const rankingSettingsSchema = z.object({});
 
 /** Settings achatados com defaults, usados pela UI e pelas regras de resposta. */
 export const normalizedSettingsSchema = z.object({
@@ -125,6 +134,8 @@ export function normalizeSettings(type: InteractionType, raw: unknown): Normaliz
       const parsed = multipleChoiceSettingsSchema.safeParse(source);
       return parsed.success ? { ...DEFAULT_SETTINGS, optionStyle: parsed.data.optionStyle } : DEFAULT_SETTINGS;
     }
+    case "ranking":
+      return DEFAULT_SETTINGS;
   }
 }
 
@@ -182,6 +193,13 @@ export const interactionInputSchema = z.discriminatedUnion("type", [
       .refine((options) => options.filter((o) => o.isCorrect).length === 1, {
         error: "Marque exatamente uma alternativa correta.",
       }),
+  }),
+  z.object({
+    type: z.literal("ranking"),
+    title: titleSchema,
+    description: descriptionSchema,
+    settings: rankingSettingsSchema,
+    options: z.array(optionInputSchema).min(2, "Adicione pelo menos 2 alternativas.").max(8, "Máximo de 8 alternativas."),
   }),
 ]);
 
@@ -241,6 +259,7 @@ export const answerPayloadSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("rating"), value: z.number().int() }),
   z.object({ type: z.literal("word_cloud"), text: z.string().trim().min(1, "Digite uma palavra.").max(50) }),
   z.object({ type: z.literal("open_text"), text: z.string().trim().min(1, "Escreva sua resposta.").max(500) }),
+  z.object({ type: z.literal("ranking"), order: z.array(z.uuid()).min(2, "Ordene todas as alternativas.").max(8) }),
 ]);
 
 export type AnswerPayload = z.infer<typeof answerPayloadSchema>;
@@ -248,10 +267,15 @@ export type AnswerPayload = z.infer<typeof answerPayloadSchema>;
 /** Folga para latência de rede no timer do quiz. */
 export const QUIZ_GRACE_MS = 2500;
 
+/** Recursos da sessão que aparecem no celular fora das perguntas do roteiro. */
+export const participantFeaturesSchema = z.object({ questions: z.boolean(), reactions: z.boolean() });
+export type ParticipantFeatures = z.infer<typeof participantFeaturesSchema>;
+
 export const currentInteractionResponseSchema = z.object({
   status: z.string(),
   interaction: publicInteractionSchema.nullable(),
   answered: z.boolean(),
+  features: participantFeaturesSchema.default({ questions: false, reactions: false }),
 });
 
 export type CurrentInteractionResponse = z.infer<typeof currentInteractionResponseSchema>;

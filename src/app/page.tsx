@@ -56,6 +56,19 @@ const QUESTION_TYPES = [
     text: "Pergunta com resposta certa, pontos, tempo opcional e ranking dos participantes.",
     example: "Qual destes é um modelo de linguagem?",
   },
+  {
+    paper: "bg-rev-violet",
+    type: "Ranking",
+    text: "A plateia ordena as alternativas por prioridade, tocando nelas em ordem. O telão mostra a ordem do grupo.",
+    example: "Ordene o que mais importa no seu trabalho.",
+  },
+];
+
+// Recursos que valem a sessão inteira, fora do roteiro.
+const AUDIENCE_TOOLS = [
+  { title: "Perguntas da plateia", text: "Qualquer um pergunta pelo celular, anônimo ou com nome, e curte as dos outros. Você leva a mais votada ao telão." },
+  { title: "Reações ao vivo", text: "👏 ❤️ 😂 😮 🤔 a qualquer momento. Os emojis sobem no telão e mostram onde a palestra empolgou." },
+  { title: "Seguro para escolas", text: "Filtro de palavrões e aprovação antes do telão para respostas abertas, nuvem e perguntas." },
 ];
 
 const HERO_FACTS = [
@@ -68,7 +81,7 @@ const HERO_FACTS = [
 const PRODUCT_FACTS = [
   { value: "0", text: "apps para a plateia instalar" },
   { value: MAX_PARTICIPANTS_PER_SESSION.toLocaleString("pt-BR"), text: "pessoas por sessão" },
-  { value: "5", text: "tipos de pergunta para misturar" },
+  { value: "6", text: "tipos de pergunta para misturar" },
   { value: "1", text: "tela para slides e perguntas" },
 ];
 
@@ -206,6 +219,14 @@ const FAQ = [
   {
     q: "Como funciona o sorteio?",
     a: "Você cadastra os prêmios e escolhe quem concorre: todos que entraram ou só quem respondeu a pesquisa no fim. Cada pessoa recebe um número no celular. O ganhador é escolhido pelo servidor e revelado no telão com animação; a mensagem do prêmio, como um cupom, aparece só no celular de quem ganhou.",
+  },
+  {
+    q: "A plateia pode mandar perguntas durante a palestra?",
+    a: "Sim. Pelo celular, a qualquer momento, anônima ou com nome. Os outros curtem as perguntas que também querem ver respondidas, e você destaca a mais votada no telão, marca como respondida ou oculta. Se preferir, aprove cada pergunta antes de ela aparecer.",
+  },
+  {
+    q: "É seguro usar com alunos de escola?",
+    a: "Sim. O filtro de palavrões vem ligado: nuvem de palavras, respostas abertas e perguntas com palavrões não vão ao telão, e você pode liberar se for engano. Também dá para aprovar as respostas abertas antes de elas aparecerem e tirar qualquer palavra da nuvem na hora.",
   },
   {
     q: "Funciona com o Claude ou o ChatGPT?",
@@ -372,9 +393,19 @@ export default function Home() {
         {/* Tipos de pergunta. */}
         <section className="border-t bg-muted/40">
           <div className="mx-auto grid w-full max-w-6xl gap-12 px-4 py-20 md:px-6 md:py-24 lg:grid-cols-[2fr_3fr] lg:gap-16">
-            <SectionHeading title="Cinco tipos de pergunta">
-              Misture os formatos ao longo da apresentação. Cada tipo tem a sua cor, no seu painel e na tela do projetor.
-            </SectionHeading>
+            <div className="flex flex-col gap-10">
+              <SectionHeading title="Seis tipos de pergunta, e a plateia com voz o tempo todo">
+                Misture os formatos ao longo da apresentação. Cada tipo tem a sua cor, no seu painel e na tela do projetor.
+              </SectionHeading>
+              <dl className="flex flex-col gap-5">
+                {AUDIENCE_TOOLS.map((tool, index) => (
+                  <div key={tool.title} className="reveal flex flex-col gap-1 border-t pt-4" style={stagger(index)}>
+                    <dt className="font-display text-lg font-bold">{tool.title}</dt>
+                    <dd className="leading-relaxed text-muted-foreground">{tool.text}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
             <ol className="flex flex-col">
               {QUESTION_TYPES.map((item, index) => (
                 <li

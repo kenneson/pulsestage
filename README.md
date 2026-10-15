@@ -49,7 +49,10 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
    Ao vivo, use **Nova pergunta** para criar uma pergunta e lançá-la na hora ou deixá-la como a próxima.
 6. **Encerrar sessão** → o celular e o projetor mostram o link de avaliação. Envie alguns feedbacks.
 7. Abra o analytics da sessão e, com `AI_PROVIDER`/`AI_API_KEY` configurados, gere os insights.
-8. MCP: em **Integrações**, copie o endereço e conecte um assistente (ou `claude mcp add --transport http pulsestage
+8. Participação: com a sessão ao vivo, num celular toque nas reações e em **Perguntar ao palestrante**; noutro, curta a
+   pergunta. Na sala ao vivo, **Destacar** e **Mostrar no telão**; numa nuvem, mande um palavrão e confira que ele
+   fica em **Moderar palavras** e fora do telão. Crie um **Ranking** e ordene pelo celular.
+9. MCP: em **Integrações**, copie o endereço e conecte um assistente (ou `claude mcp add --transport http pulsestage
    <endereço>`). Anexe um PDF, peça as perguntas, confira a sessão criada e envie o mesmo PDF na aba **Slides**.
 
 ## Scripts
@@ -104,6 +107,7 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
 | Gamificação: avatares, alternativas com formas/cores e imagens, bônus de velocidade | ✅ |
 | Sorteio de prêmios (pesquisa ou todos), número da sorte, telão com suspense e som, controle de entrega | ✅ |
 | Perfil público verificado do palestrante, diretório `/palestrantes` (filtros e páginas por tema) e convites | ✅ |
+| Participação da plateia: ranking (6º tipo), perguntas da plateia com curtidas e telão, reações ao vivo, filtro de palavrões e moderação | ✅ |
 | Servidor MCP (Claude, ChatGPT e outros): criar sessões e perguntas a partir dos slides, OAuth, página Integrações | ✅ |
 | Realtime resistente a eventos perdidos (releitura ao conectar, após ações e no projetor) | ✅ |
 | Testes unitários do domínio (sessão, palavras, datas, resultados, métricas) | ✅ |

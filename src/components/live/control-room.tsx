@@ -44,6 +44,11 @@ import { showLeaderboardAction } from "@/features/live/actions";
 import type { SessionClock } from "@/lib/domain/timing";
 import type { RaffleState } from "@/lib/data/raffle";
 import { RafflePanel } from "./raffle-panel";
+import { QuestionsCard } from "./questions-card";
+import { ModerationPanel } from "./moderation-panel";
+import { ReactionTotals } from "./reaction-totals";
+import { EngagementSettings, type EngagementFlags } from "@/components/engagement/engagement-settings";
+import { questionsOnScreen } from "@/lib/domain/questions";
 
 export type ControlRoomInteraction = PublicInteraction & { correctOptionId: string | null };
 
@@ -61,6 +66,8 @@ type Props = {
   plannedMinutes: number | null;
   /** null = sessão sem sorteio */
   raffle: RaffleState | null;
+  /** perguntas da plateia, reações, filtro e moderação */
+  engagement: EngagementFlags;
 };
 
 export function ControlRoom({
@@ -74,6 +81,7 @@ export function ControlRoom({
   clock,
   plannedMinutes,
   raffle,
+  engagement,
 }: Props) {
   const router = useRouter();
   const [statusPending, startTransition] = useTransition();
@@ -143,6 +151,7 @@ export function ControlRoom({
   const hasQuiz = interactions.some((i) => i.type === "quiz");
   const leaderboardOn = status === "live" && Boolean(live?.show_leaderboard);
   const raffleOn = raffle !== null && status !== "draft" && Boolean(live?.show_raffle);
+  const questionsOn = questionsOnScreen(live);
   const toggleLeaderboard = (show: boolean) =>
     startTransition(async () => {
       const result = await showLeaderboardAction(session.id, show);
@@ -167,6 +176,7 @@ export function ControlRoom({
           <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <UsersIcon /> {plural(participantCount, "participante", "participantes")} · {online} conectados agora
           </p>
+          {engagement.reactions_enabled ? <ReactionTotals sessionId={session.id} running={status === "live"} /> : null}
         </div>
         <div className="flex flex-wrap gap-2">
           <a
@@ -233,6 +243,13 @@ export function ControlRoom({
                   <p className="font-display text-xs font-bold uppercase tracking-wider text-muted-foreground">No telão</p>
                   <CardTitle className="mt-1 text-xl">Ranking do quiz</CardTitle>
                 </>
+              ) : questionsOn ? (
+                <>
+                  <p className="font-display text-xs font-bold uppercase tracking-wider text-muted-foreground">No telão</p>
+                  <CardTitle className="mt-1 text-xl">
+                    {live?.question_id ? "Pergunta da plateia em destaque" : "Perguntas da plateia"}
+                  </CardTitle>
+                </>
               ) : active ? (
                 <>
                   <TypeTag type={active.type} />
@@ -294,12 +311,22 @@ export function ControlRoom({
               </p>
             ) : leaderboardOn ? (
               <QuizLeaderboard sessionId={session.id} version={live?.leaderboard_at ?? null} variant="compact" />
+            ) : questionsOn ? (
+              <p className="py-10 text-center text-muted-foreground">
+                As perguntas da plateia estão no telão. Use o card “Perguntas da plateia” para destacar, marcar como
+                respondida ou tirar do telão. Clique em Próxima para seguir o roteiro.
+              </p>
             ) : active ? (
-              <ResultsView
-                interaction={active}
-                snapshot={results[active.id] ?? EMPTY_SNAPSHOT}
-                correctOptionId={showAnswer ? active.correctOptionId : null}
-              />
+              <>
+                <ResultsView
+                  interaction={active}
+                  snapshot={results[active.id] ?? EMPTY_SNAPSHOT}
+                  correctOptionId={showAnswer ? active.correctOptionId : null}
+                />
+                {active.type === "word_cloud" || active.type === "open_text" ? (
+                  <ModerationPanel interactionId={active.id} type={active.type} snapshot={results[active.id] ?? EMPTY_SNAPSHOT} />
+                ) : null}
+              </>
             ) : hasSlides && slideOnScreen !== null && slideUrls[slideOnScreen] && status === "live" ? (
               // eslint-disable-next-line @next/next/no-img-element -- URL assinada do Storage
               <img
@@ -336,6 +363,13 @@ export function ControlRoom({
         </Card>
 
         <div className="flex flex-col gap-6">
+          <QuestionsCard
+            sessionId={session.id}
+            live={live}
+            status={status}
+            enabled={engagement.qa_enabled}
+            onChanged={refreshLive}
+          />
           {raffle ? (
             <RafflePanel sessionId={session.id} initial={raffle} status={status} live={live} onChanged={refreshLive} />
           ) : null}
@@ -428,6 +462,15 @@ export function ControlRoom({
                   </Link>
                 </p>
               ) : null}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Participação</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <EngagementSettings sessionId={session.id} initial={engagement} compact />
             </CardContent>
           </Card>
         </div>

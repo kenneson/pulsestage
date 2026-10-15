@@ -32,7 +32,9 @@ Não é mais um clone de Mentimeter, Slido ou AhaSlides. A interação ao vivo �
 
 ## Capabilities and Constraints
 
-- Cinco tipos de interação: Enquete, Escala, Nuvem de palavras, Pergunta aberta, Quiz (com pontos, tempo e ranking).
+- Seis tipos de interação: Enquete, Escala, Nuvem de palavras, Pergunta aberta, Quiz (com pontos, tempo e ranking) e
+  Ranking (ordenar alternativas). Durante a sessão: perguntas da plateia (com curtidas e telão) e reações ao vivo.
+- Filtro de palavrões ligado por padrão e moderação antes do telão (respostas abertas, nuvem e perguntas): pensado para escolas.
 - Login do speaker por e-mail/senha ou Google. Participantes sem conta (cookie assinado), uma resposta por interação.
 - Servidor MCP: o speaker conecta o Claude, o ChatGPT ou outro assistente (OAuth) e cria sessões e perguntas
   a partir dos próprios slides; o assistente não inicia sessões ao vivo nem recebe dados pessoais da plateia.

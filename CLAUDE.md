@@ -117,6 +117,19 @@
   ordena sem limitar ao número de slides (a posição vale quando o PDF chegar). Escrita compartilhada com o painel em
   `features/interactions/core.ts` e `features/sessions/core.ts`. Painel: `/dashboard/integracoes` (passo a passo,
   pedidos de exemplo, assistentes conectados com revogar). Não inicia/encerra sessão ao vivo de propósito.
+- **Participação da plateia (leva 1)** (migration `20261015000000_audience_engagement.sql`): opções por sessão
+  (`qa_enabled`, `qa_moderated`, `reactions_enabled`, `profanity_filter`, `moderate_open_text`) na aba “Participação” e
+  no card da sala ao vivo (`components/engagement/engagement-settings.tsx`). **Ranking** é o 6º tipo: o servidor grava
+  `{order, points}` (Borda, `lib/domain/ranking.ts`) e o trigger soma os pontos em `interaction_results.counts`.
+  **Moderação**: `responses.moderation` (`visible|pending|hidden`); só as visíveis entram em counts/recent;
+  `recompute_interaction_results()` refaz o agregado depois de `moderate_response()`/`set_term_visibility()`.
+  **Filtro de palavrões** (`lib/domain/profanity.ts`): o que for barrado é gravado oculto (`metadata.filtered`), sem
+  avisar quem enviou. **Perguntas da plateia** em `audience_questions` + `audience_question_votes` (trigger conta curtidas);
+  celular lê por `/api/participant/[id]/questions` (só quando o painel está aberto, a cada 6 s), telão por
+  `/api/session/[id]/questions` (só com `session_live_state.show_questions`); `show_questions()`/`moderate_question()`.
+  **Reações** em `reactions`; o telão busca `/api/session/[id]/reactions?after=` a cada 1,5 s (nada de realtime por
+  toque); limite por pessoa em memória (`allowReaction`). Analytics: perguntas e picos de reação (com o que estava no
+  telão). Tudo também no MCP (ranking, perguntas sem nome, reações).
 - **Realtime resistente**: `useLiveState` relê `session_live_state` ao conectar (e 3 s depois), expõe `refresh()` (a sala
   ao vivo chama após cada ação) e aceita `pollMs` (só o projetor, 10 s). Nunca usar `pollMs` para participantes.
 - **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta

@@ -9,6 +9,7 @@ import { getSpeakerProfile } from "@/lib/data/profile";
 import { toPublicInteraction } from "@/lib/domain/interactions";
 import { utcToZonedParts, formatDateTime } from "@/lib/datetime";
 import { isUuid } from "@/lib/action-result";
+import { EngagementSettings } from "@/components/engagement/engagement-settings";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs } from "@/components/ui/tabs";
@@ -27,7 +28,12 @@ import { RaffleEditor } from "@/components/raffle/raffle-editor";
 
 export const metadata: Metadata = { title: "Editar sessão" };
 
-const TAB_ALIASES: Record<string, string> = { sorteio: "raffle", slides: "slides", informacoes: "info" };
+const TAB_ALIASES: Record<string, string> = {
+  sorteio: "raffle",
+  slides: "slides",
+  informacoes: "info",
+  participacao: "engagement",
+};
 
 export default async function SessionBuilderPage({
   params,
@@ -182,6 +188,32 @@ export default async function SessionBuilderPage({
                     slideUrls={slideUrls}
                     interactions={deckInteractions}
                     readOnly={status === "completed"}
+                  />
+                </CardContent>
+              </Card>
+            ),
+          },
+          {
+            id: "engagement",
+            label: "Participação",
+            content: (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Participação</CardTitle>
+                  <CardDescription>
+                    Perguntas da plateia, reações ao vivo e moderação. Dá para mudar também durante a sessão, na sala ao vivo.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <EngagementSettings
+                    sessionId={id}
+                    initial={{
+                      qa_enabled: session.qa_enabled,
+                      qa_moderated: session.qa_moderated,
+                      reactions_enabled: session.reactions_enabled,
+                      profanity_filter: session.profanity_filter,
+                      moderate_open_text: session.moderate_open_text,
+                    }}
                   />
                 </CardContent>
               </Card>

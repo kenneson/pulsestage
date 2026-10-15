@@ -10,12 +10,15 @@ import type { LiveState } from "@/lib/realtime/schemas";
 import { useLiveState } from "@/lib/realtime/use-live-state";
 import { useInteractionResults } from "@/lib/realtime/use-interaction-results";
 import { usePresence } from "@/lib/realtime/use-presence";
-import { formatInt } from "@/lib/format";
+import { formatInt, plural } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { ResultsView } from "@/components/results/results-view";
 import type { DeckItem } from "@/lib/domain/deck";
 import { QuizLeaderboard } from "./quiz-leaderboard";
 import { RaffleStage } from "./raffle-stage";
+import { AudienceQuestionsStage } from "./audience-questions-stage";
+import { ReactionStream } from "./reaction-stream";
+import { questionsOnScreen } from "@/lib/domain/questions";
 import { useAudioUnlock } from "@/lib/raffle/use-audio-unlock";
 import { lastActivatedOf, useDeckControls } from "@/components/live/use-deck-controls";
 
@@ -121,6 +124,8 @@ export function DisplayView({
     );
   } else if (state?.show_leaderboard) {
     body = <QuizLeaderboard sessionId={session.id} version={state.leaderboard_at} />;
+  } else if (questionsOnScreen(state)) {
+    body = <AudienceQuestionsStage sessionId={session.id} version={state?.questions_at ?? null} joinHost={joinHost(joinUrl)} />;
   } else if (active) {
     body = (
       <div className="flex w-full max-w-6xl flex-col gap-10">
@@ -152,6 +157,7 @@ export function DisplayView({
       <main className={cn("flex min-h-0 flex-1 items-center justify-center", slideUrl ? "p-4" : "px-10 py-12")}>
         {body}
       </main>
+      <ReactionStream sessionId={session.id} active={status === "live"} />
       <footer
         className={cn(
           "flex items-center justify-between px-10 text-muted-foreground",
@@ -162,7 +168,7 @@ export function DisplayView({
           {slideUrl
             ? `Participe em ${joinHost(joinUrl)}`
             : active
-              ? `${formatInt(snapshot.total)} respostas`
+              ? plural(snapshot.total, "resposta", "respostas")
               : `${formatInt(state?.participant_count ?? 0)} participantes`}
           {online > 0 && !slideUrl ? ` · ${formatInt(online)} conectados` : ""}
         </span>

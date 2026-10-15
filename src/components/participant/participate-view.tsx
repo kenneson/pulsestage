@@ -11,12 +11,14 @@ import {
 import type { LiveState } from "@/lib/realtime/schemas";
 import { useLiveState } from "@/lib/realtime/use-live-state";
 import { usePresence } from "@/lib/realtime/use-presence";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Alert } from "@/components/ui/misc";
-import { CheckIcon } from "@/components/icons";
+import { CheckIcon, MessageQuestionIcon } from "@/components/icons";
 import { Logo } from "@/components/logo";
 import { AnswerForm } from "./answer-form";
 import { RaffleTicketCard } from "./raffle-ticket";
+import { ReactionBar } from "./reaction-bar";
+import { QuestionsPanel } from "./questions-panel";
 
 async function fetchCurrent(sessionId: string): Promise<CurrentInteractionResponse | null> {
   const res = await fetch(`/api/participant/${sessionId}/current`, { cache: "no-store" });
@@ -57,6 +59,7 @@ export function ParticipateView({
   const [current, setCurrent] = useState<CurrentInteractionResponse>(initialCurrent);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [questionsOpen, setQuestionsOpen] = useState(false);
   const requestId = useRef(0);
 
   const refresh = useCallback(() => {
@@ -161,6 +164,10 @@ export function ParticipateView({
     );
   }
 
+  const { features } = current;
+  const showQuestions = features.questions && (status === "live" || status === "paused");
+  const showReactions = features.reactions && status === "live";
+
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 py-5">
       <header className="flex items-center justify-between gap-3">
@@ -179,6 +186,19 @@ export function ParticipateView({
         {body}
         {showTicket ? <RaffleTicketCard sessionId={sessionId} drawnAt={live?.raffle_drawn_at ?? null} className="mt-6" /> : null}
       </main>
+      {showQuestions || showReactions ? (
+        <footer className="sticky bottom-0 -mx-5 flex flex-col gap-3 border-t bg-background/95 px-5 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-3 backdrop-blur">
+          {showReactions ? <ReactionBar sessionId={sessionId} /> : null}
+          {showQuestions ? (
+            <Button variant="outline" size="lg" className="w-full" onClick={() => setQuestionsOpen(true)}>
+              <MessageQuestionIcon /> Perguntar ao palestrante
+            </Button>
+          ) : null}
+        </footer>
+      ) : null}
+      {questionsOpen && showQuestions ? (
+        <QuestionsPanel sessionId={sessionId} myName={me.name} onClose={() => setQuestionsOpen(false)} />
+      ) : null}
     </div>
   );
 }

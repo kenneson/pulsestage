@@ -15,6 +15,93 @@ export type Database = {
   }
   public: {
     Tables: {
+      audience_question_votes: {
+        Row: {
+          created_at: string
+          participant_id: string
+          question_id: string
+        }
+        Insert: {
+          created_at?: string
+          participant_id: string
+          question_id: string
+        }
+        Update: {
+          created_at?: string
+          participant_id?: string
+          question_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audience_question_votes_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audience_question_votes_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "audience_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audience_questions: {
+        Row: {
+          answered_at: string | null
+          author_name: string | null
+          body: string
+          created_at: string
+          filtered: boolean
+          id: string
+          participant_id: string | null
+          session_id: string
+          status: string
+          upvotes: number
+        }
+        Insert: {
+          answered_at?: string | null
+          author_name?: string | null
+          body: string
+          created_at?: string
+          filtered?: boolean
+          id?: string
+          participant_id?: string | null
+          session_id: string
+          status?: string
+          upvotes?: number
+        }
+        Update: {
+          answered_at?: string | null
+          author_name?: string | null
+          body?: string
+          created_at?: string
+          filtered?: boolean
+          id?: string
+          participant_id?: string | null
+          session_id?: string
+          status?: string
+          upvotes?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audience_questions_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audience_questions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_requests: {
         Row: {
           archived_at: string | null
@@ -620,6 +707,45 @@ export type Database = {
           },
         ]
       }
+      reactions: {
+        Row: {
+          created_at: string
+          id: number
+          kind: string
+          participant_id: string | null
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          kind: string
+          participant_id?: string | null
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          kind?: string
+          participant_id?: string | null
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reactions_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reactions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       responses: {
         Row: {
           aggregate_key: string | null
@@ -627,6 +753,7 @@ export type Database = {
           id: string
           interaction_id: string
           metadata: Json
+          moderation: string
           participant_id: string
           session_id: string
           value: Json
@@ -637,6 +764,7 @@ export type Database = {
           id?: string
           interaction_id: string
           metadata?: Json
+          moderation?: string
           participant_id: string
           session_id: string
           value: Json
@@ -647,6 +775,7 @@ export type Database = {
           id?: string
           interaction_id?: string
           metadata?: Json
+          moderation?: string
           participant_id?: string
           session_id?: string
           value?: Json
@@ -728,12 +857,15 @@ export type Database = {
           current_slide_changed_at: string | null
           leaderboard_at: string | null
           participant_count: number
+          question_id: string | null
+          questions_at: string | null
           raffle_at: string | null
           raffle_drawn_at: string | null
           raffle_prize_id: string | null
           raffle_winner_id: string | null
           session_id: string
           show_leaderboard: boolean
+          show_questions: boolean
           show_raffle: boolean
           status: string
           updated_at: string
@@ -745,12 +877,15 @@ export type Database = {
           current_slide_changed_at?: string | null
           leaderboard_at?: string | null
           participant_count?: number
+          question_id?: string | null
+          questions_at?: string | null
           raffle_at?: string | null
           raffle_drawn_at?: string | null
           raffle_prize_id?: string | null
           raffle_winner_id?: string | null
           session_id: string
           show_leaderboard?: boolean
+          show_questions?: boolean
           show_raffle?: boolean
           status: string
           updated_at?: string
@@ -762,12 +897,15 @@ export type Database = {
           current_slide_changed_at?: string | null
           leaderboard_at?: string | null
           participant_count?: number
+          question_id?: string | null
+          questions_at?: string | null
           raffle_at?: string | null
           raffle_drawn_at?: string | null
           raffle_prize_id?: string | null
           raffle_winner_id?: string | null
           session_id?: string
           show_leaderboard?: boolean
+          show_questions?: boolean
           show_raffle?: boolean
           status?: string
           updated_at?: string
@@ -874,10 +1012,15 @@ export type Database = {
           estimated_duration_minutes: number | null
           id: string
           join_code: string
+          moderate_open_text: boolean
           paused_at: string | null
           paused_seconds: number
+          profanity_filter: boolean
           public_listed: boolean
+          qa_enabled: boolean
+          qa_moderated: boolean
           raffle_eligibility: string | null
+          reactions_enabled: boolean
           scheduled_at: string | null
           slide_count: number
           slides_batch: string | null
@@ -896,10 +1039,15 @@ export type Database = {
           estimated_duration_minutes?: number | null
           id?: string
           join_code?: string
+          moderate_open_text?: boolean
           paused_at?: string | null
           paused_seconds?: number
+          profanity_filter?: boolean
           public_listed?: boolean
+          qa_enabled?: boolean
+          qa_moderated?: boolean
           raffle_eligibility?: string | null
+          reactions_enabled?: boolean
           scheduled_at?: string | null
           slide_count?: number
           slides_batch?: string | null
@@ -918,10 +1066,15 @@ export type Database = {
           estimated_duration_minutes?: number | null
           id?: string
           join_code?: string
+          moderate_open_text?: boolean
           paused_at?: string | null
           paused_seconds?: number
+          profanity_filter?: boolean
           public_listed?: boolean
+          qa_enabled?: boolean
+          qa_moderated?: boolean
           raffle_eligibility?: string | null
+          reactions_enabled?: boolean
           scheduled_at?: string | null
           slide_count?: number
           slides_batch?: string | null
@@ -1118,6 +1271,14 @@ export type Database = {
       forfeit_raffle_winner: { Args: { p_winner_id: string }; Returns: undefined }
       generate_join_code: { Args: { len?: number }; Returns: string }
       is_session_owner: { Args: { p_session_id: string }; Returns: boolean }
+      moderate_question: {
+        Args: { p_question_id: string; p_status: string }
+        Returns: undefined
+      }
+      moderate_response: {
+        Args: { p_response_id: string; p_visible: boolean }
+        Returns: undefined
+      }
       raffle_is_eligible: {
         Args: { p_mode: string; p_participant_id: string; p_session_id: string }
         Returns: boolean
@@ -1131,8 +1292,16 @@ export type Database = {
         Args: { p_interaction_id?: string; p_session_id: string }
         Returns: undefined
       }
+      set_term_visibility: {
+        Args: { p_interaction_id: string; p_term: string; p_visible: boolean }
+        Returns: undefined
+      }
       show_leaderboard: {
         Args: { p_session_id: string; p_show: boolean }
+        Returns: undefined
+      }
+      show_questions: {
+        Args: { p_question_id?: string; p_session_id: string; p_show: boolean }
         Returns: undefined
       }
       show_raffle: {

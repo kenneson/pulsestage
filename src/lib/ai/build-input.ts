@@ -1,3 +1,4 @@
+import { rankingResults } from "@/lib/domain/ranking";
 import {
   computeOverview,
   computePulse,
@@ -65,6 +66,11 @@ export function buildInsightInput(data: AnalyticsData, options: readonly Interac
             break;
           case "open_text":
             summary = { answers: texts(snapshot.recent.map((e) => e.text)) };
+            break;
+          case "ranking":
+            summary = {
+              ranking: rankingResults(pub.options, snapshot).map((r) => ({ option: r.label, averagePosition: r.averagePosition })),
+            };
             break;
         }
       }

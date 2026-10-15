@@ -22,7 +22,7 @@ export default function PrivacyPage() {
       <Logo />
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Política de privacidade</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Última atualização: 13 de outubro de 2026</p>
+        <p className="mt-1 text-sm text-muted-foreground">Última atualização: 14 de outubro de 2026</p>
       </div>
 
       <div className="flex flex-col gap-8 text-muted-foreground [&_li]:ml-5 [&_li]:list-disc">
@@ -60,6 +60,15 @@ export default function PrivacyPage() {
             <li>
               <strong className="text-foreground">Respostas e avaliação.</strong> O que você responde nas interações e
               no feedback pós-evento.
+            </li>
+            <li>
+              <strong className="text-foreground">Perguntas ao palestrante (opcional).</strong> O texto da pergunta e,
+              só se você marcar, o seu nome. As perguntas aparecem para a plateia e podem ir ao telão; as curtidas são
+              contadas sem mostrar quem curtiu.
+            </li>
+            <li>
+              <strong className="text-foreground">Reações.</strong> O emoji que você toca e o horário, para o telão e para
+              o palestrante saber os momentos com mais reações. Ninguém vê quem reagiu.
             </li>
             <li>
               <strong className="text-foreground">E-mail e telefone (opcionais).</strong> Só são gravados se você
@@ -108,6 +117,14 @@ export default function PrivacyPage() {
           </p>
         </Section>
 
+        <Section title="Filtro e moderação">
+          <p>
+            Se o palestrante deixar o filtro de palavrões ligado, respostas e perguntas com palavrões são guardadas, mas
+            não aparecem no telão nem para a plateia; o palestrante pode vê-las e liberar. O palestrante também pode
+            ocultar ou aprovar respostas e perguntas antes de elas aparecerem.
+          </p>
+        </Section>
+
         <Section title="Cookies e armazenamento no navegador">
           <ul className="flex flex-col gap-1">
             <li>
@@ -135,7 +152,7 @@ export default function PrivacyPage() {
             depois que ele entra no PulseStage e clica em “Permitir acesso”, e pode ser revogada a qualquer momento em
             Integrações. O assistente age como o palestrante: pelas ferramentas do PulseStage, lê e cria sessões e
             perguntas e, quando o palestrante pede, recebe os resultados de uma sessão (números agregados, respostas
-            abertas e comentários da pesquisa). Nomes, e-mails e telefones de participantes nunca são enviados por essas
+            abertas, perguntas da plateia sem o nome de quem perguntou e comentários da pesquisa). Nomes, e-mails e telefones de participantes nunca são enviados por essas
             ferramentas. O que o assistente faz com esses dados segue a política da empresa dele (por exemplo, Anthropic
             ou OpenAI). O PDF da apresentação anexado no chat fica com o assistente; o PulseStage recebe só as perguntas.
           </p>

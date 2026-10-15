@@ -32,7 +32,7 @@ export const mcpInteractionShape = {
   type: z
     .enum(INTERACTION_TYPES)
     .describe(
-      "multiple_choice = enquete (uma escolha, sem resposta certa); quiz = pergunta com uma resposta certa e pontos; rating = nota numa escala; word_cloud = nuvem de palavras (respostas curtas); open_text = pergunta aberta.",
+      "multiple_choice = enquete (uma escolha, sem resposta certa); quiz = pergunta com uma resposta certa e pontos; rating = nota numa escala; word_cloud = nuvem de palavras (respostas curtas); open_text = pergunta aberta; ranking = a plateia ordena as alternativas por preferência.",
     ),
   question: z.string().trim().min(1).max(300).describe("Texto da pergunta, como a plateia vai ler."),
   description: z.string().trim().max(1000).optional().describe("Texto de apoio opcional, abaixo da pergunta."),
@@ -41,7 +41,7 @@ export const mcpInteractionShape = {
     .min(2)
     .max(8)
     .optional()
-    .describe("Alternativas (obrigatório em multiple_choice, de 2 a 8, e quiz, de 2 a 6)."),
+    .describe("Alternativas (obrigatório em multiple_choice e ranking, de 2 a 8, e quiz, de 2 a 6)."),
   correct_option: z
     .number()
     .int()
@@ -125,6 +125,9 @@ export function toInteractionInput(item: McpInteraction): Converted {
         type: item.type,
         settings: { maxLength: item.max_length ?? 280, showOnDisplay: item.show_on_display ?? true },
       };
+      break;
+    case "ranking":
+      raw = { ...base, type: item.type, settings: {}, options: (item.options ?? []).map((label) => ({ label })) };
       break;
   }
   const parsed = interactionInputSchema.safeParse(raw);
@@ -249,6 +252,8 @@ Fluxo recomendado quando a pessoa anexar uma apresentação (PDF) no chat:
 2. Proponha um roteiro curto antes de gravar: para cada pergunta, o tipo, o texto, as alternativas e depois de qual slide ela entra (numeração das páginas do PDF). Espere a confirmação.
 3. Crie a sessão com create_session (ou use uma existente) e grave tudo de uma vez com add_interactions, informando after_slide.
 4. Diga à pessoa para abrir o link da aba Slides e enviar o mesmo PDF: as perguntas já aparecem nos lugares certos.
+
+Ranking serve para a plateia ordenar prioridades (3 a 5 alternativas). Durante a sessão, a plateia também pode mandar perguntas ao palestrante e reagir com emojis; isso é ligado na própria sessão (não precisa criar).
 
 Boas práticas: uma interação a cada 5 a 8 slides (cerca de 1 a cada 5 a 10 minutos); abrir com algo leve (enquete ou nuvem sobre a experiência da plateia); quiz logo depois de um conteúdo explicado, com distratores plausíveis; escala para medir confiança ou concordância; terminar com pergunta aberta ou nuvem. Perguntas curtas, que caibam no celular. Não invente dados que não estão nos slides.
 

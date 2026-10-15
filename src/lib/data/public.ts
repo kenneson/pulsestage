@@ -121,11 +121,15 @@ export async function getCurrentForParticipant(
   sessionId: string,
   participantId: string,
 ): Promise<CurrentInteractionResponse> {
-  const state = await getLiveState(admin, sessionId);
-  if (!state) return { status: "draft", interaction: null, answered: false };
+  const [state, flags] = await Promise.all([
+    getLiveState(admin, sessionId),
+    admin.from("sessions").select("qa_enabled, reactions_enabled").eq("id", sessionId).maybeSingle(),
+  ]);
+  const features = { questions: Boolean(flags.data?.qa_enabled), reactions: Boolean(flags.data?.reactions_enabled) };
+  if (!state) return { status: "draft", interaction: null, answered: false, features };
 
   if (state.status !== "live" || !state.active_interaction_id) {
-    return { status: state.status, interaction: null, answered: false };
+    return { status: state.status, interaction: null, answered: false, features };
   }
 
   const interaction = await getPublicInteraction(admin, state.active_interaction_id);
@@ -136,7 +140,7 @@ export async function getCurrentForParticipant(
     .eq("participant_id", participantId);
   if (error) throw new Error(error.message);
 
-  return { status: state.status, interaction, answered: (count ?? 0) > 0 };
+  return { status: state.status, interaction, answered: (count ?? 0) > 0, features };
 }
 
 export type PublicSurvey = { name: string; questions: SurveyQuestion[] };

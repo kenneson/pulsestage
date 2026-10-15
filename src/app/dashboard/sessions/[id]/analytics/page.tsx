@@ -38,6 +38,9 @@ import { PulseChart } from "@/components/analytics/pulse-chart";
 import { OpenTextList } from "@/components/analytics/open-text-list";
 import { InsightsPanel, type InsightView } from "@/components/analytics/insights-panel";
 import { SurveyQuestionResults, SurveyScorecard } from "@/components/analytics/survey-report";
+import { AudienceQuestionsReport, ReactionsReport, type ReactionPeakView } from "@/components/analytics/engagement-report";
+import { listSessionQuestions, loadReactions } from "@/lib/data/engagement";
+import { reactionPeaks, reactionsPerMinute, tallyReactions } from "@/lib/domain/reactions";
 
 export const metadata: Metadata = { title: "Analytics da sessão" };
 
@@ -70,11 +73,26 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
   const ranking = quizRanking(responses.filter((r) => quizIds.has(r.interaction_id)), participants);
   const lowSample = confidenceFromSample(survey.count) === "low";
 
-  const [timelineData, slideUrls] = await Promise.all([
+  const [timelineData, slideUrls, audienceQuestions, reactionRows] = await Promise.all([
     getTimelineEvents(supabase, session, interactionsWithOptions),
     getSlideUrls(supabase, session),
+    listSessionQuestions(supabase, id),
+    loadReactions(supabase, id),
   ]);
   const timeline = buildTimeline(timelineData.events, session.ended_at ?? new Date().toISOString());
+  // Picos de reação com o que estava no telão naquele minuto (pela linha do tempo).
+  const reactionPeakViews: ReactionPeakView[] = reactionPeaks(reactionsPerMinute(reactionRows, session.started_at)).map((p) => {
+    const at = p.minute * 60 + 30;
+    const segment = timeline?.segments.find((s) => s.start <= at && at < s.end);
+    const interaction = segment?.interactionId ? interactionsWithOptions.find((i) => i.id === segment.interactionId) : undefined;
+    const label =
+      segment?.kind === "slide" && segment.slide !== undefined
+        ? `Slide ${segment.slide + 1}`
+        : interaction
+          ? interaction.title
+          : null;
+    return { ...p, label };
+  });
   const timelineMeta: Record<string, TimelineInteractionMeta> = Object.fromEntries(
     interactionsWithOptions.map((i, index) => [
       i.id,
@@ -313,6 +331,13 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
             </ol>
           </CardContent>
         </Card>
+      ) : null}
+
+      {audienceQuestions.length > 0 || reactionRows.length > 0 ? (
+        <div className="grid gap-4 lg:grid-cols-2">
+          {audienceQuestions.length > 0 ? <AudienceQuestionsReport questions={audienceQuestions} /> : null}
+          {reactionRows.length > 0 ? <ReactionsReport tally={tallyReactions(reactionRows)} peaks={reactionPeakViews} /> : null}
+        </div>
       ) : null}
 
       {surveyResults.length > 0 ? (

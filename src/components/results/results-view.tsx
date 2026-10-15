@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ShapeGlyph, shapeBg, shapeText } from "@/components/option-shape";
 import { optionImageSrc } from "@/lib/option-images/url";
 import { WordCloud } from "./word-cloud";
+import { rankingResults } from "@/lib/domain/ranking";
 
 type Variant = "compact" | "display";
 
@@ -101,6 +102,42 @@ function OpenTexts({ snapshot, variant }: { snapshot: ResultsSnapshot; variant: 
   );
 }
 
+/** Ranking: alternativas da preferida para a menos preferida, com a posição média. */
+function RankingResults({ interaction, snapshot, variant }: { interaction: PublicInteraction; snapshot: ResultsSnapshot; variant: Variant }) {
+  if (snapshot.total === 0) return <Waiting variant={variant} />;
+  const big = variant === "display";
+  const rows = rankingResults(interaction.options, snapshot);
+  return (
+    <ol className={cn("flex flex-col", big ? "gap-5" : "gap-3")}>
+      {rows.map((row, index) => (
+        <li key={row.key} className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-1.5">
+          <span
+            className={cn(
+              "row-span-2 grid place-items-center rounded-full font-display font-bold tabular-nums",
+              big ? "size-16 text-3xl" : "size-8 text-sm",
+              index === 0 ? "bg-primary text-primary-foreground" : "bg-muted",
+            )}
+          >
+            {index + 1}º
+          </span>
+          <div className={cn("flex items-baseline justify-between gap-4", big ? "text-3xl" : "text-sm")}>
+            <span className="min-w-0 font-medium">{row.label}</span>
+            <span className={cn("shrink-0 tabular-nums text-muted-foreground", big ? "text-2xl" : "text-xs")}>
+              posição média {formatScore(row.averagePosition)}
+            </span>
+          </div>
+          <div className={cn("w-full overflow-hidden rounded-full bg-muted", big ? "h-5" : "h-2")}>
+            <div
+              className={cn("h-full rounded-full transition-[width] duration-700 ease-out", index === 0 ? "bg-primary" : "bg-foreground/35")}
+              style={{ width: `${Math.round(row.share * 100)}%` }}
+            />
+          </div>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 function Waiting({ variant }: { variant: Variant }) {
   return (
     <p className={cn("py-6 text-center text-muted-foreground", variant === "display" ? "text-3xl" : "text-sm")}>
@@ -167,5 +204,7 @@ export function ResultsView({
         );
       }
       return <OpenTexts snapshot={snapshot} variant={variant} />;
+    case "ranking":
+      return <RankingResults interaction={interaction} snapshot={snapshot} variant={variant} />;
   }
 }

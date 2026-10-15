@@ -13,11 +13,12 @@ const SECTIONS = [
   { id: "slides", title: "3. Apresentar com seus slides" },
   { id: "ao-vivo", title: "4. Apresentar ao vivo" },
   { id: "participantes", title: "5. O que a audiência vê" },
-  { id: "encerrar", title: "6. Encerrar e aplicar a pesquisa" },
-  { id: "sorteio", title: "7. Fazer um sorteio" },
-  { id: "analytics", title: "8. Analisar os resultados" },
-  { id: "perfil-publico", title: "9. Perfil público e convites" },
-  { id: "assistentes", title: "10. Criar perguntas com o Claude ou o ChatGPT" },
+  { id: "participacao", title: "6. Perguntas da plateia, reações e moderação" },
+  { id: "encerrar", title: "7. Encerrar e aplicar a pesquisa" },
+  { id: "sorteio", title: "8. Fazer um sorteio" },
+  { id: "analytics", title: "9. Analisar os resultados" },
+  { id: "perfil-publico", title: "10. Perfil público e convites" },
+  { id: "assistentes", title: "11. Criar perguntas com o Claude ou o ChatGPT" },
   { id: "dicas", title: "Dicas" },
 ];
 
@@ -96,6 +97,10 @@ export default function GuidePage() {
                 <strong>Quiz:</strong> marque a alternativa correta, defina os pontos e, se quiser, o tempo para
                 responder. Gera ranking. Com tempo definido, o <strong>“Bônus de velocidade”</strong> dá os pontos cheios
                 a quem acerta na hora e a metade a quem acerta no fim do tempo.
+              </li>
+              <li>
+                <strong>Ranking:</strong> a plateia ordena as alternativas da preferida para a menos preferida, tocando
+                nelas em ordem. O resultado mostra a ordem do grupo e a posição média de cada alternativa.
               </li>
             </ul>
             <p>
@@ -202,7 +207,39 @@ export default function GuidePage() {
             </ul>
           </Section>
 
-          <Section id="encerrar" title="6. Encerrar e aplicar a pesquisa">
+          <Section id="participacao" title="6. Perguntas da plateia, reações e moderação">
+            <p>
+              Na aba <strong>“Participação”</strong> da sessão (e no card <strong>“Participação”</strong> da sala ao
+              vivo) você liga ou desliga cada recurso. Tudo começa ligado, menos as aprovações.
+            </p>
+            <ul className="flex flex-col gap-1">
+              <li>
+                <strong>Perguntas da plateia:</strong> no celular aparece <strong>“Perguntar ao palestrante”</strong>. A
+                pessoa escreve, escolhe se mostra o nome e curte as perguntas dos outros. Na sala ao vivo, o card{" "}
+                <strong>“Perguntas da plateia”</strong> lista as mais curtidas: <strong>“Destacar”</strong> põe uma no
+                telão, <strong>“Mostrar no telão”</strong> mostra as mais curtidas, <strong>“Respondida”</strong> tira da
+                fila e <strong>“Ocultar”</strong> esconde. Com <strong>“Aprovar perguntas antes de aparecerem”</strong>,
+                as novas esperam em <strong>“Aguardando”</strong> até você aprovar.
+              </li>
+              <li>
+                <strong>Reações ao vivo:</strong> 👏 ❤️ 😂 😮 🤔 ficam no rodapé do celular durante a sessão. Os emojis
+                sobem no telão e o total aparece na sala ao vivo. No analytics, você vê os minutos com mais reações.
+              </li>
+              <li>
+                <strong>Filtro de palavrões:</strong> nuvem de palavras, respostas abertas e perguntas com palavrões não
+                vão ao telão. Quem enviou não é avisado (para não tentar burlar). Você vê o que foi barrado e pode liberar.
+              </li>
+              <li>
+                <strong>Moderação ao vivo:</strong> numa nuvem de palavras, abra <strong>“Moderar palavras”</strong> e
+                clique no × para tirar uma palavra do telão (os próximos envios dela também ficam de fora). Numa pergunta
+                aberta, <strong>“Moderar respostas”</strong> oculta respostas; com{" "}
+                <strong>“Aprovar respostas abertas antes do telão”</strong>, cada uma espera o seu{" "}
+                <strong>“Aprovar”</strong>.
+              </li>
+            </ul>
+          </Section>
+
+          <Section id="encerrar" title="7. Encerrar e aplicar a pesquisa">
             <p>
               Ao final, clique em <strong>“Encerrar sessão”</strong>. Os celulares mostram o link da pesquisa e o
               projetor exibe um QR Code para ela. Deixe essa tela no ar por um minuto.
@@ -221,7 +258,7 @@ export default function GuidePage() {
             </p>
           </Section>
 
-          <Section id="sorteio" title="7. Fazer um sorteio">
+          <Section id="sorteio" title="8. Fazer um sorteio">
             <p>
               Opcional. Na página da sessão, abra a aba <strong>“Sorteio”</strong>, marque{" "}
               <strong>“Fazer sorteio nesta sessão”</strong> e escolha <strong>“Quem concorre”</strong>:
@@ -255,7 +292,7 @@ export default function GuidePage() {
             </p>
           </Section>
 
-          <Section id="analytics" title="8. Analisar os resultados">
+          <Section id="analytics" title="9. Analisar os resultados">
             <p>
               No <strong>analytics da sessão</strong> você encontra:
             </p>
@@ -301,7 +338,7 @@ export default function GuidePage() {
             </p>
           </Section>
 
-          <Section id="perfil-publico" title="9. Perfil público e convites">
+          <Section id="perfil-publico" title="10. Perfil público e convites">
             <p>
               Em <strong>“Perfil público”</strong>, no menu, você monta um portfólio com números que o PulseStage confere:
               sessões realizadas, pessoas na plateia e a nota da pesquisa (0 a 10). Conta só a sessão encerrada com pelo
@@ -338,7 +375,7 @@ export default function GuidePage() {
             </p>
           </Section>
 
-          <Section id="assistentes" title="10. Criar perguntas com o Claude ou o ChatGPT">
+          <Section id="assistentes" title="11. Criar perguntas com o Claude ou o ChatGPT">
             <p>
               Com a apresentação pronta, um assistente de IA pode montar as perguntas para você. Abra{" "}
               <Link href="/dashboard/integracoes" className="font-medium text-primary hover:underline">

@@ -24,6 +24,10 @@ import { MAX_PARTICIPANTS_PER_SESSION, normalizeJoinCode } from "@/lib/domain/se
 import { normalizeTerm } from "@/lib/domain/words";
 import { parseSurveyAnswers } from "@/lib/domain/survey";
 import { avatarKeySchema, quizPoints } from "@/lib/domain/gamification";
+import { bordaPoints, isValidRanking } from "@/lib/domain/ranking";
+import { containsProfanity } from "@/lib/domain/profanity";
+import { askQuestionSchema, QUESTION_LIMIT, QUESTION_WINDOW_MS } from "@/lib/domain/questions";
+import { allowReaction, reactionKindSchema } from "@/lib/domain/reactions";
 import { fail, firstIssue, formValues, isUuid, ok, type ActionResult } from "@/lib/action-result";
 
 // ---------------------------------------------------------------------------
@@ -96,7 +100,13 @@ export async function joinSessionAction(code: string, _prev: JoinFormState, form
 
 export type AnswerResult = ActionResult<{ status: "recorded" }>;
 
-type BuiltResponse = { ok: true; value: Json; aggregateKey: string | null } | { ok: false; error: string; code?: string };
+type Moderation = "visible" | "pending" | "hidden";
+
+type BuiltResponse =
+  | { ok: true; value: Json; aggregateKey: string | null; moderation: Moderation; filtered?: boolean }
+  | { ok: false; error: string; code?: string };
+
+type SessionRules = { profanityFilter: boolean; moderateOpenText: boolean };
 
 async function loadOption(admin: AdminSupabase, interactionId: string, optionId: string) {
   const { data } = await admin
@@ -113,6 +123,7 @@ async function buildResponse(
   admin: AdminSupabase,
   interaction: InteractionRow,
   payload: AnswerPayload,
+  rules: SessionRules,
 ): Promise<BuiltResponse> {
   if (!isInteractionType(interaction.type) || payload.type !== interaction.type) {
     return { ok: false, error: "Tipo de resposta inválido." };
@@ -123,7 +134,7 @@ async function buildResponse(
     case "multiple_choice": {
       const option = await loadOption(admin, interaction.id, payload.optionId);
       if (!option) return { ok: false, error: "Alternativa inválida." };
-      return { ok: true, value: { optionId: option.id }, aggregateKey: option.id };
+      return { ok: true, value: { optionId: option.id }, aggregateKey: option.id, moderation: "visible" };
     }
     case "quiz": {
       const option = await loadOption(admin, interaction.id, payload.optionId);
@@ -144,23 +155,51 @@ async function buildResponse(
           responseTimeMs,
         },
         aggregateKey: option.id,
+        moderation: "visible",
       };
     }
     case "rating": {
       if (payload.value < settings.min || payload.value > settings.max) {
         return { ok: false, error: "Nota fora da escala." };
       }
-      return { ok: true, value: { value: payload.value }, aggregateKey: String(payload.value) };
+      return { ok: true, value: { value: payload.value }, aggregateKey: String(payload.value), moderation: "visible" };
     }
     case "word_cloud": {
       if (payload.text.length > settings.maxLength) return { ok: false, error: "Resposta muito longa." };
       const normalized = normalizeTerm(payload.text);
       if (!normalized) return { ok: false, error: "Tente uma palavra mais específica." };
-      return { ok: true, value: { text: payload.text, normalized }, aggregateKey: normalized };
+      const value = { text: payload.text, normalized };
+      // Palavrão: entra oculto (o palestrante vê e pode liberar). Sem aviso, para não ensinar a burlar.
+      if (rules.profanityFilter && containsProfanity(payload.text)) {
+        return { ok: true, value, aggregateKey: normalized, moderation: "hidden", filtered: true };
+      }
+      // Palavra que o palestrante ocultou da nuvem continua oculta.
+      const { count } = await admin
+        .from("responses")
+        .select("id", { count: "exact", head: true })
+        .eq("interaction_id", interaction.id)
+        .eq("aggregate_key", normalized)
+        .eq("moderation", "hidden");
+      return { ok: true, value, aggregateKey: normalized, moderation: (count ?? 0) > 0 ? "hidden" : "visible" };
     }
     case "open_text": {
       if (payload.text.length > settings.maxLength) return { ok: false, error: "Resposta muito longa." };
-      return { ok: true, value: { text: payload.text }, aggregateKey: null };
+      const value = { text: payload.text };
+      if (rules.profanityFilter && containsProfanity(payload.text)) {
+        return { ok: true, value, aggregateKey: null, moderation: "hidden", filtered: true };
+      }
+      return { ok: true, value, aggregateKey: null, moderation: rules.moderateOpenText ? "pending" : "visible" };
+    }
+    case "ranking": {
+      const { data: options } = await admin.from("interaction_options").select("id").eq("interaction_id", interaction.id);
+      const ids = (options ?? []).map((o) => o.id);
+      if (!isValidRanking(payload.order, ids)) return { ok: false, error: "Ordene todas as alternativas." };
+      return {
+        ok: true,
+        value: { order: payload.order, points: bordaPoints(payload.order) },
+        aggregateKey: null,
+        moderation: "visible",
+      };
     }
   }
 }
@@ -188,7 +227,15 @@ export async function submitAnswerAction(
   if (!interaction) return fail("Interação não encontrada.", "not_found");
   if (!interaction.is_active) return fail("Esta interação foi encerrada.", "closed");
 
-  const built = await buildResponse(admin, interaction, payload.data);
+  const { data: session } = await admin
+    .from("sessions")
+    .select("profanity_filter, moderate_open_text")
+    .eq("id", sessionId)
+    .maybeSingle();
+  const built = await buildResponse(admin, interaction, payload.data, {
+    profanityFilter: session?.profanity_filter ?? true,
+    moderateOpenText: session?.moderate_open_text ?? false,
+  });
   if (!built.ok) return fail(built.error, built.code);
 
   const { error } = await admin.from("responses").insert({
@@ -197,7 +244,8 @@ export async function submitAnswerAction(
     participant_id: participantId,
     value: built.value,
     aggregate_key: built.aggregateKey,
-    metadata: {},
+    moderation: built.moderation,
+    metadata: built.filtered ? { filtered: true } : {},
   });
 
   if (error) {
@@ -271,4 +319,112 @@ export async function submitSurveyAction(
 
   await markFeedbackSent(sessionId);
   return { done: true };
+}
+
+// ---------------------------------------------------------------------------
+// Perguntas da plateia
+// ---------------------------------------------------------------------------
+
+/** Sessão em andamento (ao vivo ou pausada) com perguntas ligadas. */
+async function openForQuestions(admin: AdminSupabase, sessionId: string) {
+  const { data } = await admin
+    .from("sessions")
+    .select("status, qa_enabled, qa_moderated, profanity_filter")
+    .eq("id", sessionId)
+    .maybeSingle();
+  if (!data || !data.qa_enabled || (data.status !== "live" && data.status !== "paused")) return null;
+  return data;
+}
+
+export async function askQuestionAction(sessionId: string, raw: unknown): Promise<ActionResult<{ pending: boolean }>> {
+  if (!isUuid(sessionId)) return fail("Dados inválidos.");
+  const parsed = askQuestionSchema.safeParse(raw);
+  if (!parsed.success) return fail(firstIssue(parsed.error));
+
+  const participantId = await getParticipantIdFromCookie(sessionId);
+  if (!participantId) return fail("Entre na sessão novamente.", "no_participant");
+
+  const admin = createAdminClient();
+  const session = await openForQuestions(admin, sessionId);
+  if (!session) return fail("As perguntas não estão abertas nesta sessão.", "closed");
+
+  const since = new Date(Date.now() - QUESTION_WINDOW_MS).toISOString();
+  const { count } = await admin
+    .from("audience_questions")
+    .select("id", { count: "exact", head: true })
+    .eq("participant_id", participantId)
+    .gte("created_at", since);
+  if ((count ?? 0) >= QUESTION_LIMIT) return fail("Você enviou várias perguntas seguidas. Espere alguns minutos.");
+
+  let author: string | null = null;
+  if (parsed.data.withName) {
+    const { data: me } = await admin.from("participants").select("display_name").eq("id", participantId).maybeSingle();
+    author = me?.display_name ?? null;
+  }
+
+  // Palavrão: fica oculta (o palestrante vê e pode liberar). Para quem perguntou, parece aguardar aprovação.
+  const filtered = session.profanity_filter && containsProfanity(parsed.data.body);
+  const status = filtered ? "hidden" : session.qa_moderated ? "pending" : "visible";
+  const { error } = await admin.from("audience_questions").insert({
+    session_id: sessionId,
+    participant_id: participantId,
+    body: parsed.data.body,
+    author_name: author,
+    status,
+    filtered,
+  });
+  if (error) {
+    if (isForeignKeyViolation(error)) return fail("Entre na sessão novamente.", "no_participant");
+    return fail("Não foi possível enviar a pergunta. Tente de novo.");
+  }
+  return ok({ pending: status !== "visible" });
+}
+
+export async function voteQuestionAction(sessionId: string, questionId: string, vote: boolean): Promise<ActionResult> {
+  if (!isUuid(sessionId) || !isUuid(questionId) || typeof vote !== "boolean") return fail("Dados inválidos.");
+  const participantId = await getParticipantIdFromCookie(sessionId);
+  if (!participantId) return fail("Entre na sessão novamente.", "no_participant");
+
+  const admin = createAdminClient();
+  if (!(await openForQuestions(admin, sessionId))) return fail("As perguntas não estão abertas nesta sessão.", "closed");
+  const { data: question } = await admin
+    .from("audience_questions")
+    .select("id, participant_id, status")
+    .eq("id", questionId)
+    .eq("session_id", sessionId)
+    .maybeSingle();
+  if (!question || question.status !== "visible") return fail("Esta pergunta não está aberta.");
+  if (question.participant_id === participantId) return fail("Você não pode curtir a própria pergunta.");
+
+  const { error } = vote
+    ? await admin.from("audience_question_votes").insert({ question_id: questionId, participant_id: participantId })
+    : await admin.from("audience_question_votes").delete().eq("question_id", questionId).eq("participant_id", participantId);
+  if (error && !isUniqueViolation(error)) return fail("Não foi possível registrar. Tente de novo.");
+  return ok(null);
+}
+
+// ---------------------------------------------------------------------------
+// Reações ao vivo
+// ---------------------------------------------------------------------------
+
+// ponytail: limite em memória, por instância do servidor; mover para o banco se houver abuso.
+const reactionTimes = new Map<string, number[]>();
+
+export async function sendReactionAction(sessionId: string, kind: unknown): Promise<ActionResult> {
+  const parsed = reactionKindSchema.safeParse(kind);
+  if (!isUuid(sessionId) || !parsed.success) return fail("Dados inválidos.");
+  const participantId = await getParticipantIdFromCookie(sessionId);
+  if (!participantId) return fail("Entre na sessão novamente.", "no_participant");
+
+  const allowed = allowReaction(reactionTimes.get(participantId) ?? [], Date.now());
+  if (!allowed) return fail("Calma! Muitas reações seguidas.", "rate_limited");
+  reactionTimes.set(participantId, allowed);
+
+  const admin = createAdminClient();
+  const { data: session } = await admin.from("sessions").select("status, reactions_enabled").eq("id", sessionId).maybeSingle();
+  if (!session || session.status !== "live" || !session.reactions_enabled) return fail("Reações desligadas agora.", "closed");
+
+  const { error } = await admin.from("reactions").insert({ session_id: sessionId, participant_id: participantId, kind: parsed.data });
+  if (error) return fail("Não foi possível reagir.");
+  return ok(null);
 }

@@ -29,8 +29,8 @@ demonstração (`components/landing/stage-demo.tsx`): telão escuro e celular da
 Nuvem de palavras, Quiz e ranking e Sorteio (abas clicáveis, barra de tempo, dados simulados e rotulados; movimento
 reduzido mostra o estado final sem autoplay). Fecha com a ficha do código do participante. Nada de hero dividido.
 
-SECTIONS: fatos do produto (limites e recursos reais: 0 apps, 2.000 pessoas por sessão, 5 tipos, 1 tela), Como
-funciona, Cinco tipos (papéis de revisão), Slides e perguntas numa sequência só, Quiz/ranking/sorteio (gamificação),
+SECTIONS: fatos do produto (limites e recursos reais: 0 apps, 2.000 pessoas por sessão, 6 tipos, 1 tela), Como
+funciona, Seis tipos (papéis de revisão, com Ranking em violeta) + perguntas da plateia, reações e filtro para escolas, Slides e perguntas numa sequência só, Quiz/ranking/sorteio (gamificação),
 Com IA (Claude e ChatGPT via MCP: conversa de exemplo rotulada, `#ia`), Relatório, Para quem, Perguntas frequentes, chamada final na faixa escura ("Sua próxima aula ou palestra começa aqui."). "Para quem": universidades, escolas, empresas e palestrantes.
 
 FORM: Campus (universitário e corporativo, acolhedor para escolas), escolha do dono em 2026-10-12; substitui "Roteiro com deixas".

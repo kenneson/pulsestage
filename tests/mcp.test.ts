@@ -127,3 +127,9 @@ test("positionLabel e toInteractionView", () => {
   ]);
   assert.equal(view.type_label, "Quiz");
 });
+
+test("ranking pelo MCP vira alternativas sem resposta certa", () => {
+  const r = toInteractionInput({ type: "ranking", question: "Ordene as prioridades", options: ["A", "B", "C"], after_slide: 3 });
+  assert.ok(r.ok && r.input.type === "ranking" && r.input.options.length === 3 && r.afterSlide === 3);
+  assert.equal(toInteractionInput({ type: "ranking", question: "Só uma", options: ["A"] }).ok, false);
+});

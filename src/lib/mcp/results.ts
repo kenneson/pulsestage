@@ -4,6 +4,9 @@ import { computeOverview, quizStats } from "@/lib/domain/metrics";
 import { isInteractionType, normalizeSettings, INTERACTION_TYPE_META } from "@/lib/domain/interactions";
 import { ratingStats, snapshotFromResponses, wordList } from "@/lib/domain/results";
 import { sessionClock, talkSeconds } from "@/lib/domain/timing";
+import { rankingResults } from "@/lib/domain/ranking";
+import type { SpeakerQuestion } from "@/lib/data/engagement";
+import type { ReactionTally } from "@/lib/domain/reactions";
 
 // Resumo dos resultados de uma sessão para o assistente analisar. Só números agregados e textos das
 // respostas abertas e da pesquisa; nunca nomes, e-mails ou telefones de quem participou.
@@ -11,7 +14,10 @@ import { sessionClock, talkSeconds } from "@/lib/domain/timing";
 const MAX_TEXTS = 30;
 const round = (n: number | null, digits = 2) => (n === null ? null : Math.round(n * 10 ** digits) / 10 ** digits);
 
-export function summarizeForAssistant(bundle: SessionAnalyticsBundle) {
+export function summarizeForAssistant(
+  bundle: SessionAnalyticsBundle,
+  extras: { questions: SpeakerQuestion[]; reactions: ReactionTally },
+) {
   const { session } = bundle;
   const overview = computeOverview(bundle);
   const seconds = talkSeconds(sessionClock(session), Date.now());
@@ -59,6 +65,15 @@ export function summarizeForAssistant(bundle: SessionAnalyticsBundle) {
           return { ...base, top_words: wordList(snapshot, 20) };
         case "open_text":
           return { ...base, answers: snapshot.recent.slice(0, MAX_TEXTS).map((e) => e.text) };
+        case "ranking":
+          return {
+            ...base,
+            ranking: rankingResults(options.map((o) => ({ id: o.id, label: o.label })), snapshot).map((r, index) => ({
+              position: index + 1,
+              option: r.label,
+              average_position: r.averagePosition,
+            })),
+          };
       }
     });
 
@@ -91,5 +106,12 @@ export function summarizeForAssistant(bundle: SessionAnalyticsBundle) {
       comments,
     },
     interactions,
+    // Perguntas da plateia sem nome de quem perguntou (só o texto, curtidas e se foi respondida).
+    audience_questions: extras.questions
+      .filter((q) => q.status !== "hidden")
+      .sort((a, b) => b.upvotes - a.upvotes)
+      .slice(0, 50)
+      .map((q) => ({ question: q.body, upvotes: q.upvotes, answered: q.status === "answered" })),
+    reactions: extras.reactions,
   };
 }
