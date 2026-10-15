@@ -1,1 +1,354 @@
-{}
+{
+  "meta": {
+    "title": "PulseStage: aulas, palestras e treinamentos com todo mundo participando",
+    "description": "Enquetes, quiz, nuvem de palavras e sorteio respondidos pelo celular, com o resultado no telão em segundos e seus slides na mesma tela. Para universidades, escolas e empresas."
+  },
+  "nav": {
+    "howItWorks": "Como funciona",
+    "features": "Recursos",
+    "withAi": "Com IA",
+    "speakers": "Palestrantes",
+    "signIn": "Entrar",
+    "signUp": "Criar conta grátis"
+  },
+  "hero": {
+    "title": "Aulas, palestras e treinamentos com <mark>todo mundo participando</mark>.",
+    "lead": "Enquetes, quiz, nuvem de palavras e sorteio respondidos pelo celular, com o resultado no telão em segundos e seus slides na mesma tela. Para universidades, escolas e empresas. Depois, um relatório mostra o que funcionou para a próxima ser ainda melhor.",
+    "cta": "Criar minha sessão grátis",
+    "beta": "Grátis durante o beta, sem cartão · <link>já tenho conta</link>",
+    "facts": {
+      "qr": "Alunos e participantes entram pelo QR Code, sem app e sem cadastro",
+      "slides": "Seus slides e as perguntas numa sequência só, no mesmo passador",
+      "quiz": "Quiz com ranking, sorteio de prêmios e relatório com IA no fim"
+    },
+    "joinPrompt": "Vai participar de uma aula ou palestra? Digite o código que aparece na tela."
+  },
+  "facts": {
+    "ariaLabel": "O PulseStage em números do produto",
+    "apps": "apps para a plateia instalar",
+    "participants": "pessoas por sessão",
+    "types": "tipos de pergunta para misturar",
+    "screen": "tela para slides e perguntas"
+  },
+  "steps": {
+    "title": "Como funciona",
+    "lead": "Três passos, do cadastro ao relatório. Você continua apresentando do seu jeito.",
+    "create": {
+      "title": "Crie a sessão",
+      "text": "Cadastre sua palestra ou aula e escreva as perguntas na ordem em que vai usá-las. Leva poucos minutos."
+    },
+    "join": {
+      "title": "A plateia entra pelo celular",
+      "text": "Mostre o QR Code ou o código na tela. Cada pessoa responde do próprio celular, sem instalar nada e sem criar conta."
+    },
+    "learn": {
+      "title": "Veja e aprenda",
+      "text": "Os resultados aparecem ao vivo na tela. No fim, o público avalia a sessão e você recebe um relatório."
+    }
+  },
+  "questionTypes": {
+    "title": "Seis tipos de pergunta, e a plateia com voz o tempo todo",
+    "lead": "Misture os formatos ao longo da apresentação. Cada tipo tem a sua cor, no seu painel e na tela do projetor.",
+    "example": "Ex.: “{text}”",
+    "multiple_choice": {
+      "text": "Uma escolha entre alternativas. Boa para abrir a sessão e conhecer quem está na sala.",
+      "example": "Você já usa IA no seu trabalho?"
+    },
+    "rating": {
+      "text": "Uma nota entre dois extremos, como de 1 a 5.",
+      "example": "De 1 a 5, quanto isso se aplica ao seu dia?"
+    },
+    "word_cloud": {
+      "text": "Respostas curtas agrupadas: as palavras mais repetidas crescem na tela.",
+      "example": "Uma palavra para o seu momento profissional."
+    },
+    "open_text": {
+      "text": "Resposta livre. Você lê tudo no seu painel e escolhe o que comentar.",
+      "example": "O que você quer me perguntar?"
+    },
+    "quiz": {
+      "text": "Pergunta com resposta certa, pontos, tempo opcional e ranking dos participantes.",
+      "example": "Qual destes é um modelo de linguagem?"
+    },
+    "ranking": {
+      "text": "A plateia ordena as alternativas por prioridade, tocando nelas em ordem. O telão mostra a ordem do grupo.",
+      "example": "Ordene o que mais importa no seu trabalho."
+    }
+  },
+  "audienceTools": {
+    "questions": {
+      "title": "Perguntas da plateia",
+      "text": "Qualquer um pergunta pelo celular, anônimo ou com nome, e curte as dos outros. Você leva a mais votada ao telão."
+    },
+    "reactions": {
+      "title": "Reações ao vivo",
+      "text": "👏 ❤️ 😂 😮 🤔 a qualquer momento. Os emojis sobem no telão e mostram onde a palestra empolgou."
+    },
+    "safe": {
+      "title": "Seguro para escolas",
+      "text": "Filtro de palavrões e aprovação antes do telão para respostas abertas, nuvem e perguntas."
+    }
+  },
+  "slides": {
+    "title": "Seus slides e suas perguntas numa sequência só",
+    "lead": "Nada de trocar de janela no meio da palestra. Você apresenta pelo PulseStage e a interação entra no momento certo.",
+    "points": {
+      "pdf": "Envie o PDF exportado do PowerPoint, Google Slides, Keynote ou Canva. O arquivo é convertido no seu navegador.",
+      "drag": "Arraste cada pergunta para o ponto exato da apresentação em que ela deve entrar.",
+      "clicker": "No palco, o passador ou a seta do teclado avança tudo: slide, pergunta, resultado, próximo slide.",
+      "live": "Surgiu uma dúvida na sala? Crie uma pergunta nova durante a palestra e lance na hora."
+    },
+    "deckLabel": "Exemplo de sequência da apresentação",
+    "deck": {
+      "opening": "Abertura",
+      "whatChanges": "O que muda",
+      "inPractice": "Na prática",
+      "risks": "Riscos",
+      "nextSteps": "Próximos passos",
+      "thanks": "Obrigado!",
+      "pollQuestion": "Você já usa IA no trabalho?",
+      "cloudType": "Nuvem",
+      "cloudQuestion": "Uma palavra para o seu momento",
+      "quizQuestion": "Qual destes é um modelo de linguagem?"
+    },
+    "slideNumber": "Slide {n}",
+    "question": "Pergunta",
+    "advance": "<kbd>→</kbd> ou o passador avança",
+    "reorder": "arraste as perguntas para mudar a ordem"
+  },
+  "game": {
+    "title": "Quiz, ranking e sorteio: a sala inteira quer jogar",
+    "lead": "Recursos de jogo para a plateia participar do começo ao fim, e um sorteio para fechar a palestra em clima de festa.",
+    "quizQuestion": "Qual destes é um modelo de linguagem?",
+    "correct": "Certa! +{points} pontos",
+    "onPhone": "No celular da plateia · exemplo",
+    "leaderboard": "Ranking do quiz",
+    "place": "{n}º",
+    "onScreen": "No telão · exemplo",
+    "drawing": "Sorteando: {prize}",
+    "prize": "Livro autografado",
+    "winner": "{name} · Parabéns!",
+    "points": {
+      "avatars": {
+        "title": "Avatares",
+        "text": "Cada pessoa escolhe um bichinho ao entrar e aparece com ele no ranking."
+      },
+      "shapes": {
+        "title": "Formas e cores",
+        "text": "Alternativas no estilo dos jogos de quiz, com forma, cor e até imagem."
+      },
+      "speed": {
+        "title": "Bônus de velocidade",
+        "text": "No quiz com tempo, quem acerta primeiro leva mais pontos."
+      },
+      "leaderboard": {
+        "title": "Ranking animado",
+        "text": "O telão mostra quem subiu e quem caiu depois de cada pergunta."
+      },
+      "raffle": {
+        "title": "Sorteio de prêmios",
+        "text": "Roleta de números com suspense, som e confete. Físico ou digital."
+      },
+      "survey": {
+        "title": "Incentivo à pesquisa",
+        "text": "Se quiser, só concorre ao sorteio quem responde a pesquisa no fim."
+      }
+    }
+  },
+  "ai": {
+    "title": "Monte as perguntas conversando com o Claude ou o ChatGPT",
+    "lead": "Já tem a apresentação pronta? Conecte o PulseStage ao seu assistente de IA, anexe os slides e peça as interações. Ele cria a sessão com cada pergunta no ponto certo da apresentação.",
+    "points": {
+      "slides": {
+        "title": "Seus slides viram roteiro",
+        "text": "Anexe o PDF da apresentação no chat. O assistente lê os slides e sugere a pergunta certa para cada momento."
+      },
+      "placement": {
+        "title": "Cada pergunta no lugar certo",
+        "text": "As perguntas já chegam marcadas com o slide em que entram. Envie o mesmo PDF na sessão e está tudo encaixado."
+      },
+      "approval": {
+        "title": "Você aprova antes",
+        "text": "O assistente mostra a proposta e só grava quando você confirmar. Depois, ajuste no PulseStage como sempre."
+      },
+      "analysis": {
+        "title": "Análise depois da palestra",
+        "text": "Peça um balanço da sessão: o assistente lê os resultados e a pesquisa, sem nomes nem contatos da plateia."
+      }
+    },
+    "compat": "Funciona com o Claude, o ChatGPT e outros assistentes compatíveis com MCP (Model Context Protocol). Você conecta uma vez, pelo painel, em Integrações.",
+    "fileName": "ia-na-escola.pdf",
+    "pages": "{count, plural, one {# página} other {# páginas}}",
+    "request": "Crie no PulseStage as interações desta palestra de 50 minutos para professores.",
+    "proposal": "Proposta para os seus slides:",
+    "afterSlide": "Depois do slide {n}",
+    "atEnd": "No fim",
+    "plan": {
+      "cloud": "Em uma palavra: o que você espera da IA na escola?",
+      "quiz": "O que é um modelo de linguagem?",
+      "scale": "Quanto você se sente pronto para usar IA em aula?",
+      "open": "Que dúvida ficou?"
+    },
+    "confirmQuestion": "Posso gravar?",
+    "confirmAnswer": "Pode!",
+    "saved": "PulseStage · {count, plural, one {# pergunta gravada} other {# perguntas gravadas}} na sessão",
+    "caption": "Exemplo de conversa com um assistente de IA"
+  },
+  "report": {
+    "title": "Depois: o relatório da sessão",
+    "lead": "Ao encerrar, a plateia responde uma pesquisa pelo celular. Você vê seus pontos fortes e fracos, onde o público mais participou, quanto tempo ficou em cada slide e sugestões da IA para a próxima vez. Tudo exportável em PDF e planilha.",
+    "note": "Os números medem participação, não atenção. E cada sugestão da IA mostra em quantas respostas se baseia: quanto menos respostas, mais fraco o sublinhado.",
+    "heading": "Relatório: “{title}”",
+    "sampleTitle": "IA no trabalho",
+    "simulated": "exemplo com dados simulados",
+    "chartTitle": "Participação em cada pergunta",
+    "chartAria": "Participação por pergunta: {values}",
+    "minute": "{minute} min",
+    "suggestions": "Sugestões da IA",
+    "notes": {
+      "cloud": "A nuvem de palavras teve a maior participação da sessão. Repita o formato no meio da próxima.",
+      "quiz": "A participação caiu no quiz dos 25 minutos. Os 20 segundos de tempo podem ter sido curtos.",
+      "comments": "Alguns comentários pedem mais exemplos práticos. Vale confirmar na próxima sessão."
+    },
+    "confidence": {
+      "high": "confiança alta",
+      "medium": "confiança média",
+      "low": "confiança baixa"
+    },
+    "responses": "{count, plural, one {# resposta} other {# respostas}}",
+    "comments": "{count, plural, one {# comentário} other {# comentários}}",
+    "rating": "Avaliação do público"
+  },
+  "audiences": {
+    "title": "Da sala de aula ao auditório",
+    "lead": "Funciona em sala de aula, auditório, reunião ou treinamento, presencial ou online com tela compartilhada.",
+    "universities": {
+      "who": "Universidades e faculdades",
+      "text": "Aulas expositivas com a turma inteira participando, verificação de entendimento em tempo real e avaliação da disciplina no fim."
+    },
+    "schools": {
+      "who": "Escolas: fundamental e médio",
+      "text": "Quiz com ranking, avatares e sorteio deixam a revisão divertida. Os alunos respondem pelo celular, sem criar conta e com o nome que quiserem."
+    },
+    "companies": {
+      "who": "Empresas e treinamentos",
+      "text": "Treinamentos, onboarding e reuniões gerais com a opinião de todos em segundos e um relatório pronto para o RH."
+    },
+    "events": {
+      "who": "Palestrantes e eventos",
+      "text": "Quebre o gelo na abertura, puxe a plateia no meio e descubra depois o que realmente marcou."
+    }
+  },
+  "faq": {
+    "title": "Perguntas frequentes",
+    "lead": "O essencial antes de usar na sua próxima apresentação.",
+    "items": {
+      "app": {
+        "q": "A plateia precisa baixar algum aplicativo?",
+        "a": "Não. As pessoas apontam a câmera do celular para o QR Code ou digitam o código no navegador. Não precisam de conta, e o nome é opcional."
+      },
+      "price": {
+        "q": "Quanto custa?",
+        "a": "Nada durante o beta. Você cria sua conta com Google ou e-mail e usa todos os recursos, sem cartão de crédito."
+      },
+      "slides": {
+        "q": "Funciona junto com meus slides?",
+        "a": "Sim. Envie o PDF da apresentação e apresente pelo PulseStage: slides e perguntas ficam na mesma sequência e o passador avança tudo, sem trocar de janela. Animações e vídeos dos slides não são mantidos; se precisar deles, apresente pelo seu programa e alterne para a tela de resultados na hora de cada pergunta."
+      },
+      "raffle": {
+        "q": "Como funciona o sorteio?",
+        "a": "Você cadastra os prêmios e escolhe quem concorre: todos que entraram ou só quem respondeu a pesquisa no fim. Cada pessoa recebe um número no celular. O ganhador é escolhido pelo servidor e revelado no telão com animação; a mensagem do prêmio, como um cupom, aparece só no celular de quem ganhou."
+      },
+      "questions": {
+        "q": "A plateia pode mandar perguntas durante a palestra?",
+        "a": "Sim. Pelo celular, a qualquer momento, anônima ou com nome. Os outros curtem as perguntas que também querem ver respondidas, e você destaca a mais votada no telão, marca como respondida ou oculta. Se preferir, aprove cada pergunta antes de ela aparecer."
+      },
+      "schools": {
+        "q": "É seguro usar com alunos de escola?",
+        "a": "Sim. O filtro de palavrões vem ligado: nuvem de palavras, respostas abertas e perguntas com palavrões não vão ao telão, e você pode liberar se for engano. Também dá para aprovar as respostas abertas antes de elas aparecerem e tirar qualquer palavra da nuvem na hora."
+      },
+      "assistants": {
+        "q": "Funciona com o Claude ou o ChatGPT?",
+        "a": "Sim. O PulseStage tem um servidor MCP: você conecta sua conta ao Claude, ao ChatGPT ou a outro assistente compatível, anexa os slides no chat e pede as perguntas. O assistente cria a sessão e coloca cada pergunta depois do slide certo. Ele não inicia a sessão ao vivo; isso continua com você."
+      },
+      "capacity": {
+        "q": "Quantas pessoas podem participar?",
+        "a": "Até {max} participantes por sessão. Cada pessoa responde uma vez por pergunta."
+      },
+      "export": {
+        "q": "Consigo levar os resultados para fora?",
+        "a": "Sim. Cada sessão gera um relatório em PDF e exporta as respostas e a pesquisa em planilha (CSV). Você também pode duplicar uma sessão para repetir a palestra."
+      },
+      "data": {
+        "q": "E os dados de quem participa?",
+        "a": "A participação pode ser anônima. Contato só é guardado com autorização e fica separado das respostas. A análise com IA usa apenas dados agregados, nunca nomes ou contatos."
+      }
+    }
+  },
+  "cta": {
+    "title": "Sua próxima aula ou palestra começa aqui.",
+    "lead": "Crie a primeira sessão em poucos minutos, com Google ou e-mail. Grátis durante o beta, sem cartão de crédito.",
+    "primary": "Criar minha sessão grátis",
+    "signIn": "Entrar"
+  },
+  "footer": {
+    "tagline": "PulseStage · interação ao vivo para palestras e aulas",
+    "findSpeaker": "Encontre um palestrante",
+    "privacy": "Privacidade"
+  },
+  "demo": {
+    "ariaLabel": "Demonstração do PulseStage com dados simulados",
+    "scenesLabel": "Cenas da demonstração",
+    "scenes": {
+      "poll": "Enquete",
+      "cloud": "Nuvem de palavras",
+      "quiz": "Quiz e ranking",
+      "raffle": "Sorteio"
+    },
+    "caption": "Telão e celular da plateia · demonstração com dados simulados",
+    "poll": {
+      "question": "Você já usa IA no seu trabalho?",
+      "options": {
+        "daily": "Sim, todo dia",
+        "starting": "Estou começando",
+        "notYet": "Ainda não",
+        "curious": "Só por curiosidade"
+      },
+      "responses": "{count, plural, one {# resposta} other {# respostas}}",
+      "waiting": "Aguardando respostas…",
+      "sent": "Resposta enviada"
+    },
+    "cloud": {
+      "question": "Uma palavra para o seu momento profissional",
+      "words": {
+        "w1": "colaboração",
+        "w2": "foco",
+        "w3": "aprender",
+        "w4": "tempo",
+        "w5": "criatividade",
+        "w6": "dados",
+        "w7": "clientes",
+        "w8": "equipe",
+        "w9": "futuro"
+      },
+      "placeholder": "Uma palavra…",
+      "send": "Enviar resposta",
+      "sent": "Enviado"
+    },
+    "quiz": {
+      "leaderboard": "Ranking do quiz",
+      "leaderboardLabel": "Ranking simulado",
+      "place": "{n}º",
+      "question": "Qual destes é um modelo de linguagem?",
+      "correct": "Certa! +{points} pts"
+    },
+    "raffle": {
+      "drawing": "Sorteando",
+      "prize": "Livro autografado",
+      "winnerNumber": "nº {number} · Parabéns!",
+      "youWon": "Você ganhou!",
+      "luckyNumber": "Seu número da sorte",
+      "watchScreen": "Fique de olho no telão."
+    }
+  }
+}

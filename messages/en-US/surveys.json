@@ -1,1 +1,79 @@
-{}
+{
+  "list": {
+    "metaTitle": "Surveys",
+    "title": "Surveys",
+    "description": "The survey your audience answers at the end of the session, about the talk or class as a whole. Pick each session's template in its form; if you don't pick one, “General feedback” is used.",
+    "newTemplate": "New template",
+    "mine": "My templates",
+    "emptyTitle": "You haven't created any templates yet",
+    "emptyDescription": "Start from scratch or duplicate a ready-made template to adjust the questions.",
+    "createTemplate": "Create template",
+    "platform": "Ready-made templates",
+    "platformEmpty": "There are no ready-made templates in this language yet.",
+    "otherLocales": "Ready-made templates in other languages",
+    "otherLocalesHint": "For sessions in another language. The audience sees the questions exactly as they're written."
+  },
+  "card": {
+    "questions": "{count, plural, one {# question} other {# questions}}",
+    "measures": "measures {dimensions}",
+    "showQuestions": "Show questions"
+  },
+  "templateActions": {
+    "duplicateAndEdit": "Duplicate and edit",
+    "duplicating": "Duplicating…",
+    "deleteTitle": "Delete the “{name}” template?",
+    "deleteDescription": "Sessions that haven't ended yet and used this template will switch to “General feedback”. Reports from ended sessions don't change.",
+    "deleted": "Template deleted."
+  },
+  "new": {
+    "metaTitle": "New survey template",
+    "title": "New survey template",
+    "description": "Build the questions your audience answers at the end of the session.",
+    "defaultNpsLabel": "On a scale of 0 to 10, how useful was this session for you?",
+    "defaultNpsMin": "Not useful at all",
+    "defaultNpsMax": "Extremely useful",
+    "defaultTextLabel": "What could be improved?"
+  },
+  "edit": {
+    "metaTitle": "Edit survey template",
+    "title": "Edit template",
+    "description": "Changes apply to upcoming sessions. Reports from sessions that have already ended don't change."
+  },
+  "editor": {
+    "name": "Template name",
+    "namePlaceholder": "E.g., Marketing class survey",
+    "description": "Description (optional)",
+    "descriptionPlaceholder": "What this survey is for.",
+    "kind": "Question type",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "removeQuestion": "Remove question",
+    "question": "Question",
+    "questionPlaceholder": "What do you want to ask your audience?",
+    "dimension": "Dimension",
+    "noDimension": "None",
+    "endLabel": "Label for {value}",
+    "minPlaceholder": "E.g., Not at all",
+    "maxPlaceholder": "E.g., Completely",
+    "dimensionHint": "Dimensions group similar questions in the scorecard, in strengths and weaknesses, and in trends across sessions.",
+    "options": "Options",
+    "option": "Option {number}",
+    "removeOption": "Remove option {number}",
+    "addOption": "Add option",
+    "required": "Required answer",
+    "addQuestion": "Add question",
+    "save": "Save template",
+    "saved": "Template saved."
+  },
+  "copyName": "{name} (copy)",
+  "errors": {
+    "invalidTemplate": "Invalid template.",
+    "signInAgain": "Please sign in again.",
+    "limitReached": "You've reached the limit of {max} templates.",
+    "createFailed": "Couldn't create the template.",
+    "notFound": "Template not found.",
+    "saveFailed": "Couldn't save the template.",
+    "questionsSaveFailed": "Couldn't save the questions.",
+    "deleteFailed": "Couldn't delete the template."
+  }
+}

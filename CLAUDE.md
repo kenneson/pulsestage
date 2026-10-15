@@ -130,6 +130,17 @@
   **Reações** em `reactions`; o telão busca `/api/session/[id]/reactions?after=` a cada 1,5 s (nada de realtime por
   toque); limite por pessoa em memória (`allowReaction`). Analytics: perguntas e picos de reação (com o que estava no
   telão). Tudo também no MCP (ranking, perguntas sem nome, reações).
+- **Idiomas** (next-intl 4, migration `20261016000000_locales.sql`; guia completo em `docs/I18N.md`): `pt-BR`, `es-419`
+  (espanhol latino neutro, "tú") e `en-US`. Regras puras em `lib/domain/locale.ts`. Páginas públicas aceitam `/es` e `/en`
+  (o `proxy.ts` reescreve, grava `x-pulsestage-locale` e o cookie `NEXT_LOCALE`); sem prefixo vale o cookie, depois o
+  `Accept-Language`. `profiles.locale` (cadastro/seletor, vira cookie no login) e `sessions.locale` (formulário da
+  sessão): o celular e o telão usam o da sessão via `<SessionIntl>`; também o filtro de palavrões, a nuvem
+  (`normalizeTerm(text, locale)`), as sugestões da IA e o modelo padrão de pesquisa (`survey_templates.locale`, mesmo
+  slug nos três idiomas). Textos em `messages/<locale>/<área>.json`; chaves tipadas e `satisfies Messages` acusam falta no
+  `tsc`; `tests/i18n.test.ts` confere chaves e parâmetros. Regras puras devolvem chaves (`validation.*`, `messageKey`),
+  traduzidas por `getMessageTranslator()` (servidor) ou `translateMessage()` (cliente). Rótulos das constantes do domínio
+  (em português, para MCP/IA) aparecem na tela pela área `domain`. Textos novos: sempre nos três idiomas. E-mails do
+  Supabase Auth com os três idiomas em `supabase/templates/` (colar no painel).
 - **Realtime resistente**: `useLiveState` relê `session_live_state` ao conectar (e 3 s depois), expõe `refresh()` (a sala
   ao vivo chama após cada ação) e aceita `pollMs` (só o projetor, 10 s). Nunca usar `pollMs` para participantes.
 - **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta
@@ -154,6 +165,7 @@
 - Realtime público só lê `session_live_state` e `interaction_results` (seção 0.2).
 - Quiz e word cloud: cálculo no servidor (seção 0.3).
 - Regras de negócio fora dos componentes de UI.
+- Nenhum texto visível fixo no código: tudo pelo next-intl, nos três idiomas (`docs/I18N.md`).
 
 ## Validação antes de fechar cada fase
 ```bash

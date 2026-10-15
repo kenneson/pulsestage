@@ -1,0 +1,19 @@
+<div style="font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; max-width: 480px; margin: 0 auto; padding: 24px; color: #0d1324;">
+  <p style="font-size: 20px; font-weight: 700; margin: 0 0 24px;">PulseStage</p>
+  {{ if eq (printf "%v" .Data.locale) "es-419" }}
+  <h1 style="font-size: 22px; margin: 0 0 12px;">Confirma tu correo electrónico</h1>
+  <p style="line-height: 1.5;">¡Hola, {{ .Data.name }}! Para empezar a crear sesiones interactivas, confirma tu correo:</p>
+  <p style="margin: 24px 0;"><a href="{{ .ConfirmationURL }}" style="background: #1f4fd1; color: #ffffff; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 600;">Confirmar correo</a></p>
+  <p style="line-height: 1.5; color: #5b6478; font-size: 14px;">Si no creaste una cuenta en PulseStage, ignora este mensaje.</p>
+  {{ else if eq (printf "%v" .Data.locale) "en-US" }}
+  <h1 style="font-size: 22px; margin: 0 0 12px;">Confirm your email</h1>
+  <p style="line-height: 1.5;">Hi, {{ .Data.name }}! To start creating interactive sessions, confirm your email:</p>
+  <p style="margin: 24px 0;"><a href="{{ .ConfirmationURL }}" style="background: #1f4fd1; color: #ffffff; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 600;">Confirm email</a></p>
+  <p style="line-height: 1.5; color: #5b6478; font-size: 14px;">If you didn't create a PulseStage account, you can ignore this message.</p>
+  {{ else }}
+  <h1 style="font-size: 22px; margin: 0 0 12px;">Confirme seu e-mail</h1>
+  <p style="line-height: 1.5;">Olá, {{ .Data.name }}! Para começar a criar sessões interativas, confirme seu e-mail:</p>
+  <p style="margin: 24px 0;"><a href="{{ .ConfirmationURL }}" style="background: #1f4fd1; color: #ffffff; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 600;">Confirmar e-mail</a></p>
+  <p style="line-height: 1.5; color: #5b6478; font-size: 14px;">Se você não criou uma conta no PulseStage, ignore esta mensagem.</p>
+  {{ end }}
+</div>

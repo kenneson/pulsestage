@@ -1,0 +1,16 @@
+<div style="font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; max-width: 480px; margin: 0 auto; padding: 24px; color: #0d1324;">
+  <p style="font-size: 20px; font-weight: 700; margin: 0 0 24px;">PulseStage</p>
+  {{ if eq (printf "%v" .Data.locale) "es-419" }}
+  <h1 style="font-size: 22px; margin: 0 0 12px;">Confirma el nuevo correo</h1>
+  <p style="line-height: 1.5;">Confirma el cambio de {{ .Email }} a {{ .NewEmail }}:</p>
+  <p style="margin: 24px 0;"><a href="{{ .ConfirmationURL }}" style="background: #1f4fd1; color: #ffffff; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 600;">Confirmar cambio</a></p>
+  {{ else if eq (printf "%v" .Data.locale) "en-US" }}
+  <h1 style="font-size: 22px; margin: 0 0 12px;">Confirm your new email</h1>
+  <p style="line-height: 1.5;">Confirm the change from {{ .Email }} to {{ .NewEmail }}:</p>
+  <p style="margin: 24px 0;"><a href="{{ .ConfirmationURL }}" style="background: #1f4fd1; color: #ffffff; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 600;">Confirm change</a></p>
+  {{ else }}
+  <h1 style="font-size: 22px; margin: 0 0 12px;">Confirme o novo e-mail</h1>
+  <p style="line-height: 1.5;">Confirme a troca de {{ .Email }} para {{ .NewEmail }}:</p>
+  <p style="margin: 24px 0;"><a href="{{ .ConfirmationURL }}" style="background: #1f4fd1; color: #ffffff; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 600;">Confirmar troca</a></p>
+  {{ end }}
+</div>

@@ -54,6 +54,9 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
    fica em **Moderar palavras** e fora do telão. Crie um **Ranking** e ordene pelo celular.
 9. MCP: em **Integrações**, copie o endereço e conecte um assistente (ou `claude mcp add --transport http pulsestage
    <endereço>`). Anexe um PDF, peça as perguntas, confira a sessão criada e envie o mesmo PDF na aba **Slides**.
+10. Idiomas: abra `/es` e `/en` (landing, login, diretório) e troque pelo seletor de idioma. Crie uma sessão com
+   **Idioma da sessão** = Español: o celular e o telão aparecem em espanhol mesmo com o navegador em português, a
+   pesquisa padrão é a "Evaluación general" e "weón" fica fora da nuvem. Veja `docs/I18N.md`.
 
 ## Scripts
 
@@ -109,6 +112,7 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
 | Perfil público verificado do palestrante, diretório `/palestrantes` (filtros e páginas por tema) e convites | ✅ |
 | Participação da plateia: ranking (6º tipo), perguntas da plateia com curtidas e telão, reações ao vivo, filtro de palavrões e moderação | ✅ |
 | Servidor MCP (Claude, ChatGPT e outros): criar sessões e perguntas a partir dos slides, OAuth, página Integrações | ✅ |
+| Idiomas: português, espanhol latino e inglês americano (next-intl, `/es` e `/en`, idioma por sessão, palavrões e IA por idioma) | ✅ |
 | Realtime resistente a eventos perdidos (releitura ao conectar, após ações e no projetor) | ✅ |
 | Testes unitários do domínio (sessão, palavras, datas, resultados, métricas) | ✅ |
 | Testes de integração e E2E | ⏳ |

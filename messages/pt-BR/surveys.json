@@ -1,1 +1,79 @@
-{}
+{
+  "list": {
+    "metaTitle": "Pesquisas",
+    "title": "Pesquisas",
+    "description": "A pesquisa que a plateia responde ao fim da sessão, sobre a palestra ou aula como um todo. Escolha o modelo de cada sessão no formulário dela; sem escolha, vale a “Avaliação geral”.",
+    "newTemplate": "Novo modelo",
+    "mine": "Meus modelos",
+    "emptyTitle": "Você ainda não criou modelos",
+    "emptyDescription": "Crie do zero ou duplique um modelo pronto para ajustar as perguntas.",
+    "createTemplate": "Criar modelo",
+    "platform": "Modelos prontos",
+    "platformEmpty": "Ainda não há modelos prontos neste idioma.",
+    "otherLocales": "Modelos prontos em outros idiomas",
+    "otherLocalesHint": "Para sessões em outro idioma. A plateia vê as perguntas exatamente como estão escritas."
+  },
+  "card": {
+    "questions": "{count, plural, one {# pergunta} other {# perguntas}}",
+    "measures": "mede {dimensions}",
+    "showQuestions": "Ver perguntas"
+  },
+  "templateActions": {
+    "duplicateAndEdit": "Duplicar e editar",
+    "duplicating": "Duplicando…",
+    "deleteTitle": "Excluir o modelo “{name}”?",
+    "deleteDescription": "Sessões que ainda não terminaram e usavam este modelo passam a usar a “Avaliação geral”. Relatórios de sessões encerradas não mudam.",
+    "deleted": "Modelo excluído."
+  },
+  "new": {
+    "metaTitle": "Novo modelo de pesquisa",
+    "title": "Novo modelo de pesquisa",
+    "description": "Monte as perguntas que a plateia responde ao fim da sessão.",
+    "defaultNpsLabel": "De 0 a 10, quanto esta sessão foi útil para você?",
+    "defaultNpsMin": "Nada útil",
+    "defaultNpsMax": "Extremamente útil",
+    "defaultTextLabel": "O que poderia melhorar?"
+  },
+  "edit": {
+    "metaTitle": "Editar modelo de pesquisa",
+    "title": "Editar modelo",
+    "description": "As mudanças valem para as próximas sessões. Relatórios de sessões já encerradas não mudam."
+  },
+  "editor": {
+    "name": "Nome do modelo",
+    "namePlaceholder": "Ex.: Pesquisa da aula de Marketing",
+    "description": "Descrição (opcional)",
+    "descriptionPlaceholder": "Para que serve esta pesquisa.",
+    "kind": "Tipo da pergunta",
+    "moveUp": "Subir",
+    "moveDown": "Descer",
+    "removeQuestion": "Remover pergunta",
+    "question": "Pergunta",
+    "questionPlaceholder": "O que você quer perguntar à plateia?",
+    "dimension": "Dimensão",
+    "noDimension": "Nenhuma",
+    "endLabel": "Rótulo do {value}",
+    "minPlaceholder": "Ex.: Nada",
+    "maxPlaceholder": "Ex.: Totalmente",
+    "dimensionHint": "A dimensão agrupa perguntas parecidas no scorecard, nos pontos fortes e fracos e na evolução entre sessões.",
+    "options": "Alternativas",
+    "option": "Alternativa {number}",
+    "removeOption": "Remover alternativa {number}",
+    "addOption": "Adicionar alternativa",
+    "required": "Resposta obrigatória",
+    "addQuestion": "Adicionar pergunta",
+    "save": "Salvar modelo",
+    "saved": "Modelo salvo."
+  },
+  "copyName": "{name} (cópia)",
+  "errors": {
+    "invalidTemplate": "Modelo inválido.",
+    "signInAgain": "Entre novamente.",
+    "limitReached": "Limite de {max} modelos atingido.",
+    "createFailed": "Não foi possível criar o modelo.",
+    "notFound": "Modelo não encontrado.",
+    "saveFailed": "Não foi possível salvar o modelo.",
+    "questionsSaveFailed": "Não foi possível salvar as perguntas.",
+    "deleteFailed": "Não foi possível excluir o modelo."
+  }
+}

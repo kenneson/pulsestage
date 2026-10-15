@@ -1,1 +1,79 @@
-{}
+{
+  "list": {
+    "metaTitle": "Encuestas",
+    "title": "Encuestas",
+    "description": "La encuesta que el público responde al final de la sesión, sobre la charla o la clase en su conjunto. Elige la plantilla de cada sesión en su formulario; si no eliges ninguna, se usa la “Evaluación general”.",
+    "newTemplate": "Nueva plantilla",
+    "mine": "Mis plantillas",
+    "emptyTitle": "Todavía no has creado plantillas",
+    "emptyDescription": "Crea una desde cero o duplica una plantilla lista para ajustar las preguntas.",
+    "createTemplate": "Crear plantilla",
+    "platform": "Plantillas listas",
+    "platformEmpty": "Todavía no hay plantillas listas en este idioma.",
+    "otherLocales": "Plantillas listas en otros idiomas",
+    "otherLocalesHint": "Para sesiones en otro idioma. El público ve las preguntas tal como están escritas."
+  },
+  "card": {
+    "questions": "{count, plural, one {# pregunta} other {# preguntas}}",
+    "measures": "mide {dimensions}",
+    "showQuestions": "Ver preguntas"
+  },
+  "templateActions": {
+    "duplicateAndEdit": "Duplicar y editar",
+    "duplicating": "Duplicando…",
+    "deleteTitle": "¿Eliminar la plantilla “{name}”?",
+    "deleteDescription": "Las sesiones que aún no han terminado y usaban esta plantilla pasan a usar la “Evaluación general”. Los informes de sesiones finalizadas no cambian.",
+    "deleted": "Plantilla eliminada."
+  },
+  "new": {
+    "metaTitle": "Nueva plantilla de encuesta",
+    "title": "Nueva plantilla de encuesta",
+    "description": "Arma las preguntas que el público responde al final de la sesión.",
+    "defaultNpsLabel": "Del 0 al 10, ¿qué tan útil fue esta sesión para ti?",
+    "defaultNpsMin": "Nada útil",
+    "defaultNpsMax": "Extremadamente útil",
+    "defaultTextLabel": "¿Qué se podría mejorar?"
+  },
+  "edit": {
+    "metaTitle": "Editar plantilla de encuesta",
+    "title": "Editar plantilla",
+    "description": "Los cambios se aplican a las próximas sesiones. Los informes de sesiones ya finalizadas no cambian."
+  },
+  "editor": {
+    "name": "Nombre de la plantilla",
+    "namePlaceholder": "Ej.: Encuesta de la clase de Marketing",
+    "description": "Descripción (opcional)",
+    "descriptionPlaceholder": "Para qué sirve esta encuesta.",
+    "kind": "Tipo de pregunta",
+    "moveUp": "Subir",
+    "moveDown": "Bajar",
+    "removeQuestion": "Quitar pregunta",
+    "question": "Pregunta",
+    "questionPlaceholder": "¿Qué quieres preguntarle al público?",
+    "dimension": "Dimensión",
+    "noDimension": "Ninguna",
+    "endLabel": "Etiqueta del {value}",
+    "minPlaceholder": "Ej.: Nada",
+    "maxPlaceholder": "Ej.: Totalmente",
+    "dimensionHint": "La dimensión agrupa preguntas parecidas en el scorecard, en los puntos fuertes y débiles y en la evolución entre sesiones.",
+    "options": "Alternativas",
+    "option": "Alternativa {number}",
+    "removeOption": "Quitar alternativa {number}",
+    "addOption": "Agregar alternativa",
+    "required": "Respuesta obligatoria",
+    "addQuestion": "Agregar pregunta",
+    "save": "Guardar plantilla",
+    "saved": "Plantilla guardada."
+  },
+  "copyName": "{name} (copia)",
+  "errors": {
+    "invalidTemplate": "Plantilla no válida.",
+    "signInAgain": "Vuelve a iniciar sesión.",
+    "limitReached": "Llegaste al límite de {max} plantillas.",
+    "createFailed": "No se pudo crear la plantilla.",
+    "notFound": "No se encontró la plantilla.",
+    "saveFailed": "No se pudo guardar la plantilla.",
+    "questionsSaveFailed": "No se pudieron guardar las preguntas.",
+    "deleteFailed": "No se pudo eliminar la plantilla."
+  }
+}

@@ -28,7 +28,8 @@ Não é mais um clone de Mentimeter, Slido ou AhaSlides. A interação ao vivo �
 - Ciclo do speaker: criar → preparar → apresentar → interagir → analisar → aprender → melhorar.
 - Ao vivo: sala de controle no notebook, tela do projetor em outra aba/tela, audiência entra por QR Code ou código curto (ex.: `IA2026`), seta → do teclado avança interações.
 - Depois: o público avalia a sessão (utilidade 0–10 obrigatória; clareza, engajamento, conteúdo e aplicabilidade 1–5) e o speaker vê analytics e gera insights.
-- Idioma: português do Brasil.
+- Idiomas: português do Brasil, espanhol latino-americano neutro (Colômbia, Chile e demais países) e inglês americano.
+  O painel segue a escolha do speaker; o telão e o celular da plateia seguem o idioma da sessão (escolhido ao criá-la).
 
 ## Capabilities and Constraints
 
