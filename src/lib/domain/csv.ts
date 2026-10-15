@@ -7,16 +7,20 @@ function neutralizeFormula(text: string): string {
   return /^[=+\-@\t\r]/.test(text) ? `'${text}` : text;
 }
 
-export function csvCell(value: CsvCell): string {
+/** Sim/não no idioma de quem exporta. */
+export type CsvLabels = { yes: string; no: string };
+const PT_LABELS: CsvLabels = { yes: "sim", no: "não" };
+
+export function csvCell(value: CsvCell, labels: CsvLabels = PT_LABELS): string {
   if (value === null || value === undefined) return "";
   if (typeof value === "number") return Number.isFinite(value) ? String(value).replace(".", ",") : "";
-  if (typeof value === "boolean") return value ? "sim" : "não";
+  if (typeof value === "boolean") return value ? labels.yes : labels.no;
   const text = neutralizeFormula(value);
   return /[";\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
-export function toCsv(header: readonly string[], rows: readonly (readonly CsvCell[])[]): string {
-  const lines = [header, ...rows].map((row) => row.map(csvCell).join(";"));
+export function toCsv(header: readonly string[], rows: readonly (readonly CsvCell[])[], labels: CsvLabels = PT_LABELS): string {
+  const lines = [header, ...rows].map((row) => row.map((cell) => csvCell(cell, labels)).join(";"));
   return `﻿${lines.join("\r\n")}\r\n`;
 }
 

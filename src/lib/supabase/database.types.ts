@@ -501,6 +501,7 @@ export type Database = {
           headline: string | null
           id: string
           linkedin_url: string | null
+          locale: string
           name: string | null
           promote_on_survey: boolean
           public_enabled: boolean
@@ -526,6 +527,7 @@ export type Database = {
           headline?: string | null
           id: string
           linkedin_url?: string | null
+          locale?: string
           name?: string | null
           promote_on_survey?: boolean
           public_enabled?: boolean
@@ -551,6 +553,7 @@ export type Database = {
           headline?: string | null
           id?: string
           linkedin_url?: string | null
+          locale?: string
           name?: string | null
           promote_on_survey?: boolean
           public_enabled?: boolean
@@ -1012,6 +1015,7 @@ export type Database = {
           estimated_duration_minutes: number | null
           id: string
           join_code: string
+          locale: string
           moderate_open_text: boolean
           paused_at: string | null
           paused_seconds: number
@@ -1039,6 +1043,7 @@ export type Database = {
           estimated_duration_minutes?: number | null
           id?: string
           join_code?: string
+          locale?: string
           moderate_open_text?: boolean
           paused_at?: string | null
           paused_seconds?: number
@@ -1066,6 +1071,7 @@ export type Database = {
           estimated_duration_minutes?: number | null
           id?: string
           join_code?: string
+          locale?: string
           moderate_open_text?: boolean
           paused_at?: string | null
           paused_seconds?: number
@@ -1221,6 +1227,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          locale: string
           name: string
           owner_id: string | null
           slug: string | null
@@ -1230,6 +1237,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          locale?: string
           name: string
           owner_id?: string | null
           slug?: string | null
@@ -1239,6 +1247,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          locale?: string
           name?: string
           owner_id?: string | null
           slug?: string | null

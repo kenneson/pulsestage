@@ -3,8 +3,10 @@ import type { ServerSupabase } from "@/lib/supabase/server";
 import { isUniqueViolation } from "@/lib/supabase/errors";
 import { generateJoinCode } from "@/lib/domain/session";
 import { fail, ok, type ActionResult } from "@/lib/action-result";
+import type { Locale } from "@/lib/domain/locale";
 
 // Criação de sessão compartilhada pelo painel e pelo MCP (cliente já autenticado; RLS garante o dono).
+// Erros saem como chaves da área "errors" (core.*): quem chama traduz com getMessageTranslator().
 
 export type NewSession = {
   speakerId: string;
@@ -14,6 +16,8 @@ export type NewSession = {
   duration: number | null;
   joinCode: string | null;
   surveyTemplateId: string | null;
+  /** Idioma do telão, do celular da plateia, do filtro de palavrões e da IA. */
+  locale: Locale;
 };
 
 /** O modelo precisa ser visível ao speaker (RLS: da plataforma ou dele). */
@@ -40,13 +44,14 @@ export async function insertSession(
         estimated_duration_minutes: values.duration,
         join_code: joinCode,
         survey_template_id: values.surveyTemplateId,
+        locale: values.locale,
       })
       .select("id, join_code")
       .single();
 
     if (!result.error) return ok({ id: result.data.id, joinCode: result.data.join_code });
-    if (!isUniqueViolation(result.error)) return fail("Não foi possível criar a sessão.");
-    if (values.joinCode) return fail("Esse código já está em uso por outra sessão ativa.", "join_code_taken");
+    if (!isUniqueViolation(result.error)) return fail("core.sessionCreateFailed");
+    if (values.joinCode) return fail("core.joinCodeTaken", "join_code_taken");
   }
-  return fail("Não foi possível gerar um código único. Tente novamente.");
+  return fail("core.joinCodeExhausted");
 }

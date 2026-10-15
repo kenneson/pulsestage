@@ -11,6 +11,7 @@ import { optionImagesOf, removeUnusedOptionImages } from "@/lib/data/option-imag
 import { createInteraction, foreignImage, updateInteraction } from "./core";
 import { aiConfigProblem, getAIProvider, suggestInteractions } from "@/lib/ai";
 import { AIProviderError } from "@/lib/ai/types";
+import { localeOrDefault } from "@/lib/domain/locale";
 import { fail, firstIssue, isUuid, ok, type ActionResult } from "@/lib/action-result";
 
 function revalidateSession(sessionId: string) {
@@ -71,13 +72,17 @@ export async function suggestInteractionsAction(
   if (error) return fail("Não foi possível carregar o roteiro.");
 
   try {
-    const suggestions = await suggestInteractions(provider, {
-      title: session.title,
-      description: session.description,
-      durationMinutes: session.estimated_duration_minutes,
-      existing: existing.map((i) => i.title),
-      avoid: avoid.data,
-    });
+    const suggestions = await suggestInteractions(
+      provider,
+      {
+        title: session.title,
+        description: session.description,
+        durationMinutes: session.estimated_duration_minutes,
+        existing: existing.map((i) => i.title),
+        avoid: avoid.data,
+      },
+      localeOrDefault(session.locale),
+    );
     return ok({ suggestions });
   } catch (e) {
     return fail(e instanceof AIProviderError ? e.message : "Falha ao gerar sugestões.");

@@ -1,0 +1,169 @@
+{
+  "interactionTypes": {
+    "multiple_choice": {
+      "label": "Poll",
+      "description": "Pick one of several options."
+    },
+    "rating": {
+      "label": "Scale",
+      "description": "A rating on a scale, like 1 to 5."
+    },
+    "word_cloud": {
+      "label": "Word cloud",
+      "description": "Short answers grouped by frequency."
+    },
+    "open_text": {
+      "label": "Open-ended",
+      "description": "A free answer in one sentence."
+    },
+    "quiz": {
+      "label": "Quiz",
+      "description": "A question with a correct answer and points."
+    },
+    "ranking": {
+      "label": "Ranking",
+      "description": "The audience ranks the options by preference."
+    }
+  },
+  "sessionStatus": {
+    "draft": "Draft",
+    "live": "Live",
+    "paused": "Paused",
+    "completed": "Ended"
+  },
+  "surveyKinds": {
+    "scale": {
+      "label": "1–5 scale",
+      "description": "Buttons from 1 to 5 with labels at each end."
+    },
+    "nps": {
+      "label": "0–10 score",
+      "description": "NPS style: the report calculates promoters and detractors."
+    },
+    "choice": {
+      "label": "Multiple choice",
+      "description": "Options you define (including yes/no)."
+    },
+    "text": {
+      "label": "Free text",
+      "description": "Open answer, included in the AI analysis."
+    }
+  },
+  "dimensions": {
+    "utilidade": "Usefulness",
+    "satisfacao": "Satisfaction",
+    "recomendacao": "Recommendation",
+    "clareza": "Clarity",
+    "atencao": "Attention",
+    "engajamento": "Engagement",
+    "conteudo": "Content",
+    "aplicabilidade": "Applicability",
+    "didatica": "Teaching",
+    "relevancia": "Relevance",
+    "dominio": "Subject mastery",
+    "organizacao": "Organization"
+  },
+  "raffleEligibility": {
+    "survey": {
+      "label": "People who answer the survey",
+      "description": "When someone submits the post-event survey, they get a number. People who don't answer aren't entered."
+    },
+    "everyone": {
+      "label": "Everyone who joins the session",
+      "description": "Everyone gets a number when they join, even without answering the survey."
+    }
+  },
+  "prizeKinds": {
+    "physical": "Physical",
+    "digital": "Digital"
+  },
+  "questionStatus": {
+    "pending": "Awaiting approval",
+    "visible": "Open",
+    "answered": "Answered",
+    "hidden": "Hidden"
+  },
+  "reactions": {
+    "clap": "Applause",
+    "heart": "Love it",
+    "laugh": "Funny",
+    "wow": "Wow",
+    "think": "Thinking"
+  },
+  "avatars": {
+    "raposa": "Fox",
+    "panda": "Panda",
+    "leao": "Lion",
+    "sapo": "Frog",
+    "polvo": "Octopus",
+    "coruja": "Owl",
+    "tartaruga": "Turtle",
+    "unicornio": "Unicorn",
+    "pinguim": "Penguin",
+    "coala": "Koala",
+    "tigre": "Tiger",
+    "abelha": "Bee",
+    "dinossauro": "Dinosaur",
+    "golfinho": "Dolphin",
+    "gato": "Cat",
+    "cachorro": "Dog",
+    "foguete": "Rocket",
+    "cacto": "Cactus"
+  },
+  "shapes": {
+    "triangle": "Triangle",
+    "diamond": "Diamond",
+    "circle": "Circle",
+    "square": "Square",
+    "star": "Star",
+    "hexagon": "Hexagon",
+    "pentagon": "Pentagon",
+    "heart": "Heart"
+  },
+  "formats": {
+    "presencial": "In person",
+    "online": "Online"
+  },
+  "audiences": {
+    "universidades": "Universities and colleges",
+    "escolas": "Schools",
+    "empresas": "Companies",
+    "eventos": "Events and conferences"
+  },
+  "orgKinds": {
+    "universidade": "University or college",
+    "escola": "School",
+    "empresa": "Company",
+    "evento": "Event",
+    "outro": "Other"
+  },
+  "audienceRange": {
+    "upTo20": "up to 20 people",
+    "from21to50": "21–50 people",
+    "from51to100": "51–100 people",
+    "from101to300": "101–300 people",
+    "over300": "more than 300 people"
+  },
+  "duration": {
+    "lessThanMinute": "under 1 min",
+    "minutes": "{minutes} min",
+    "hours": "{hours} h",
+    "hoursMinutes": "{hours} h {minutes} min",
+    "seconds": "{seconds} s",
+    "minutesSeconds": "{minutes} min {seconds} s",
+    "talk": "{duration} of speaking time",
+    "talkVersus": "{duration} of speaking time (planned {planned}, {detail})",
+    "onTime": "on time",
+    "over": "{minutes} min over",
+    "under": "{minutes} min under"
+  },
+  "deck": {
+    "end": "At the end",
+    "beforeFirst": "Before slide 1",
+    "afterSlide": "After slide {slide}"
+  },
+  "anonymousParticipant": "Participant",
+  "anonymous": "Anonymous",
+  "yes": "yes",
+  "no": "no"
+}

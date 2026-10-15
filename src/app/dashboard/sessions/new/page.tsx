@@ -2,16 +2,16 @@ import type { Metadata } from "next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SessionForm } from "@/components/sessions/session-form";
 import { createClient } from "@/lib/supabase/server";
-import { listSurveyTemplates } from "@/lib/data/surveys";
+import { generalTemplateId, listSurveyTemplates } from "@/lib/data/surveys";
 import { getSpeakerProfile } from "@/lib/data/profile";
 
 export const metadata: Metadata = { title: "Nova sessão" };
 
 export default async function NewSessionPage() {
   const [templates, profile] = await Promise.all([listSurveyTemplates(await createClient()), getSpeakerProfile()]);
-  const surveyOptions = templates.map((t) => ({ id: t.id, name: t.name, isPlatform: t.isPlatform }));
+  const surveyOptions = templates.map((t) => ({ id: t.id, name: t.name, isPlatform: t.isPlatform, locale: t.locale, slug: t.slug }));
   const defaultSurvey =
-    templates.find((t) => t.id === profile.defaultSurveyTemplateId)?.id ?? templates.find((t) => t.slug === "geral")?.id ?? "";
+    templates.find((t) => t.id === profile.defaultSurveyTemplateId)?.id ?? generalTemplateId(templates, profile.locale) ?? "";
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -31,6 +31,7 @@ export default async function NewSessionPage() {
               duration: String(profile.defaultDurationMinutes ?? 60),
               joinCode: "",
               surveyTemplateId: defaultSurvey,
+              locale: profile.locale,
             }}
           />
         </CardContent>

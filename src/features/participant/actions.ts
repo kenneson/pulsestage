@@ -26,6 +26,7 @@ import { parseSurveyAnswers } from "@/lib/domain/survey";
 import { avatarKeySchema, quizPoints } from "@/lib/domain/gamification";
 import { bordaPoints, isValidRanking } from "@/lib/domain/ranking";
 import { containsProfanity } from "@/lib/domain/profanity";
+import { localeOrDefault, type Locale } from "@/lib/domain/locale";
 import { askQuestionSchema, QUESTION_LIMIT, QUESTION_WINDOW_MS } from "@/lib/domain/questions";
 import { allowReaction, reactionKindSchema } from "@/lib/domain/reactions";
 import { fail, firstIssue, formValues, isUuid, ok, type ActionResult } from "@/lib/action-result";
@@ -106,7 +107,7 @@ type BuiltResponse =
   | { ok: true; value: Json; aggregateKey: string | null; moderation: Moderation; filtered?: boolean }
   | { ok: false; error: string; code?: string };
 
-type SessionRules = { profanityFilter: boolean; moderateOpenText: boolean };
+type SessionRules = { profanityFilter: boolean; moderateOpenText: boolean; locale: Locale };
 
 async function loadOption(admin: AdminSupabase, interactionId: string, optionId: string) {
   const { data } = await admin
@@ -166,11 +167,11 @@ async function buildResponse(
     }
     case "word_cloud": {
       if (payload.text.length > settings.maxLength) return { ok: false, error: "Resposta muito longa." };
-      const normalized = normalizeTerm(payload.text);
+      const normalized = normalizeTerm(payload.text, rules.locale);
       if (!normalized) return { ok: false, error: "Tente uma palavra mais específica." };
       const value = { text: payload.text, normalized };
       // Palavrão: entra oculto (o palestrante vê e pode liberar). Sem aviso, para não ensinar a burlar.
-      if (rules.profanityFilter && containsProfanity(payload.text)) {
+      if (rules.profanityFilter && containsProfanity(payload.text, rules.locale)) {
         return { ok: true, value, aggregateKey: normalized, moderation: "hidden", filtered: true };
       }
       // Palavra que o palestrante ocultou da nuvem continua oculta.
@@ -185,7 +186,7 @@ async function buildResponse(
     case "open_text": {
       if (payload.text.length > settings.maxLength) return { ok: false, error: "Resposta muito longa." };
       const value = { text: payload.text };
-      if (rules.profanityFilter && containsProfanity(payload.text)) {
+      if (rules.profanityFilter && containsProfanity(payload.text, rules.locale)) {
         return { ok: true, value, aggregateKey: null, moderation: "hidden", filtered: true };
       }
       return { ok: true, value, aggregateKey: null, moderation: rules.moderateOpenText ? "pending" : "visible" };
@@ -229,12 +230,13 @@ export async function submitAnswerAction(
 
   const { data: session } = await admin
     .from("sessions")
-    .select("profanity_filter, moderate_open_text")
+    .select("profanity_filter, moderate_open_text, locale")
     .eq("id", sessionId)
     .maybeSingle();
   const built = await buildResponse(admin, interaction, payload.data, {
     profanityFilter: session?.profanity_filter ?? true,
     moderateOpenText: session?.moderate_open_text ?? false,
+    locale: localeOrDefault(session?.locale),
   });
   if (!built.ok) return fail(built.error, built.code);
 
@@ -329,7 +331,7 @@ export async function submitSurveyAction(
 async function openForQuestions(admin: AdminSupabase, sessionId: string) {
   const { data } = await admin
     .from("sessions")
-    .select("status, qa_enabled, qa_moderated, profanity_filter")
+    .select("status, qa_enabled, qa_moderated, profanity_filter, locale")
     .eq("id", sessionId)
     .maybeSingle();
   if (!data || !data.qa_enabled || (data.status !== "live" && data.status !== "paused")) return null;
@@ -363,7 +365,7 @@ export async function askQuestionAction(sessionId: string, raw: unknown): Promis
   }
 
   // Palavrão: fica oculta (o palestrante vê e pode liberar). Para quem perguntou, parece aguardar aprovação.
-  const filtered = session.profanity_filter && containsProfanity(parsed.data.body);
+  const filtered = session.profanity_filter && containsProfanity(parsed.data.body, localeOrDefault(session.locale));
   const status = filtered ? "hidden" : session.qa_moderated ? "pending" : "visible";
   const { error } = await admin.from("audience_questions").insert({
     session_id: sessionId,

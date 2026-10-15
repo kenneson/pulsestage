@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { messageKey } from "./message-key.ts";
 
 // Pesquisas pós-evento por modelo. Regras puras: tipos, validação e agregação. Sem I/O.
 
@@ -120,8 +121,8 @@ export function toSurveyQuestions(rows: Parameters<typeof toSurveyQuestion>[0][]
 // Rascunho do editor de modelos
 // ---------------------------------------------------------------------------
 
-const label = z.string().trim().min(1, "Escreva o texto de todas as perguntas.").max(300, "Pergunta muito longa.");
-const endLabel = z.string().trim().max(40, "Rótulo muito longo.").optional();
+const label = z.string().trim().min(1, "validation.surveyQuestionLabelRequired").max(300, "validation.questionTooLong");
+const endLabel = z.string().trim().max(40, "validation.labelTooLong").optional();
 const dimension = z.enum(DIMENSIONS).nullable();
 
 export const questionDraftSchema = z.discriminatedUnion("kind", [
@@ -132,21 +133,21 @@ export const questionDraftSchema = z.discriminatedUnion("kind", [
     label,
     required: z.boolean(),
     options: z
-      .array(z.string().trim().min(1, "Preencha todas as alternativas.").max(80, "Alternativa muito longa."))
-      .min(2, "Perguntas de múltipla escolha precisam de pelo menos 2 alternativas.")
-      .max(MAX_OPTIONS, `No máximo ${MAX_OPTIONS} alternativas.`),
+      .array(z.string().trim().min(1, "validation.fillAllOptions").max(80, "validation.optionTooLong"))
+      .min(2, "validation.choiceNeedsTwoOptions")
+      .max(MAX_OPTIONS, messageKey("validation.maxOptions", { max: MAX_OPTIONS })),
   }),
   z.object({ kind: z.literal("text"), label, required: z.boolean() }),
 ]);
 export type QuestionDraft = z.infer<typeof questionDraftSchema>;
 
 export const templateDraftSchema = z.object({
-  name: z.string().trim().min(1, "Dê um nome ao modelo.").max(120, "Nome muito longo."),
-  description: z.string().trim().max(500, "Descrição muito longa.").optional(),
+  name: z.string().trim().min(1, "validation.templateNameRequired").max(120, "validation.nameTooLong"),
+  description: z.string().trim().max(500, "validation.descriptionTooLong").optional(),
   questions: z
     .array(questionDraftSchema)
-    .min(1, "Adicione pelo menos uma pergunta.")
-    .max(MAX_QUESTIONS, `No máximo ${MAX_QUESTIONS} perguntas.`),
+    .min(1, "validation.atLeastOneQuestion")
+    .max(MAX_QUESTIONS, messageKey("validation.maxQuestions", { max: MAX_QUESTIONS })),
 });
 export type TemplateDraft = z.infer<typeof templateDraftSchema>;
 
@@ -207,11 +208,11 @@ export function parseSurveyAnswers(
   for (const q of questions) {
     const raw = read(answerFieldName(q.id))?.trim();
     if (!raw) {
-      if (q.required) return { ok: false, error: `Responda: “${q.label}”` };
+      if (q.required) return { ok: false, error: messageKey("validation.answerRequiredIn", { label: q.label }) };
       continue;
     }
     if (q.kind === "text") {
-      if (raw.length > TEXT_MAX_LENGTH) return { ok: false, error: "Resposta muito longa." };
+      if (raw.length > TEXT_MAX_LENGTH) return { ok: false, error: "validation.answerTooLong" };
       answers.push({ questionId: q.id, valueInt: null, valueText: raw });
       continue;
     }
@@ -219,11 +220,11 @@ export function parseSurveyAnswers(
     const [min, max] =
       q.kind === "choice" ? [0, (q.settings.options?.length ?? 0) - 1] : [RANGE[q.kind].min, RANGE[q.kind].max];
     if (!Number.isInteger(value) || value < min || value > max) {
-      return { ok: false, error: `Resposta inválida em “${q.label}”.` };
+      return { ok: false, error: messageKey("validation.invalidAnswerIn", { label: q.label }) };
     }
     answers.push({ questionId: q.id, valueInt: value, valueText: null });
   }
-  if (answers.length === 0) return { ok: false, error: "Responda pelo menos uma pergunta." };
+  if (answers.length === 0) return { ok: false, error: "validation.answerAtLeastOne" };
   return { ok: true, answers };
 }
 

@@ -48,7 +48,7 @@ export const ratingSettingsSchema = z
     minLabel: z.string().trim().max(40).optional(),
     maxLabel: z.string().trim().max(40).optional(),
   })
-  .refine((s) => s.min < s.max, { error: "O mínimo precisa ser menor que o máximo." });
+  .refine((s) => s.min < s.max, { error: "validation.minBelowMax" });
 
 export const wordCloudSettingsSchema = z.object({
   maxLength: z.number().int().min(5).max(50).default(30),
@@ -145,14 +145,14 @@ export function normalizeSettings(type: InteractionType, raw: unknown): Normaliz
 
 export const optionInputSchema = z.object({
   id: z.uuid().optional(),
-  label: z.string().trim().min(1, "Preencha todas as alternativas.").max(200),
+  label: z.string().trim().min(1, "validation.fillAllOptions").max(200),
   isCorrect: z.boolean().default(false),
   points: z.number().int().min(0).max(10000).default(100),
   /** imagem no bucket option-images; o texto continua obrigatório (vira o texto alternativo) */
   imagePath: optionImagePathSchema.nullish(),
 });
 
-const titleSchema = z.string().trim().min(1, "Escreva a pergunta.").max(300, "Pergunta muito longa.");
+const titleSchema = z.string().trim().min(1, "validation.questionRequired").max(300, "validation.questionTooLong");
 const descriptionSchema = z.string().trim().max(1000).optional();
 
 export const interactionInputSchema = z.discriminatedUnion("type", [
@@ -161,7 +161,7 @@ export const interactionInputSchema = z.discriminatedUnion("type", [
     title: titleSchema,
     description: descriptionSchema,
     settings: multipleChoiceSettingsSchema,
-    options: z.array(optionInputSchema).min(2, "Adicione pelo menos 2 alternativas.").max(8, "Máximo de 8 alternativas."),
+    options: z.array(optionInputSchema).min(2, "validation.atLeastTwoOptions").max(8, "validation.maxEightOptions"),
   }),
   z.object({
     type: z.literal("rating"),
@@ -188,10 +188,10 @@ export const interactionInputSchema = z.discriminatedUnion("type", [
     settings: quizSettingsSchema,
     options: z
       .array(optionInputSchema)
-      .min(2, "Adicione pelo menos 2 alternativas.")
-      .max(6, "Máximo de 6 alternativas.")
+      .min(2, "validation.atLeastTwoOptions")
+      .max(6, "validation.maxSixOptions")
       .refine((options) => options.filter((o) => o.isCorrect).length === 1, {
-        error: "Marque exatamente uma alternativa correta.",
+        error: "validation.exactlyOneCorrect",
       }),
   }),
   z.object({
@@ -199,7 +199,7 @@ export const interactionInputSchema = z.discriminatedUnion("type", [
     title: titleSchema,
     description: descriptionSchema,
     settings: rankingSettingsSchema,
-    options: z.array(optionInputSchema).min(2, "Adicione pelo menos 2 alternativas.").max(8, "Máximo de 8 alternativas."),
+    options: z.array(optionInputSchema).min(2, "validation.atLeastTwoOptions").max(8, "validation.maxEightOptions"),
   }),
 ]);
 
@@ -257,9 +257,9 @@ export const answerPayloadSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("multiple_choice"), optionId: z.uuid() }),
   z.object({ type: z.literal("quiz"), optionId: z.uuid() }),
   z.object({ type: z.literal("rating"), value: z.number().int() }),
-  z.object({ type: z.literal("word_cloud"), text: z.string().trim().min(1, "Digite uma palavra.").max(50) }),
-  z.object({ type: z.literal("open_text"), text: z.string().trim().min(1, "Escreva sua resposta.").max(500) }),
-  z.object({ type: z.literal("ranking"), order: z.array(z.uuid()).min(2, "Ordene todas as alternativas.").max(8) }),
+  z.object({ type: z.literal("word_cloud"), text: z.string().trim().min(1, "validation.wordRequired").max(50) }),
+  z.object({ type: z.literal("open_text"), text: z.string().trim().min(1, "validation.answerRequired").max(500) }),
+  z.object({ type: z.literal("ranking"), order: z.array(z.uuid()).min(2, "validation.rankAllOptions").max(8) }),
 ]);
 
 export type AnswerPayload = z.infer<typeof answerPayloadSchema>;

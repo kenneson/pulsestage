@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 
 type ConfirmOptions = {
@@ -15,6 +16,7 @@ type ConfirmOptions = {
  * Uso: `const [confirm, dialog] = useConfirm();` renderize `{dialog}` e faça `if (!(await confirm({...}))) return;`.
  */
 export function useConfirm() {
+  const t = useTranslations("common.actions");
   const ref = useRef<HTMLDialogElement>(null);
   const resolver = useRef<((ok: boolean) => void) | null>(null);
   const [options, setOptions] = useState<ConfirmOptions>({ title: "" });
@@ -56,10 +58,10 @@ export function useConfirm() {
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           {/* Foco inicial em Cancelar: Enter acidental não confirma uma ação destrutiva. */}
           <Button type="submit" value="cancel" variant="outline" autoFocus>
-            Cancelar
+            {t("cancel")}
           </Button>
           <Button type="submit" value="confirm" variant={options.destructive ? "destructive" : "default"}>
-            {options.confirmLabel ?? "Confirmar"}
+            {options.confirmLabel ?? t("confirm")}
           </Button>
         </div>
       </form>

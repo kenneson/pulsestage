@@ -1,11 +1,29 @@
 "use server";
 
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { publicEnv } from "@/lib/env";
 import { firstIssue, formValues, safeNextPath } from "@/lib/action-result";
+import { isValidTimeZone } from "@/lib/datetime";
+import { localeOrDefault } from "@/lib/domain/locale";
+import { getRequestLocale } from "@/i18n/locale.server";
+import { setLocaleCookie } from "@/i18n/cookie";
+
+/** Fuso do navegador (campo escondido): vira o fuso do perfil no cadastro. */
+const SIGNUP_TZ_COOKIE = "ps_signup_tz";
+
+function browserTimeZone(formData: FormData): string | null {
+  const tz = formData.get("timeZone");
+  return typeof tz === "string" && tz.length <= 64 && isValidTimeZone(tz) ? tz : null;
+}
+
+/** Depois do login, o painel segue o idioma salvo no perfil. */
+async function applyProfileLocale(supabase: Awaited<ReturnType<typeof createClient>>, userId: string) {
+  const { data } = await supabase.from("profiles").select("locale").eq("id", userId).maybeSingle();
+  if (data) await setLocaleCookie(localeOrDefault(data.locale));
+}
 
 export type AuthFormState = { error?: string; message?: string };
 
@@ -41,7 +59,8 @@ export async function signUpAction(_prev: AuthFormState, formData: FormData): Pr
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      data: { name: parsed.data.name },
+      // Idioma e fuso do navegador vão para o perfil (trigger handle_new_user).
+      data: { name: parsed.data.name, locale: await getRequestLocale(), time_zone: browserTimeZone(formData) },
       emailRedirectTo: `${publicEnv.appUrl}/auth/callback?next=/dashboard`,
     },
   });
@@ -57,8 +76,9 @@ export async function signInAction(_prev: AuthFormState, formData: FormData): Pr
   if (!parsed.success) return { error: firstIssue(parsed.error) };
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword(parsed.data);
+  const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) return { error: translateAuthError(error.message) };
+  await applyProfileLocale(supabase, data.user.id);
 
   redirect(safeNextPath(values.next));
 }
@@ -68,6 +88,9 @@ export async function signInWithGoogleAction(formData: FormData): Promise<void> 
   // Origem real da requisição (localhost, preview ou produção). O Supabase só aceita
   // redirectTo que esteja nas Redirect URLs do projeto.
   const origin = (await headers()).get("origin") ?? publicEnv.appUrl;
+  // Se for o primeiro acesso, o retorno (/auth/callback) usa o fuso do navegador no perfil novo.
+  const tz = browserTimeZone(formData);
+  if (tz) (await cookies()).set(SIGNUP_TZ_COOKIE, tz, { path: "/", maxAge: 600, sameSite: "lax", httpOnly: true });
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithOAuth({

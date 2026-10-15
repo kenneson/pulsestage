@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "description": "Enquetes, quiz, nuvem de palavras e sorteio ao vivo para aulas, palestras e treinamentos. Para universidades, escolas e empresas."
+  },
+  "actions": {
+    "save": "Salvar",
+    "saving": "Salvando…",
+    "saved": "Salvo",
+    "cancel": "Cancelar",
+    "close": "Fechar",
+    "back": "Voltar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "duplicate": "Duplicar",
+    "copy": "Copiar",
+    "copied": "Copiado!",
+    "confirm": "Confirmar",
+    "continue": "Continuar",
+    "remove": "Remover",
+    "add": "Adicionar",
+    "create": "Criar",
+    "send": "Enviar",
+    "sending": "Enviando…",
+    "retry": "Tentar de novo",
+    "open": "Abrir",
+    "search": "Buscar",
+    "loading": "Carregando…",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "show": "Mostrar",
+    "hide": "Ocultar",
+    "seeAll": "Ver tudo"
+  },
+  "theme": {
+    "label": "Tema",
+    "light": "Claro",
+    "dark": "Escuro",
+    "system": "Sistema",
+    "useLight": "Usar tema claro",
+    "useDark": "Usar tema escuro"
+  },
+  "locale": {
+    "label": "Idioma",
+    "change": "Mudar idioma"
+  },
+  "confirm": {
+    "title": "Tem certeza?"
+  },
+  "states": {
+    "empty": "Nada por aqui.",
+    "noDate": "Sem data"
+  },
+  "errorPage": {
+    "title": "Algo deu errado",
+    "description": "Tente de novo. Se continuar, recarregue a página."
+  },
+  "notFound": {
+    "title": "Página não encontrada",
+    "description": "O endereço pode ter mudado ou a sessão já foi encerrada.",
+    "home": "Ir para o início"
+  }
+}

@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Plus_Jakarta_Sans } from "next/font/google";
+import { getLocale, getTranslations } from "next-intl/server";
 import { ThemedToaster } from "@/components/theme";
+import { IntlProvider } from "@/i18n/provider";
+import { publicEnv } from "@/lib/env";
 import "./globals.css";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
@@ -15,10 +18,23 @@ const jakarta = Plus_Jakarta_Sans({
 // Aplica o tema salvo (ou o do sistema) antes da primeira pintura, sem flash.
 const THEME_SCRIPT = `try{var t=localStorage.getItem("theme");if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")}catch(e){}`;
 
-export const metadata: Metadata = {
-  title: { default: "PulseStage", template: "%s · PulseStage" },
-  description: "Enquetes, quiz, nuvem de palavras e sorteio ao vivo para aulas, palestras e treinamentos. Para universidades, escolas e empresas.",
-};
+function safeUrl(value: string): URL | undefined {
+  try {
+    return new URL(value);
+  } catch {
+    return undefined;
+  }
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("common.meta");
+  return {
+    // Completa os caminhos relativos (canonical, hreflang, Open Graph) com o domínio público.
+    metadataBase: safeUrl(publicEnv.appUrl),
+    title: { default: "PulseStage", template: "%s · PulseStage" },
+    description: t("description"),
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -29,16 +45,19 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale();
   return (
     // suppressHydrationWarning: o script abaixo adiciona a classe `dark` antes da hidratação.
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body className={`${geist.variable} ${jakarta.variable} min-h-dvh font-sans`}>
-        {children}
-        <ThemedToaster />
+        <IntlProvider>
+          {children}
+          <ThemedToaster />
+        </IntlProvider>
       </body>
     </html>
   );

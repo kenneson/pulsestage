@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
+import { TimeZoneInput } from "./time-zone-input";
 import { signInAction, signInWithGoogleAction, signUpAction, type AuthFormState } from "@/features/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,6 +33,7 @@ function GoogleSignIn({ next }: { next?: string }) {
     <>
       <form action={signInWithGoogleAction}>
         {next ? <input type="hidden" name="next" value={next} /> : null}
+        <TimeZoneInput />
         <GoogleSubmit />
       </form>
       <div className="flex items-center gap-3 text-xs text-muted-foreground">
@@ -95,6 +97,7 @@ export function SignUpForm() {
           <div className="grid gap-4">
             <GoogleSignIn />
             <form action={action} className="grid gap-4">
+              <TimeZoneInput />
               <Field>
                 <Label htmlFor="name">Nome</Label>
                 <Input id="name" name="name" autoComplete="name" required maxLength={120} />

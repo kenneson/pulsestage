@@ -40,9 +40,9 @@ test("verifySession exige 5 pessoas respondendo e 10 minutos de palestra", () =>
   assert.deepEqual(verifySession({ responders: 5, talkSeconds: 600 }), { verified: true });
   const few = verifySession({ responders: 4, talkSeconds: 3600 });
   assert.equal(few.verified, false);
-  assert.match(few.verified ? "" : few.reason, /5 pessoas.*teve 4/);
+  assert.equal(few.verified ? "" : few.reason, "verify.needResponders|min=5|had=4");
   const short = verifySession({ responders: 50, talkSeconds: 599 });
-  assert.match(short.verified ? "" : short.reason, /10 minutos.*teve 9/);
+  assert.equal(short.verified ? "" : short.reason, "verify.needTalkTime|min=10|had=9");
 });
 
 test("audienceRange mostra faixas, não o número exato", () => {

@@ -50,6 +50,7 @@ export function leaderboard(
   participants: readonly LeaderboardParticipant[],
   latestQuizId: string | null,
   limit = 10,
+  anonymous = "Participante",
 ): LeaderboardEntry[] {
   const now = totalsOf(responses, null);
   const before = totalsOf(responses, latestQuizId);
@@ -64,7 +65,7 @@ export function leaderboard(
       const previousIndex = beforeOrder.indexOf(id);
       return {
         key: id.slice(0, 8),
-        name: participantLabel(participant, id),
+        name: participantLabel(participant, id, anonymous),
         avatar: avatarOf(participant?.avatar)?.emoji ?? null,
         rank: index + 1,
         points: current.points,

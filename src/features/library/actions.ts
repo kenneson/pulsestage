@@ -175,6 +175,7 @@ export async function duplicateSessionAction(sessionId: string, raw: unknown = {
         reactions_enabled: source.reactions_enabled,
         profanity_filter: source.profanity_filter,
         moderate_open_text: source.moderate_open_text,
+        locale: source.locale,
         join_code: generateJoinCode(),
       })
       .select("id")

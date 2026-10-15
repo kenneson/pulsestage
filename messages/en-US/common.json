@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "description": "Live polls, quizzes, word clouds, and giveaways for classes, talks, and training sessions. For universities, schools, and companies."
+  },
+  "actions": {
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "cancel": "Cancel",
+    "close": "Close",
+    "back": "Back",
+    "delete": "Delete",
+    "edit": "Edit",
+    "duplicate": "Duplicate",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "confirm": "Confirm",
+    "continue": "Continue",
+    "remove": "Remove",
+    "add": "Add",
+    "create": "Create",
+    "send": "Send",
+    "sending": "Sending…",
+    "retry": "Try again",
+    "open": "Open",
+    "search": "Search",
+    "loading": "Loading…",
+    "next": "Next",
+    "previous": "Previous",
+    "show": "Show",
+    "hide": "Hide",
+    "seeAll": "See all"
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "useLight": "Use light theme",
+    "useDark": "Use dark theme"
+  },
+  "locale": {
+    "label": "Language",
+    "change": "Change language"
+  },
+  "confirm": {
+    "title": "Are you sure?"
+  },
+  "states": {
+    "empty": "Nothing here yet.",
+    "noDate": "No date"
+  },
+  "errorPage": {
+    "title": "Something went wrong",
+    "description": "Please try again. If it keeps happening, reload the page."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The address may have changed, or the session may have already ended.",
+    "home": "Go to the home page"
+  }
+}

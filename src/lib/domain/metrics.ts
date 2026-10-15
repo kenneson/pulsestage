@@ -186,14 +186,20 @@ export function quizStats(responses: readonly ResponseRow[]): QuizStats {
 
 export type RankingEntry = { participantId: string; name: string; avatar: string | null; points: number; correct: number };
 
-export function participantLabel(p: Pick<ParticipantRow, "id" | "display_name"> | undefined, id: string): string {
-  return p?.display_name || `Participante ${id.slice(0, 4).toUpperCase()}`;
+/** Nome escolhido ou "Participante XXXX". `anonymous` é a palavra no idioma de quem lê (domain.anonymousParticipant). */
+export function participantLabel(
+  p: Pick<ParticipantRow, "id" | "display_name"> | undefined,
+  id: string,
+  anonymous = "Participante",
+): string {
+  return p?.display_name || `${anonymous} ${id.slice(0, 4).toUpperCase()}`;
 }
 
 export function quizRanking(
   quizResponses: readonly ResponseRow[],
   participants: readonly ParticipantRow[],
   limit = 10,
+  anonymous = "Participante",
 ): RankingEntry[] {
   const byId = new Map(participants.map((p) => [p.id, p]));
   const totals = new Map<string, RankingEntry>();
@@ -202,7 +208,7 @@ export function quizRanking(
     if (!value) continue;
     const entry = totals.get(r.participant_id) ?? {
       participantId: r.participant_id,
-      name: participantLabel(byId.get(r.participant_id), r.participant_id),
+      name: participantLabel(byId.get(r.participant_id), r.participant_id, anonymous),
       avatar: avatarOf(byId.get(r.participant_id)?.avatar)?.emoji ?? null,
       points: 0,
       correct: 0,

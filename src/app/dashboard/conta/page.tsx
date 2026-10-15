@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { getSpeakerProfile } from "@/lib/data/profile";
-import { listSurveyTemplates } from "@/lib/data/surveys";
+import { generalTemplateId, listSurveyTemplates } from "@/lib/data/surveys";
 import { buttonVariants } from "@/components/ui/button";
 import {
   AvatarForm,
@@ -57,7 +57,7 @@ export default async function AccountPage() {
   const supabase = await createClient();
   const [{ data: auth }, templates] = await Promise.all([supabase.auth.getUser(), listSurveyTemplates(supabase)]);
   const providers = new Set((auth.user?.identities ?? []).map((i) => i.provider));
-  const defaultSurvey = profile.defaultSurveyTemplateId ?? templates.find((t) => t.slug === "geral")?.id ?? "";
+  const defaultSurvey = profile.defaultSurveyTemplateId ?? generalTemplateId(templates, profile.locale) ?? "";
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6">

@@ -30,6 +30,8 @@ import type { McpContext } from "./auth";
 import { summarizeForAssistant } from "./results";
 import { listSessionQuestions, loadReactions } from "@/lib/data/engagement";
 import { tallyReactions } from "@/lib/domain/reactions";
+import { DEFAULT_LOCALE, LOCALE_NAME, LOCALES, toLocale } from "@/lib/domain/locale";
+import { getMessageTranslator } from "@/i18n/server";
 
 // Servidor MCP do PulseStage: um por requisição (sem estado), já com o usuário autenticado.
 
@@ -65,11 +67,12 @@ const timeSchema = z.string().regex(/^\d{2}:\d{2}$/, "Use HH:MM.").describe("Hor
 async function speakerPrefs(ctx: McpContext) {
   const { data } = await ctx.supabase
     .from("profiles")
-    .select("time_zone, default_survey_template_id, default_duration_minutes")
+    .select("time_zone, default_survey_template_id, default_duration_minutes, locale")
     .eq("id", ctx.userId)
     .maybeSingle();
   const timeZone = data?.time_zone && isValidTimeZone(data.time_zone) ? data.time_zone : APP_TIME_ZONE;
-  // Sem padrão no perfil, o mesmo do formulário do painel: o modelo "geral" da plataforma.
+  const locale = toLocale(data?.locale) ?? DEFAULT_LOCALE;
+  // Sem padrão no perfil, o mesmo do formulário do painel: o modelo "geral" da plataforma, no idioma do perfil.
   let surveyTemplateId = data?.default_survey_template_id ?? null;
   if (!surveyTemplateId) {
     const { data: general } = await ctx.supabase
@@ -77,10 +80,13 @@ async function speakerPrefs(ctx: McpContext) {
       .select("id")
       .is("owner_id", null)
       .eq("slug", "geral")
+      .eq("locale", locale)
       .maybeSingle();
     surveyTemplateId = general?.id ?? null;
   }
-  return { timeZone, surveyTemplateId, duration: data?.default_duration_minutes ?? null };
+  // Erros das regras do painel (validação, core.*) no idioma do palestrante.
+  const translate = (await getMessageTranslator(locale)).message;
+  return { timeZone, surveyTemplateId, duration: data?.default_duration_minutes ?? null, locale, translate };
 }
 
 /** Sessão do usuário que ainda pode ser editada. */
@@ -102,6 +108,8 @@ async function sessionView(ctx: McpContext, session: SessionRow) {
     status_label: isSessionStatus(session.status) ? STATUS_LABEL[session.status] : session.status,
     scheduled_at: session.scheduled_at ? formatDateTime(session.scheduled_at, prefs.timeZone) : null,
     planned_minutes: session.estimated_duration_minutes,
+    language: session.locale,
+    language_name: LOCALE_NAME[toLocale(session.locale) ?? DEFAULT_LOCALE],
     join_code: session.join_code,
     slides:
       session.slide_count > 0
@@ -236,10 +244,16 @@ export function buildMcpServer(ctx: McpContext): McpServer {
           .uuid()
           .optional()
           .describe("Modelo de pesquisa pós-evento (de list_survey_templates). Sem ele, usa o padrão do palestrante."),
+        language: z
+          .enum(LOCALES)
+          .optional()
+          .describe(
+            "Idioma da sessão (telão e celular da plateia): pt-BR, es-419 (espanhol latino) ou en-US. Sem ele, o do perfil. Escreva as perguntas neste idioma.",
+          ),
       },
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     },
-    async ({ title, description, date, time, duration_minutes, survey_template_id }) => {
+    async ({ title, description, date, time, duration_minutes, survey_template_id, language }) => {
       const prefs = await speakerPrefs(ctx);
       let scheduledAt: string | null = null;
       if (date) {
@@ -257,8 +271,9 @@ export function buildMcpServer(ctx: McpContext): McpServer {
         duration: duration_minutes ?? prefs.duration,
         joinCode: null,
         surveyTemplateId: templateId,
+        locale: language ?? prefs.locale,
       });
-      if (!created.ok) return error(created.error);
+      if (!created.ok) return error(prefs.translate(created.error));
       const session = await getOwnedSession(ctx.supabase, created.data.id);
       if (!session) return error("A sessão foi criada, mas não foi possível lê-la.");
       return json({ created: true, ...(await sessionView(ctx, session)) });
@@ -326,7 +341,8 @@ export function buildMcpServer(ctx: McpContext): McpServer {
     async ({ session_id, interactions }) => {
       const session = await editableSession(ctx, session_id);
       if (typeof session === "string") return error(session);
-      const batch = convertBatch(interactions);
+      const prefs = await speakerPrefs(ctx);
+      const batch = convertBatch(interactions, prefs.translate);
       if (!batch.ok) return error(`${batch.error} Nada foi gravado.`);
 
       const existing = await getSessionInteractions(ctx.supabase, session.id);
@@ -335,7 +351,7 @@ export function buildMcpServer(ctx: McpContext): McpServer {
         const result = await createInteraction(ctx.supabase, session.id, item.input);
         if (!result.ok) {
           return error(
-            `${result.error} ${created.length} de ${batch.items.length} interações foram gravadas antes do erro (no fim do roteiro); confira com get_session.`,
+            `${prefs.translate(result.error)} ${created.length} de ${batch.items.length} interações foram gravadas antes do erro (no fim do roteiro); confira com get_session.`,
           );
         }
         created.push({ id: result.data.id, afterSlide: item.afterSlide });
@@ -374,7 +390,8 @@ export function buildMcpServer(ctx: McpContext): McpServer {
     async ({ session_id, interaction_id, ...item }) => {
       const session = await editableSession(ctx, session_id);
       if (typeof session === "string") return error(session);
-      const converted = toInteractionInput(item);
+      const prefs = await speakerPrefs(ctx);
+      const converted = toInteractionInput(item, prefs.translate);
       if (!converted.ok) return error(converted.error);
 
       // Mantém as alternativas existentes (mesmo id) pela posição, preservando imagens e respostas.
@@ -391,7 +408,7 @@ export function buildMcpServer(ctx: McpContext): McpServer {
       }
       if (foreignImage(input, session.speaker_id)) return error("Imagem inválida.");
       const saved = await updateInteraction(ctx.supabase, session.id, interaction_id, input);
-      if (!saved.ok) return error(saved.error);
+      if (!saved.ok) return error(prefs.translate(saved.error));
 
       if (item.after_slide !== undefined) {
         const all = await getSessionInteractions(ctx.supabase, session.id);

@@ -35,7 +35,7 @@ export type Avatar = (typeof AVATARS)[number];
 export type AvatarKey = Avatar["key"];
 
 const AVATAR_KEYS = AVATARS.map((a) => a.key) as [AvatarKey, ...AvatarKey[]];
-export const avatarKeySchema = z.enum(AVATAR_KEYS, { error: "Avatar inválido." });
+export const avatarKeySchema = z.enum(AVATAR_KEYS, { error: "validation.invalidAvatar" });
 
 /** Avatar de uma chave guardada no banco; chaves antigas ou desconhecidas viram null. */
 export function avatarOf(key: string | null | undefined): Avatar | null {
@@ -97,7 +97,7 @@ const UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 const IMAGE_PATH = new RegExp(`^(${UUID})/${UUID}\\.(webp|jpg)$`);
 
 /** `{speaker}/{uuid}.webp` (ou .jpg, quando o navegador não codifica WebP). */
-export const optionImagePathSchema = z.string().regex(IMAGE_PATH, "Imagem inválida.");
+export const optionImagePathSchema = z.string().regex(IMAGE_PATH, "validation.invalidImage");
 
 /** Dono da pasta da imagem; null se o caminho não segue o formato. */
 export function imageOwner(path: string): string | null {

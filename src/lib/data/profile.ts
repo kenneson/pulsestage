@@ -3,6 +3,7 @@ import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { APP_TIME_ZONE } from "@/lib/datetime";
+import { DEFAULT_LOCALE, toLocale, type Locale } from "@/lib/domain/locale";
 
 export type SpeakerProfile = {
   id: string;
@@ -13,6 +14,8 @@ export type SpeakerProfile = {
   timeZone: string;
   defaultSurveyTemplateId: string | null;
   defaultDurationMinutes: number | null;
+  /** Idioma do painel e padrão das sessões novas. */
+  locale: Locale;
 };
 
 /** Perfil do speaker logado, lido uma vez por requisição. Redireciona ao login sem sessão. */
@@ -33,5 +36,6 @@ export const getSpeakerProfile = cache(async (): Promise<SpeakerProfile> => {
     timeZone: data?.time_zone ?? APP_TIME_ZONE,
     defaultSurveyTemplateId: data?.default_survey_template_id ?? null,
     defaultDurationMinutes: data?.default_duration_minutes ?? null,
+    locale: toLocale(data?.locale) ?? DEFAULT_LOCALE,
   };
 });

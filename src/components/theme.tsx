@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
+import { useTranslations } from "next-intl";
 import { Toaster } from "sonner";
 import { MonitorIcon, MoonIcon, SunIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -22,8 +23,9 @@ function useIsDark() {
 }
 
 export function ThemeToggle() {
+  const t = useTranslations("common.theme");
   const dark = useIsDark();
-  const label = dark ? "Usar tema claro" : "Usar tema escuro";
+  const label = dark ? t("useLight") : t("useDark");
 
   function toggle() {
     document.documentElement.classList.toggle("dark", !dark);
@@ -59,6 +61,7 @@ function readChoice(): ThemeChoiceValue {
 
 /** Claro, escuro ou seguir o sistema (preferência deste navegador). */
 export function ThemeChoice() {
+  const t = useTranslations("common.theme");
   // Re-renderiza quando o toggle da barra lateral muda a classe do <html>.
   useIsDark();
   const choice = useSyncExternalStore(subscribe, readChoice, () => "system" as ThemeChoiceValue);
@@ -78,13 +81,13 @@ export function ThemeChoice() {
   }
 
   const options: { value: ThemeChoiceValue; label: string; icon: React.ReactNode }[] = [
-    { value: "light", label: "Claro", icon: <SunIcon /> },
-    { value: "dark", label: "Escuro", icon: <MoonIcon /> },
-    { value: "system", label: "Sistema", icon: <MonitorIcon /> },
+    { value: "light", label: t("light"), icon: <SunIcon /> },
+    { value: "dark", label: t("dark"), icon: <MoonIcon /> },
+    { value: "system", label: t("system"), icon: <MonitorIcon /> },
   ];
 
   return (
-    <div role="radiogroup" aria-label="Tema" className="inline-flex w-fit overflow-hidden rounded-md border">
+    <div role="radiogroup" aria-label={t("label")} className="inline-flex w-fit overflow-hidden rounded-md border">
       {options.map((o) => (
         <button
           key={o.value}

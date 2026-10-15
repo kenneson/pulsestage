@@ -9,6 +9,7 @@ import { fail, ok, type ActionResult } from "@/lib/action-result";
 
 // Escrita de interações compartilhada pelas Server Actions do painel e pelo MCP.
 // Recebe o cliente já autenticado (cookie do painel ou token OAuth): o RLS garante o dono.
+// Erros saem como chaves da área "errors" (core.*): quem chama traduz com getMessageTranslator().
 
 async function responseCount(supabase: ServerSupabase, interactionId: string): Promise<number> {
   const { count, error } = await supabase
@@ -50,7 +51,7 @@ export async function createInteraction(
     .order("position", { ascending: false })
     .limit(1)
     .maybeSingle();
-  if (lastError) return fail("Não foi possível criar a interação.");
+  if (lastError) return fail("core.interactionCreateFailed");
 
   const created = await supabase
     .from("interactions")
@@ -64,14 +65,14 @@ export async function createInteraction(
     })
     .select("id")
     .single();
-  if (created.error) return fail("Não foi possível criar a interação.");
+  if (created.error) return fail("core.interactionCreateFailed");
 
   const rows = optionRows(created.data.id, input);
   if (rows.length > 0) {
     const { error } = await supabase.from("interaction_options").insert(rows);
     if (error) {
       await supabase.from("interactions").delete().eq("id", created.data.id);
-      return fail("Não foi possível salvar as alternativas.");
+      return fail("core.optionsSaveFailed");
     }
   }
   return ok({ id: created.data.id });
@@ -90,27 +91,27 @@ export async function updateInteraction(
     .eq("id", interactionId)
     .eq("session_id", sessionId)
     .maybeSingle();
-  if (existingError || !existing) return fail("Interação não encontrada.");
+  if (existingError || !existing) return fail("core.interactionNotFound");
 
   const { data: currentOptions, error: optionsError } = await supabase
     .from("interaction_options")
     .select("*")
     .eq("interaction_id", interactionId);
-  if (optionsError) return fail("Não foi possível carregar as alternativas.");
+  if (optionsError) return fail("core.optionsLoadFailed");
 
   const answered = (await responseCount(supabase, interactionId)) > 0;
   const rows = optionRows(interactionId, input);
 
   if (answered) {
     // Respostas guardam o id da opção e o acerto: estrutura precisa ficar estável.
-    if (existing.type !== input.type) return fail("Já existem respostas: o tipo não pode mudar.");
+    if (existing.type !== input.type) return fail("core.typeLocked");
     const currentIds = new Set(currentOptions.map((o) => o.id));
     const sameSet = rows.length === currentOptions.length && rows.every((r) => currentIds.has(r.id));
-    if (!sameSet) return fail("Já existem respostas: edite o texto das alternativas, sem adicionar ou remover.");
+    if (!sameSet) return fail("core.optionsLocked");
     if (input.type === "quiz") {
       const before = currentOptions.find((o) => o.is_correct)?.id;
       const after = rows.find((r) => r.is_correct)?.id;
-      if (before !== after) return fail("Já existem respostas: a alternativa correta não pode mudar.");
+      if (before !== after) return fail("core.correctLocked");
     }
   }
 
@@ -118,18 +119,18 @@ export async function updateInteraction(
     .from("interactions")
     .update({ type: input.type, title: input.title, description: input.description || null, settings: input.settings })
     .eq("id", interactionId);
-  if (updateError) return fail("Não foi possível salvar a interação.");
+  if (updateError) return fail("core.interactionSaveFailed");
 
   const keepIds = new Set(rows.map((r) => r.id));
   const toDelete = currentOptions.filter((o) => !keepIds.has(o.id)).map((o) => o.id);
   if (toDelete.length > 0) {
     const { error } = await supabase.from("interaction_options").delete().in("id", toDelete);
-    if (error) return fail("Não foi possível atualizar as alternativas.");
+    if (error) return fail("core.optionsUpdateFailed");
   }
   if (hasOptions(input.type) && rows.length > 0) {
     // Upsert numa única requisição: a constraint de posição é verificada no commit.
     const { error } = await supabase.from("interaction_options").upsert(rows, { onConflict: "id" });
-    if (error) return fail("Não foi possível atualizar as alternativas.");
+    if (error) return fail("core.optionsUpdateFailed");
   }
 
   await removeUnusedOptionImages(

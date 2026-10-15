@@ -1,3 +1,5 @@
+import { DEFAULT_LOCALE, type Locale } from "./domain/locale.ts";
+
 export const APP_TIME_ZONE = process.env.NEXT_PUBLIC_APP_TIME_ZONE || "America/Sao_Paulo";
 
 /** Diferença (ms) entre o horário de parede no fuso e UTC para um instante. */
@@ -45,19 +47,20 @@ export function utcToZonedParts(iso: string | null, timeZone = APP_TIME_ZONE): {
   return { date: `${get("year")}-${get("month")}-${get("day")}`, time: `${get("hour")}:${get("minute")}` };
 }
 
-export function formatDateTime(iso: string | null, timeZone = APP_TIME_ZONE): string {
-  if (!iso) return "Sem data";
-  return new Intl.DateTimeFormat("pt-BR", { timeZone, dateStyle: "medium", timeStyle: "short" }).format(new Date(iso));
-}
-
-export function formatDate(iso: string | null, timeZone = APP_TIME_ZONE): string {
-  if (!iso) return "Sem data";
-  return new Intl.DateTimeFormat("pt-BR", { timeZone, dateStyle: "medium" }).format(new Date(iso));
-}
-
-export function formatShortDate(iso: string | null, timeZone = APP_TIME_ZONE): string {
+// Datas no fuso do speaker e no idioma de quem lê. Sem data, "—" (a tela pode trocar por um texto).
+export function formatDateTime(iso: string | null, timeZone = APP_TIME_ZONE, locale: Locale = DEFAULT_LOCALE): string {
   if (!iso) return "—";
-  return new Intl.DateTimeFormat("pt-BR", { timeZone, day: "2-digit", month: "short" }).format(new Date(iso));
+  return new Intl.DateTimeFormat(locale, { timeZone, dateStyle: "medium", timeStyle: "short" }).format(new Date(iso));
+}
+
+export function formatDate(iso: string | null, timeZone = APP_TIME_ZONE, locale: Locale = DEFAULT_LOCALE): string {
+  if (!iso) return "—";
+  return new Intl.DateTimeFormat(locale, { timeZone, dateStyle: "medium" }).format(new Date(iso));
+}
+
+export function formatShortDate(iso: string | null, timeZone = APP_TIME_ZONE, locale: Locale = DEFAULT_LOCALE): string {
+  if (!iso) return "—";
+  return new Intl.DateTimeFormat(locale, { timeZone, day: "2-digit", month: "short" }).format(new Date(iso));
 }
 
 /** Fusos oferecidos na tela de preferências (qualquer fuso IANA válido é aceito no servidor). */
@@ -73,7 +76,21 @@ export const TIME_ZONE_OPTIONS = [
   { value: "America/Porto_Velho", label: "Porto Velho (UTC−4)" },
   { value: "America/Rio_Branco", label: "Rio Branco (UTC−5)" },
   { value: "America/Noronha", label: "Fernando de Noronha (UTC−2)" },
+  { value: "America/Bogota", label: "Bogotá (UTC−5)" },
+  { value: "America/Santiago", label: "Santiago de Chile" },
+  { value: "America/Lima", label: "Lima (UTC−5)" },
+  { value: "America/Mexico_City", label: "Ciudad de México (UTC−6)" },
+  { value: "America/Argentina/Buenos_Aires", label: "Buenos Aires (UTC−3)" },
+  { value: "America/Montevideo", label: "Montevideo (UTC−3)" },
+  { value: "America/New_York", label: "New York (Eastern)" },
+  { value: "America/Chicago", label: "Chicago (Central)" },
+  { value: "America/Denver", label: "Denver (Mountain)" },
+  { value: "America/Phoenix", label: "Phoenix (Arizona)" },
+  { value: "America/Los_Angeles", label: "Los Angeles (Pacific)" },
+  { value: "America/Anchorage", label: "Anchorage (Alaska)" },
+  { value: "Pacific/Honolulu", label: "Honolulu (Hawaii)" },
   { value: "Europe/Lisbon", label: "Lisboa" },
+  { value: "Europe/Madrid", label: "Madrid" },
   { value: "UTC", label: "UTC" },
 ] as const;
 

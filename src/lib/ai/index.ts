@@ -1,3 +1,4 @@
+import type { Locale } from "@/lib/domain/locale";
 import "server-only";
 import { serverEnv } from "@/lib/env.server";
 import { AnthropicProvider } from "./providers/anthropic";
@@ -66,13 +67,18 @@ export function isAIConfigured(): boolean {
   }
 }
 
-export async function generateInsights(provider: AIProvider, input: InsightInput): Promise<InsightOutput> {
-  return parseInsightOutput(await provider.complete(SYSTEM_PROMPT, buildUserPrompt(input), { temperature: 0.2 }));
+/** Insights para o palestrante, no idioma do painel dele. */
+export async function generateInsights(provider: AIProvider, input: InsightInput, locale: Locale = "pt-BR"): Promise<InsightOutput> {
+  return parseInsightOutput(await provider.complete(SYSTEM_PROMPT, buildUserPrompt(input, locale), { temperature: 0.2 }));
 }
 
 /** Perguntas sugeridas para o roteiro, já validadas com o schema do builder. */
-export async function suggestInteractions(provider: AIProvider, input: QuestionsInput): Promise<ParsedInteractionInput[]> {
-  // Temperatura mais alta: "Gerar outras sugestões" precisa de variedade.
-  const raw = await provider.complete(QUESTIONS_SYSTEM_PROMPT, buildQuestionsPrompt(input), { temperature: 0.8 });
+export async function suggestInteractions(
+  provider: AIProvider,
+  input: QuestionsInput,
+  locale: Locale = "pt-BR",
+): Promise<ParsedInteractionInput[]> {
+  // Temperatura mais alta: "Gerar outras sugestões" precisa de variedade. Perguntas no idioma da sessão.
+  const raw = await provider.complete(QUESTIONS_SYSTEM_PROMPT, buildQuestionsPrompt(input, locale), { temperature: 0.8 });
   return parseQuestionSuggestions(raw, [...input.existing, ...input.avoid]);
 }

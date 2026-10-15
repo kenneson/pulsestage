@@ -2,6 +2,7 @@
 
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { loadSessionAnalytics } from "@/lib/data/analytics";
 import { aiConfigProblem, generateInsights, getAIProvider } from "@/lib/ai";
@@ -37,7 +38,7 @@ export async function generateInsightsAction(sessionId: string): Promise<ActionR
   const options = data.interactionsWithOptions.flatMap((i) => i.options);
   let output: InsightOutput;
   try {
-    output = await generateInsights(provider, buildInsightInput(data, options));
+    output = await generateInsights(provider, buildInsightInput(data, options), await getLocale());
   } catch (error) {
     return fail(error instanceof AIProviderError ? error.message : "Falha ao gerar insights.");
   }

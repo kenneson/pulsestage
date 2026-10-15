@@ -40,6 +40,24 @@ test("containsProfanity pega variações e não barra palavras comuns", () => {
   }
 });
 
+test("containsProfanity segue o idioma da sessão", () => {
+  for (const bad of ["weón", "WEON", "hijueputa", "conchetumare", "gonorrea", "malparido", "qué mierdita", "fuck"]) {
+    assert.equal(containsProfanity(bad, "es-419"), true, bad);
+  }
+  for (const ok of ["vergüenza", "las tres y pico", "coger el bus", "Culiacán", "una concha en la playa", "impresora HP", "cuidado"]) {
+    assert.equal(containsProfanity(ok, "es-419"), false, ok);
+  }
+  for (const bad of ["bullshit", "you ass", "f*ck".replace("*", "u"), "sh1t"]) {
+    assert.equal(containsProfanity(bad, "en-US"), true, bad);
+  }
+  for (const ok of ["class", "assist", "Scunthorpe", "cocktail", "pass"]) {
+    assert.equal(containsProfanity(ok, "en-US"), false, ok);
+  }
+  // "porra" só barra onde é palavrão; "ass" só em inglês.
+  assert.equal(containsProfanity("porra", "en-US"), false);
+  assert.equal(containsProfanity("ass", "pt-BR"), false);
+});
+
 test("askQuestionSchema", () => {
   assert.equal(askQuestionSchema.safeParse({ body: " Como começar? ", withName: false }).success, true);
   assert.equal(askQuestionSchema.safeParse({ body: "a", withName: false }).success, false);

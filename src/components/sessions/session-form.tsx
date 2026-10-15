@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 import {
   createSessionAction,
@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Field, Input, Label, Select, Textarea } from "@/components/ui/input";
 import { Alert } from "@/components/ui/misc";
+import { LOCALE_NAME, LOCALES, isLocale, type Locale } from "@/lib/domain/locale";
 
 type Defaults = {
   title: string;
@@ -19,11 +20,21 @@ type Defaults = {
   duration: string;
   joinCode: string;
   surveyTemplateId: string;
+  locale: Locale;
 };
 
-export type SurveyOption = { id: string; name: string; isPlatform: boolean };
+export type SurveyOption = { id: string; name: string; isPlatform: boolean; locale: string; slug: string | null };
 
-const EMPTY: Defaults = { title: "", description: "", date: "", time: "", duration: "60", joinCode: "", surveyTemplateId: "" };
+const EMPTY: Defaults = {
+  title: "",
+  description: "",
+  date: "",
+  time: "",
+  duration: "60",
+  joinCode: "",
+  surveyTemplateId: "",
+  locale: "pt-BR",
+};
 const initial: SessionFormState = {};
 
 export function SessionForm({
@@ -42,6 +53,20 @@ export function SessionForm({
 }) {
   const action = sessionId ? updateSessionAction.bind(null, sessionId) : createSessionAction;
   const [state, formAction, pending] = useActionState(action, initial);
+  const [locale, setLocale] = useState<Locale>(defaults.locale);
+  const [templateId, setTemplateId] = useState(defaults.surveyTemplateId);
+  // Modelos prontos no idioma da sessão (o da plateia); os do speaker aparecem sempre.
+  const platform = surveyOptions.filter((o) => o.isPlatform && o.locale === locale);
+
+  function changeLocale(next: Locale) {
+    setLocale(next);
+    // Modelo pronto escolhido: troca pelo mesmo modelo no novo idioma.
+    const current = surveyOptions.find((o) => o.id === templateId);
+    if (current?.isPlatform) {
+      const same = surveyOptions.find((o) => o.isPlatform && o.locale === next && o.slug === current.slug);
+      if (same) setTemplateId(same.id);
+    }
+  }
 
   return (
     <form action={formAction} className="grid gap-5">
@@ -81,6 +106,24 @@ export function SessionForm({
         </Field>
       </div>
       <Field>
+        <Label htmlFor="locale">Idioma da sessão</Label>
+        <Select
+          id="locale"
+          name="locale"
+          value={locale}
+          onChange={(e) => isLocale(e.target.value) && changeLocale(e.target.value)}
+        >
+          {LOCALES.map((l) => (
+            <option key={l} value={l}>
+              {LOCALE_NAME[l]}
+            </option>
+          ))}
+        </Select>
+        <p className="text-xs text-muted-foreground">
+          O telão e o celular da plateia aparecem neste idioma, assim como o filtro de palavrões e as sugestões da IA.
+        </p>
+      </Field>
+      <Field>
         <Label htmlFor="joinCode">Código de entrada (opcional)</Label>
         <Input
           id="joinCode"
@@ -105,15 +148,18 @@ export function SessionForm({
           </>
         ) : (
           <>
-            <Select id="surveyTemplateId" name="surveyTemplateId" defaultValue={defaults.surveyTemplateId}>
+            <Select
+              id="surveyTemplateId"
+              name="surveyTemplateId"
+              value={templateId}
+              onChange={(e) => setTemplateId(e.target.value)}
+            >
               <optgroup label="Modelos prontos">
-                {surveyOptions
-                  .filter((o) => o.isPlatform)
-                  .map((o) => (
-                    <option key={o.id} value={o.id}>
-                      {o.name}
-                    </option>
-                  ))}
+                {platform.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.name}
+                  </option>
+                ))}
               </optgroup>
               {surveyOptions.some((o) => !o.isPlatform) ? (
                 <optgroup label="Meus modelos">

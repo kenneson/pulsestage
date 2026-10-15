@@ -20,6 +20,7 @@
     "d3-cloud": "^1.2.9",
     "d3-scale": "^4.0.2",
     "next": "^16.0.0",
+    "next-intl": "^4.14.9",
     "pdfjs-dist": "^6.4.299",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.0",

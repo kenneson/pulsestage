@@ -3,6 +3,7 @@
 // cadastro, os tempos do suspense (iguais para telão, sala ao vivo e celulares) e a sequência da roleta.
 
 import { z } from "zod";
+import { messageKey } from "./message-key.ts";
 
 // ---------------------------------------------------------------------------
 // Configuração
@@ -49,15 +50,15 @@ const optionalText = (max: number, message: string) =>
     .transform((v) => v ?? null);
 
 export const prizeInputSchema = z.object({
-  name: z.string().trim().min(1, "Dê um nome ao prêmio.").max(120, "Nome muito longo."),
-  description: optionalText(300, "Descrição muito longa."),
+  name: z.string().trim().min(1, "validation.prizeNameRequired").max(120, "validation.nameTooLong"),
+  description: optionalText(300, "validation.descriptionTooLong"),
   kind: prizeKindSchema,
   quantity: z
-    .number({ error: "Quantidade inválida." })
-    .int("Quantidade inválida.")
-    .min(1, "Pelo menos 1 ganhador.")
-    .max(MAX_PRIZE_QUANTITY, `No máximo ${MAX_PRIZE_QUANTITY} ganhadores por prêmio.`),
-  winnerMessage: optionalText(500, "Mensagem muito longa."),
+    .number({ error: "validation.invalidQuantity" })
+    .int("validation.invalidQuantity")
+    .min(1, "validation.atLeastOneWinner")
+    .max(MAX_PRIZE_QUANTITY, messageKey("validation.maxWinnersPerPrize", { max: MAX_PRIZE_QUANTITY })),
+  winnerMessage: optionalText(500, "validation.messageTooLong"),
 });
 
 export type PrizeInput = z.input<typeof prizeInputSchema>;

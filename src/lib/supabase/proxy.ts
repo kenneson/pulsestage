@@ -6,9 +6,18 @@ import type { Database } from "./database.types";
 
 const AUTH_PAGES = ["/login", "/signup"];
 
+type Options = {
+  /** URL sem o prefixo de idioma (/es/login → /login), servida no lugar da original. */
+  rewrite?: URL;
+  /** Cabeçalhos repassados à página (ex.: o idioma do prefixo). */
+  headers?: Headers;
+};
+
 /** Renova a sessão do Supabase e protege /dashboard. */
-export async function updateSession(request: NextRequest) {
-  let response = NextResponse.next({ request });
+export async function updateSession(request: NextRequest, options: Options = {}) {
+  const forward = { request: { headers: options.headers ?? request.headers } };
+  const pass = () => (options.rewrite ? NextResponse.rewrite(options.rewrite, forward) : NextResponse.next(forward));
+  let response = pass();
 
   const supabase = createServerClient<Database>(publicEnv.supabaseUrl, publicEnv.supabaseKey, {
     cookies: {
@@ -16,8 +25,11 @@ export async function updateSession(request: NextRequest) {
         return request.cookies.getAll();
       },
       setAll(cookiesToSet) {
-        for (const { name, value } of cookiesToSet) request.cookies.set(name, value);
-        response = NextResponse.next({ request });
+        for (const { name, value } of cookiesToSet) {
+          request.cookies.set(name, value);
+          options.headers?.set("cookie", request.headers.get("cookie") ?? "");
+        }
+        response = pass();
         for (const { name, value, options } of cookiesToSet) {
           response.cookies.set(name, value, options);
         }
@@ -29,7 +41,7 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const path = request.nextUrl.pathname;
+  const path = options.rewrite?.pathname ?? request.nextUrl.pathname;
 
   if (!user && path.startsWith("/dashboard")) {
     const url = request.nextUrl.clone();

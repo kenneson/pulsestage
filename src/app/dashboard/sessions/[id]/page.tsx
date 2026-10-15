@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { fetchAllRows } from "@/lib/supabase/fetch-all";
 import { getOwnedSession, getSessionInteractions } from "@/lib/data/sessions";
-import { listSurveyTemplates } from "@/lib/data/surveys";
+import { generalTemplateId, listSurveyTemplates } from "@/lib/data/surveys";
+import { localeOrDefault } from "@/lib/domain/locale";
 import { getSpeakerProfile } from "@/lib/data/profile";
 import { toPublicInteraction } from "@/lib/domain/interactions";
 import { utcToZonedParts, formatDateTime } from "@/lib/datetime";
@@ -64,8 +65,8 @@ export default async function SessionBuilderPage({
   // Biblioteca sem as perguntas que já estão nesta sessão.
   const ownIds = new Set(interactions.map((i) => i.id));
   const library = (await loadLibrary(supabase)).filter((item) => !ownIds.has(item.sourceId));
-  const surveyOptions = templates.map((t) => ({ id: t.id, name: t.name, isPlatform: t.isPlatform }));
-  const surveyTemplateId = session.survey_template_id ?? templates.find((t) => t.slug === "geral")?.id ?? "";
+  const surveyOptions = templates.map((t) => ({ id: t.id, name: t.name, isPlatform: t.isPlatform, locale: t.locale, slug: t.slug }));
+  const surveyTemplateId = session.survey_template_id ?? generalTemplateId(templates, localeOrDefault(session.locale)) ?? "";
 
   const responseCounts = new Map<string, number>();
   for (const r of responses) responseCounts.set(r.interaction_id, (responseCounts.get(r.interaction_id) ?? 0) + 1);
@@ -255,6 +256,7 @@ export default async function SessionBuilderPage({
                       duration: session.estimated_duration_minutes ? String(session.estimated_duration_minutes) : "",
                       joinCode: session.join_code,
                       surveyTemplateId,
+                      locale: localeOrDefault(session.locale),
                     }}
                   />
                 </CardContent>

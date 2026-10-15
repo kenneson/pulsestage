@@ -7,6 +7,7 @@ import {
 } from "../domain/interactions.ts";
 import { extractJson } from "./json.ts";
 import { AIProviderError } from "./types.ts";
+import { LOCALE_AI_NAME, type Locale } from "../domain/locale.ts";
 
 /** O que a IA recebe para sugerir perguntas: só o que o speaker escreveu, nada da plateia. */
 export type QuestionsInput = {
@@ -21,7 +22,7 @@ export type QuestionsInput = {
 
 export const QUESTIONS_SYSTEM_PROMPT = `Você ajuda palestrantes e professores a preparar perguntas que a plateia responde pelo celular durante a apresentação.
 
-Crie 5 perguntas para a sessão descrita, em português do Brasil:
+Crie 5 perguntas para a sessão descrita, no idioma da sessão indicado na mensagem (padrão: português do Brasil). Escreva perguntas, alternativas e rótulos nesse idioma; as chaves do JSON e os valores de "type" ficam como estão:
 1. Varie os tipos: "multiple_choice" (enquete, 2 a 5 alternativas, sem resposta certa), "quiz" (2 a 4 alternativas, exatamente uma correta), "rating" (escala de 1 a 5), "word_cloud" (resposta de uma ou duas palavras), "open_text" (resposta livre curta) e "ranking" (a plateia ordena 3 a 5 alternativas por prioridade).
 2. Misture quebra-gelo, checagem de entendimento e reflexão sobre como aplicar o tema.
 3. Perguntas com até 120 caracteres, claras para ler no projetor. Alternativas com até 60 caracteres.
@@ -33,8 +34,8 @@ Responda APENAS com um objeto JSON, sem markdown, exatamente neste formato:
 { "questions": [{ "type": "multiple_choice" | "quiz" | "rating" | "word_cloud" | "open_text" | "ranking", "title": "...", "options": ["..."], "correct_option": 0, "min_label": "...", "max_label": "..." }] }
 "options" só em multiple_choice, quiz e ranking. "correct_option" só em quiz: índice da alternativa correta, começando em 0. "min_label" e "max_label" (até 30 caracteres) só em rating.`;
 
-export function buildQuestionsPrompt(input: QuestionsInput): string {
-  return `Sessão (JSON):\n${JSON.stringify(input)}`;
+export function buildQuestionsPrompt(input: QuestionsInput, locale: Locale = "pt-BR"): string {
+  return `Idioma da sessão: ${LOCALE_AI_NAME[locale]}.\n\nSessão (JSON):\n${JSON.stringify(input)}`;
 }
 
 const suggestionSchema = z.object({

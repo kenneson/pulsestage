@@ -77,8 +77,11 @@ export type McpInteraction = z.infer<typeof mcpInteractionSchema>;
 
 type Converted = { ok: true; input: ParsedInteractionInput; afterSlide: number | null } | { ok: false; error: string };
 
-/** Converte para a entrada do builder e valida com as mesmas regras do painel. */
-export function toInteractionInput(item: McpInteraction): Converted {
+/**
+ * Converte para a entrada do builder e valida com as mesmas regras do painel. `translate` transforma a chave
+ * de validação ("validation.questionRequired") em texto no idioma do palestrante.
+ */
+export function toInteractionInput(item: McpInteraction, translate: (message: string) => string = (m) => m): Converted {
   const base = { title: item.question, description: item.description };
   const optionStyle = item.shapes ? "shapes" : "text";
   let raw: unknown;
@@ -134,7 +137,7 @@ export function toInteractionInput(item: McpInteraction): Converted {
   if (!parsed.success) {
     const issue = parsed.error.issues[0];
     const where = issue?.path.length ? ` (${issue.path.join(".")})` : "";
-    return { ok: false, error: `${issue?.message ?? "Dados inválidos."}${where}` };
+    return { ok: false, error: `${issue ? translate(issue.message) : "Dados inválidos."}${where}` };
   }
   return { ok: true, input: parsed.data, afterSlide: item.after_slide ?? null };
 }
@@ -142,10 +145,11 @@ export function toInteractionInput(item: McpInteraction): Converted {
 /** Valida um lote inteiro antes de gravar qualquer coisa: ou entram todas, ou nenhuma. */
 export function convertBatch(
   items: readonly McpInteraction[],
+  translate: (message: string) => string = (m) => m,
 ): { ok: true; items: { input: ParsedInteractionInput; afterSlide: number | null }[] } | { ok: false; error: string } {
   const out: { input: ParsedInteractionInput; afterSlide: number | null }[] = [];
   for (const [index, item] of items.entries()) {
-    const converted = toInteractionInput(item);
+    const converted = toInteractionInput(item, translate);
     if (!converted.ok) return { ok: false, error: `Interação ${index + 1} (“${item.question.slice(0, 60)}”): ${converted.error}` };
     out.push({ input: converted.input, afterSlide: converted.afterSlide });
   }
@@ -256,6 +260,8 @@ Fluxo recomendado quando a pessoa anexar uma apresentação (PDF) no chat:
 Ranking serve para a plateia ordenar prioridades (3 a 5 alternativas). Durante a sessão, a plateia também pode mandar perguntas ao palestrante e reagir com emojis; isso é ligado na própria sessão (não precisa criar).
 
 Boas práticas: uma interação a cada 5 a 8 slides (cerca de 1 a cada 5 a 10 minutos); abrir com algo leve (enquete ou nuvem sobre a experiência da plateia); quiz logo depois de um conteúdo explicado, com distratores plausíveis; escala para medir confiança ou concordância; terminar com pergunta aberta ou nuvem. Perguntas curtas, que caibam no celular. Não invente dados que não estão nos slides.
+
+Idiomas: a sessão tem um idioma (pt-BR, es-419 = espanhol latino neutro, en-US = inglês americano), que vale para o telão e o celular da plateia. Ao criar, use language no idioma em que a pessoa conversa com você (ou o que ela pedir) e escreva as perguntas nesse idioma.
 
 O MCP não inicia nem encerra sessões ao vivo: isso é feito no app. Sessões encerradas não podem ser editadas, mas get_session_results traz os resultados para análise.`;
 

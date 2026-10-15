@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SessionIntl } from "@/i18n/session-intl";
 import { notFound, redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentForParticipant, getLiveState, getParticipantBadge, getPublicSession } from "@/lib/data/public";
@@ -30,12 +31,14 @@ export default async function ParticipatePage({ params }: { params: Promise<{ id
   const initialLive = liveStateSchema.safeParse(live);
 
   return (
-    <ParticipateView
-      sessionId={id}
-      title={session.title}
-      initialLive={initialLive.success ? initialLive.data : null}
-      initialCurrent={current}
-      me={me}
-    />
+    <SessionIntl locale={session.locale}>
+      <ParticipateView
+        sessionId={id}
+        title={session.title}
+        initialLive={initialLive.success ? initialLive.data : null}
+        initialCurrent={current}
+        me={me}
+      />
+    </SessionIntl>
   );
 }

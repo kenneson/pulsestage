@@ -3,6 +3,7 @@
 // o que o speaker declara (experiência anterior, links) aparece separado e rotulado como declarado.
 
 import { z } from "zod";
+import { messageKey } from "./message-key.ts";
 
 // ---------------------------------------------------------------------------
 // Critério de verificação
@@ -71,13 +72,13 @@ export function verifySession(f: Pick<SessionFacts, "responders" | "talkSeconds"
   if (f.responders < VERIFY_MIN_RESPONDERS) {
     return {
       verified: false,
-      reason: `Precisa de ${VERIFY_MIN_RESPONDERS} pessoas respondendo (teve ${f.responders}).`,
+      reason: messageKey("verify.needResponders", { min: VERIFY_MIN_RESPONDERS, had: f.responders }),
     };
   }
   if (f.talkSeconds < VERIFY_MIN_TALK_SECONDS) {
     return {
       verified: false,
-      reason: `Precisa de ${VERIFY_MIN_TALK_SECONDS / 60} minutos de palestra (teve ${Math.floor(f.talkSeconds / 60)}).`,
+      reason: messageKey("verify.needTalkTime", { min: VERIFY_MIN_TALK_SECONDS / 60, had: Math.floor(f.talkSeconds / 60) }),
     };
   }
   return { verified: true };
@@ -180,12 +181,12 @@ export function slugify(name: string): string {
 }
 
 export const slugSchema = z
-  .string({ error: "Escolha o endereço do perfil." })
+  .string({ error: "validation.slugRequired" })
   .trim()
   .toLowerCase()
-  .regex(SLUG_RE, "Use de 3 a 40 letras minúsculas, números ou hífens (sem hífen no começo ou no fim).")
-  .refine((s) => !s.includes("--"), "Não use dois hífens seguidos.")
-  .refine((s) => !RESERVED_SLUGS.has(s), "Esse endereço é reservado. Escolha outro.");
+  .regex(SLUG_RE, "validation.slugFormat")
+  .refine((s) => !s.includes("--"), "validation.slugDoubleHyphen")
+  .refine((s) => !RESERVED_SLUGS.has(s), "validation.slugReserved");
 
 export const MAX_TOPICS = 10;
 export const TOPIC_MAX_LENGTH = 40;
@@ -258,7 +259,7 @@ function urlField(message: string, host?: RegExp) {
   return z
     .string()
     .trim()
-    .max(200, "Endereço muito longo.")
+    .max(200, "validation.urlTooLong")
     .optional()
     .transform((v, ctx) => {
       if (!v) return null;
@@ -275,25 +276,25 @@ function urlField(message: string, host?: RegExp) {
 export const publicProfileSchema = z.object({
   publicEnabled: z.boolean(),
   slug: slugSchema,
-  headline: z.string().trim().max(120, "O título pode ter até 120 caracteres.").optional(),
+  headline: z.string().trim().max(120, "validation.headlineTooLong").optional(),
   topics: z
     .string()
     .optional()
     .transform((v) => parseTopics(v ?? ""))
-    .refine((list) => list.length <= MAX_TOPICS, `Use até ${MAX_TOPICS} temas.`)
-    .refine((list) => list.every((t) => t.length <= TOPIC_MAX_LENGTH), `Cada tema pode ter até ${TOPIC_MAX_LENGTH} caracteres.`),
-  city: z.string().trim().max(80, "Cidade muito longa.").optional(),
+    .refine((list) => list.length <= MAX_TOPICS, messageKey("validation.maxTopics", { max: MAX_TOPICS }))
+    .refine((list) => list.every((t) => t.length <= TOPIC_MAX_LENGTH), messageKey("validation.topicTooLong", { max: TOPIC_MAX_LENGTH })),
+  city: z.string().trim().max(80, "validation.cityTooLong").optional(),
   state: z
     .string()
     .trim()
     .toUpperCase()
     .optional()
-    .refine((v) => v === undefined || isState(v), "Estado inválido."),
-  formats: z.array(z.enum(FORMATS, { error: "Formato inválido." })),
-  audiences: z.array(z.enum(AUDIENCES, { error: "Público inválido." })),
-  experience: z.string().trim().max(600, "A experiência anterior pode ter até 600 caracteres.").optional(),
-  websiteUrl: urlField("Site inválido."),
-  linkedinUrl: urlField("Use o endereço do seu perfil no LinkedIn.", /(^|\.)linkedin\.com$/i),
+    .refine((v) => v === undefined || isState(v), "validation.invalidState"),
+  formats: z.array(z.enum(FORMATS, { error: "validation.invalidFormat" })),
+  audiences: z.array(z.enum(AUDIENCES, { error: "validation.invalidAudience" })),
+  experience: z.string().trim().max(600, "validation.experienceTooLong").optional(),
+  websiteUrl: urlField("validation.invalidWebsite"),
+  linkedinUrl: urlField("validation.invalidLinkedin", /(^|\.)linkedin\.com$/i),
   contactEnabled: z.boolean(),
   showRatings: z.boolean(),
   promoteOnSurvey: z.boolean(),
@@ -309,22 +310,22 @@ export const CONTACT_LIMIT_PER_HOUR = 3;
 export const CONTACT_LIMIT_PER_DAY = 30;
 
 export const contactRequestSchema = z.object({
-  name: z.string({ error: "Informe seu nome." }).trim().min(2, "Informe seu nome.").max(120, "Nome muito longo."),
+  name: z.string({ error: "validation.nameRequired" }).trim().min(2, "validation.nameRequired").max(120, "validation.nameTooLong"),
   email: z
-    .string({ error: "Informe seu e-mail." })
+    .string({ error: "validation.emailRequired" })
     .trim()
     .toLowerCase()
-    .max(254, "E-mail muito longo.")
-    .pipe(z.email({ error: "Informe um e-mail válido." })),
-  organization: z.string().trim().max(160, "Nome da instituição muito longo.").optional(),
-  orgKind: z.enum(ORG_KINDS, { error: "Tipo de instituição inválido." }).optional(),
+    .max(254, "validation.emailTooLong")
+    .pipe(z.email({ error: "validation.invalidEmail" })),
+  organization: z.string().trim().max(160, "validation.organizationTooLong").optional(),
+  orgKind: z.enum(ORG_KINDS, { error: "validation.invalidOrgKind" }).optional(),
   message: z
-    .string({ error: "Escreva uma mensagem." })
+    .string({ error: "validation.messageRequired" })
     .trim()
-    .min(10, "Conte um pouco mais na mensagem (mínimo de 10 caracteres).")
-    .max(2000, "A mensagem pode ter até 2000 caracteres."),
-  eventDate: z.iso.date({ error: "Data inválida." }).optional(),
-  eventCity: z.string().trim().max(80, "Cidade muito longa.").optional(),
+    .min(10, "validation.messageTooShort")
+    .max(2000, "validation.messageMax"),
+  eventDate: z.iso.date({ error: "validation.invalidDate" }).optional(),
+  eventCity: z.string().trim().max(80, "validation.cityTooLong").optional(),
 });
 export type ContactRequestInput = z.infer<typeof contactRequestSchema>;
 

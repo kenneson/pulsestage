@@ -11,6 +11,8 @@ import { getSpeakerProfile } from "@/lib/data/profile";
 import { hasDbErrorCode, isUniqueViolation } from "@/lib/supabase/errors";
 import { zonedToUtcIso } from "@/lib/datetime";
 import { insertSession, isVisibleTemplate } from "./core";
+import { LOCALES, type Locale } from "@/lib/domain/locale";
+import { getMessageTranslator } from "@/i18n/server";
 import {
   canTransition,
   isSessionStatus,
@@ -23,7 +25,7 @@ import { fail, firstIssue, formValues, isUuid, ok, type ActionResult } from "@/l
 
 export type SessionFormState = { error?: string; success?: string };
 
-const FIELDS = ["title", "description", "date", "time", "duration", "joinCode", "surveyTemplateId"] as const;
+const FIELDS = ["title", "description", "date", "time", "duration", "joinCode", "surveyTemplateId", "locale"] as const;
 
 const sessionFormSchema = z.object({
   title: z.string({ error: "Informe o título." }).trim().min(1, "Informe o título.").max(200, "Título muito longo."),
@@ -33,6 +35,7 @@ const sessionFormSchema = z.object({
   duration: z.coerce.number().int().min(1, "Duração inválida.").max(1440, "Duração inválida.").optional(),
   joinCode: z.string().optional(),
   surveyTemplateId: z.uuid({ error: "Modelo de pesquisa inválido." }).optional(),
+  locale: z.enum(LOCALES).optional(),
 });
 
 type SessionValues = {
@@ -42,6 +45,7 @@ type SessionValues = {
   duration: number | null;
   joinCode: string | null;
   surveyTemplateId: string | null;
+  locale: Locale | null;
 };
 
 function parseSessionForm(
@@ -50,7 +54,7 @@ function parseSessionForm(
 ): { ok: true; values: SessionValues } | { ok: false; error: string } {
   const parsed = sessionFormSchema.safeParse(formValues(formData, FIELDS));
   if (!parsed.success) return { ok: false, error: firstIssue(parsed.error) };
-  const { title, description, date, time, duration, joinCode, surveyTemplateId } = parsed.data;
+  const { title, description, date, time, duration, joinCode, surveyTemplateId, locale } = parsed.data;
 
   let scheduledAt: string | null = null;
   if (date) {
@@ -75,12 +79,14 @@ function parseSessionForm(
       duration: duration ?? null,
       joinCode: code,
       surveyTemplateId: surveyTemplateId ?? null,
+      locale: locale ?? null,
     },
   };
 }
 
 export async function createSessionAction(_prev: SessionFormState, formData: FormData): Promise<SessionFormState> {
-  const parsed = parseSessionForm(formData, (await getSpeakerProfile()).timeZone);
+  const profile = await getSpeakerProfile();
+  const parsed = parseSessionForm(formData, profile.timeZone);
   if (!parsed.ok) return { error: parsed.error };
   const { values } = parsed;
 
@@ -91,8 +97,8 @@ export async function createSessionAction(_prev: SessionFormState, formData: For
   if (!user) redirect("/login");
   if (!(await isVisibleTemplate(supabase, values.surveyTemplateId))) return { error: "Modelo de pesquisa inválido." };
 
-  const created = await insertSession(supabase, { speakerId: user.id, ...values });
-  if (!created.ok) return { error: created.error };
+  const created = await insertSession(supabase, { speakerId: user.id, ...values, locale: values.locale ?? profile.locale });
+  if (!created.ok) return { error: (await getMessageTranslator()).message(created.error) };
   const createdId = created.data.id;
 
   revalidatePath("/dashboard");
@@ -129,6 +135,7 @@ export async function updateSessionAction(
       description: values.description,
       scheduled_at: values.scheduledAt,
       estimated_duration_minutes: values.duration,
+      ...(values.locale ? { locale: values.locale } : {}),
       ...(codeChanged && values.joinCode ? { join_code: values.joinCode } : {}),
       ...(surveyEditable ? { survey_template_id: values.surveyTemplateId } : {}),
     })

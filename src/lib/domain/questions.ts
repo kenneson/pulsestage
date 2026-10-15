@@ -12,9 +12,9 @@ export const DISPLAY_QUESTIONS = 5;
 
 export const askQuestionSchema = z.object({
   body: z
-    .string({ error: "Escreva sua pergunta." })
+    .string({ error: "validation.audienceQuestionRequired" })
     .trim()
-    .min(QUESTION_MIN, "Escreva sua pergunta.")
+    .min(QUESTION_MIN, "validation.audienceQuestionRequired")
     .max(QUESTION_MAX, `A pergunta pode ter até ${QUESTION_MAX} caracteres.`),
   /** mostrar o nome escolhido na entrada (sem nome, vai anônima) */
   withName: z.boolean(),

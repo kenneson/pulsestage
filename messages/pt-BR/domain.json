@@ -1,0 +1,169 @@
+{
+  "interactionTypes": {
+    "multiple_choice": {
+      "label": "Enquete",
+      "description": "Uma escolha entre alternativas."
+    },
+    "rating": {
+      "label": "Escala",
+      "description": "Nota em uma escala, como 1 a 5."
+    },
+    "word_cloud": {
+      "label": "Nuvem de palavras",
+      "description": "Respostas curtas agrupadas por frequência."
+    },
+    "open_text": {
+      "label": "Pergunta aberta",
+      "description": "Resposta livre em uma frase."
+    },
+    "quiz": {
+      "label": "Quiz",
+      "description": "Pergunta com resposta correta e pontuação."
+    },
+    "ranking": {
+      "label": "Ranking",
+      "description": "A plateia ordena as alternativas por preferência."
+    }
+  },
+  "sessionStatus": {
+    "draft": "Rascunho",
+    "live": "Ao vivo",
+    "paused": "Pausada",
+    "completed": "Encerrada"
+  },
+  "surveyKinds": {
+    "scale": {
+      "label": "Escala 1 a 5",
+      "description": "Botões de 1 a 5 com rótulos nas pontas."
+    },
+    "nps": {
+      "label": "Nota 0 a 10",
+      "description": "Estilo NPS: o relatório calcula promotores e detratores."
+    },
+    "choice": {
+      "label": "Múltipla escolha",
+      "description": "Alternativas definidas por você (inclui sim/não)."
+    },
+    "text": {
+      "label": "Texto livre",
+      "description": "Resposta aberta, considerada na análise da IA."
+    }
+  },
+  "dimensions": {
+    "utilidade": "Utilidade",
+    "satisfacao": "Satisfação",
+    "recomendacao": "Recomendação",
+    "clareza": "Clareza",
+    "atencao": "Atenção",
+    "engajamento": "Engajamento",
+    "conteudo": "Conteúdo",
+    "aplicabilidade": "Aplicabilidade",
+    "didatica": "Didática",
+    "relevancia": "Relevância",
+    "dominio": "Domínio do tema",
+    "organizacao": "Organização"
+  },
+  "raffleEligibility": {
+    "survey": {
+      "label": "Quem responder a pesquisa",
+      "description": "Ao enviar a pesquisa pós-evento, a pessoa recebe um número. Quem não responde não concorre."
+    },
+    "everyone": {
+      "label": "Todos que entrarem na sessão",
+      "description": "Cada pessoa recebe um número ao entrar, mesmo sem responder a pesquisa."
+    }
+  },
+  "prizeKinds": {
+    "physical": "Físico",
+    "digital": "Digital"
+  },
+  "questionStatus": {
+    "pending": "Aguardando aprovação",
+    "visible": "Aberta",
+    "answered": "Respondida",
+    "hidden": "Oculta"
+  },
+  "reactions": {
+    "clap": "Aplausos",
+    "heart": "Amei",
+    "laugh": "Engraçado",
+    "wow": "Uau",
+    "think": "Pensativo"
+  },
+  "avatars": {
+    "raposa": "Raposa",
+    "panda": "Panda",
+    "leao": "Leão",
+    "sapo": "Sapo",
+    "polvo": "Polvo",
+    "coruja": "Coruja",
+    "tartaruga": "Tartaruga",
+    "unicornio": "Unicórnio",
+    "pinguim": "Pinguim",
+    "coala": "Coala",
+    "tigre": "Tigre",
+    "abelha": "Abelha",
+    "dinossauro": "Dinossauro",
+    "golfinho": "Golfinho",
+    "gato": "Gato",
+    "cachorro": "Cachorro",
+    "foguete": "Foguete",
+    "cacto": "Cacto"
+  },
+  "shapes": {
+    "triangle": "Triângulo",
+    "diamond": "Losango",
+    "circle": "Círculo",
+    "square": "Quadrado",
+    "star": "Estrela",
+    "hexagon": "Hexágono",
+    "pentagon": "Pentágono",
+    "heart": "Coração"
+  },
+  "formats": {
+    "presencial": "Presencial",
+    "online": "Online"
+  },
+  "audiences": {
+    "universidades": "Universidades e faculdades",
+    "escolas": "Escolas",
+    "empresas": "Empresas",
+    "eventos": "Eventos e congressos"
+  },
+  "orgKinds": {
+    "universidade": "Universidade ou faculdade",
+    "escola": "Escola",
+    "empresa": "Empresa",
+    "evento": "Evento",
+    "outro": "Outro"
+  },
+  "audienceRange": {
+    "upTo20": "até 20 pessoas",
+    "from21to50": "21 a 50 pessoas",
+    "from51to100": "51 a 100 pessoas",
+    "from101to300": "101 a 300 pessoas",
+    "over300": "mais de 300 pessoas"
+  },
+  "duration": {
+    "lessThanMinute": "menos de 1 min",
+    "minutes": "{minutes} min",
+    "hours": "{hours} h",
+    "hoursMinutes": "{hours} h {minutes} min",
+    "seconds": "{seconds} s",
+    "minutesSeconds": "{minutes} min {seconds} s",
+    "talk": "{duration} de palestra",
+    "talkVersus": "{duration} de palestra (previsto {planned}, {detail})",
+    "onTime": "no tempo",
+    "over": "{minutes} min a mais",
+    "under": "{minutes} min a menos"
+  },
+  "deck": {
+    "end": "No fim",
+    "beforeFirst": "Antes do 1º slide",
+    "afterSlide": "Depois do slide {slide}"
+  },
+  "anonymousParticipant": "Participante",
+  "anonymous": "Anônimo",
+  "yes": "sim",
+  "no": "não"
+}

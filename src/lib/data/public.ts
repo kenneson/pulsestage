@@ -1,4 +1,5 @@
 import "server-only";
+import { localeOrDefault, type Locale } from "@/lib/domain/locale";
 import type { AdminSupabase } from "@/lib/supabase/admin";
 import type { InteractionResultRow, SessionLiveStateRow } from "@/lib/supabase/types";
 import {
@@ -15,28 +16,33 @@ import { avatarOf } from "@/lib/domain/gamification";
 // Leituras públicas feitas no servidor com a secret key.
 // Tudo que sai daqui é sanitizado: sem is_correct, points ou dados pessoais.
 
-export type PublicSession = { id: string; title: string; status: string; joinCode: string };
+/** `locale`: idioma da sessão (telão e celular da plateia). */
+export type PublicSession = { id: string; title: string; status: string; joinCode: string; locale: Locale };
 
 export async function findSessionByCode(admin: AdminSupabase, code: string): Promise<PublicSession | null> {
   const { data, error } = await admin
     .from("sessions")
-    .select("id, title, status, join_code")
+    .select("id, title, status, join_code, locale")
     .eq("join_code", code)
     .order("created_at", { ascending: false })
     .limit(5);
   if (error) throw new Error(error.message);
   const match = data.find((s) => s.status !== "completed") ?? data[0];
-  return match ? { id: match.id, title: match.title, status: match.status, joinCode: match.join_code } : null;
+  return match ? toPublicSession(match) : null;
+}
+
+function toPublicSession(row: { id: string; title: string; status: string; join_code: string; locale: string }): PublicSession {
+  return { id: row.id, title: row.title, status: row.status, joinCode: row.join_code, locale: localeOrDefault(row.locale) };
 }
 
 export async function getPublicSession(admin: AdminSupabase, sessionId: string): Promise<PublicSession | null> {
   const { data, error } = await admin
     .from("sessions")
-    .select("id, title, status, join_code")
+    .select("id, title, status, join_code, locale")
     .eq("id", sessionId)
     .maybeSingle();
   if (error) throw new Error(error.message);
-  return data ? { id: data.id, title: data.title, status: data.status, joinCode: data.join_code } : null;
+  return data ? toPublicSession(data) : null;
 }
 
 /** Dados do deck (slides) da sessão, para gerar as URLs assinadas no servidor. */

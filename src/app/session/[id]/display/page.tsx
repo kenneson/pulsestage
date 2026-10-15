@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SessionIntl } from "@/i18n/session-intl";
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getLiveState, getPublicInteractions, getPublicSession, getSessionDeck, getSessionResults } from "@/lib/data/public";
@@ -33,16 +34,18 @@ export default async function DisplayPage({ params }: { params: Promise<{ id: st
   const initialLive = liveStateSchema.safeParse(live);
 
   return (
-    <DisplayView
-      session={{ id, title: session.title, joinCode: session.joinCode }}
-      interactions={interactions}
-      initialLive={initialLive.success ? initialLive.data : null}
-      initialResults={toResultsMap(results)}
-      joinUrl={joinUrl(session.joinCode)}
-      feedbackUrl={feedbackUrl(id)}
-      deck={buildDeck(slideUrls.length, interactions)}
-      slideUrls={slideUrls}
-      canControl={Boolean(user && deckSession && user.id === deckSession.speaker_id)}
-    />
+    <SessionIntl locale={session.locale}>
+      <DisplayView
+        session={{ id, title: session.title, joinCode: session.joinCode }}
+        interactions={interactions}
+        initialLive={initialLive.success ? initialLive.data : null}
+        initialResults={toResultsMap(results)}
+        joinUrl={joinUrl(session.joinCode)}
+        feedbackUrl={feedbackUrl(id)}
+        deck={buildDeck(slideUrls.length, interactions)}
+        slideUrls={slideUrls}
+        canControl={Boolean(user && deckSession && user.id === deckSession.speaker_id)}
+      />
+    </SessionIntl>
   );
 }
