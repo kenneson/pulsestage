@@ -64,7 +64,7 @@ export default async function SessionBuilderPage({
     listSurveyTemplates(supabase),
     supabase.from("session_surveys").select("name").eq("session_id", id).maybeSingle(),
     getSlideUrls(supabase, session),
-    getRaffleState(supabase, id, session.raffle_eligibility),
+    getTranslations("domain").then((t) => getRaffleState(supabase, id, session.raffle_eligibility, t("anonymousParticipant"))),
   ]);
   // Biblioteca sem as perguntas que já estão nesta sessão.
   const ownIds = new Set(interactions.map((i) => i.id));

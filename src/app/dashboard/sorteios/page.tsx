@@ -33,14 +33,15 @@ export default async function RafflesPage() {
     .limit(MAX_SESSIONS);
   if (error) throw new Error(error.message);
 
-  const [{ timeZone }, t, tDomain, tStates, locale, states] = await Promise.all([
+  const [{ timeZone }, t, tDomain, tStates, locale] = await Promise.all([
     getSpeakerProfile(),
     getTranslations("dashboard.raffles"),
     getTranslations("domain"),
     getTranslations("common.states"),
     getLocale(),
-    Promise.all(sessions.map((s) => getRaffleState(supabase, s.id, s.raffle_eligibility))),
   ]);
+  const anonymous = tDomain("anonymousParticipant");
+  const states = await Promise.all(sessions.map((s) => getRaffleState(supabase, s.id, s.raffle_eligibility, anonymous)));
   const pending = states.reduce(
     (sum, state) =>
       sum + state.prizes.reduce((n, p) => n + p.winners.filter((w) => !w.forfeitedAt && !w.deliveredAt).length, 0),

@@ -225,7 +225,8 @@ export async function raffleStateAction(sessionId: string): Promise<ActionResult
   const session = await getOwnedSession(supabase, sessionId);
   if (!session) return fail(tSession("sessionNotFound"));
   try {
-    return ok(await getRaffleState(supabase, sessionId, session.raffle_eligibility));
+    const anonymous = (await getTranslations("domain"))("anonymousParticipant");
+    return ok(await getRaffleState(supabase, sessionId, session.raffle_eligibility, anonymous));
   } catch {
     return fail(t("loadFailed"));
   }
