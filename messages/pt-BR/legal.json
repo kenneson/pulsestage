@@ -1,1 +1,65 @@
-{}
+{
+  "meta": {
+    "title": "Privacidade",
+    "description": "Como o PulseStage coleta, usa e guarda os dados de quem participa e de quem apresenta."
+  },
+  "title": "Política de privacidade",
+  "updated": "Última atualização: {date, date, long}",
+  "intro": "O PulseStage permite que palestrantes façam enquetes, quizzes e perguntas ao vivo e recebam avaliações depois da apresentação. Coletamos o mínimo necessário para isso funcionar, e você pode participar sem se identificar.",
+  "controller": {
+    "title": "Quem decide sobre os seus dados",
+    "text": "Quando você participa de uma sessão, quem decide como usar as respostas e o contato que você informar é o palestrante ou organizador daquela sessão (controlador). O PulseStage guarda e processa esses dados em nome dele (operador). Para a conta do palestrante, o PulseStage é o controlador."
+  },
+  "participants": {
+    "title": "O que coletamos de quem participa",
+    "name": "<b>Nome (opcional).</b> Aparece só no ranking do quiz, que o palestrante pode mostrar no telão da sala. Sem nome, você participa de forma anônima e aparece como “Participante” seguido de um código.",
+    "avatar": "<b>Avatar (opcional).</b> Um desenho escolhido de uma lista fixa (nada de foto), mostrado ao lado do nome no ranking do quiz.",
+    "raffle": "<b>Número do sorteio.</b> Se a sessão tiver sorteio, quem concorre recebe um número aleatório. Quem for sorteado tem nome (ou “Participante” e um código), número e avatar mostrados no telão; a mensagem do prêmio aparece só no celular de quem ganhou. Números e ganhadores são apagados junto com a sessão.",
+    "answers": "<b>Respostas e avaliação.</b> O que você responde nas interações e no feedback pós-evento.",
+    "questions": "<b>Perguntas ao palestrante (opcional).</b> O texto da pergunta e, só se você marcar, o seu nome. As perguntas aparecem para a plateia e podem ir ao telão; as curtidas são contadas sem mostrar quem curtiu.",
+    "reactions": "<b>Reações.</b> O emoji que você toca e o horário, para o telão e para o palestrante saber os momentos com mais reações. Ninguém vê quem reagiu.",
+    "contact": "<b>E-mail e telefone (opcionais).</b> Só são gravados se você marcar a autorização, para que o palestrante envie materiais e comunicações sobre aquela sessão. Ficam guardados separados das suas respostas.",
+    "noTracking": "Não pedimos cadastro, não usamos anúncios e não rastreamos você entre sites."
+  },
+  "speakers": {
+    "title": "O que coletamos de palestrantes",
+    "account": "Nome, e-mail e senha da conta (a senha é guardada pelo serviço de autenticação, nunca em texto puro). Se você entrar com o Google, recebemos dele apenas nome, e-mail e foto do perfil, sem acesso a mais nada da sua conta. Também guardamos as sessões, interações e resultados que você cria.",
+    "slides": "Se você enviar os slides de uma apresentação, o PDF é convertido em imagens no seu próprio navegador e só essas imagens são guardadas, num armazenamento privado. Elas aparecem para a plateia apenas na tela do projetor, por links temporários.",
+    "optionImages": "Imagens que você anexa às alternativas de enquetes e quizzes são reduzidas no seu navegador (sem os metadados do arquivo, como a localização da foto) e guardadas num armazenamento público com endereço impossível de adivinhar, porque precisam abrir no celular de quem participa. Elas são apagadas quando nenhuma pergunta usa mais a imagem ou quando você exclui a conta.",
+    "publicProfile": "<b>Perfil público (opcional).</b> Só existe se você publicar. Mostra nome, foto, mini-bio e o que você preencher (título, temas, cidade, formatos, públicos, experiência declarada e links), além de números calculados das suas sessões encerradas: quantidade de sessões verificadas, total de participantes, nota média da pesquisa (que você pode ocultar) e, nas sessões que você escolher, título, data e faixa de público. Nenhum dado de participante aparece. Ao desligar o perfil, ele sai do ar e do diretório na hora."
+  },
+  "invites": {
+    "title": "Convites pelo perfil público",
+    "text": "Quem usa “Convidar para palestrar” informa nome, e-mail, mensagem e, se quiser, instituição, data e cidade do evento. Esses dados vão só para o palestrante convidado, que é quem decide como responder (controlador); o e-mail do palestrante não é mostrado a quem convida. Para limitar abuso, guardamos junto com o convite um código derivado do endereço IP (um hash com segredo do servidor, sem o IP em si). Quando o aviso por e-mail está configurado, o convite também é enviado ao palestrante pelo serviço de e-mail (Resend). O convite é apagado quando o palestrante o exclui ou exclui a conta."
+  },
+  "moderation": {
+    "title": "Filtro e moderação",
+    "text": "Se o palestrante deixar o filtro de palavrões ligado, respostas e perguntas com palavrões são guardadas, mas não aparecem no telão nem para a plateia; o palestrante pode vê-las e liberar. O palestrante também pode ocultar ou aprovar respostas e perguntas antes de elas aparecerem."
+  },
+  "cookies": {
+    "title": "Cookies e armazenamento no navegador",
+    "participation": "<b>Participação</b> (<code>ps_p_…</code>, 30 dias): identifica você dentro de uma sessão para evitar respostas duplicadas. É assinado e não contém dados pessoais.",
+    "feedback": "<b>Avaliação enviada</b> (<code>ps_fb_…</code>, 30 dias): evita que a mesma avaliação seja enviada duas vezes.",
+    "login": "<b>Login</b>: mantém o palestrante conectado.",
+    "language": "<b>Idioma</b> (<code>NEXT_LOCALE</code>, 1 ano): lembra o idioma em que você usa o site.",
+    "theme": "<b>Tema</b> (armazenamento local): lembra se você escolheu o modo claro ou escuro.",
+    "necessary": "Todos são necessários para o funcionamento; não usamos cookies de análise ou publicidade."
+  },
+  "assistants": {
+    "title": "Assistentes de IA conectados (Claude, ChatGPT e outros)",
+    "text": "O palestrante pode conectar a própria conta a um assistente de IA pelo protocolo MCP. A conexão só acontece depois que ele entra no PulseStage e clica em “Permitir acesso”, e pode ser revogada a qualquer momento em Integrações. O assistente age como o palestrante: pelas ferramentas do PulseStage, lê e cria sessões e perguntas e, quando o palestrante pede, recebe os resultados de uma sessão (números agregados, respostas abertas, perguntas da plateia sem o nome de quem perguntou e comentários da pesquisa). Nomes, e-mails e telefones de participantes nunca são enviados por essas ferramentas. O que o assistente faz com esses dados segue a política da empresa dele (por exemplo, Anthropic ou OpenAI). O PDF da apresentação anexado no chat fica com o assistente; o PulseStage recebe só as perguntas."
+  },
+  "sharing": {
+    "title": "Com quem compartilhamos",
+    "infrastructure": "<b>Infraestrutura:</b> Supabase (banco de dados e autenticação) e Vercel (hospedagem), que processam os dados apenas para operar o serviço. Quando configurado, o Resend entrega os avisos de convite por e-mail.",
+    "ai": "<b>Inteligência artificial:</b> quando o palestrante pede insights, enviamos ao provedor de IA configurado apenas resultados agregados e trechos de respostas abertas e comentários de feedback. Quando pede sugestões de perguntas, enviamos só o título, a descrição, a duração e as perguntas da sessão, sem nada da plateia. Nomes, e-mails e telefones nunca são enviados."
+  },
+  "retention": {
+    "title": "Por quanto tempo guardamos",
+    "text": "Os dados de uma sessão ficam guardados enquanto ela existir. Quando o palestrante exclui a sessão, todas as respostas, participantes, contatos, avaliações, insights e slides dela são apagados definitivamente."
+  },
+  "rights": {
+    "title": "Seus direitos",
+    "text": "Pela LGPD, você pode pedir acesso, correção ou exclusão dos seus dados e revogar a autorização de contato. Para dados de uma sessão, fale com o palestrante ou organizador dela, que pode excluir a sessão inteira a qualquer momento."
+  }
+}

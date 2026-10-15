@@ -29,11 +29,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // Inexistente: o Next mostra a página 404 e marca noindex (o status fica 200 pelo streaming do loading.tsx).
   if (!found) notFound();
   const t = await getTranslations("profile.topic");
+  const title = t("metaTitle", { topic: found.topic.label });
+  const description = t("metaDescription", { topic: found.topic.label });
   return {
-    title: t("metaTitle", { topic: found.topic.label }),
-    description: t("metaDescription", { topic: found.topic.label }),
+    title,
+    description,
     alternates: await localeAlternates(`/palestrantes/tema/${found.topic.key}`),
-    openGraph: { locale: await ogLocale() },
+    openGraph: { title, description, locale: await ogLocale() },
   };
 }
 

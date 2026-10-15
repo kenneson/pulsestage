@@ -10,11 +10,12 @@ import { DirectoryView } from "@/components/speaker-profile/directory-view";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("profile.directory");
+  const [title, description] = [t("metaTitle"), t("metaDescription")];
   return {
-    title: t("metaTitle"),
-    description: t("metaDescription"),
+    title,
+    description,
     alternates: await localeAlternates("/palestrantes"),
-    openGraph: { locale: await ogLocale() },
+    openGraph: { title, description, locale: await ogLocale() },
   };
 }
 
