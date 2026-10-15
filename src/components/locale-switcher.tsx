@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { setLocaleAction } from "@/features/locale/actions";
-import { isLocale, LOCALE_NAME, LOCALES, localizedPath, splitLocalePrefix, type Locale } from "@/lib/domain/locale";
+import { isLocale, LOCALE_NAME, LOCALE_SHORT, LOCALES, localizedPath, splitLocalePrefix, type Locale } from "@/lib/domain/locale";
 import { GlobeIcon } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
@@ -12,7 +12,8 @@ import { cn } from "@/lib/utils";
  * Seletor de idioma. Em página pública com prefixo (/es, /en), troca o prefixo; nas demais, grava o cookie
  * (e o perfil, com login) e recarrega no novo idioma.
  */
-export function LocaleSwitcher({ className }: { className?: string }) {
+/** `compact`: só a sigla (PT, ES, EN), para barras estreitas. */
+export function LocaleSwitcher({ className, compact = false }: { className?: string; compact?: boolean }) {
   const t = useTranslations("common.locale");
   const locale = useLocale();
   const router = useRouter();
@@ -43,8 +44,8 @@ export function LocaleSwitcher({ className }: { className?: string }) {
         className="h-9 appearance-none rounded-md border border-input bg-background py-1 pl-8 pr-3 text-sm text-foreground shadow-xs hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
       >
         {LOCALES.map((l) => (
-          <option key={l} value={l}>
-            {LOCALE_NAME[l]}
+          <option key={l} value={l} title={LOCALE_NAME[l]}>
+            {compact ? LOCALE_SHORT[l] : LOCALE_NAME[l]}
           </option>
         ))}
       </select>
