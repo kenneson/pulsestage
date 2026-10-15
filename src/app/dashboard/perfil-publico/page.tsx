@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSpeakerProfile } from "@/lib/data/profile";
 import { getOwnPublicProfile, getOwnSessionFacts } from "@/lib/data/speaker-profile";
@@ -7,7 +8,6 @@ import { publicEnv } from "@/lib/env";
 import { formatDate } from "@/lib/datetime";
 import { formatInt, formatScore } from "@/lib/format";
 import {
-  audienceRange,
   DIRECTORY_MIN_VERIFIED,
   profileStats,
   RATING_MIN_PROFILE,
@@ -17,6 +17,8 @@ import {
   VERIFY_MIN_TALK_SECONDS,
   verifySession,
 } from "@/lib/domain/speaker-profile";
+import { audienceRangeText } from "@/i18n/text";
+import { getMessageTranslator } from "@/i18n/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, EmptyState } from "@/components/ui/misc";
 import { BadgeCheckIcon } from "@/components/icons";
@@ -26,10 +28,19 @@ import {
   ShareProfileLink,
 } from "@/components/speaker-profile/public-profile-form";
 
-export const metadata: Metadata = { title: "Perfil público" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("profile.settings");
+  return { title: t("metaTitle") };
+}
 
 export default async function PublicProfileSettingsPage() {
-  const profile = await getSpeakerProfile();
+  const [t, tDomain, tr, locale, profile] = await Promise.all([
+    getTranslations("profile.settings"),
+    getTranslations("domain"),
+    getMessageTranslator(),
+    getLocale(),
+    getSpeakerProfile(),
+  ]);
   const supabase = await createClient();
   const [settings, facts] = await Promise.all([
     getOwnPublicProfile(supabase, profile.id),
@@ -44,25 +55,26 @@ export default async function PublicProfileSettingsPage() {
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Perfil público</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
         <p className="text-muted-foreground">
-          Um portfólio com números que o PulseStage confere: sessões realizadas, pessoas alcançadas e a nota da plateia.
-          Instituições e empresas encontram você no{" "}
-          <Link href="/palestrantes" className="font-medium text-primary hover:underline">
-            diretório de palestrantes
-          </Link>{" "}
-          e enviam convites.
+          {t.rich("intro", {
+            link: (c) => (
+              <Link href="/palestrantes" className="font-medium text-primary hover:underline">
+                {c}
+              </Link>
+            ),
+          })}
         </p>
       </div>
 
       {settings.publicEnabled && url ? (
         <Card>
           <CardHeader>
-            <CardTitle>Seu perfil está no ar</CardTitle>
+            <CardTitle>{t("liveTitle")}</CardTitle>
             <CardDescription>
               {stats.verifiedSessions >= DIRECTORY_MIN_VERIFIED
-                ? "Ele aparece no diretório e pode ser encontrado por buscadores."
-                : "Ele ainda não aparece no diretório: falta uma sessão verificada. Quem tem o link já consegue ver."}
+                ? t("liveListed")
+                : t("liveUnlisted")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -74,34 +86,33 @@ export default async function PublicProfileSettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <BadgeCheckIcon className="text-primary" /> Números verificados
+            <BadgeCheckIcon className="text-primary" /> {t("verifiedTitle")}
           </CardTitle>
           <CardDescription>
-            Contam as sessões encerradas com pelo menos {VERIFY_MIN_RESPONDERS} pessoas respondendo e{" "}
-            {VERIFY_MIN_TALK_SECONDS / 60} minutos de palestra. Não dá para editar esses números.
+            {t("verifiedDescription", { responders: VERIFY_MIN_RESPONDERS, minutes: VERIFY_MIN_TALK_SECONDS / 60 })}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <dl className="grid grid-cols-2 gap-4 sm:grid-cols-3">
             <div>
-              <dt className="text-sm text-muted-foreground">Sessões verificadas</dt>
-              <dd className="font-display text-3xl font-bold tabular-nums">{formatInt(stats.verifiedSessions)}</dd>
+              <dt className="text-sm text-muted-foreground">{t("verifiedSessions")}</dt>
+              <dd className="font-display text-3xl font-bold tabular-nums">{formatInt(stats.verifiedSessions, locale)}</dd>
             </div>
             <div>
-              <dt className="text-sm text-muted-foreground">Pessoas alcançadas</dt>
-              <dd className="font-display text-3xl font-bold tabular-nums">{formatInt(stats.peopleReached)}</dd>
+              <dt className="text-sm text-muted-foreground">{t("peopleReached")}</dt>
+              <dd className="font-display text-3xl font-bold tabular-nums">{formatInt(stats.peopleReached, locale)}</dd>
             </div>
             <div>
-              <dt className="text-sm text-muted-foreground">Nota da plateia</dt>
+              <dt className="text-sm text-muted-foreground">{t("rating")}</dt>
               <dd className="font-display text-3xl font-bold tabular-nums">
-                {stats.rating !== null ? formatScore(stats.rating) : "—"}
+                {stats.rating !== null ? formatScore(stats.rating, locale) : "—"}
               </dd>
               {stats.rating === null ? (
                 <p className="text-xs text-muted-foreground">
-                  Aparece com {RATING_MIN_PROFILE} respostas de pesquisa (você tem {stats.ratingResponses}).
+                  {t("ratingPending", { min: RATING_MIN_PROFILE, count: stats.ratingResponses })}
                 </p>
               ) : !settings.showRatings ? (
-                <p className="text-xs text-muted-foreground">Oculta no perfil (veja as opções abaixo).</p>
+                <p className="text-xs text-muted-foreground">{t("ratingHidden")}</p>
               ) : null}
             </div>
           </dl>
@@ -110,17 +121,19 @@ export default async function PublicProfileSettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Dados do perfil</CardTitle>
+          <CardTitle>{t("dataTitle")}</CardTitle>
           <CardDescription>
-            Nome, foto e mini-bio vêm de{" "}
-            <Link href="/dashboard/conta#perfil" className="font-medium text-primary hover:underline">
-              Conta
-            </Link>
-            .
+            {t.rich("dataDescription", {
+              link: (c) => (
+                <Link href="/dashboard/conta#perfil" className="font-medium text-primary hover:underline">
+                  {c}
+                </Link>
+              ),
+            })}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {!profile.name ? <Alert className="mb-4">Preencha seu nome em Conta antes de publicar o perfil.</Alert> : null}
+          {!profile.name ? <Alert className="mb-4">{t("nameMissing")}</Alert> : null}
           <PublicProfileForm
             profileUrlBase={publicEnv.appUrl.replace(/^https?:\/\//, "")}
             initialValues={{
@@ -145,15 +158,14 @@ export default async function PublicProfileSettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Sessões no perfil</CardTitle>
+          <CardTitle>{t("sessionsTitle")}</CardTitle>
           <CardDescription>
-            Marque as sessões verificadas que aparecem no perfil (título, data, faixa de público e nota). Todas as
-            verificadas contam nos números, marcadas ou não; as que não cumprem o critério ficam só aqui.
+            {t("sessionsDescription")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {facts.length === 0 ? (
-            <EmptyState title="Nenhuma sessão encerrada ainda" description="Depois de encerrar uma sessão, ela aparece aqui." />
+            <EmptyState title={t("emptyTitle")} description={t("emptyDescription")} />
           ) : (
             <SessionVisibilityList
               sessions={facts.map((f) => {
@@ -162,12 +174,12 @@ export default async function PublicProfileSettingsPage() {
                 return {
                   id: f.sessionId,
                   title: f.title,
-                  date: formatDate(f.startedAt, profile.timeZone),
-                  audience: audienceRange(f.participants),
-                  rating: rating !== null ? formatScore(rating) : null,
+                  date: formatDate(f.startedAt, profile.timeZone, locale),
+                  audience: audienceRangeText(tDomain, f.participants),
+                  rating: rating !== null ? formatScore(rating, locale) : null,
                   listed: f.publicListed,
                   verified: check.verified,
-                  reason: check.verified ? null : check.reason,
+                  reason: check.verified ? null : tr.message(check.reason),
                 };
               })}
             />

@@ -2,14 +2,13 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { saveSurveyTemplateAction } from "@/features/surveys/actions";
 import {
-  DIMENSION_LABEL,
   DIMENSIONS,
   MAX_OPTIONS,
   MAX_QUESTIONS,
-  QUESTION_KIND_META,
   QUESTION_KINDS,
   isDimension,
   isQuestionKind,
@@ -43,6 +42,9 @@ function blank(kind: QuestionKind, label = "", required = false): QuestionDraft 
 }
 
 export function TemplateEditor({ templateId, initial }: { templateId: string | null; initial: TemplateDraft }) {
+  const t = useTranslations("surveys.editor");
+  const tDomain = useTranslations("domain");
+  const tCommon = useTranslations("common.actions");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [name, setName] = useState(initial.name);
@@ -81,7 +83,7 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
         setError(result.error);
         return;
       }
-      toast.success("Modelo salvo.");
+      toast.success(t("saved"));
       router.push("/dashboard/pesquisas");
       router.refresh();
     });
@@ -92,23 +94,23 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
       <Card>
         <CardContent className="grid gap-4">
           <Field>
-            <Label htmlFor="template-name">Nome do modelo</Label>
+            <Label htmlFor="template-name">{t("name")}</Label>
             <Input
               id="template-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               maxLength={120}
-              placeholder="Ex.: Pesquisa da aula de Marketing"
+              placeholder={t("namePlaceholder")}
             />
           </Field>
           <Field>
-            <Label htmlFor="template-description">Descrição (opcional)</Label>
+            <Label htmlFor="template-description">{t("description")}</Label>
             <Textarea
               id="template-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               maxLength={500}
-              placeholder="Para que serve esta pesquisa."
+              placeholder={t("descriptionPlaceholder")}
             />
           </Field>
         </CardContent>
@@ -122,7 +124,7 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="font-display text-xl font-bold tabular-nums">{index + 1}</span>
                   <Select
-                    aria-label="Tipo da pergunta"
+                    aria-label={t("kind")}
                     value={q.kind}
                     onChange={(e) => {
                       const kind = e.target.value;
@@ -132,18 +134,18 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
                   >
                     {QUESTION_KINDS.map((kind) => (
                       <option key={kind} value={kind}>
-                        {QUESTION_KIND_META[kind].label}
+                        {tDomain(`surveyKinds.${kind}.label`)}
                       </option>
                     ))}
                   </Select>
                   <div className="ml-auto flex gap-1">
-                    <Button variant="ghost" size="icon" aria-label="Subir" disabled={index === 0} onClick={() => move(index, -1)}>
+                    <Button variant="ghost" size="icon" aria-label={t("moveUp")} disabled={index === 0} onClick={() => move(index, -1)}>
                       <ArrowUpIcon />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      aria-label="Descer"
+                      aria-label={t("moveDown")}
                       disabled={index === questions.length - 1}
                       onClick={() => move(index, 1)}
                     >
@@ -152,7 +154,7 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
                     <Button
                       variant="ghost"
                       size="icon"
-                      aria-label="Remover pergunta"
+                      aria-label={t("removeQuestion")}
                       className="text-destructive hover:text-destructive"
                       onClick={() => setQuestions((list) => list.filter((x) => x.key !== q.key))}
                     >
@@ -162,20 +164,20 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
                 </div>
 
                 <Field>
-                  <Label htmlFor={`${q.key}-label`}>Pergunta</Label>
+                  <Label htmlFor={`${q.key}-label`}>{t("question")}</Label>
                   <Input
                     id={`${q.key}-label`}
                     value={q.label}
                     onChange={(e) => update(q.key, { ...q, label: e.target.value })}
                     maxLength={300}
-                    placeholder="O que você quer perguntar à plateia?"
+                    placeholder={t("questionPlaceholder")}
                   />
                 </Field>
 
                 {q.kind === "scale" || q.kind === "nps" ? (
                   <div className="grid gap-4 sm:grid-cols-3">
                     <Field>
-                      <Label htmlFor={`${q.key}-dimension`}>Dimensão</Label>
+                      <Label htmlFor={`${q.key}-dimension`}>{t("dimension")}</Label>
                       <Select
                         id={`${q.key}-dimension`}
                         value={q.dimension ?? ""}
@@ -184,51 +186,48 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
                           update(q.key, { ...q, dimension: isDimension(value) ? value : null });
                         }}
                       >
-                        <option value="">Nenhuma</option>
+                        <option value="">{t("noDimension")}</option>
                         {DIMENSIONS.map((d) => (
                           <option key={d} value={d}>
-                            {DIMENSION_LABEL[d]}
+                            {tDomain(`dimensions.${d}`)}
                           </option>
                         ))}
                       </Select>
                     </Field>
                     <Field>
-                      <Label htmlFor={`${q.key}-min`}>Rótulo do {q.kind === "scale" ? "1" : "0"}</Label>
+                      <Label htmlFor={`${q.key}-min`}>{t("endLabel", { value: q.kind === "scale" ? "1" : "0" })}</Label>
                       <Input
                         id={`${q.key}-min`}
                         value={q.minLabel ?? ""}
                         onChange={(e) => update(q.key, { ...q, minLabel: e.target.value })}
                         maxLength={40}
-                        placeholder="Ex.: Nada"
+                        placeholder={t("minPlaceholder")}
                       />
                     </Field>
                     <Field>
-                      <Label htmlFor={`${q.key}-max`}>Rótulo do {q.kind === "scale" ? "5" : "10"}</Label>
+                      <Label htmlFor={`${q.key}-max`}>{t("endLabel", { value: q.kind === "scale" ? "5" : "10" })}</Label>
                       <Input
                         id={`${q.key}-max`}
                         value={q.maxLabel ?? ""}
                         onChange={(e) => update(q.key, { ...q, maxLabel: e.target.value })}
                         maxLength={40}
-                        placeholder="Ex.: Totalmente"
+                        placeholder={t("maxPlaceholder")}
                       />
                     </Field>
-                    <p className="text-xs text-muted-foreground sm:col-span-3">
-                      A dimensão agrupa perguntas parecidas no scorecard, nos pontos fortes e fracos e na evolução entre
-                      sessões.
-                    </p>
+                    <p className="text-xs text-muted-foreground sm:col-span-3">{t("dimensionHint")}</p>
                   </div>
                 ) : null}
 
                 {q.kind === "choice" ? (
                   <div className="flex flex-col gap-2">
-                    <Label>Alternativas</Label>
+                    <Label>{t("options")}</Label>
                     {q.options.map((option, i) => (
                       <div key={i} className="flex gap-2">
                         <Input
-                          aria-label={`Alternativa ${i + 1}`}
+                          aria-label={t("option", { number: i + 1 })}
                           value={option}
                           maxLength={80}
-                          placeholder={`Alternativa ${i + 1}`}
+                          placeholder={t("option", { number: i + 1 })}
                           onChange={(e) =>
                             update(q.key, { ...q, options: q.options.map((o, j) => (j === i ? e.target.value : o)) })
                           }
@@ -236,7 +235,7 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
                         <Button
                           variant="ghost"
                           size="icon"
-                          aria-label={`Remover alternativa ${i + 1}`}
+                          aria-label={t("removeOption", { number: i + 1 })}
                           disabled={q.options.length <= 2}
                           onClick={() => update(q.key, { ...q, options: q.options.filter((_, j) => j !== i) })}
                         >
@@ -251,7 +250,7 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
                         className="w-fit"
                         onClick={() => update(q.key, { ...q, options: [...q.options, ""] })}
                       >
-                        <PlusIcon /> Adicionar alternativa
+                        <PlusIcon /> {t("addOption")}
                       </Button>
                     ) : null}
                   </div>
@@ -264,7 +263,7 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
                     onChange={(e) => update(q.key, { ...q, required: e.target.checked })}
                     className="size-4"
                   />
-                  Resposta obrigatória
+                  {t("required")}
                 </label>
               </CardContent>
             </Card>
@@ -275,7 +274,7 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
       {questions.length < MAX_QUESTIONS ? (
         <div className="flex flex-col gap-2 rounded-md border border-dashed p-4">
           <p className="flex items-center gap-2 text-sm font-medium">
-            <PlusIcon /> Adicionar pergunta
+            <PlusIcon /> {t("addQuestion")}
           </p>
           <div className="flex flex-wrap gap-2">
             {QUESTION_KINDS.map((kind) => (
@@ -283,10 +282,10 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
                 key={kind}
                 variant="outline"
                 size="sm"
-                title={QUESTION_KIND_META[kind].description}
+                title={tDomain(`surveyKinds.${kind}.description`)}
                 onClick={() => setQuestions((list) => [...list, { ...blank(kind), key: nextKey() }])}
               >
-                {QUESTION_KIND_META[kind].label}
+                {tDomain(`surveyKinds.${kind}.label`)}
               </Button>
             ))}
           </div>
@@ -296,10 +295,10 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
       {error ? <Alert>{error}</Alert> : null}
       <div className="flex flex-wrap gap-3">
         <Button size="lg" onClick={save} disabled={pending}>
-          {pending ? "Salvando…" : "Salvar modelo"}
+          {pending ? tCommon("saving") : t("save")}
         </Button>
         <Button size="lg" variant="outline" onClick={() => router.push("/dashboard/pesquisas")} disabled={pending}>
-          Cancelar
+          {tCommon("cancel")}
         </Button>
       </div>
     </div>

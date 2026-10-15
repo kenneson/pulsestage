@@ -1,15 +1,17 @@
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 /** Formulário GET simples: funciona sem JavaScript. */
 export function JoinCodeForm({ defaultValue = "" }: { defaultValue?: string }) {
+  const t = useTranslations("participant.codeForm");
   return (
     <form action="/join" method="get" className="flex w-full gap-2">
       <Input
         name="code"
         defaultValue={defaultValue}
-        placeholder="Código"
-        aria-label="Código da sessão"
+        placeholder={t("placeholder")}
+        aria-label={t("label")}
         autoCapitalize="characters"
         autoComplete="off"
         maxLength={10}
@@ -17,7 +19,7 @@ export function JoinCodeForm({ defaultValue = "" }: { defaultValue?: string }) {
         className="h-12 text-center text-lg font-semibold uppercase tracking-widest"
       />
       <Button type="submit" size="lg" className="h-12">
-        Entrar
+        {t("submit")}
       </Button>
     </form>
   );

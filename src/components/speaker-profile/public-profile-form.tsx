@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useOptimistic, useState, useTransition } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
   savePublicProfileAction,
@@ -9,14 +10,7 @@ import {
   type PublicProfileFormState,
   type PublicProfileFormValues,
 } from "@/features/speaker-profile/actions";
-import {
-  AUDIENCE_LABEL,
-  AUDIENCES,
-  BR_STATES,
-  FORMAT_LABEL,
-  FORMATS,
-  MAX_TOPICS,
-} from "@/lib/domain/speaker-profile";
+import { AUDIENCES, BR_STATES, FORMATS, MAX_TOPICS } from "@/lib/domain/speaker-profile";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Label, Select, Textarea } from "@/components/ui/input";
 import { Alert } from "@/components/ui/misc";
@@ -80,8 +74,16 @@ function CheckGroup<T extends string>({
 }
 
 export function PublicProfileForm({ initialValues, profileUrlBase }: { initialValues: PublicProfileFormValues; profileUrlBase: string }) {
+  const t = useTranslations("profile.form");
+  const tDomain = useTranslations("domain");
+  const tCommon = useTranslations("common.actions");
   const [state, action, pending] = useActionState(savePublicProfileAction, initial);
   const v = state.values ?? initialValues;
+  const formatLabels = Object.fromEntries(FORMATS.map((f) => [f, tDomain(`formats.${f}`)])) as Record<(typeof FORMATS)[number], string>;
+  const audienceLabels = Object.fromEntries(AUDIENCES.map((a) => [a, tDomain(`audiences.${a}`)])) as Record<
+    (typeof AUDIENCES)[number],
+    string
+  >;
 
   useEffect(() => {
     if (state.success) toast.success(state.success);
@@ -91,13 +93,13 @@ export function PublicProfileForm({ initialValues, profileUrlBase }: { initialVa
     <form action={action} className="grid gap-6">
       <Toggle
         name="publicEnabled"
-        label="Publicar meu perfil"
-        description="Qualquer pessoa com o link vê o perfil. Com ao menos uma sessão verificada, ele também aparece no diretório de palestrantes."
+        label={t("publish")}
+        description={t("publishHint")}
         defaultChecked={v.publicEnabled}
       />
 
       <Field>
-        <Label htmlFor="slug">Endereço do perfil</Label>
+        <Label htmlFor="slug">{t("slug")}</Label>
         <div className="flex items-center overflow-hidden rounded-md border border-input focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/40">
           <span className="shrink-0 bg-muted px-3 py-2 text-sm text-muted-foreground">{profileUrlBase}/p/</span>
           <input
@@ -114,39 +116,39 @@ export function PublicProfileForm({ initialValues, profileUrlBase }: { initialVa
           />
         </div>
         <p className="text-xs text-muted-foreground">
-          Letras minúsculas, números e hífen. Trocar o endereço quebra os links que você já divulgou.
+          {t("slugHint")}
         </p>
       </Field>
 
       <Field>
-        <Label htmlFor="headline">Título profissional</Label>
+        <Label htmlFor="headline">{t("headline")}</Label>
         <Input
           id="headline"
           name="headline"
           maxLength={120}
           defaultValue={v.headline}
-          placeholder="Ex.: Professora de Engenharia e palestrante sobre IA na educação"
+          placeholder={t("headlinePlaceholder")}
         />
       </Field>
 
       <Field>
-        <Label htmlFor="topics">Temas</Label>
+        <Label htmlFor="topics">{t("topics")}</Label>
         <Input
           id="topics"
           name="topics"
           defaultValue={v.topics}
-          placeholder="Ex.: Inteligência artificial, Liderança, Educação financeira"
+          placeholder={t("topicsPlaceholder")}
         />
-        <p className="text-xs text-muted-foreground">Separe por vírgula. Até {MAX_TOPICS} temas; cada um vira uma página no diretório.</p>
+        <p className="text-xs text-muted-foreground">{t("topicsHint", { max: MAX_TOPICS })}</p>
       </Field>
 
       <div className="grid gap-4 sm:grid-cols-[1fr_8rem]">
         <Field>
-          <Label htmlFor="city">Cidade</Label>
+          <Label htmlFor="city">{t("city")}</Label>
           <Input id="city" name="city" maxLength={80} defaultValue={v.city} autoComplete="address-level2" />
         </Field>
         <Field>
-          <Label htmlFor="state">Estado</Label>
+          <Label htmlFor="state">{t("state")}</Label>
           <Select id="state" name="state" defaultValue={v.state}>
             <option value="">—</option>
             {BR_STATES.map((uf) => (
@@ -158,27 +160,27 @@ export function PublicProfileForm({ initialValues, profileUrlBase }: { initialVa
         </Field>
       </div>
 
-      <CheckGroup legend="Formatos" name="formats" options={FORMATS} labels={FORMAT_LABEL} selected={v.formats} />
-      <CheckGroup legend="Públicos que atendo" name="audiences" options={AUDIENCES} labels={AUDIENCE_LABEL} selected={v.audiences} />
+      <CheckGroup legend={t("formats")} name="formats" options={FORMATS} labels={formatLabels} selected={v.formats} />
+      <CheckGroup legend={t("audiences")} name="audiences" options={AUDIENCES} labels={audienceLabels} selected={v.audiences} />
 
       <Field>
-        <Label htmlFor="experience">Experiência anterior (declarada)</Label>
+        <Label htmlFor="experience">{t("experience")}</Label>
         <Textarea
           id="experience"
           name="experience"
           maxLength={600}
           defaultValue={v.experience}
-          placeholder="Ex.: Palestras no Congresso X (2024), treinamentos para a empresa Y, aulas na pós-graduação Z."
+          placeholder={t("experiencePlaceholder")}
         />
         <p className="text-xs text-muted-foreground">
-          O que você fez fora do PulseStage. Aparece separado dos números verificados, com o rótulo “declarada”.
+          {t("experienceHint")}
         </p>
       </Field>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field>
-          <Label htmlFor="websiteUrl">Site</Label>
-          <Input id="websiteUrl" name="websiteUrl" maxLength={200} defaultValue={v.websiteUrl} placeholder="seusite.com.br" inputMode="url" />
+          <Label htmlFor="websiteUrl">{t("website")}</Label>
+          <Input id="websiteUrl" name="websiteUrl" maxLength={200} defaultValue={v.websiteUrl} placeholder={t("websitePlaceholder")} inputMode="url" />
         </Field>
         <Field>
           <Label htmlFor="linkedinUrl">LinkedIn</Label>
@@ -187,30 +189,30 @@ export function PublicProfileForm({ initialValues, profileUrlBase }: { initialVa
             name="linkedinUrl"
             maxLength={200}
             defaultValue={v.linkedinUrl}
-            placeholder="linkedin.com/in/seu-nome"
+            placeholder={t("linkedinPlaceholder")}
             inputMode="url"
           />
         </Field>
       </div>
 
       <div className="grid gap-2">
-        <p className="text-sm font-medium">Opções</p>
+        <p className="text-sm font-medium">{t("options")}</p>
         <Toggle
           name="contactEnabled"
-          label="Receber convites pelo perfil"
-          description="Mostra o botão “Convidar para palestrar”. Os convites chegam em Convites; seu e-mail não aparece."
+          label={t("contactEnabled")}
+          description={t("contactEnabledHint")}
           defaultChecked={v.contactEnabled}
         />
         <Toggle
           name="showRatings"
-          label="Mostrar a nota da plateia"
-          description="Média das perguntas de 0 a 10 (utilidade, satisfação e recomendação) das sessões verificadas."
+          label={t("showRatings")}
+          description={t("showRatingsHint")}
           defaultChecked={v.showRatings}
         />
         <Toggle
           name="promoteOnSurvey"
-          label="Divulgar o perfil depois da pesquisa"
-          description="Quem responde a pesquisa de uma sessão sua vê um card “Conheça o palestrante” com o link do perfil."
+          label={t("promoteOnSurvey")}
+          description={t("promoteOnSurveyHint")}
           defaultChecked={v.promoteOnSurvey}
         />
       </div>
@@ -218,7 +220,7 @@ export function PublicProfileForm({ initialValues, profileUrlBase }: { initialVa
       {state.error ? <Alert>{state.error}</Alert> : null}
       <div>
         <Button type="submit" disabled={pending}>
-          {pending ? "Salvando…" : "Salvar perfil público"}
+          {pending ? tCommon("saving") : t("submit")}
         </Button>
       </div>
     </form>
@@ -226,6 +228,7 @@ export function PublicProfileForm({ initialValues, profileUrlBase }: { initialVa
 }
 
 export function ShareProfileLink({ url }: { url: string }) {
+  const t = useTranslations("profile.share");
   const [copied, setCopied] = useState(false);
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -239,14 +242,14 @@ export function ShareProfileLink({ url }: { url: string }) {
             setCopied(true);
             window.setTimeout(() => setCopied(false), 2000);
           } catch {
-            toast.error("Não foi possível copiar. Selecione o link e copie.");
+            toast.error(t("copyFailed"));
           }
         }}
       >
-        {copied ? <CheckIcon /> : <CopyIcon />} {copied ? "Copiado" : "Copiar link"}
+        {copied ? <CheckIcon /> : <CopyIcon />} {copied ? t("copied") : t("copyLink")}
       </Button>
       <Link href={url} target="_blank" className="inline-flex min-h-9 items-center gap-1.5 px-2 text-sm font-medium text-primary hover:underline">
-        Abrir <ExternalIcon />
+        {t("open")} <ExternalIcon />
       </Link>
     </div>
   );
@@ -265,6 +268,7 @@ export type SessionVisibilityItem = {
 
 /** Sessões encerradas: escolher quais aparecem no perfil e ver se cada uma conta como verificada. */
 export function SessionVisibilityList({ sessions }: { sessions: SessionVisibilityItem[] }) {
+  const t = useTranslations("profile.sessions");
   const [optimistic, setListed] = useOptimistic(
     sessions,
     (list, change: { id: string; listed: boolean }) => list.map((s) => (s.id === change.id ? { ...s, listed: change.listed } : s)),
@@ -281,7 +285,7 @@ export function SessionVisibilityList({ sessions }: { sessions: SessionVisibilit
               checked={s.listed && s.verified}
               disabled={!s.verified}
               className="mt-1 size-4 accent-primary disabled:opacity-40"
-              aria-label={`Mostrar “${s.title}” no perfil`}
+              aria-label={t("showOnProfile", { title: s.title })}
               onChange={(e) => {
                 const listed = e.target.checked;
                 startTransition(async () => {
@@ -295,17 +299,17 @@ export function SessionVisibilityList({ sessions }: { sessions: SessionVisibilit
               <span className="truncate font-medium">{s.title}</span>
               <span className="text-xs text-muted-foreground">
                 {s.date} · {s.audience}
-                {s.rating ? ` · nota ${s.rating}` : ""}
+                {s.rating ? ` · ${t("rating", { rating: s.rating })}` : ""}
               </span>
               {s.reason ? <span className="text-xs text-muted-foreground">{s.reason}</span> : null}
             </span>
           </label>
           {s.verified ? (
             <Badge variant="secondary" className="gap-1">
-              <BadgeCheckIcon className="text-primary" /> Verificada
+              <BadgeCheckIcon className="text-primary" /> {t("verified")}
             </Badge>
           ) : (
-            <Badge variant="outline">Não conta</Badge>
+            <Badge variant="outline">{t("notCounted")}</Badge>
           )}
         </li>
       ))}

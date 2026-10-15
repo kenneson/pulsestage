@@ -1,1 +1,14 @@
-{}
+{
+  "contactRequest": {
+    "subject": "Convite para palestrar: {from}",
+    "greeting": "Olá, {name}!",
+    "greetingNoName": "Olá!",
+    "intro": "{name} enviou um convite pelo seu perfil público no PulseStage.",
+    "organization": "Instituição: {organization}",
+    "organizationKind": "Instituição: {organization} ({kind})",
+    "eventDate": "Data do evento: {date}",
+    "eventCity": "Cidade: {city}",
+    "reply": "Responda este e-mail para falar com {name} ({email}).",
+    "inbox": "Seus convites: {url}"
+  }
+}

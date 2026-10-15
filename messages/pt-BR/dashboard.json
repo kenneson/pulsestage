@@ -1,1 +1,110 @@
-{}
+{
+  "nav": {
+    "overview": "Visão geral",
+    "sessions": "Sessões",
+    "surveys": "Pesquisas",
+    "library": "Biblioteca",
+    "raffles": "Sorteios",
+    "evolution": "Evolução",
+    "publicProfile": "Perfil público",
+    "invites": "Convites",
+    "integrations": "Integrações",
+    "guide": "Guia",
+    "newSession": "Nova sessão",
+    "mainNav": "Navegação principal",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu",
+    "unreadInvites": "{count, plural, one {# convite novo} other {# convites novos}}",
+    "settings": "Configurações",
+    "profileAndAccount": "Perfil e conta",
+    "signOut": "Sair"
+  },
+  "home": {
+    "metaTitle": "Visão geral",
+    "title": "Visão geral",
+    "greeting": "Olá, {name}",
+    "tagline": "Criar, apresentar, analisar, melhorar.",
+    "newSession": "Nova sessão",
+    "nextMeta": "código <b>{code}</b> · {count, plural, one {# pergunta} other {# perguntas}}",
+    "openLive": "Abrir sala ao vivo",
+    "summary": "Resumo",
+    "stats": {
+      "sessions": "Sessões",
+      "sessionsHint": "{count, plural, one {# encerrada} other {# encerradas}}",
+      "overall": "Nota geral",
+      "overallHint": "Utilidade, satisfação ou recomendação",
+      "dimensions": "Média das dimensões",
+      "dimensionsHint": "Perguntas de 1 a 5 das pesquisas",
+      "participation": "Participação média",
+      "participationHint": "Quem respondeu algo ÷ quem entrou"
+    },
+    "recent": "Sessões recentes",
+    "seeAll": "Ver todas",
+    "emptyTitle": "Nenhuma sessão ainda",
+    "emptyDescription": "Crie sua primeira sessão, adicione interações e compartilhe o código com a audiência.",
+    "createSession": "Criar sessão",
+    "seeGuide": "Ver o guia",
+    "steps": {
+      "title": "Primeiros passos",
+      "createSession": "Criar a primeira sessão",
+      "addQuestions": "Adicionar perguntas",
+      "presentLive": "Apresentar ao vivo",
+      "completeProfile": "Completar o perfil",
+      "createTemplate": "Criar um modelo de pesquisa",
+      "done": "(feito)"
+    }
+  },
+  "sessionList": {
+    "meta": "{date} · código <b>{code}</b>"
+  },
+  "sessions": {
+    "metaTitle": "Sessões",
+    "title": "Sessões",
+    "newSession": "Nova sessão",
+    "emptyTitle": "Nenhuma sessão",
+    "emptyDescription": "Suas palestras, aulas e workshops aparecem aqui."
+  },
+  "library": {
+    "metaTitle": "Biblioteca de perguntas",
+    "title": "Biblioteca de perguntas",
+    "intro": "Toda pergunta que você cria fica aqui, uma vez só mesmo que apareça em várias sessões. Reaproveite com um clique.",
+    "newSession": "Nova sessão",
+    "emptyTitle": "Sua biblioteca está vazia",
+    "emptyDescription": "As perguntas aparecem aqui assim que você as cria em uma sessão.",
+    "createSession": "Criar sessão"
+  },
+  "libraryTable": {
+    "useInSession": "Usar em uma sessão",
+    "emptyTitle": "Nenhuma pergunta encontrada",
+    "emptyDescription": "Ajuste a busca ou o filtro de tipo.",
+    "added": "Pergunta adicionada a “{name}”.",
+    "addedGeneric": "Pergunta adicionada à sessão.",
+    "targetSession": "Sessão de destino",
+    "entersAtEnd": "A pergunta entra no fim do roteiro.",
+    "adding": "Adicionando…",
+    "noOpenSessions": "Nenhuma sessão aberta. <link>Crie uma sessão</link>."
+  },
+  "raffles": {
+    "metaTitle": "Sorteios",
+    "title": "Sorteios",
+    "intro": "Os sorteios das suas sessões, com os ganhadores e o controle de entrega dos prêmios. Para criar um, abra a sessão e use a aba “Sorteio”.",
+    "emptyTitle": "Nenhuma sessão com sorteio",
+    "emptyDescription": "Na página da sessão, a aba “Sorteio” liga o sorteio e cadastra os prêmios.",
+    "seeSessions": "Ver sessões",
+    "pendingDeliveries": "{count, plural, one {prêmio sorteado ainda não marcado como entregue.} other {prêmios sorteados ainda não marcados como entregues.}}",
+    "entrants": "{count, plural, one {# pessoa concorrendo} other {# pessoas concorrendo}}",
+    "editPrizes": "Editar prêmios",
+    "noPrizes": "Nenhum prêmio cadastrado.",
+    "winners": "{drawn} de {count, plural, one {# ganhador} other {# ganhadores}}"
+  },
+  "winnerList": {
+    "delivered": "Entregue",
+    "ticket": "nº {number}",
+    "absent": "ausente"
+  },
+  "copyField": {
+    "copyLabel": "Copiar {label}",
+    "copied": "Copiado",
+    "copyFailed": "Não foi possível copiar. Selecione o texto e copie."
+  }
+}

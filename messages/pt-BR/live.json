@@ -1,1 +1,135 @@
-{}
+{
+  "page": {
+    "metaTitle": "Sala ao vivo"
+  },
+  "controlRoom": {
+    "reconnecting": "Reconectando…",
+    "participants": "{count, plural, one {# participante} other {# participantes}}",
+    "connectedNow": "{count, plural, one {# conectado agora} other {# conectados agora}}",
+    "projectorScreen": "Tela do projetor",
+    "startSession": "Iniciar sessão",
+    "pause": "Pausar",
+    "resume": "Retomar",
+    "endSession": "Encerrar sessão",
+    "endConfirm": {
+      "title": "Encerrar a sessão?",
+      "description": "Os participantes verão o link de avaliação. Não dá para reabrir.",
+      "descriptionRaffle": "Os participantes verão o link de avaliação. Não dá para reabrir. O sorteio continua nesta sala.",
+      "confirm": "Encerrar"
+    },
+    "viewAnalytics": "Ver analytics",
+    "onScreen": "No telão",
+    "raffle": "Sorteio",
+    "leaderboard": "Ranking do quiz",
+    "highlightedQuestion": "Pergunta da plateia em destaque",
+    "audienceQuestions": "Perguntas da plateia",
+    "responsesOf": "{count, plural, one {# resposta} other {# respostas}} de {participants, number}",
+    "slideOf": "Slide {slide} <muted>de {total}</muted>",
+    "qrOnScreen": "QR Code no telão",
+    "noActive": "Nenhuma interação ativa",
+    "showLeaderboard": "Mostrar ranking",
+    "hideLeaderboard": "Ocultar ranking",
+    "showAnswer": "Mostrar resposta",
+    "hideAnswer": "Ocultar resposta",
+    "closeQuestion": "Encerrar",
+    "previousSlide": "Voltar ao slide anterior",
+    "previous": "Anterior",
+    "next": "Próxima",
+    "raffleOnScreenHint": "O sorteio está no telão. Sorteie pelo card “Sorteio”; o nome aparece lá depois que o telão revela.",
+    "questionsOnScreenHint": "As perguntas da plateia estão no telão. Use o card “Perguntas da plateia” para destacar, marcar como respondida ou tirar do telão. Clique em Próxima para seguir o roteiro.",
+    "slide": "Slide {slide}",
+    "upNextHint": "A seguir: {item}. Clique em Próxima ou pressione →.",
+    "lineupDone": "Todo o roteiro foi apresentado.",
+    "pausedHint": "Sessão pausada. Retome para continuar.",
+    "draftHint": "Inicie a sessão para começar.",
+    "endedHint": "Sessão encerrada.",
+    "upNextSlides": "A seguir: <strong>{item}</strong> · → ou PageDown avança, ← volta",
+    "upNextKeys": "A seguir: <strong>{item}</strong> · → avança",
+    "lineupEnd": "Fim do roteiro.",
+    "itemLabel": "{type}: {title}",
+    "interactionFallback": "Interação",
+    "joinCode": "Código de entrada",
+    "showOnScreen": "Mostrar no telão",
+    "lineup": "Roteiro",
+    "active": "Ativa",
+    "noInteractions": "Nenhuma interação.",
+    "participation": "Participação"
+  },
+  "moderation": {
+    "moderateWords": "Moderar palavras",
+    "moderateResponses": "Moderar respostas",
+    "hiddenCount": "{count, plural, one {# oculta} other {# ocultas}}",
+    "waitingCount": "{count, plural, one {# aguardando} other {# aguardando}}",
+    "wordsOnScreenHint": "No telão. Clique no × para ocultar a palavra (e os próximos envios dela).",
+    "hideWord": "Ocultar “{word}”",
+    "onScreen": "No telão",
+    "offScreen": "Fora do telão",
+    "profanityFilter": "filtro de palavrões",
+    "approve": "Aprovar",
+    "noWords": "Nenhuma palavra ainda.",
+    "noResponses": "Nenhuma resposta ainda."
+  },
+  "questionsCard": {
+    "title": "Perguntas da plateia",
+    "showOnScreen": "Mostrar no telão",
+    "hideFromScreen": "Ocultar do telão",
+    "disabled": "Desligadas nesta sessão. Ligue em “Participação”, abaixo, para a plateia poder perguntar.",
+    "tabsLabel": "Perguntas",
+    "tabs": {
+      "open": "Abertas",
+      "pending": "Aguardando",
+      "answered": "Respondidas",
+      "hidden": "Ocultas"
+    },
+    "tab": "{label} ({count, number})",
+    "emptyOpen": "Nenhuma pergunta aberta. A plateia pergunta pelo celular.",
+    "anonymous": "Anônima",
+    "filtered": "barrada pelo filtro",
+    "onScreen": "No telão",
+    "approve": "Aprovar",
+    "highlight": "Destacar",
+    "removeFromScreen": "Tirar do telão",
+    "markAnswered": "Respondida",
+    "reopen": "Reabrir"
+  },
+  "rafflePanel": {
+    "title": "Sorteio",
+    "show": "Mostrar sorteio",
+    "hide": "Ocultar sorteio",
+    "entrantsSurveyDone": "<num>{count, number}</num> {count, plural, one {pessoa concorrendo} other {pessoas concorrendo}} (quem respondeu a pesquisa).",
+    "entrantsSurveyPending": "<num>{count, number}</num> {count, plural, one {pessoa concorrendo} other {pessoas concorrendo}}. Só quem responder a pesquisa concorre: ela abre quando você encerra a sessão.",
+    "entrantsEveryone": "<num>{count, number}</num> {count, plural, one {pessoa concorrendo} other {pessoas concorrendo}}.",
+    "suspense": "Sorteando… o telão revela em <num>{seconds}s</num>",
+    "noPrizes": "Nenhum prêmio cadastrado. <link>Cadastrar</link>",
+    "progress": "{drawn, number} de {quantity, plural, one {# ganhador} other {# ganhadores}}",
+    "draw": "Sortear",
+    "absent": "Ausente?",
+    "absentConfirm": {
+      "title": "{name} não está presente?",
+      "description": "A pessoa sai do sorteio e outra é sorteada para o mesmo prêmio, com animação no telão.",
+      "confirm": "Sortear outra pessoa"
+    },
+    "startToDraw": "Inicie a sessão para sortear."
+  },
+  "reactionTotals": {
+    "label": "Reações da plateia"
+  },
+  "talkTimer": {
+    "label": "Tempo de palestra: {time}",
+    "labelPlanned": "Tempo de palestra: {time} de {planned, plural, one {# minuto previsto} other {# minutos previstos}}",
+    "paused": "pausado"
+  },
+  "errors": {
+    "leaderboardNotLive": "Inicie ou retome a sessão para mostrar o ranking.",
+    "leaderboardFailed": "Não foi possível mudar o ranking no telão.",
+    "questionsLoadFailed": "Não foi possível carregar as perguntas.",
+    "questionUpdateFailed": "Não foi possível atualizar a pergunta.",
+    "screenNotLive": "Inicie ou retome a sessão para usar o telão.",
+    "questionNotOpen": "Essa pergunta não está aberta.",
+    "screenFailed": "Não foi possível mudar o telão.",
+    "moderationLoadFailed": "Não foi possível carregar a moderação.",
+    "responseUpdateFailed": "Não foi possível atualizar a resposta.",
+    "wordUpdateFailed": "Não foi possível atualizar a palavra.",
+    "reactionsLoadFailed": "Não foi possível carregar as reações."
+  }
+}

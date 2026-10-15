@@ -1,6 +1,7 @@
 "use client";
 
 import { useOptimistic, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { updateEngagementAction } from "@/features/engagement/actions";
 import { cn } from "@/lib/utils";
@@ -13,32 +14,13 @@ export type EngagementFlags = {
   moderate_open_text: boolean;
 };
 
-const OPTIONS: { key: keyof EngagementFlags; label: string; description: string }[] = [
-  {
-    key: "qa_enabled",
-    label: "Perguntas da plateia",
-    description: "Botão “Perguntar ao palestrante” no celular. A plateia curte as perguntas dos outros.",
-  },
-  {
-    key: "qa_moderated",
-    label: "Aprovar perguntas antes de aparecerem",
-    description: "As perguntas novas ficam aguardando até você aprovar na sala ao vivo.",
-  },
-  {
-    key: "reactions_enabled",
-    label: "Reações ao vivo",
-    description: "👏 ❤️ 😂 😮 🤔 no celular durante a sessão; os emojis sobem no telão.",
-  },
-  {
-    key: "profanity_filter",
-    label: "Filtro de palavrões",
-    description: "Nuvem de palavras, respostas abertas e perguntas com palavrões ficam fora do telão. Você vê e pode liberar.",
-  },
-  {
-    key: "moderate_open_text",
-    label: "Aprovar respostas abertas antes do telão",
-    description: "Cada resposta aberta espera a sua aprovação para aparecer no telão.",
-  },
+// Rótulos e descrições em session.engagement.<chave>.
+const OPTIONS: (keyof EngagementFlags)[] = [
+  "qa_enabled",
+  "qa_moderated",
+  "reactions_enabled",
+  "profanity_filter",
+  "moderate_open_text",
 ];
 
 /** Opções de participação da sessão. Salvam na hora (também durante a apresentação). */
@@ -51,6 +33,7 @@ export function EngagementSettings({
   initial: EngagementFlags;
   compact?: boolean;
 }) {
+  const t = useTranslations("session.engagement");
   const [flags, setFlag] = useOptimistic(initial, (current, change: Partial<EngagementFlags>) => ({ ...current, ...change }));
   const [, startTransition] = useTransition();
 
@@ -63,21 +46,21 @@ export function EngagementSettings({
 
   return (
     <ul className={cn("flex flex-col", compact ? "gap-2" : "gap-3")}>
-      {OPTIONS.map((option) => {
-        const disabled = option.key === "qa_moderated" && !flags.qa_enabled;
+      {OPTIONS.map((key) => {
+        const disabled = key === "qa_moderated" && !flags.qa_enabled;
         return (
-          <li key={option.key}>
+          <li key={key}>
             <label className={cn("flex cursor-pointer items-start gap-3", disabled && "cursor-not-allowed opacity-50")}>
               <input
                 type="checkbox"
-                checked={flags[option.key]}
+                checked={flags[key]}
                 disabled={disabled}
-                onChange={(e) => toggle(option.key, e.target.checked)}
+                onChange={(e) => toggle(key, e.target.checked)}
                 className="mt-0.5 size-4 shrink-0 accent-primary"
               />
               <span className="flex flex-col gap-0.5">
-                <span className="text-sm font-medium">{option.label}</span>
-                {compact ? null : <span className="text-xs text-muted-foreground">{option.description}</span>}
+                <span className="text-sm font-medium">{t(`${key}.label`)}</span>
+                {compact ? null : <span className="text-xs text-muted-foreground">{t(`${key}.description`)}</span>}
               </span>
             </label>
           </li>

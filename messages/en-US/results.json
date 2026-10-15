@@ -1,1 +1,8 @@
-{}
+{
+  "waiting": "Waiting for responses…",
+  "position": "{position, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}",
+  "averagePosition": "average position {value}",
+  "mean": "average · {count, plural, one {# response} other {# responses}}",
+  "received": "{count, plural, one {# response received} other {# responses received}}",
+  "wordCloud": "Word cloud: {words}"
+}

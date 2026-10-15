@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { fail, ok, type ActionResult } from "@/lib/action-result";
+import { getMessageTranslator } from "@/i18n/server";
 
 // Consentimento OAuth (Claude, ChatGPT e outros clientes MCP) e acessos concedidos.
 
@@ -37,11 +38,12 @@ export async function denyAuthorizationAction(formData: FormData): Promise<void>
 }
 
 export async function revokeGrantAction(clientId: string): Promise<ActionResult> {
+  const tr = await getMessageTranslator();
   const parsed = z.string().trim().min(1).max(200).safeParse(clientId);
-  if (!parsed.success) return fail("Dados inválidos.");
+  if (!parsed.success) return fail(tr.message("errors.invalidData"));
   const supabase = await createClient();
   const { error } = await supabase.auth.oauth.revokeGrant({ clientId: parsed.data });
-  if (error) return fail("Não foi possível revogar o acesso.");
+  if (error) return fail(tr.message("integrations.errors.revokeFailed"));
   revalidatePath("/dashboard/integracoes");
   return ok(null);
 }

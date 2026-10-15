@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
   createSessionAction,
   updateSessionAction,
@@ -51,6 +52,8 @@ export function SessionForm({
   /** Nome da pesquisa já copiada para a sessão (encerrada): não dá mais para trocar. */
   lockedSurveyName?: string | null;
 }) {
+  const t = useTranslations("session.form");
+  const tActions = useTranslations("common.actions");
   const action = sessionId ? updateSessionAction.bind(null, sessionId) : createSessionAction;
   const [state, formAction, pending] = useActionState(action, initial);
   const [locale, setLocale] = useState<Locale>(defaults.locale);
@@ -71,42 +74,42 @@ export function SessionForm({
   return (
     <form action={formAction} className="grid gap-5">
       <Field>
-        <Label htmlFor="title">Título</Label>
+        <Label htmlFor="title">{t("title")}</Label>
         <Input
           id="title"
           name="title"
           defaultValue={defaults.title}
-          placeholder="Como a IA está mudando o mercado de trabalho"
+          placeholder={t("titlePlaceholder")}
           maxLength={200}
           required
         />
       </Field>
       <Field>
-        <Label htmlFor="description">Descrição</Label>
+        <Label htmlFor="description">{t("description")}</Label>
         <Textarea
           id="description"
           name="description"
           defaultValue={defaults.description}
-          placeholder="Do que trata a sessão e para quem ela é."
+          placeholder={t("descriptionPlaceholder")}
           maxLength={2000}
         />
       </Field>
       <div className="grid gap-5 sm:grid-cols-3">
         <Field>
-          <Label htmlFor="date">Data</Label>
+          <Label htmlFor="date">{t("date")}</Label>
           <Input id="date" name="date" type="date" defaultValue={defaults.date} />
         </Field>
         <Field>
-          <Label htmlFor="time">Horário</Label>
+          <Label htmlFor="time">{t("time")}</Label>
           <Input id="time" name="time" type="time" defaultValue={defaults.time} />
         </Field>
         <Field>
-          <Label htmlFor="duration">Duração (min)</Label>
+          <Label htmlFor="duration">{t("duration")}</Label>
           <Input id="duration" name="duration" type="number" min={1} max={1440} defaultValue={defaults.duration} />
         </Field>
       </div>
       <Field>
-        <Label htmlFor="locale">Idioma da sessão</Label>
+        <Label htmlFor="locale">{t("locale")}</Label>
         <Select
           id="locale"
           name="locale"
@@ -119,32 +122,30 @@ export function SessionForm({
             </option>
           ))}
         </Select>
-        <p className="text-xs text-muted-foreground">
-          O telão e o celular da plateia aparecem neste idioma, assim como o filtro de palavrões e as sugestões da IA.
-        </p>
+        <p className="text-xs text-muted-foreground">{t("localeHelp")}</p>
       </Field>
       <Field>
-        <Label htmlFor="joinCode">Código de entrada (opcional)</Label>
+        <Label htmlFor="joinCode">{t("joinCode")}</Label>
         <Input
           id="joinCode"
           name="joinCode"
           defaultValue={defaults.joinCode}
-          placeholder="Ex.: IA2026 — deixe vazio para gerar automaticamente"
+          placeholder={t("joinCodePlaceholder")}
           maxLength={10}
           disabled={!canEditCode}
           className="uppercase"
         />
         {!canEditCode ? (
-          <p className="text-xs text-muted-foreground">O código não pode mudar depois que a sessão começou.</p>
+          <p className="text-xs text-muted-foreground">{t("joinCodeLocked")}</p>
         ) : null}
       </Field>
       <Field>
-        <Label htmlFor="surveyTemplateId">Pesquisa pós-evento</Label>
+        <Label htmlFor="surveyTemplateId">{t("survey")}</Label>
         {lockedSurveyName ? (
           <>
             <Input id="surveyTemplateId" value={lockedSurveyName} disabled readOnly />
             <input type="hidden" name="surveyTemplateId" value={defaults.surveyTemplateId} />
-            <p className="text-xs text-muted-foreground">A sessão já foi encerrada com esta pesquisa.</p>
+            <p className="text-xs text-muted-foreground">{t("surveyLocked")}</p>
           </>
         ) : (
           <>
@@ -154,7 +155,7 @@ export function SessionForm({
               value={templateId}
               onChange={(e) => setTemplateId(e.target.value)}
             >
-              <optgroup label="Modelos prontos">
+              <optgroup label={t("platformTemplates")}>
                 {platform.map((o) => (
                   <option key={o.id} value={o.id}>
                     {o.name}
@@ -162,7 +163,7 @@ export function SessionForm({
                 ))}
               </optgroup>
               {surveyOptions.some((o) => !o.isPlatform) ? (
-                <optgroup label="Meus modelos">
+                <optgroup label={t("myTemplates")}>
                   {surveyOptions
                     .filter((o) => !o.isPlatform)
                     .map((o) => (
@@ -174,9 +175,9 @@ export function SessionForm({
               ) : null}
             </Select>
             <p className="text-xs text-muted-foreground">
-              A plateia responde ao encerrar a sessão.{" "}
+              {t("surveyHelp")}{" "}
               <Link href="/dashboard/pesquisas" className="text-primary underline-offset-4 hover:underline">
-                Ver ou criar modelos
+                {t("manageTemplates")}
               </Link>
             </p>
           </>
@@ -186,7 +187,7 @@ export function SessionForm({
       {state.success ? <Alert tone="success">{state.success}</Alert> : null}
       <div>
         <Button type="submit" disabled={pending}>
-          {pending ? "Salvando…" : sessionId ? "Salvar informações" : "Criar sessão"}
+          {pending ? tActions("saving") : sessionId ? t("saveInfo") : t("create")}
         </Button>
       </div>
     </form>

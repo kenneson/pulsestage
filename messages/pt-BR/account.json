@@ -1,1 +1,110 @@
-{}
+{
+  "page": {
+    "metaTitle": "Conta e configurações",
+    "title": "Conta e configurações",
+    "description": "Seu perfil, preferências, acesso e dados.",
+    "navLabel": "Seções da conta"
+  },
+  "sections": {
+    "profile": "Perfil",
+    "preferences": "Preferências",
+    "preferencesDescription": "Valores usados ao criar uma sessão e para mostrar datas.",
+    "security": "Segurança",
+    "privacy": "Privacidade",
+    "privacyTitle": "Privacidade e dados"
+  },
+  "security": {
+    "emailPassword": "E-mail e senha",
+    "active": "Ativo",
+    "activateHint": "Defina uma senha abaixo para ativar",
+    "connected": "Conectado",
+    "connectHint": "Entre com o Google uma vez para conectar"
+  },
+  "privacy": {
+    "exportTitle": "Exportar meus dados",
+    "exportDescription": "Um arquivo JSON com seu perfil, sessões, perguntas, respostas, pesquisas, insights e convites recebidos.",
+    "export": "Exportar",
+    "deleteTitle": "Excluir conta",
+    "deleteDescription": "Apaga para sempre seu perfil (inclusive o público), todas as sessões, respostas, pesquisas, insights, convites recebidos e os contatos de participantes. Não dá para desfazer."
+  },
+  "avatar": {
+    "choose": "Escolher foto",
+    "change": "Trocar foto",
+    "hint": "PNG, JPG ou WebP, até 2 MB."
+  },
+  "profile": {
+    "name": "Nome",
+    "email": "E-mail",
+    "bio": "Mini-bio",
+    "bioPlaceholder": "Ex.: Palestrante sobre IA no trabalho e produtividade.",
+    "bioHint": "Aparece para a plateia na tela de entrada da sessão, no relatório em PDF e no seu perfil público.",
+    "save": "Salvar perfil"
+  },
+  "preferences": {
+    "locale": "Idioma",
+    "localeHint": "Idioma do painel, das sessões novas e dos e-mails.",
+    "timeZone": "Fuso horário",
+    "timeZoneHint": "Usado para as datas e horários das suas sessões.",
+    "defaultSurvey": "Pesquisa padrão para novas sessões",
+    "myTemplates": "Meus modelos",
+    "defaultDuration": "Duração padrão (min)",
+    "themeHint": "Vale para este navegador.",
+    "save": "Salvar preferências"
+  },
+  "password": {
+    "new": "Nova senha",
+    "newPlaceholder": "Mínimo de 8 caracteres",
+    "confirm": "Confirmar nova senha",
+    "changing": "Trocando…",
+    "change": "Trocar senha"
+  },
+  "signOutOthers": {
+    "button": "Sair de todos os outros dispositivos",
+    "confirmTitle": "Sair de todos os outros dispositivos?",
+    "confirmDescription": "Você continua conectado aqui. Nos outros navegadores será preciso entrar de novo.",
+    "confirmLabel": "Sair dos outros",
+    "done": "Pronto: os outros dispositivos foram desconectados."
+  },
+  "delete": {
+    "confirmWord": "EXCLUIR",
+    "typeToConfirm": "Digite <b>{word}</b> para confirmar",
+    "deleting": "Excluindo…",
+    "button": "Excluir minha conta"
+  },
+  "export": {
+    "fileName": "pulsestage-meus-dados-{date}.json"
+  },
+  "success": {
+    "profileSaved": "Perfil salvo.",
+    "photoUpdated": "Foto atualizada.",
+    "preferencesSaved": "Preferências salvas.",
+    "passwordChanged": "Senha trocada."
+  },
+  "errors": {
+    "bioTooLong": "A mini-bio pode ter até 400 caracteres.",
+    "profileSaveFailed": "Não foi possível salvar o perfil.",
+    "chooseImage": "Escolha uma imagem.",
+    "imageType": "Use uma imagem PNG, JPG ou WebP.",
+    "imageTooLarge": "A imagem pode ter até 2 MB.",
+    "uploadFailed": "Não foi possível enviar a imagem.",
+    "photoSaveFailed": "Não foi possível salvar a foto.",
+    "photoRemoveFailed": "Não foi possível remover a foto.",
+    "invalidLocale": "Idioma inválido.",
+    "invalidTimeZone": "Fuso horário inválido.",
+    "invalidSurvey": "Modelo de pesquisa inválido.",
+    "invalidDuration": "Duração inválida.",
+    "preferencesSaveFailed": "Não foi possível salvar as preferências.",
+    "passwordRequired": "Informe a nova senha.",
+    "passwordTooShort": "A senha precisa ter pelo menos 8 caracteres.",
+    "passwordTooLong": "A senha pode ter até 72 caracteres.",
+    "confirmRequired": "Confirme a nova senha.",
+    "passwordMismatch": "As senhas não conferem.",
+    "passwordSame": "A nova senha precisa ser diferente da atual.",
+    "reauthenticate": "Por segurança, entre de novo e repita a troca.",
+    "passwordChangeFailed": "Não foi possível trocar a senha.",
+    "signOutOthersFailed": "Não foi possível encerrar as outras sessões.",
+    "typeToConfirm": "Digite {word} para confirmar.",
+    "deleteFailed": "Não foi possível excluir a conta. Tente de novo.",
+    "unauthenticated": "Não autenticado."
+  }
+}

@@ -2,6 +2,7 @@
 
 import { useOptimistic, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { saveSlidesAction, removeSlidesAction } from "@/features/slides/actions";
@@ -10,7 +11,6 @@ import {
   anchorOf,
   buildDeck,
   dropInteraction,
-  gapLabel,
   placeInteraction,
   slidePath,
   type Arrangement,
@@ -19,6 +19,8 @@ import {
 } from "@/lib/domain/deck";
 import type { InteractionType } from "@/lib/domain/interactions";
 import { convertPdf, PdfConversionError } from "@/lib/slides/convert-pdf";
+import { translateAnyMessage } from "@/i18n/errors";
+import { gapText } from "@/i18n/text";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Alert, Progress } from "@/components/ui/misc";
@@ -45,6 +47,8 @@ const UPLOAD_CONCURRENCY = 4;
 type Progressing = { label: string; done: number; total: number };
 
 function useSlidesUpload(sessionId: string, speakerId: string) {
+  const t = useTranslations("session.slides");
+  const tRoot = useTranslations();
   const router = useRouter();
   const [progress, setProgress] = useState<Progressing | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -53,15 +57,15 @@ function useSlidesUpload(sessionId: string, speakerId: string) {
     setError(null);
     try {
       const batch = crypto.randomUUID();
-      setProgress({ label: "Convertendo o PDF", done: 0, total: 1 });
+      setProgress({ label: t("converting"), done: 0, total: 1 });
       const { slides, format } = await convertPdf(file, (done, total) =>
-        setProgress({ label: "Convertendo o PDF", done, total }),
+        setProgress({ label: t("converting"), done, total }),
       );
-      if (slides.length === 0) throw new PdfConversionError("O PDF não tem páginas.");
+      if (slides.length === 0) throw new PdfConversionError("session.slides.errors.noPages");
 
       const bucket = createClient().storage.from("slides");
       let sent = 0;
-      setProgress({ label: "Enviando os slides", done: 0, total: slides.length });
+      setProgress({ label: t("uploading"), done: 0, total: slides.length });
       const queue = slides.map((blob, index) => ({ blob, index }));
       const worker = async () => {
         for (let next = queue.shift(); next; next = queue.shift()) {
@@ -70,21 +74,27 @@ function useSlidesUpload(sessionId: string, speakerId: string) {
             next.blob,
             { contentType: next.blob.type, cacheControl: "31536000", upsert: true },
           );
-          if (uploadError) throw new PdfConversionError("Falha ao enviar os slides. Verifique a conexão e tente de novo.");
+          if (uploadError) throw new PdfConversionError("session.slides.errors.uploadFailed");
           sent += 1;
-          setProgress({ label: "Enviando os slides", done: sent, total: slides.length });
+          setProgress({ label: t("uploading"), done: sent, total: slides.length });
         }
       };
       await Promise.all(Array.from({ length: UPLOAD_CONCURRENCY }, worker));
 
-      setProgress({ label: "Salvando", done: slides.length, total: slides.length });
+      setProgress({ label: t("saving"), done: slides.length, total: slides.length });
       const result = await saveSlidesAction(sessionId, { batch, count: slides.length, format });
-      if (!result.ok) throw new PdfConversionError(result.error);
-      toast.success(`${result.data.count} slides prontos.`);
+      // O erro do servidor já vem traduzido.
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      toast.success(t("ready", { count: result.data.count }));
       router.refresh();
     } catch (e) {
       if (!(e instanceof PdfConversionError)) console.error("Falha ao processar o PDF", e);
-      setError(e instanceof PdfConversionError ? e.message : "Não foi possível processar o PDF.");
+      setError(
+        translateAnyMessage(tRoot, e instanceof PdfConversionError ? e.message : "session.slides.errors.processFailed"),
+      );
     } finally {
       setProgress(null);
     }
@@ -155,6 +165,9 @@ export function SlidesEditor({
   interactions: SlideDeckInteraction[];
   readOnly: boolean;
 }) {
+  const t = useTranslations("session.slides");
+  const tActions = useTranslations("common.actions");
+  const tDomain = useTranslations("domain");
   const router = useRouter();
   const { upload, progress, error } = useSlidesUpload(sessionId, speakerId);
   const [pending, startTransition] = useTransition();
@@ -201,23 +214,23 @@ export function SlidesEditor({
 
   async function remove() {
     const confirmed = await confirm({
-      title: "Remover os slides?",
-      description: "As perguntas continuam no roteiro. Se você enviar outro PDF, elas voltam para os mesmos pontos.",
-      confirmLabel: "Remover",
+      title: t("removeConfirmTitle"),
+      description: t("removeConfirmDescription"),
+      confirmLabel: tActions("remove"),
       destructive: true,
     });
     if (!confirmed) return;
     startTransition(async () => {
       const result = await removeSlidesAction(sessionId);
       if (!result.ok) toast.error(result.error);
-      else toast.success("Slides removidos.");
+      else toast.success(t("removed"));
       router.refresh();
     });
   }
 
   if (slideCount === 0) {
     if (readOnly) {
-      return <p className="text-sm text-muted-foreground">Esta sessão foi apresentada sem slides.</p>;
+      return <p className="text-sm text-muted-foreground">{t("noSlidesReadOnly")}</p>;
     }
     return (
       <div
@@ -241,11 +254,8 @@ export function SlidesEditor({
           <PresentationIcon />
         </span>
         <div className="flex max-w-md flex-col gap-1">
-          <p className="font-medium">Apresente seus slides daqui, sem trocar de janela</p>
-          <p className="text-sm text-muted-foreground">
-            Envie o PDF da apresentação. As perguntas entram entre os slides e o passador avança tudo: slide, pergunta,
-            resultado, próximo slide.
-          </p>
+          <p className="font-medium">{t("emptyTitle")}</p>
+          <p className="text-sm text-muted-foreground">{t("emptyDescription")}</p>
         </div>
         {progress ? (
           <div className="w-full max-w-sm">
@@ -253,15 +263,11 @@ export function SlidesEditor({
           </div>
         ) : (
           <PdfPicker onFile={upload} disabled={busy} variant="default">
-            Escolher PDF
+            {t("choosePdf")}
           </PdfPicker>
         )}
         {error ? <Alert className="max-w-md">{error}</Alert> : null}
-        <p className="max-w-lg text-xs text-muted-foreground">
-          PowerPoint: Arquivo → Exportar → PDF · Google Slides: Arquivo → Fazer download → PDF · Keynote: Arquivo →
-          Exportar para → PDF · Canva: Compartilhar → Baixar → PDF. O PDF é convertido no seu navegador; só as imagens
-          dos slides são enviadas. Animações e vídeos não são mantidos.
-        </p>
+        <p className="max-w-lg text-xs text-muted-foreground">{t("exportHelp")}</p>
       </div>
     );
   }
@@ -303,19 +309,20 @@ export function SlidesEditor({
       {confirmDialog}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">
-          <span className="font-display font-bold text-foreground tabular-nums">{slideCount}</span> slides ·{" "}
-          {shown.length} perguntas.{" "}
-          {readOnly
-            ? "Cada pergunta entra no ponto marcado."
-            : "Arraste as perguntas para o ponto da apresentação em que devem entrar, ou use o seletor de cada uma."}
+          {t.rich("summary", {
+            slides: slideCount,
+            questions: shown.length,
+            num: (chunks) => <span className="font-display font-bold text-foreground tabular-nums">{chunks}</span>,
+          })}{" "}
+          {readOnly ? t("readOnlyHint") : t("editHint")}
         </p>
         {!readOnly ? (
           <div className="flex gap-2">
             <PdfPicker onFile={upload} disabled={busy}>
-              <RefreshIcon /> Trocar PDF
+              <RefreshIcon /> {t("replacePdf")}
             </PdfPicker>
             <Button variant="ghost" disabled={busy} onClick={remove}>
-              <TrashIcon /> Remover slides
+              <TrashIcon /> {t("removeSlides")}
             </Button>
           </div>
         ) : null}
@@ -332,11 +339,11 @@ export function SlidesEditor({
                 {/* eslint-disable-next-line @next/next/no-img-element -- URL assinada do Storage, já em 1920 px */}
                 <img
                   src={slideUrls[item.index]}
-                  alt={`Slide ${item.index + 1}`}
+                  alt={t("slideAlt", { number: item.index + 1 })}
                   loading="lazy"
                   className="aspect-video w-full rounded-lg border bg-muted object-contain"
                 />
-                <span className="font-display text-xs text-muted-foreground">Slide {item.index + 1}</span>
+                <span className="font-display text-xs text-muted-foreground">{t("slideLabel", { number: item.index + 1 })}</span>
               </li>
             );
           }
@@ -367,10 +374,10 @@ export function SlidesEditor({
               </div>
               <p className="line-clamp-3 text-sm font-medium">{interaction.title}</p>
               {readOnly ? (
-                <span className="mt-auto text-xs">{gapLabel(interaction.afterSlide, slideCount)}</span>
+                <span className="mt-auto text-xs">{gapText(tDomain, interaction.afterSlide, slideCount)}</span>
               ) : (
                 <Select
-                  aria-label={`Ponto da apresentação de "${interaction.title}"`}
+                  aria-label={t("placeAria", { title: interaction.title })}
                   className="mt-auto h-8 text-xs text-foreground"
                   value={anchorOf(interaction.afterSlide, slideCount)}
                   disabled={busy}
@@ -378,7 +385,7 @@ export function SlidesEditor({
                 >
                   {gapOptions.map((gap) => (
                     <option key={gap} value={gap}>
-                      {gap === slideCount ? `No fim (depois do slide ${slideCount})` : gapLabel(gap, slideCount)}
+                      {gap === slideCount ? t("endAfter", { slide: slideCount }) : gapText(tDomain, gap, slideCount)}
                     </option>
                   ))}
                 </Select>

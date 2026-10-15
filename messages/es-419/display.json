@@ -1,1 +1,56 @@
-{}
+{
+  "meta": {
+    "title": "Proyector"
+  },
+  "join": {
+    "prompt": "Entra a <host>{host}</host> y usa el código"
+  },
+  "completed": {
+    "title": "¡Gracias por participar!",
+    "subtitle": "Toma 1 minuto: evalúa la sesión."
+  },
+  "paused": {
+    "title": "Sesión en pausa",
+    "subtitle": "Volvemos en un momento."
+  },
+  "slideAlt": "Diapositiva {slide}",
+  "footer": {
+    "joinAt": "Participa en {host}",
+    "responses": "{count, plural, one {# respuesta} other {# respuestas}}",
+    "participants": "{count, plural, one {# participante} other {# participantes}}",
+    "connected": "{count, plural, one {# conectado} other {# conectados}}",
+    "code": "Código <code>{code}</code>"
+  },
+  "questions": {
+    "eyebrow": "Pregunta del público",
+    "title": "Preguntas del público",
+    "anonymous": "Anónima",
+    "openCount": "{count, plural, one {# pregunta abierta} other {# preguntas abiertas}}",
+    "empty": "Envía tu pregunta desde el celular en <host>{host}</host>"
+  },
+  "leaderboard": {
+    "title": "Tabla de posiciones del quiz",
+    "rank": "{rank}.º",
+    "new": "nuevo",
+    "points": "{points, number} pts",
+    "loading": "Cargando la tabla de posiciones…",
+    "loadFailed": "No se pudo cargar la tabla de posiciones.",
+    "empty": "Nadie ha respondido el quiz todavía."
+  },
+  "raffle": {
+    "title": "Sorteo",
+    "loading": "Cargando el sorteo…",
+    "loadFailed": "No se pudo cargar el sorteo.",
+    "prizeFallback": "Premio",
+    "soundHint": "Haz clic en la pantalla para activar el sonido",
+    "drawing": "Sorteando",
+    "entrants": "{count, plural, one {# persona participa} other {# personas participan}}",
+    "entrantsBig": "<num>{count, number}</num> {count, plural, one {persona participa} other {personas participan}}",
+    "ticket": "n.º {number}",
+    "congrats": "¡Felicitaciones! 🎉",
+    "prizeMeta": "{kind} · {quantity, plural, one {# ganador} other {# ganadores}}",
+    "hintSurveyOpen": "Responde la encuesta y recibe tu número de la suerte en el celular.",
+    "hintSurveyLater": "Al final, responde la encuesta para recibir tu número de la suerte.",
+    "hintEveryone": "Tu número de la suerte está en tu celular."
+  }
+}

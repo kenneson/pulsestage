@@ -2,6 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { deleteSessionAction, setSessionStatusAction } from "@/features/sessions/actions";
 import { duplicateSessionAction } from "@/features/library/actions";
@@ -12,6 +13,7 @@ import { Alert } from "@/components/ui/misc";
 import { CopyIcon, PlayIcon, TrashIcon } from "@/components/icons";
 
 export function StartSessionButton({ sessionId, hasInteractions }: { sessionId: string; hasInteractions: boolean }) {
+  const t = useTranslations("session.controls");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [confirm, confirmDialog] = useConfirm();
@@ -24,9 +26,9 @@ export function StartSessionButton({ sessionId, hasInteractions }: { sessionId: 
           if (
             !hasInteractions &&
             !(await confirm({
-              title: "Iniciar sem interações?",
-              description: "A sessão ainda não tem nenhuma interação.",
-              confirmLabel: "Iniciar mesmo assim",
+              title: t("startConfirmTitle"),
+              description: t("startConfirmDescription"),
+              confirmLabel: t("startConfirmLabel"),
             }))
           ) {
             return;
@@ -41,13 +43,15 @@ export function StartSessionButton({ sessionId, hasInteractions }: { sessionId: 
           });
         }}
       >
-        <PlayIcon /> {pending ? "Iniciando…" : "Iniciar sessão"}
+        <PlayIcon /> {pending ? t("starting") : t("start")}
       </Button>
     </>
   );
 }
 
 export function DeleteSessionButton({ sessionId, title }: { sessionId: string; title: string }) {
+  const t = useTranslations("session.controls");
+  const tActions = useTranslations("common.actions");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [confirm, confirmDialog] = useConfirm();
@@ -60,9 +64,9 @@ export function DeleteSessionButton({ sessionId, title }: { sessionId: string; t
         className="text-destructive hover:text-destructive"
         onClick={async () => {
           const confirmed = await confirm({
-            title: `Excluir "${title}"?`,
-            description: "Todos os dados da sessão (respostas, feedback, insights) serão apagados. Não dá para desfazer.",
-            confirmLabel: "Excluir",
+            title: t("deleteConfirmTitle", { title }),
+            description: t("deleteConfirmDescription"),
+            confirmLabel: tActions("delete"),
             destructive: true,
           });
           if (!confirmed) return;
@@ -72,12 +76,12 @@ export function DeleteSessionButton({ sessionId, title }: { sessionId: string; t
               toast.error(result.error);
               return;
             }
-            toast.success("Sessão excluída.");
+            toast.success(t("deleted"));
             router.push("/dashboard/sessions");
           });
         }}
       >
-        <TrashIcon /> Excluir
+        <TrashIcon /> {tActions("delete")}
       </Button>
     </>
   );
@@ -99,25 +103,27 @@ export function DuplicateSessionButton({
   /** só o ícone (linhas da lista de sessões) */
   iconOnly?: boolean;
 }) {
+  const t = useTranslations("session.controls");
+  const tActions = useTranslations("common.actions");
   const ref = useRef<HTMLDialogElement>(null);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const defaultTitle = `${title} (cópia)`.slice(0, 200);
+  const defaultTitle = t("copyTitle", { title }).slice(0, 200);
 
   return (
     <>
       <Button
         variant={iconOnly ? "ghost" : "outline"}
         size={iconOnly ? "icon" : size}
-        aria-label={iconOnly ? `Duplicar ${title}` : undefined}
-        title={iconOnly ? "Duplicar" : undefined}
+        aria-label={iconOnly ? t("duplicateAria", { title }) : undefined}
+        title={iconOnly ? tActions("duplicate") : undefined}
         onClick={() => {
           setError(null);
           ref.current?.showModal();
         }}
       >
         <CopyIcon />
-        {iconOnly ? null : " Duplicar"}
+        {iconOnly ? null : ` ${tActions("duplicate")}`}
       </Button>
       <dialog
         ref={ref}
@@ -146,33 +152,31 @@ export function DuplicateSessionButton({
         >
           <div className="flex flex-col gap-1">
             <h2 id={`duplicate-${sessionId}`} className="text-lg font-semibold">
-              Duplicar sessão
+              {t("duplicateTitle")}
             </h2>
-            <p className="text-sm text-muted-foreground">
-              A cópia leva perguntas, slides, pesquisa e prêmios do sorteio. Respostas e participantes ficam na original.
-            </p>
+            <p className="text-sm text-muted-foreground">{t("duplicateDescription")}</p>
           </div>
           <Field>
-            <Label htmlFor={`duplicate-title-${sessionId}`}>Nome da nova sessão</Label>
+            <Label htmlFor={`duplicate-title-${sessionId}`}>{t("newName")}</Label>
             <Input id={`duplicate-title-${sessionId}`} name="title" defaultValue={defaultTitle} maxLength={200} required />
           </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field>
-              <Label htmlFor={`duplicate-date-${sessionId}`}>Data (opcional)</Label>
+              <Label htmlFor={`duplicate-date-${sessionId}`}>{t("dateOptional")}</Label>
               <Input id={`duplicate-date-${sessionId}`} name="date" type="date" />
             </Field>
             <Field>
-              <Label htmlFor={`duplicate-time-${sessionId}`}>Horário</Label>
+              <Label htmlFor={`duplicate-time-${sessionId}`}>{t("time")}</Label>
               <Input id={`duplicate-time-${sessionId}`} name="time" type="time" />
             </Field>
           </div>
           {error ? <Alert>{error}</Alert> : null}
           <div className="flex justify-end gap-2">
             <Button type="button" variant="ghost" disabled={pending} onClick={() => ref.current?.close()}>
-              Cancelar
+              {tActions("cancel")}
             </Button>
             <Button type="submit" disabled={pending}>
-              {pending ? "Duplicando…" : "Duplicar e editar"}
+              {pending ? t("duplicating") : t("duplicateAndEdit")}
             </Button>
           </div>
         </form>

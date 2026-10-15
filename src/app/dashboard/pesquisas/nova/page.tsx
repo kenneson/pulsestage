@@ -1,30 +1,36 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { TemplateEditor } from "@/components/surveys/template-editor";
 
-export const metadata: Metadata = { title: "Novo modelo de pesquisa" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("surveys.new");
+  return { title: t("metaTitle") };
+}
 
-export default function NewSurveyTemplatePage() {
+export default async function NewSurveyTemplatePage() {
+  const t = await getTranslations("surveys.new");
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Novo modelo de pesquisa</h1>
-        <p className="text-muted-foreground">Monte as perguntas que a plateia responde ao fim da sessão.</p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+        <p className="text-muted-foreground">{t("description")}</p>
       </div>
       <TemplateEditor
         templateId={null}
         initial={{
           name: "",
           description: "",
+          // Perguntas iniciais no idioma do painel (viram conteúdo do modelo ao salvar).
           questions: [
             {
               kind: "nps",
-              label: "De 0 a 10, quanto esta sessão foi útil para você?",
+              label: t("defaultNpsLabel"),
               required: true,
               dimension: "utilidade",
-              minLabel: "Nada útil",
-              maxLabel: "Extremamente útil",
+              minLabel: t("defaultNpsMin"),
+              maxLabel: t("defaultNpsMax"),
             },
-            { kind: "text", label: "O que poderia melhorar?", required: false },
+            { kind: "text", label: t("defaultTextLabel"), required: false },
           ],
         }}
       />

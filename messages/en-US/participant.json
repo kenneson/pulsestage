@@ -1,1 +1,149 @@
-{}
+{
+  "join": {
+    "metaTitle": "Join a session",
+    "title": "Join a session",
+    "description": "Enter the code shown on the speaker's screen."
+  },
+  "codeForm": {
+    "placeholder": "Code",
+    "label": "Session join code",
+    "submit": "Join"
+  },
+  "joinCode": {
+    "metaTitle": "Join session",
+    "notFoundTitle": "Session not found",
+    "notFoundText": "Check the code on the speaker's screen and try again.",
+    "endedText": "This session has ended. Want to share your feedback?",
+    "rateSession": "Rate the session",
+    "code": "Code {code}",
+    "notStarted": "The session hasn't started yet. You'll be able to join as soon as it begins."
+  },
+  "joinForm": {
+    "nameLabel": "Your name (optional)",
+    "namePlaceholder": "You can join without a name",
+    "nameHint": "Only shown on the quiz leaderboard, which may appear on the big screen. Leave it blank to stay anonymous.",
+    "avatarLegend": "Pick an avatar (optional)",
+    "avatarHint": "Shown next to your name on the quiz leaderboard.",
+    "materialSummary": "Send me the materials (optional)",
+    "email": "Email",
+    "phone": "Phone",
+    "consent": "I allow the speaker to use my contact info to send materials and updates about this session. My contact info is kept separate from my answers. <link>Privacy policy</link>",
+    "submit": "Join",
+    "submitting": "Joining…",
+    "terms": "By joining, you agree to the <link>privacy policy</link>."
+  },
+  "participate": {
+    "metaTitle": "Participate"
+  },
+  "view": {
+    "connectionUnstable": "Unstable connection. Retrying…",
+    "endedTitle": "Session ended",
+    "endedText": "Thanks for participating! Your feedback helps make the next talk even better.",
+    "rateSession": "Rate the session",
+    "pausedTitle": "Session paused",
+    "pausedText": "Stay tuned, we'll be right back.",
+    "inNamed": "You're in, {name}!",
+    "in": "You're in!",
+    "waiting": "Waiting for the next interaction…",
+    "answeredTitle": "Answer received",
+    "answeredText": "Watch the results on the speaker's screen.",
+    "askSpeaker": "Ask the speaker"
+  },
+  "answer": {
+    "secondsLeft": "{seconds}s",
+    "yourOrder": "Your order",
+    "restart": "Start over",
+    "position": "{position, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}",
+    "rankedItem": "{position, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}: {label}. Tap to remove.",
+    "rankFirst": "Tap your favorite first, then the next one…",
+    "rankNext": "Tap your {position, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} choice",
+    "wordPlaceholder": "A word or short phrase",
+    "textPlaceholder": "Type your answer",
+    "yourAnswer": "Your answer",
+    "submitPreview": "Submit (preview)",
+    "submit": "Submit answer"
+  },
+  "questions": {
+    "title": "Audience Q&A",
+    "closed": "The speaker has closed questions.",
+    "placeholder": "Write your question for the speaker",
+    "label": "Your question",
+    "showName": "Show my name ({name})",
+    "anonymousNote": "Your question will be anonymous.",
+    "submit": "Send question",
+    "moderatedNote": "The speaker approves questions before they appear.",
+    "empty": "No questions yet. Be the first to ask!",
+    "voteHint": "Upvote the questions you'd also like answered.",
+    "sent": "Question sent!",
+    "sentPending": "Question sent! Everyone will see it once it's approved.",
+    "anonymous": "Anonymous",
+    "mine": "Yours",
+    "like": "Upvote this question",
+    "unlike": "Remove upvote"
+  },
+  "raffle": {
+    "won": "You won!",
+    "pickUpPhysical": "Find the speaker to pick up your prize.",
+    "deliveryDigital": "The speaker will get in touch to arrange delivery.",
+    "prizeKind": "{kind, select, physical {Physical prize} digital {Digital prize} other {Prize}}",
+    "luckyNumber": "Your lucky number",
+    "competingFor": "In the running for: {prizes}",
+    "watchScreen": "Keep an eye on the big screen.",
+    "teaser": "There's a giveaway!",
+    "teaserWithPrizes": "There's a giveaway: {prizes}!",
+    "answerSurvey": "Answer the survey at the end of the session to get your lucky number."
+  },
+  "reactions": {
+    "label": "React"
+  },
+  "feedback": {
+    "metaTitle": "Session survey",
+    "eyebrow": "Survey about this session",
+    "notOpen": "The survey opens as soon as the session ends. Come back to this link later.",
+    "alreadySent": "You've already answered this survey. Thank you!",
+    "raffleJoined": "There's a giveaway! Submit the survey to get your lucky number.",
+    "raffleNotJoined": "There's a giveaway, but it's only for people who joined the session on their phone with the code or QR code.",
+    "unavailable": "This session's survey isn't available."
+  },
+  "survey": {
+    "thanksTitle": "Thank you!",
+    "thanksText": "Your answers were sent and will help make the next talk better.",
+    "submit": "Submit answers",
+    "requiredNote": "* required",
+    "anonymityNote": "Your name isn't shown with your answers."
+  },
+  "promo": {
+    "label": "Meet the speaker"
+  },
+  "errors": {
+    "invalidEmail": "Invalid email.",
+    "invalidPhone": "Invalid phone number.",
+    "consentRequired": "To save your contact info, check the consent box.",
+    "sessionNotFoundCheckCode": "Session not found. Check the code.",
+    "notStarted": "This session hasn't started yet.",
+    "sessionFull": "This session has reached its participant limit.",
+    "joinFailed": "Couldn't join right now. Please try again.",
+    "invalidAnswerType": "Invalid answer type.",
+    "invalidOption": "Invalid option.",
+    "timeUp": "Time's up.",
+    "ratingOutOfRange": "Rating is out of range.",
+    "moreSpecificWord": "Try a more specific word.",
+    "rejoin": "Please join the session again.",
+    "interactionClosed": "This interaction has ended.",
+    "alreadyAnswered": "You've already answered this interaction.",
+    "sendFailed": "Couldn't send. Please try again.",
+    "invalidSession": "Invalid session.",
+    "sessionNotFound": "Session not found.",
+    "surveyNotOpen": "The survey opens when the session ends.",
+    "surveyUnavailable": "This session's survey isn't available.",
+    "questionsClosed": "Questions aren't open in this session.",
+    "tooManyQuestions": "You've sent several questions in a row. Please wait a few minutes.",
+    "questionSendFailed": "Couldn't send your question. Please try again.",
+    "questionNotOpen": "This question isn't open.",
+    "ownQuestion": "You can't upvote your own question.",
+    "voteFailed": "Couldn't save that. Please try again.",
+    "tooManyReactions": "Easy there! Too many reactions in a row.",
+    "reactionsOff": "Reactions are off right now.",
+    "reactionFailed": "Couldn't send your reaction."
+  }
+}

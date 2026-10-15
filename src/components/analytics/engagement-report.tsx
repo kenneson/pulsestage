@@ -1,7 +1,7 @@
+import { useLocale, useTranslations } from "next-intl";
 import type { SpeakerQuestion } from "@/lib/data/engagement";
 import { REACTIONS, type ReactionTally } from "@/lib/domain/reactions";
-import { QUESTION_STATUS_LABEL } from "@/lib/domain/questions";
-import { formatInt, plural } from "@/lib/format";
+import { formatInt } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -10,18 +10,20 @@ export function AudienceQuestionsReport({ questions }: { questions: SpeakerQuest
   const shown = questions.filter((q) => q.status !== "hidden").sort((a, b) => b.upvotes - a.upvotes);
   const hidden = questions.length - shown.length;
   const answered = questions.filter((q) => q.status === "answered").length;
+  const t = useTranslations("analytics.engagement.questions");
+  const tDomain = useTranslations("domain");
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Perguntas da plateia</CardTitle>
+        <CardTitle>{t("title")}</CardTitle>
         <CardDescription>
-          {plural(questions.length, "pergunta enviada", "perguntas enviadas")} · {formatInt(answered)} respondidas
-          {hidden > 0 ? ` · ${formatInt(hidden)} ocultas` : ""}. Boas candidatas a conteúdo ou FAQ da próxima vez.
+          {t("sent", { count: questions.length })} · {t("answered", { count: answered })}
+          {hidden > 0 ? ` · ${t("hidden", { count: hidden })}` : ""}. {t("tip")}
         </CardDescription>
       </CardHeader>
       <CardContent>
         {shown.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nenhuma pergunta visível.</p>
+          <p className="text-sm text-muted-foreground">{t("none")}</p>
         ) : (
           <ul className="divide-y">
             {shown.map((q) => (
@@ -29,9 +31,9 @@ export function AudienceQuestionsReport({ questions }: { questions: SpeakerQuest
                 <span className="w-12 shrink-0 font-display font-bold tabular-nums">👍 {q.upvotes}</span>
                 <div className="min-w-0 flex-1">
                   <p className="whitespace-pre-line break-words">{q.body}</p>
-                  <p className="text-xs text-muted-foreground">{q.author ?? "Anônima"}</p>
+                  <p className="text-xs text-muted-foreground">{q.author ?? t("anonymous")}</p>
                 </div>
-                <Badge variant={q.status === "answered" ? "secondary" : "outline"}>{QUESTION_STATUS_LABEL[q.status]}</Badge>
+                <Badge variant={q.status === "answered" ? "secondary" : "outline"}>{tDomain(`questionStatus.${q.status}`)}</Badge>
               </li>
             ))}
           </ul>
@@ -46,11 +48,14 @@ export type ReactionPeakView = { minute: number; count: number; label: string | 
 /** Reações: total por emoji e os momentos com mais reações (com o que estava no telão). */
 export function ReactionsReport({ tally, peaks }: { tally: ReactionTally; peaks: ReactionPeakView[] }) {
   const total = Object.values(tally).reduce((a, b) => a + b, 0);
+  const t = useTranslations("analytics.engagement.reactions");
+  const tDomain = useTranslations("domain");
+  const locale = useLocale();
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Reações da plateia</CardTitle>
-        <CardDescription>{plural(total, "reação", "reações")} durante a sessão.</CardDescription>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("total", { count: total })}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-5">
         <ul className="flex flex-wrap gap-3">
@@ -60,21 +65,21 @@ export function ReactionsReport({ tally, peaks }: { tally: ReactionTally; peaks:
                 {r.emoji}
               </span>
               <span className="flex flex-col leading-tight">
-                <span className="font-display text-lg font-bold tabular-nums">{formatInt(tally[r.key])}</span>
-                <span className="text-xs text-muted-foreground">{r.label}</span>
+                <span className="font-display text-lg font-bold tabular-nums">{formatInt(tally[r.key], locale)}</span>
+                <span className="text-xs text-muted-foreground">{tDomain(`reactions.${r.key}`)}</span>
               </span>
             </li>
           ))}
         </ul>
         {peaks.length > 0 ? (
           <div className="flex flex-col gap-2">
-            <p className="text-sm font-medium">Momentos com mais reações</p>
+            <p className="text-sm font-medium">{t("peaksTitle")}</p>
             <ol className="flex flex-col gap-1 text-sm">
               {peaks.map((p) => (
                 <li key={p.minute} className="flex flex-wrap gap-x-2">
-                  <span className="font-display font-bold tabular-nums">min {p.minute}</span>
+                  <span className="font-display font-bold tabular-nums">{t("peakMinute", { minute: p.minute })}</span>
                   <span className="text-muted-foreground">
-                    {plural(p.count, "reação", "reações")}
+                    {t("count", { count: p.count })}
                     {p.label ? ` · ${p.label}` : ""}
                   </span>
                 </li>

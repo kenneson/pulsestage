@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSurveyTemplate } from "@/lib/data/surveys";
 import { questionToDraft } from "@/lib/domain/survey";
 import { isUuid } from "@/lib/action-result";
 import { TemplateEditor } from "@/components/surveys/template-editor";
 
-export const metadata: Metadata = { title: "Editar modelo de pesquisa" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("surveys.edit");
+  return { title: t("metaTitle") };
+}
 
 export default async function EditSurveyTemplatePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -17,14 +21,13 @@ export default async function EditSurveyTemplatePage({ params }: { params: Promi
   if (!template) notFound();
   // Modelos prontos não são editáveis: a lista oferece "Duplicar e editar".
   if (template.isPlatform) redirect("/dashboard/pesquisas");
+  const t = await getTranslations("surveys.edit");
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Editar modelo</h1>
-        <p className="text-muted-foreground">
-          As mudanças valem para as próximas sessões. Relatórios de sessões já encerradas não mudam.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+        <p className="text-muted-foreground">{t("description")}</p>
       </div>
       <TemplateEditor
         templateId={template.id}

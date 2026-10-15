@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { loadSessionAnalytics } from "@/lib/data/analytics";
 import { aiConfigProblem, isAIConfigured } from "@/lib/ai";
@@ -15,15 +16,16 @@ import {
 } from "@/lib/domain/metrics";
 import { ratingStats, snapshotFromResponses } from "@/lib/domain/results";
 import { questionResults, strengthsAndWeaknesses } from "@/lib/domain/survey";
-import { durationSummary, sessionClock } from "@/lib/domain/timing";
+import { sessionClock } from "@/lib/domain/timing";
+import { durationSummaryText } from "@/i18n/text";
 import { buildTimeline } from "@/lib/domain/timeline";
 import { getTimelineEvents } from "@/lib/data/timeline";
 import { getSlideUrls } from "@/lib/data/slides";
-import { INTERACTION_TYPE_META, isInteractionType } from "@/lib/domain/interactions";
+import { isInteractionType } from "@/lib/domain/interactions";
 import { TalkTimeline, type TimelineInteractionMeta } from "@/components/analytics/talk-timeline";
 import { formatDateTime } from "@/lib/datetime";
 import { getSpeakerProfile } from "@/lib/data/profile";
-import { formatPercent, formatScore, formatSeconds, plural } from "@/lib/format";
+import { formatInt, formatPercent, formatScore, formatSeconds } from "@/lib/format";
 import { isUuid } from "@/lib/action-result";
 import { TypeTag } from "@/components/interaction-type-tag";
 import { buttonVariants } from "@/components/ui/button";
@@ -42,7 +44,10 @@ import { AudienceQuestionsReport, ReactionsReport, type ReactionPeakView } from 
 import { listSessionQuestions, loadReactions } from "@/lib/data/engagement";
 import { reactionPeaks, reactionsPerMinute, tallyReactions } from "@/lib/domain/reactions";
 
-export const metadata: Metadata = { title: "Analytics da sessão" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("analytics.session");
+  return { title: t("metaTitle") };
+}
 
 const evidenceSchema = z.array(z.string());
 
@@ -62,7 +67,14 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
   })();
 
   const { session, interactionsWithOptions, participants, responses } = data;
-  const { timeZone } = await getSpeakerProfile();
+  const [{ timeZone }, t, tAnalytics, tTimeline, tDomain, locale] = await Promise.all([
+    getSpeakerProfile(),
+    getTranslations("analytics.session"),
+    getTranslations("analytics"),
+    getTranslations("analytics.timeline"),
+    getTranslations("domain"),
+    getLocale(),
+  ]);
   const pulse = computePulse(data);
   const overview = computeOverview(data, pulse);
   const { survey } = overview;
@@ -70,7 +82,12 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
   const surveyResults = questionResults(data.survey.questions, data.survey.answers);
   const allOptions = interactionsWithOptions.flatMap((i) => i.options);
   const quizIds = new Set(interactionsWithOptions.filter((i) => i.type === "quiz").map((i) => i.id));
-  const ranking = quizRanking(responses.filter((r) => quizIds.has(r.interaction_id)), participants);
+  const ranking = quizRanking(
+    responses.filter((r) => quizIds.has(r.interaction_id)),
+    participants,
+    10,
+    tDomain("anonymousParticipant"),
+  );
   const lowSample = confidenceFromSample(survey.count) === "low";
 
   const [timelineData, slideUrls, audienceQuestions, reactionRows] = await Promise.all([
@@ -87,7 +104,7 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
     const interaction = segment?.interactionId ? interactionsWithOptions.find((i) => i.id === segment.interactionId) : undefined;
     const label =
       segment?.kind === "slide" && segment.slide !== undefined
-        ? `Slide ${segment.slide + 1}`
+        ? tTimeline("slideLong", { number: segment.slide + 1 })
         : interaction
           ? interaction.title
           : null;
@@ -99,7 +116,7 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
       {
         number: index + 1,
         title: i.title,
-        typeLabel: isInteractionType(i.type) ? INTERACTION_TYPE_META[i.type].label : "Pergunta",
+        typeLabel: isInteractionType(i.type) ? tDomain(`interactionTypes.${i.type}.label`) : t("questionFallback"),
       },
     ]),
   );
@@ -117,7 +134,7 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
     };
   });
   const latest = data.latestInsights[0];
-  const talkTime = durationSummary(sessionClock(session), session.estimated_duration_minutes);
+  const talkTime = durationSummaryText(tDomain, sessionClock(session), session.estimated_duration_minutes);
 
   return (
     <div className="flex flex-col gap-8">
@@ -126,65 +143,86 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
           <StatusBadge status={session.status} />
           <h1 className="mt-2 text-2xl font-semibold tracking-tight">{session.title}</h1>
           <p className="text-sm text-muted-foreground">
-            {formatDateTime(session.started_at ?? session.scheduled_at, timeZone)}
+            {formatDateTime(session.started_at ?? session.scheduled_at, timeZone, locale)}
             {talkTime ? ` · ${talkTime}` : ""}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Link href={`/dashboard/sessions/${id}`} className={buttonVariants({ variant: "outline" })}>
-            Ver interações
+            {t("viewInteractions")}
           </Link>
           <DuplicateSessionButton sessionId={id} title={session.title} />
           <details className="relative">
             <summary className={buttonVariants({ variant: "outline", className: "cursor-pointer list-none [&::-webkit-details-marker]:hidden" })}>
-              <DownloadIcon /> Exportar
+              <DownloadIcon /> {t("export")}
             </summary>
             <div className="absolute right-0 z-20 mt-2 flex w-64 flex-col rounded-md border bg-card p-1.5 shadow-lg">
               <Link href={`/dashboard/sessions/${id}/relatorio`} className="flex items-center gap-2.5 rounded px-3 py-2.5 text-sm hover:bg-muted">
-                <FileTextIcon className="text-muted-foreground" /> Relatório em PDF
+                <FileTextIcon className="text-muted-foreground" /> {t("exportPdf")}
               </Link>
               <a href={`/dashboard/sessions/${id}/exportar?tipo=interacoes`} download className="flex items-center gap-2.5 rounded px-3 py-2.5 text-sm hover:bg-muted">
-                <TableIcon className="text-muted-foreground" /> Respostas ao vivo (CSV)
+                <TableIcon className="text-muted-foreground" /> {t("exportResponses")}
               </a>
               <a href={`/dashboard/sessions/${id}/exportar?tipo=pesquisa`} download className="flex items-center gap-2.5 rounded px-3 py-2.5 text-sm hover:bg-muted">
-                <TableIcon className="text-muted-foreground" /> Pesquisa (CSV)
+                <TableIcon className="text-muted-foreground" /> {t("exportSurvey")}
               </a>
             </div>
           </details>
           {session.status === "live" || session.status === "paused" ? (
             <Link href={`/dashboard/sessions/${id}/live`} className={buttonVariants()}>
-              Sala ao vivo
+              {t("liveRoom")}
             </Link>
           ) : null}
         </div>
       </div>
 
       {session.status !== "completed" ? (
-        <Alert tone="info">A sessão ainda não foi encerrada: os números abaixo são parciais.</Alert>
+        <Alert tone="info">{t("partial")}</Alert>
       ) : null}
 
       <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Participantes" value={String(overview.participants)} hint={`${overview.uniqueResponders} responderam algo`} icon={<UsersIcon />} paper="bg-rev-blue" />
-        <StatCard label="Respostas" value={String(overview.totalResponses)} hint={`Taxa de resposta ${formatPercent(overview.responseRate)}`} icon={<ListIcon />} paper="bg-rev-yellow" />
-        <StatCard label="Participação" value={formatPercent(overview.participationRate)} hint="Quem respondeu ÷ quem entrou" icon={<TrendingUpIcon />} paper="bg-rev-green" />
-        <StatCard label="Pesquisas respondidas" value={String(survey.count)} hint={`${formatPercent(overview.surveyResponseRate)} dos participantes`} icon={<ClipboardIcon />} paper="bg-rev-gold" />
+        <StatCard
+          label={t("stats.participants")}
+          value={formatInt(overview.participants, locale)}
+          hint={t("stats.responders", { count: overview.uniqueResponders })}
+          icon={<UsersIcon />}
+          paper="bg-rev-blue"
+        />
+        <StatCard
+          label={t("stats.responses")}
+          value={formatInt(overview.totalResponses, locale)}
+          hint={t("stats.responseRate", { rate: formatPercent(overview.responseRate) })}
+          icon={<ListIcon />}
+          paper="bg-rev-yellow"
+        />
+        <StatCard
+          label={t("stats.participation")}
+          value={formatPercent(overview.participationRate)}
+          hint={t("stats.participationHint")}
+          icon={<TrendingUpIcon />}
+          paper="bg-rev-green"
+        />
+        <StatCard
+          label={t("stats.surveys")}
+          value={formatInt(survey.count, locale)}
+          hint={t("stats.surveyRate", { rate: formatPercent(overview.surveyResponseRate) })}
+          icon={<ClipboardIcon />}
+          paper="bg-rev-gold"
+        />
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_1.4fr]">
         <Card>
           <CardHeader>
-            <CardTitle>Scorecard</CardTitle>
+            <CardTitle>{t("scorecard.title")}</CardTitle>
             <CardDescription>
-              {data.survey.name ? `Pesquisa “${data.survey.name}”.` : "Pesquisa pós-evento."} Seus pontos fortes e fracos
-              segundo a plateia.
+              {data.survey.name ? t("scorecard.namedSurvey", { name: data.survey.name }) : t("scorecard.defaultSurvey")}{" "}
+              {t("scorecard.description")}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             {survey.count === 0 ? (
-              <EmptyState
-                title="Sem pesquisas respondidas"
-                description="O link da pesquisa aparece no celular e no projetor ao encerrar a sessão."
-              />
+              <EmptyState title={t("scorecard.emptyTitle")} description={t("scorecard.emptyDescription")} />
             ) : (
               <>
                 <SurveyScorecard
@@ -194,9 +232,7 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
                   participationRate={overview.participationRate}
                 />
                 {lowSample ? (
-                  <p className="text-xs text-muted-foreground">
-                    Amostra pequena ({plural(survey.count, "pesquisa", "pesquisas")}): interprete com cautela.
-                  </p>
+                  <p className="text-xs text-muted-foreground">{tAnalytics("lowSample", { count: survey.count })}</p>
                 ) : null}
               </>
             )}
@@ -205,13 +241,11 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
 
         <Card>
           <CardHeader>
-            <CardTitle>Sinal de participação</CardTitle>
-            <CardDescription>
-              Respostas ÷ participantes presentes em cada interação. Mede participação, não atenção.
-            </CardDescription>
+            <CardTitle>{t("pulse.title")}</CardTitle>
+            <CardDescription>{t("pulse.description")}</CardDescription>
           </CardHeader>
           <CardContent>
-            {pulse.length === 0 ? <EmptyState title="Nenhuma interação foi ativada" /> : <PulseChart points={pulse} />}
+            {pulse.length === 0 ? <EmptyState title={t("pulse.empty")} /> : <PulseChart points={pulse} />}
           </CardContent>
         </Card>
       </div>
@@ -219,10 +253,8 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
       {timeline && timeline.span > 0 ? (
         <Card>
           <CardHeader>
-            <CardTitle>Linha do tempo da palestra</CardTitle>
-            <CardDescription>
-              O que esteve no telão a cada momento. Mostra para onde foi o tempo, não a atenção da plateia.
-            </CardDescription>
+            <CardTitle>{t("timeline.title")}</CardTitle>
+            <CardDescription>{t("timeline.description")}</CardDescription>
           </CardHeader>
           <CardContent>
             <TalkTimeline
@@ -237,23 +269,23 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
 
       <Card>
         <CardHeader>
-          <CardTitle>Insights</CardTitle>
+          <CardTitle>{t("insightsTitle")}</CardTitle>
         </CardHeader>
         <CardContent>
           <InsightsPanel
             sessionId={id}
             insights={insights}
             configured={isAIConfigured()}
-            problem={aiProblem}
-            generatedAt={latest ? formatDateTime(latest.created_at, timeZone) : null}
+            problem={locale === "pt-BR" ? aiProblem : null}
+            generatedAt={latest ? formatDateTime(latest.created_at, timeZone, locale) : null}
             meta={latest?.provider ? `${latest.provider}${latest.model ? ` · ${latest.model}` : ""}` : null}
           />
         </CardContent>
       </Card>
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold">Resultados por interação</h2>
-        {interactionsWithOptions.length === 0 ? <EmptyState title="Nenhuma interação nesta sessão" /> : null}
+        <h2 className="text-lg font-semibold">{t("results.title")}</h2>
+        {interactionsWithOptions.length === 0 ? <EmptyState title={t("results.empty")} /> : null}
         <div className="grid gap-4 lg:grid-cols-2">
           {interactionsWithOptions.map((row, index) => {
             const pub = toPublicInteraction(row, allOptions);
@@ -268,8 +300,10 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
                     <span className="font-display text-sm font-bold text-muted-foreground">#{index + 1}</span>
                     <TypeTag type={pub.type} />
                     <span className="text-xs text-muted-foreground">
-                      {plural(rowResponses.length, "resposta", "respostas")}
-                      {point?.rate !== null && point?.rate !== undefined ? ` · ${formatPercent(point.rate)} dos presentes` : ""}
+                      {tAnalytics("responses", { count: rowResponses.length })}
+                      {point?.rate !== null && point?.rate !== undefined
+                        ? ` · ${t("results.ofPresent", { rate: formatPercent(point.rate) })}`
+                        : ""}
                     </span>
                   </div>
                   <CardTitle className="mt-1">{pub.title}</CardTitle>
@@ -286,7 +320,9 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
                   )}
                   {pub.type === "rating" ? (
                     <p className="text-sm text-muted-foreground">
-                      Mediana {formatScore(ratingStats(pub.settings.min, pub.settings.max, snapshot).median)}
+                      {t("results.median", {
+                        value: formatScore(ratingStats(pub.settings.min, pub.settings.max, snapshot).median, locale),
+                      })}
                     </p>
                   ) : null}
                   {pub.type === "quiz"
@@ -294,7 +330,10 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
                         const stats = quizStats(rowResponses);
                         return (
                           <p className="text-sm text-muted-foreground">
-                            Acertos {formatPercent(stats.correctRate)} · tempo médio {formatSeconds(stats.avgResponseMs)}
+                            {t("results.quiz", {
+                              rate: formatPercent(stats.correctRate),
+                              time: formatSeconds(stats.avgResponseMs, locale),
+                            })}
                           </p>
                         );
                       })()
@@ -309,13 +348,13 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
       {ranking.length > 0 ? (
         <Card>
           <CardHeader>
-            <CardTitle>Ranking do quiz</CardTitle>
+            <CardTitle>{t("ranking.title")}</CardTitle>
           </CardHeader>
           <CardContent>
             <ol className="divide-y">
               {ranking.map((entry, index) => (
                 <li key={entry.participantId} className="flex items-center gap-3 py-2 text-sm">
-                  <span className="w-6 font-semibold tabular-nums">{index + 1}º</span>
+                  <span className="w-6 font-semibold tabular-nums">{t("ranking.position", { n: index + 1 })}</span>
                   <span className="flex min-w-0 flex-1 items-center gap-2">
                     {entry.avatar ? (
                       <span aria-hidden className="text-base leading-none">
@@ -324,8 +363,8 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
                     ) : null}
                     <span className="truncate">{entry.name}</span>
                   </span>
-                  <span className="text-muted-foreground">{entry.correct} acertos</span>
-                  <span className="w-20 text-right font-semibold tabular-nums">{entry.points} pts</span>
+                  <span className="text-muted-foreground">{t("ranking.correct", { count: entry.correct })}</span>
+                  <span className="w-20 text-right font-semibold tabular-nums">{t("ranking.points", { points: formatInt(entry.points, locale) })}</span>
                 </li>
               ))}
             </ol>
@@ -343,10 +382,10 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
       {surveyResults.length > 0 ? (
         <section className="flex flex-col gap-4">
           <div>
-            <h2 className="text-lg font-semibold">Resultados da pesquisa</h2>
+            <h2 className="text-lg font-semibold">{t("survey.title")}</h2>
             <p className="text-sm text-muted-foreground">
-              {data.survey.name ? `Modelo “${data.survey.name}” · ` : ""}
-              {plural(survey.count, "resposta", "respostas")}
+              {data.survey.name ? `${t("survey.template", { name: data.survey.name })} · ` : ""}
+              {tAnalytics("responses", { count: survey.count })}
             </p>
           </div>
           <SurveyQuestionResults results={surveyResults} />

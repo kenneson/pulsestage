@@ -1,27 +1,35 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { loadSessionAnalytics } from "@/lib/data/analytics";
 import { getSpeakerProfile } from "@/lib/data/profile";
 import { computeOverview, computePulse, confidenceFromSample } from "@/lib/domain/metrics";
 import { questionResults, strengthsAndWeaknesses, type DimensionScore } from "@/lib/domain/survey";
-import { durationSummary, sessionClock } from "@/lib/domain/timing";
+import { sessionClock } from "@/lib/domain/timing";
+import { durationSummaryText } from "@/i18n/text";
 import { formatDateTime } from "@/lib/datetime";
-import { formatPercent, formatScore, plural } from "@/lib/format";
+import { formatInt, formatPercent, formatScore } from "@/lib/format";
 import { isUuid } from "@/lib/action-result";
 import { buttonVariants } from "@/components/ui/button";
 import { PrintButton } from "@/components/analytics/print-button";
 import { ChevronLeftIcon } from "@/components/icons";
 
-export const metadata: Metadata = { title: "Relatório da sessão" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("analytics.report");
+  return { title: t("metaTitle") };
+}
 
 function Score({ score }: { score: DimensionScore }) {
+  const tDomain = useTranslations("domain");
+  const locale = useLocale();
   return (
     <div className="flex items-baseline justify-between gap-3">
-      <span>{score.label}</span>
+      <span>{tDomain(`dimensions.${score.dimension}`)}</span>
       <strong className="font-display tabular-nums">
-        {formatScore(score.mean)}
+        {formatScore(score.mean, locale)}
         <span className="font-normal text-muted-foreground">/{score.max}</span>
       </strong>
     </div>
@@ -33,12 +41,20 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
   if (!isUuid(id)) notFound();
 
   const supabase = await createClient();
-  const [data, profile] = await Promise.all([loadSessionAnalytics(supabase, id), getSpeakerProfile()]);
+  const [data, profile, t, tAnalytics, tSurvey, tDomain, locale] = await Promise.all([
+    loadSessionAnalytics(supabase, id),
+    getSpeakerProfile(),
+    getTranslations("analytics.report"),
+    getTranslations("analytics"),
+    getTranslations("analytics.survey"),
+    getTranslations("domain"),
+    getLocale(),
+  ]);
   if (!data) notFound();
 
   const pulse = computePulse(data);
   const overview = computeOverview(data, pulse);
-  const talkTime = durationSummary(sessionClock(data.session), data.session.estimated_duration_minutes);
+  const talkTime = durationSummaryText(tDomain, sessionClock(data.session), data.session.estimated_duration_minutes);
   const { survey } = overview;
   const { strengths, weaknesses } = strengthsAndWeaknesses(survey.dimensions);
   // Comentários iguais viram um item com a contagem, do mais citado ao menos citado.
@@ -55,10 +71,10 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
         <Link href={`/dashboard/sessions/${id}/analytics`} className={buttonVariants({ variant: "ghost" })}>
-          <ChevronLeftIcon /> Voltar ao analytics
+          <ChevronLeftIcon /> {t("back")}
         </Link>
         <div className="flex items-center gap-3">
-          <p className="hidden text-sm text-muted-foreground sm:block">Na janela de impressão, escolha “Salvar como PDF”.</p>
+          <p className="hidden text-sm text-muted-foreground sm:block">{t("printHint")}</p>
           <PrintButton />
         </div>
       </div>
@@ -71,23 +87,23 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
                 <path d="M3 12h4l2-5 4 10 2-5h6" />
               </svg>
             </span>
-            PulseStage · Relatório da sessão
+            PulseStage · {t("header")}
           </p>
           <h1 className="font-display text-3xl font-bold leading-tight tracking-tight">{data.session.title}</h1>
           <p className="text-muted-foreground">
-            {profile.name ?? profile.email} · {formatDateTime(data.session.started_at ?? data.session.scheduled_at, profile.timeZone)}
+            {profile.name ?? profile.email} · {formatDateTime(data.session.started_at ?? data.session.scheduled_at, profile.timeZone, locale)}
             {talkTime ? ` · ${talkTime}` : ""}
-            {data.survey.name ? ` · pesquisa “${data.survey.name}”` : ""}
+            {data.survey.name ? ` · ${t("surveyName", { name: data.survey.name })}` : ""}
           </p>
           {profile.bio ? <p className="text-muted-foreground">{profile.bio}</p> : null}
         </header>
 
-        <section aria-label="Números" className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <section aria-label={t("numbers")} className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
-            ["Participantes", String(overview.participants)],
-            ["Respostas ao vivo", String(overview.totalResponses)],
-            ["Participação", formatPercent(overview.participationRate)],
-            ["Pesquisas respondidas", String(survey.count)],
+            [t("participants"), formatInt(overview.participants, locale)],
+            [t("liveResponses"), formatInt(overview.totalResponses, locale)],
+            [t("participation"), formatPercent(overview.participationRate)],
+            [t("surveys"), formatInt(survey.count, locale)],
           ].map(([label, value]) => (
             <div key={label} className="rounded-md border p-3">
               <p className="text-muted-foreground">{label}</p>
@@ -97,15 +113,15 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
         </section>
 
         {strengths.length > 0 ? (
-          <section aria-label="Pontos fortes e para melhorar" className="grid gap-4 break-inside-avoid sm:grid-cols-2">
+          <section aria-label={t("strengthsAndWeaknesses")} className="grid gap-4 break-inside-avoid sm:grid-cols-2">
             <div className="flex flex-col gap-2 rounded-md bg-primary/10 p-4">
-              <h2 className="font-semibold">Pontos mais fortes</h2>
+              <h2 className="font-semibold">{tSurvey("strongest")}</h2>
               {strengths.map((s) => (
                 <Score key={`${s.dimension}-${s.kind}`} score={s} />
               ))}
             </div>
             <div className="flex flex-col gap-2 rounded-md bg-standby/20 p-4">
-              <h2 className="font-semibold">Pontos para melhorar</h2>
+              <h2 className="font-semibold">{tSurvey("weakest")}</h2>
               {weaknesses.map((s) => (
                 <Score key={`${s.dimension}-${s.kind}`} score={s} />
               ))}
@@ -116,7 +132,7 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
         {survey.dimensions.length > 0 ? (
           <section aria-labelledby="dims" className="flex flex-col gap-2 break-inside-avoid">
             <h2 id="dims" className="font-semibold">
-              Avaliação do público
+              {t("audienceRating")}
             </h2>
             <div className="grid gap-x-8 gap-y-1.5 sm:grid-cols-2">
               {survey.dimensions.map((d) => (
@@ -124,9 +140,7 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
               ))}
             </div>
             {lowSample ? (
-              <p className="text-xs text-muted-foreground">
-                Amostra pequena ({plural(survey.count, "pesquisa", "pesquisas")}): interprete com cautela.
-              </p>
+              <p className="text-xs text-muted-foreground">{tAnalytics("lowSample", { count: survey.count })}</p>
             ) : null}
           </section>
         ) : null}
@@ -134,7 +148,7 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
         {pulse.length > 0 ? (
           <section aria-labelledby="pulse" className="flex flex-col gap-3 break-inside-avoid">
             <h2 id="pulse" className="font-semibold">
-              Participação em cada pergunta
+              {t("perQuestion")}
             </h2>
             <ol className="flex flex-col gap-2">
               {pulse.map((p, index) => (
@@ -159,7 +173,7 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
         {summary || recommendations.length > 0 ? (
           <section aria-labelledby="ai" className="flex flex-col gap-2 break-inside-avoid">
             <h2 id="ai" className="font-semibold">
-              Análise da IA
+              {t("aiAnalysis")}
             </h2>
             {summary ? <p className="leading-relaxed">{summary.description}</p> : null}
             {recommendations.length > 0 ? (
@@ -177,12 +191,12 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
         {comments.length > 0 ? (
           <section aria-labelledby="comments" className="flex flex-col gap-2 break-inside-avoid">
             <h2 id="comments" className="font-semibold">
-              O que a plateia disse
+              {t("comments")}
             </h2>
             <ul className="ml-5 flex list-disc flex-col gap-1 leading-relaxed">
               {comments.map(([text, count]) => (
                 <li key={text}>
-                  “{text}”{count > 1 ? <span className="text-muted-foreground"> · {count} pessoas</span> : null}
+                  “{text}”{count > 1 ? <span className="text-muted-foreground"> · {t("people", { count })}</span> : null}
                 </li>
               ))}
             </ul>
@@ -190,8 +204,8 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
         ) : null}
 
         <footer className="mt-auto flex flex-wrap justify-between gap-2 border-t pt-3 text-xs text-muted-foreground">
-          <span>Participação mede quem respondeu, não atenção.</span>
-          <span>Gerado em {formatDateTime(new Date().toISOString(), profile.timeZone)}</span>
+          <span>{t("footerNote")}</span>
+          <span>{t("generatedAt", { date: formatDateTime(new Date().toISOString(), profile.timeZone, locale) })}</span>
         </footer>
       </article>
     </div>

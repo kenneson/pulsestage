@@ -1,18 +1,20 @@
+import { useLocale, useTranslations } from "next-intl";
 import type { DimensionScore, QuestionResult } from "@/lib/domain/survey";
-import { QUESTION_KIND_META, DIMENSION_LABEL } from "@/lib/domain/survey";
-import { formatPercent, formatScore, plural } from "@/lib/format";
+import { formatPercent, formatScore } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/misc";
 import { OpenTextList } from "@/components/analytics/open-text-list";
 
 function DimensionRow({ score }: { score: DimensionScore }) {
+  const tDomain = useTranslations("domain");
+  const locale = useLocale();
   return (
     <div className="grid gap-1.5">
       <div className="flex justify-between gap-3 text-sm">
-        <span>{score.label}</span>
+        <span>{tDomain(`dimensions.${score.dimension}`)}</span>
         <span className="font-semibold tabular-nums">
-          {formatScore(score.mean)} <span className="font-normal text-muted-foreground">/ {score.max}</span>
+          {formatScore(score.mean, locale)} <span className="font-normal text-muted-foreground">/ {score.max}</span>
         </span>
       </div>
       <Progress value={score.normalized * 100} />
@@ -21,6 +23,8 @@ function DimensionRow({ score }: { score: DimensionScore }) {
 }
 
 function RankList({ title, items, tone }: { title: string; items: DimensionScore[]; tone: "strong" | "weak" }) {
+  const tDomain = useTranslations("domain");
+  const locale = useLocale();
   return (
     <div className="flex flex-col gap-2">
       <p className="text-sm font-semibold">{title}</p>
@@ -32,10 +36,10 @@ function RankList({ title, items, tone }: { title: string; items: DimensionScore
                 aria-hidden
                 className={cn("size-2 shrink-0 rounded-full", tone === "strong" ? "bg-primary" : "bg-standby")}
               />
-              {s.label}
+              {tDomain(`dimensions.${s.dimension}`)}
             </span>
             <span className="font-display font-bold tabular-nums">
-              {formatScore(s.mean)}
+              {formatScore(s.mean, locale)}
               <span className="font-normal text-muted-foreground">/{s.max}</span>
             </span>
           </li>
@@ -57,26 +61,23 @@ export function SurveyScorecard({
   weaknesses: DimensionScore[];
   participationRate: number | null;
 }) {
+  const t = useTranslations("analytics.survey");
   return (
     <div className="flex flex-col gap-5">
       {strengths.length > 0 ? (
         <div className="grid gap-4 rounded-md bg-muted/60 p-4 sm:grid-cols-2">
-          <RankList title="Pontos mais fortes" items={strengths} tone="strong" />
-          <RankList title="Pontos para melhorar" items={weaknesses} tone="weak" />
-          <p className="text-xs text-muted-foreground sm:col-span-2">
-            Comparação entre as dimensões desta sessão, na posição relativa de cada escala.
-          </p>
+          <RankList title={t("strongest")} items={strengths} tone="strong" />
+          <RankList title={t("weakest")} items={weaknesses} tone="weak" />
+          <p className="text-xs text-muted-foreground sm:col-span-2">{t("comparisonNote")}</p>
         </div>
       ) : null}
       {dimensions.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          Este modelo não tem perguntas de nota marcadas com uma dimensão. Os resultados de cada pergunta estão abaixo.
-        </p>
+        <p className="text-sm text-muted-foreground">{t("noDimensions")}</p>
       ) : (
         dimensions.map((d) => <DimensionRow key={`${d.dimension}-${d.kind}`} score={d} />)
       )}
       <div className="flex justify-between border-t pt-3 text-sm">
-        <span>Interação (participação nas perguntas ao vivo)</span>
+        <span>{t("interaction")}</span>
         <span className="font-semibold">{formatPercent(participationRate)}</span>
       </div>
     </div>
@@ -107,6 +108,10 @@ function Bars({ rows }: { rows: { key: string; label: string; count: number; pct
 
 /** Resultado de cada pergunta da pesquisa. */
 export function SurveyQuestionResults({ results }: { results: QuestionResult[] }) {
+  const t = useTranslations("analytics.survey");
+  const tAnalytics = useTranslations("analytics");
+  const tDomain = useTranslations("domain");
+  const locale = useLocale();
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       {results.map((r, index) => (
@@ -114,14 +119,18 @@ export function SurveyQuestionResults({ results }: { results: QuestionResult[] }
           <CardHeader>
             <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               <span className="font-display text-sm font-bold">#{index + 1}</span>
-              <span>{QUESTION_KIND_META[r.kind].label}</span>
-              {r.question.dimension ? <span>· {DIMENSION_LABEL[r.question.dimension]}</span> : null}
-              <span>· {plural(r.count, "resposta", "respostas")}</span>
+              <span>{tDomain(`surveyKinds.${r.kind}.label`)}</span>
+              {r.question.dimension ? <span>· {tDomain(`dimensions.${r.question.dimension}`)}</span> : null}
+              <span>· {tAnalytics("responses", { count: r.count })}</span>
             </div>
             <CardTitle className="mt-1 text-base">{r.question.label}</CardTitle>
             {r.kind === "scale" || r.kind === "nps" ? (
               <CardDescription>
-                Média <strong className="text-foreground">{formatScore(r.mean)}</strong> de {r.kind === "scale" ? 5 : 10}
+                {t.rich("mean", {
+                  mean: formatScore(r.mean, locale),
+                  max: r.kind === "scale" ? 5 : 10,
+                  strong: (chunks) => <strong className="text-foreground">{chunks}</strong>,
+                })}
                 {r.kind === "nps" && r.nps !== null ? (
                   <>
                     {" "}
@@ -133,7 +142,7 @@ export function SurveyQuestionResults({ results }: { results: QuestionResult[] }
           </CardHeader>
           <CardContent>
             {r.kind === "text" ? (
-              <OpenTextList items={r.texts} emptyText="Sem respostas." />
+              <OpenTextList items={r.texts} emptyText={t("noResponses")} />
             ) : r.kind === "choice" ? (
               <Bars rows={r.distribution.map((d, i) => ({ key: String(i), label: d.label, count: d.count, pct: d.pct }))} />
             ) : (

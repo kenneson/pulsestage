@@ -1,1 +1,354 @@
-{}
+{
+  "meta": {
+    "title": "PulseStage: lectures, talks, and training sessions where everyone takes part",
+    "description": "Polls, quizzes, word clouds, and giveaways answered from any phone, with results on the big screen in seconds and your slides in the same place. For universities, schools, and companies."
+  },
+  "nav": {
+    "howItWorks": "How it works",
+    "features": "Features",
+    "withAi": "With AI",
+    "speakers": "Speakers",
+    "signIn": "Log in",
+    "signUp": "Sign up free"
+  },
+  "hero": {
+    "title": "Lectures, talks, and training sessions where <mark>everyone takes part</mark>.",
+    "lead": "Polls, quizzes, word clouds, and giveaways answered from any phone, with results on the big screen in seconds and your slides in the same place. For universities, schools, and companies. Afterward, a report shows what worked so the next one is even better.",
+    "cta": "Create my free session",
+    "beta": "Free during the beta, no credit card · <link>I already have an account</link>",
+    "facts": {
+      "qr": "Students and participants join with a QR code, no app and no sign-up",
+      "slides": "Your slides and questions in one lineup, on the same clicker",
+      "quiz": "Quizzes with a leaderboard, prize giveaways, and an AI report at the end"
+    },
+    "joinPrompt": "Joining a class or talk? Enter the code shown on the screen."
+  },
+  "facts": {
+    "ariaLabel": "PulseStage product facts",
+    "apps": "apps for your audience to install",
+    "participants": "people per session",
+    "types": "question types to mix and match",
+    "screen": "screen for slides and questions"
+  },
+  "steps": {
+    "title": "How it works",
+    "lead": "Three steps, from sign-up to report. You keep presenting your way.",
+    "create": {
+      "title": "Create the session",
+      "text": "Add your talk or class and write the questions in the order you'll use them. It only takes a few minutes."
+    },
+    "join": {
+      "title": "Your audience joins by phone",
+      "text": "Show the QR code or join code on screen. Everyone answers from their own phone, with nothing to install and no account to create."
+    },
+    "learn": {
+      "title": "Watch and learn",
+      "text": "Results show up live on screen. At the end, the audience rates the session and you get a report."
+    }
+  },
+  "questionTypes": {
+    "title": "Six question types, and an audience that has a voice the whole time",
+    "lead": "Mix formats throughout your presentation. Each type has its own color, in your dashboard and on the projector.",
+    "example": "E.g., “{text}”",
+    "multiple_choice": {
+      "text": "Pick one of several options. Great for opening the session and getting to know who's in the room.",
+      "example": "Do you already use AI at work?"
+    },
+    "rating": {
+      "text": "A score between two extremes, like 1 to 5.",
+      "example": "From 1 to 5, how much does this apply to your day?"
+    },
+    "word_cloud": {
+      "text": "Short answers grouped together: the most repeated words grow on screen.",
+      "example": "One word for where you are in your career."
+    },
+    "open_text": {
+      "text": "Free-form answers. You read everything in your dashboard and choose what to discuss.",
+      "example": "What would you like to ask me?"
+    },
+    "quiz": {
+      "text": "A question with a right answer, points, an optional timer, and a participant leaderboard.",
+      "example": "Which of these is a language model?"
+    },
+    "ranking": {
+      "text": "The audience ranks the options by priority by tapping them in order. The big screen shows the group's ranking.",
+      "example": "Rank what matters most in your work."
+    }
+  },
+  "audienceTools": {
+    "questions": {
+      "title": "Audience Q&A",
+      "text": "Anyone can ask from their phone, anonymously or by name, and upvote other people's questions. You bring the top one to the big screen."
+    },
+    "reactions": {
+      "title": "Live reactions",
+      "text": "👏 ❤️ 😂 😮 🤔 at any moment. Emojis float up the big screen and show where your talk got people excited."
+    },
+    "safe": {
+      "title": "Safe for schools",
+      "text": "A profanity filter and approval before anything hits the big screen, for open-ended answers, word clouds, and questions."
+    }
+  },
+  "slides": {
+    "title": "Your slides and your questions in one lineup",
+    "lead": "No more switching windows in the middle of your talk. You present from PulseStage and each interaction comes in at the right moment.",
+    "points": {
+      "pdf": "Upload the PDF exported from PowerPoint, Google Slides, Keynote, or Canva. The file is converted in your browser.",
+      "drag": "Drag each question to the exact point in the presentation where it should come in.",
+      "clicker": "On stage, your clicker or the arrow key advances everything: slide, question, results, next slide.",
+      "live": "A question came up in the room? Create a new one during your talk and launch it right away."
+    },
+    "deckLabel": "Sample presentation lineup",
+    "deck": {
+      "opening": "Welcome",
+      "whatChanges": "What's changing",
+      "inPractice": "In practice",
+      "risks": "Risks",
+      "nextSteps": "Next steps",
+      "thanks": "Thank you!",
+      "pollQuestion": "Do you already use AI at work?",
+      "cloudType": "Cloud",
+      "cloudQuestion": "One word for where you are",
+      "quizQuestion": "Which of these is a language model?"
+    },
+    "slideNumber": "Slide {n}",
+    "question": "Question",
+    "advance": "<kbd>→</kbd> or your clicker advances",
+    "reorder": "drag questions to change the order"
+  },
+  "game": {
+    "title": "Quizzes, leaderboards, and giveaways: the whole room wants to play",
+    "lead": "Game features that keep your audience involved from start to finish, and a giveaway to wrap up your talk on a festive note.",
+    "quizQuestion": "Which of these is a language model?",
+    "correct": "Correct! +{points} points",
+    "onPhone": "On the audience's phone · example",
+    "leaderboard": "Quiz leaderboard",
+    "place": "{n, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}",
+    "onScreen": "On the big screen · example",
+    "drawing": "Drawing for: {prize}",
+    "prize": "Signed book",
+    "winner": "{name} · Congratulations!",
+    "points": {
+      "avatars": {
+        "title": "Avatars",
+        "text": "Everyone picks a little critter when they join and shows up with it on the leaderboard."
+      },
+      "shapes": {
+        "title": "Shapes and colors",
+        "text": "Game-show-style answer options, with a shape, a color, and even an image."
+      },
+      "speed": {
+        "title": "Speed bonus",
+        "text": "In timed quizzes, whoever answers correctly first gets more points."
+      },
+      "leaderboard": {
+        "title": "Animated leaderboard",
+        "text": "The big screen shows who moved up and who dropped after each question."
+      },
+      "raffle": {
+        "title": "Prize giveaways",
+        "text": "A number wheel with suspense, sound, and confetti. Physical or digital prizes."
+      },
+      "survey": {
+        "title": "A nudge to take the survey",
+        "text": "If you want, only people who answer the survey at the end are entered in the giveaway."
+      }
+    }
+  },
+  "ai": {
+    "title": "Build your questions by chatting with Claude or ChatGPT",
+    "lead": "Already have your presentation ready? Connect PulseStage to your AI assistant, attach your slides, and ask for interactions. It creates the session with each question at the right point in your presentation.",
+    "points": {
+      "slides": {
+        "title": "Your slides become a lineup",
+        "text": "Attach your presentation PDF in the chat. The assistant reads the slides and suggests the right question for each moment."
+      },
+      "placement": {
+        "title": "Every question in the right place",
+        "text": "Questions arrive already tagged with the slide they follow. Upload the same PDF to the session and everything falls into place."
+      },
+      "approval": {
+        "title": "You approve first",
+        "text": "The assistant shows you its proposal and only saves it once you confirm. Then fine-tune it in PulseStage as usual."
+      },
+      "analysis": {
+        "title": "Analysis after your talk",
+        "text": "Ask for a session recap: the assistant reads the results and the survey, with no audience names or contact info."
+      }
+    },
+    "compat": "Works with Claude, ChatGPT, and other assistants that support MCP (Model Context Protocol). You connect once from your dashboard, under Integrations.",
+    "fileName": "ai-in-schools.pdf",
+    "pages": "{count, plural, one {# page} other {# pages}}",
+    "request": "Create the PulseStage interactions for this 50-minute talk for teachers.",
+    "proposal": "Here's a proposal for your slides:",
+    "afterSlide": "After slide {n}",
+    "atEnd": "At the end",
+    "plan": {
+      "cloud": "In one word: what do you expect from AI in schools?",
+      "quiz": "What is a language model?",
+      "scale": "How ready do you feel to use AI in class?",
+      "open": "What questions do you still have?"
+    },
+    "confirmQuestion": "Should I save it?",
+    "confirmAnswer": "Go ahead!",
+    "saved": "PulseStage · {count, plural, one {# question saved} other {# questions saved}} to the session",
+    "caption": "Sample conversation with an AI assistant"
+  },
+  "report": {
+    "title": "Afterward: the session report",
+    "lead": "When you end the session, the audience answers a survey on their phones. You see your strengths and weaknesses, where the audience engaged most, how long you spent on each slide, and AI suggestions for next time. Everything exports to PDF and spreadsheet.",
+    "note": "The numbers measure participation, not attention. And every AI suggestion shows how many responses it's based on: the fewer the responses, the fainter the underline.",
+    "heading": "Report: “{title}”",
+    "sampleTitle": "AI at work",
+    "simulated": "example with simulated data",
+    "chartTitle": "Participation in each question",
+    "chartAria": "Participation by question: {values}",
+    "minute": "{minute} min",
+    "suggestions": "AI suggestions",
+    "notes": {
+      "cloud": "The word cloud got the highest participation of the session. Repeat the format midway through the next one.",
+      "quiz": "Participation dropped on the quiz at minute 25. The 20-second timer may have been too short.",
+      "comments": "A few comments ask for more hands-on examples. Worth checking at your next session."
+    },
+    "confidence": {
+      "high": "high confidence",
+      "medium": "medium confidence",
+      "low": "low confidence"
+    },
+    "responses": "{count, plural, one {# response} other {# responses}}",
+    "comments": "{count, plural, one {# comment} other {# comments}}",
+    "rating": "Audience rating"
+  },
+  "audiences": {
+    "title": "From the classroom to the auditorium",
+    "lead": "Works in classrooms, auditoriums, meetings, and training sessions, in person or online with a shared screen.",
+    "universities": {
+      "who": "Universities and colleges",
+      "text": "Lectures with the whole class taking part, real-time checks for understanding, and a course evaluation at the end."
+    },
+    "schools": {
+      "who": "K–12 schools",
+      "text": "Quizzes with leaderboards, avatars, and giveaways make review fun. Students answer from their phones, with no account and any name they like."
+    },
+    "companies": {
+      "who": "Companies and training",
+      "text": "Training, onboarding, and all-hands meetings with everyone's input in seconds and a report ready for HR."
+    },
+    "events": {
+      "who": "Speakers and events",
+      "text": "Break the ice at the start, bring the audience in midway, and find out afterward what really stuck."
+    }
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "lead": "The essentials before you use it in your next presentation.",
+    "items": {
+      "app": {
+        "q": "Does the audience need to download an app?",
+        "a": "No. People point their phone camera at the QR code or type the code into their browser. They don't need an account, and their name is optional."
+      },
+      "price": {
+        "q": "How much does it cost?",
+        "a": "Nothing during the beta. Sign up with Google or email and use every feature, no credit card required."
+      },
+      "slides": {
+        "q": "Does it work with my slides?",
+        "a": "Yes. Upload your presentation PDF and present from PulseStage: slides and questions stay in the same lineup and your clicker advances everything, without switching windows. Slide animations and videos aren't kept; if you need them, present from your usual app and switch to the results screen when it's time for each question."
+      },
+      "raffle": {
+        "q": "How does the giveaway work?",
+        "a": "You add the prizes and choose who's entered: everyone who joined, or only people who answered the survey at the end. Each person gets a number on their phone. The server picks the winner, who's revealed on the big screen with an animation; the prize message, like a coupon code, shows up only on the winner's phone."
+      },
+      "questions": {
+        "q": "Can the audience send questions during my talk?",
+        "a": "Yes. From their phones, at any time, anonymously or by name. Others upvote the questions they also want answered, and you can feature the top one on the big screen, mark it as answered, or hide it. If you prefer, approve each question before it appears."
+      },
+      "schools": {
+        "q": "Is it safe to use with school students?",
+        "a": "Yes. The profanity filter is on by default: word cloud entries, open-ended answers, and questions with profanity don't reach the big screen, and you can release them if it was a mistake. You can also approve open-ended answers before they appear and remove any word from the cloud on the spot."
+      },
+      "assistants": {
+        "q": "Does it work with Claude or ChatGPT?",
+        "a": "Yes. PulseStage has an MCP server: you connect your account to Claude, ChatGPT, or another compatible assistant, attach your slides in the chat, and ask for questions. The assistant creates the session and places each question after the right slide. It doesn't start the live session; that's still up to you."
+      },
+      "capacity": {
+        "q": "How many people can take part?",
+        "a": "Up to {max} participants per session. Each person answers each question once."
+      },
+      "export": {
+        "q": "Can I take the results with me?",
+        "a": "Yes. Every session generates a PDF report and exports the responses and the survey as a spreadsheet (CSV). You can also duplicate a session to give the same talk again."
+      },
+      "data": {
+        "q": "What about participants' data?",
+        "a": "Participation can be anonymous. Contact info is only stored with permission and is kept separate from responses. The AI analysis uses only aggregated data, never names or contact info."
+      }
+    }
+  },
+  "cta": {
+    "title": "Your next class or talk starts here.",
+    "lead": "Create your first session in minutes, with Google or email. Free during the beta, no credit card required.",
+    "primary": "Create my free session",
+    "signIn": "Log in"
+  },
+  "footer": {
+    "tagline": "PulseStage · live interaction for talks and classes",
+    "findSpeaker": "Find a speaker",
+    "privacy": "Privacy"
+  },
+  "demo": {
+    "ariaLabel": "PulseStage demo with simulated data",
+    "scenesLabel": "Demo scenes",
+    "scenes": {
+      "poll": "Poll",
+      "cloud": "Word cloud",
+      "quiz": "Quiz and leaderboard",
+      "raffle": "Giveaway"
+    },
+    "caption": "Big screen and audience phone · demo with simulated data",
+    "poll": {
+      "question": "Do you already use AI at work?",
+      "options": {
+        "daily": "Yes, every day",
+        "starting": "I'm just getting started",
+        "notYet": "Not yet",
+        "curious": "Just out of curiosity"
+      },
+      "responses": "{count, plural, one {# response} other {# responses}}",
+      "waiting": "Waiting for responses…",
+      "sent": "Response sent"
+    },
+    "cloud": {
+      "question": "One word for where you are in your career",
+      "words": {
+        "w1": "teamwork",
+        "w2": "focus",
+        "w3": "learning",
+        "w4": "time",
+        "w5": "creativity",
+        "w6": "data",
+        "w7": "clients",
+        "w8": "growth",
+        "w9": "future"
+      },
+      "placeholder": "One word…",
+      "send": "Send response",
+      "sent": "Sent"
+    },
+    "quiz": {
+      "leaderboard": "Quiz leaderboard",
+      "leaderboardLabel": "Simulated leaderboard",
+      "place": "{n, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}",
+      "question": "Which of these is a language model?",
+      "correct": "Correct! +{points} pts"
+    },
+    "raffle": {
+      "drawing": "Drawing",
+      "prize": "Signed book",
+      "winnerNumber": "No. {number} · Congratulations!",
+      "youWon": "You won!",
+      "luckyNumber": "Your lucky number",
+      "watchScreen": "Keep an eye on the big screen."
+    }
+  }
+}

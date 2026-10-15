@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { moderateResponseAction, moderationQueueAction, setTermVisibilityAction } from "@/features/engagement/actions";
 import type { ModerationQueue } from "@/lib/data/engagement";
@@ -23,6 +24,8 @@ export function ModerationPanel({
   type: "word_cloud" | "open_text";
   snapshot: ResultsSnapshot;
 }) {
+  const t = useTranslations("live.moderation");
+  const tCommon = useTranslations("common.actions");
   const [queue, setQueue] = useState<ModerationQueue>({ responses: [], hiddenTerms: [] });
   const [pending, startTransition] = useTransition();
 
@@ -53,12 +56,13 @@ export function ModerationPanel({
     return (
       <details className="rounded-lg border px-3 py-2 text-sm">
         <summary className="cursor-pointer font-medium">
-          Moderar palavras{queue.hiddenTerms.length > 0 ? ` · ${queue.hiddenTerms.length} oculta(s)` : ""}
+          {t("moderateWords")}
+          {queue.hiddenTerms.length > 0 ? ` · ${t("hiddenCount", { count: queue.hiddenTerms.length })}` : ""}
         </summary>
         <div className="mt-3 flex flex-col gap-3">
           {words.length > 0 ? (
             <div className="flex flex-col gap-1.5">
-              <p className="text-xs text-muted-foreground">No telão. Clique no × para ocultar a palavra (e os próximos envios dela).</p>
+              <p className="text-xs text-muted-foreground">{t("wordsOnScreenHint")}</p>
               <ul className="flex flex-wrap gap-1.5">
                 {words.map((w) => (
                   <li key={w.word}>
@@ -67,7 +71,7 @@ export function ModerationPanel({
                       disabled={pending}
                       onClick={() => run(() => setTermVisibilityAction(interactionId, w.word, false))}
                       className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs hover:border-destructive hover:text-destructive"
-                      aria-label={`Ocultar “${w.word}”`}
+                      aria-label={t("hideWord", { word: w.word })}
                     >
                       {w.word} <span className="text-muted-foreground">{w.count}</span> <XIcon className="size-3" />
                     </button>
@@ -78,22 +82,26 @@ export function ModerationPanel({
           ) : null}
           {queue.hiddenTerms.length > 0 ? (
             <div className="flex flex-col gap-1.5">
-              <p className="text-xs text-muted-foreground">Fora do telão</p>
+              <p className="text-xs text-muted-foreground">{t("offScreen")}</p>
               <ul className="flex flex-col gap-1">
-                {queue.hiddenTerms.map((t) => (
-                  <li key={t.term} className="flex items-center justify-between gap-2">
+                {queue.hiddenTerms.map((term) => (
+                  <li key={term.term} className="flex items-center justify-between gap-2">
                     <span className="min-w-0 truncate">
-                      {t.term} <span className="text-muted-foreground">· {t.count}{t.filtered ? " · filtro de palavrões" : ""}</span>
+                      {term.term}{" "}
+                      <span className="text-muted-foreground">
+                        · {term.count}
+                        {term.filtered ? ` · ${t("profanityFilter")}` : ""}
+                      </span>
                     </span>
-                    <Button variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => setTermVisibilityAction(interactionId, t.term, true))}>
-                      Mostrar
+                    <Button variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => setTermVisibilityAction(interactionId, term.term, true))}>
+                      {tCommon("show")}
                     </Button>
                   </li>
                 ))}
               </ul>
             </div>
           ) : null}
-          {words.length === 0 && queue.hiddenTerms.length === 0 ? <p className="text-xs text-muted-foreground">Nenhuma palavra ainda.</p> : null}
+          {words.length === 0 && queue.hiddenTerms.length === 0 ? <p className="text-xs text-muted-foreground">{t("noWords")}</p> : null}
         </div>
       </details>
     );
@@ -104,9 +112,9 @@ export function ModerationPanel({
   return (
     <details className="rounded-lg border px-3 py-2 text-sm" open={waiting.length > 0}>
       <summary className="cursor-pointer font-medium">
-        Moderar respostas
-        {waiting.length > 0 ? ` · ${waiting.length} aguardando` : ""}
-        {hidden.length > 0 ? ` · ${hidden.length} oculta(s)` : ""}
+        {t("moderateResponses")}
+        {waiting.length > 0 ? ` · ${t("waitingCount", { count: waiting.length })}` : ""}
+        {hidden.length > 0 ? ` · ${t("hiddenCount", { count: hidden.length })}` : ""}
       </summary>
       <div className="mt-3 flex flex-col gap-3">
         {waiting.length > 0 ? (
@@ -115,10 +123,10 @@ export function ModerationPanel({
               <li key={r.id} className="flex items-start gap-2 rounded-md bg-standby/10 p-2">
                 <p className="min-w-0 flex-1 break-words">{r.text}</p>
                 <Button size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateResponseAction(r.id, true))}>
-                  Aprovar
+                  {t("approve")}
                 </Button>
                 <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateResponseAction(r.id, false))}>
-                  Ocultar
+                  {tCommon("hide")}
                 </Button>
               </li>
             ))}
@@ -126,13 +134,13 @@ export function ModerationPanel({
         ) : null}
         {snapshot.recent.length > 0 ? (
           <div className="flex flex-col gap-1.5">
-            <p className="text-xs text-muted-foreground">No telão</p>
+            <p className="text-xs text-muted-foreground">{t("onScreen")}</p>
             <ul className="flex max-h-56 flex-col gap-1 overflow-y-auto pr-1">
               {snapshot.recent.map((r) => (
                 <li key={r.id} className="flex items-start gap-2">
                   <p className="min-w-0 flex-1 break-words">{r.text}</p>
                   <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateResponseAction(r.id, false))}>
-                    Ocultar
+                    {tCommon("hide")}
                   </Button>
                 </li>
               ))}
@@ -141,16 +149,16 @@ export function ModerationPanel({
         ) : null}
         {hidden.length > 0 ? (
           <div className="flex flex-col gap-1.5">
-            <p className="text-xs text-muted-foreground">Fora do telão</p>
+            <p className="text-xs text-muted-foreground">{t("offScreen")}</p>
             <ul className="flex max-h-56 flex-col gap-1 overflow-y-auto pr-1">
               {hidden.map((r) => (
                 <li key={r.id} className="flex items-start gap-2 text-muted-foreground">
                   <p className="min-w-0 flex-1 break-words">
                     {r.text}
-                    {r.filtered ? <span className="text-xs"> · filtro de palavrões</span> : null}
+                    {r.filtered ? <span className="text-xs"> · {t("profanityFilter")}</span> : null}
                   </p>
                   <Button variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateResponseAction(r.id, true))}>
-                    Mostrar
+                    {tCommon("show")}
                   </Button>
                 </li>
               ))}
@@ -158,7 +166,7 @@ export function ModerationPanel({
           </div>
         ) : null}
         {waiting.length === 0 && hidden.length === 0 && snapshot.recent.length === 0 ? (
-          <p className="text-xs text-muted-foreground">Nenhuma resposta ainda.</p>
+          <p className="text-xs text-muted-foreground">{t("noResponses")}</p>
         ) : null}
       </div>
     </details>

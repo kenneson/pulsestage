@@ -2,11 +2,12 @@
 
 import { useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { copyToSessionAction } from "@/features/library/actions";
-import { INTERACTION_TYPE_META, INTERACTION_TYPES, isInteractionType } from "@/lib/domain/interactions";
+import { INTERACTION_TYPES, isInteractionType } from "@/lib/domain/interactions";
 import { matchesLibraryQuery, type LibraryItem } from "@/lib/domain/library";
-import { formatPercent, plural } from "@/lib/format";
+import { formatPercent } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { TYPE_PAPER, TypeTag } from "@/components/interaction-type-tag";
@@ -29,20 +30,22 @@ export function LibraryFilters({
   type,
   setType,
 }: Pick<ReturnType<typeof useLibraryFilter>, "query" | "setQuery" | "type" | "setType">) {
+  const t = useTranslations("builder.library");
+  const tDomain = useTranslations("domain");
   return (
     <div className="flex flex-wrap items-center gap-3">
       <label className="flex min-h-11 flex-[1_1_260px] items-center gap-2 rounded-md border bg-background px-3 text-muted-foreground focus-within:ring-2 focus-within:ring-ring/40">
         <SearchIcon />
-        <span className="sr-only">Buscar perguntas</span>
+        <span className="sr-only">{t("search")}</span>
         <input
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Buscar perguntas"
+          placeholder={t("search")}
           className="min-w-0 flex-1 bg-transparent text-base text-foreground outline-none md:text-sm"
         />
       </label>
-      <div role="group" aria-label="Filtrar por tipo" className="flex flex-wrap gap-1.5">
+      <div role="group" aria-label={t("filterByType")} className="flex flex-wrap gap-1.5">
         <button
           type="button"
           aria-pressed={type === null}
@@ -52,21 +55,21 @@ export function LibraryFilters({
             type === null ? "border-foreground bg-foreground text-background" : "hover:bg-muted",
           )}
         >
-          Todas
+          {t("all")}
         </button>
-        {INTERACTION_TYPES.map((t) => (
+        {INTERACTION_TYPES.map((kind) => (
           <button
-            key={t}
+            key={kind}
             type="button"
-            aria-pressed={type === t}
-            onClick={() => setType(type === t ? null : t)}
+            aria-pressed={type === kind}
+            onClick={() => setType(type === kind ? null : kind)}
             className={cn(
               "inline-flex min-h-9 items-center gap-1.5 rounded-full border px-3 text-sm font-medium",
-              type === t ? "border-foreground bg-foreground text-background" : "hover:bg-muted",
+              type === kind ? "border-foreground bg-foreground text-background" : "hover:bg-muted",
             )}
           >
-            <span aria-hidden className={cn("size-2.5 rounded-sm", TYPE_PAPER[t])} />
-            {INTERACTION_TYPE_META[t].label}
+            <span aria-hidden className={cn("size-2.5 rounded-sm", TYPE_PAPER[kind])} />
+            {tDomain(`interactionTypes.${kind}.label`)}
           </button>
         ))}
       </div>
@@ -75,6 +78,7 @@ export function LibraryFilters({
 }
 
 export function LibraryItemSummary({ item }: { item: LibraryItem }) {
+  const t = useTranslations("builder.library");
   return (
     <span className="flex min-w-0 flex-col gap-1">
       {isInteractionType(item.type) ? <TypeTag type={item.type} /> : null}
@@ -83,8 +87,8 @@ export function LibraryItemSummary({ item }: { item: LibraryItem }) {
         <span className="truncate text-sm text-muted-foreground">{item.optionLabels.join(" · ")}</span>
       ) : null}
       <span className="text-xs text-muted-foreground">
-        {plural(item.sessions, "sessão", "sessões")}
-        {item.participation !== null ? ` · participação ${formatPercent(item.participation)}` : ""}
+        {t("sessions", { count: item.sessions })}
+        {item.participation !== null ? ` · ${t("participation", { percent: formatPercent(item.participation) })}` : ""}
       </span>
     </span>
   );
@@ -92,6 +96,8 @@ export function LibraryItemSummary({ item }: { item: LibraryItem }) {
 
 /** "Da biblioteca": escolhe perguntas já usadas e copia para o fim do roteiro desta sessão. */
 export function LibraryPicker({ sessionId, items }: { sessionId: string; items: LibraryItem[] }) {
+  const t = useTranslations("builder.library");
+  const tCommon = useTranslations("common.actions");
   const router = useRouter();
   const ref = useRef<HTMLDialogElement>(null);
   const [selected, setSelected] = useState<string[]>([]);
@@ -109,7 +115,7 @@ export function LibraryPicker({ sessionId, items }: { sessionId: string; items: 
         toast.error(result.error);
         return;
       }
-      toast.success(`${plural(result.data.copied, "pergunta adicionada", "perguntas adicionadas")} ao roteiro.`);
+      toast.success(t("added", { count: result.data.copied }));
       setSelected([]);
       ref.current?.close();
       router.refresh();
@@ -119,7 +125,7 @@ export function LibraryPicker({ sessionId, items }: { sessionId: string; items: 
   return (
     <>
       <Button variant="outline" size="sm" onClick={() => ref.current?.showModal()} disabled={items.length === 0}>
-        <LibraryIcon /> Da biblioteca
+        <LibraryIcon /> {t("open")}
       </Button>
       <dialog
         ref={ref}
@@ -130,13 +136,13 @@ export function LibraryPicker({ sessionId, items }: { sessionId: string; items: 
           <div className="flex items-start justify-between gap-4 border-b p-5">
             <div>
               <h2 id="library-picker-title" className="text-lg font-semibold">
-                Adicionar da biblioteca
+                {t("title")}
               </h2>
-              <p className="text-sm text-muted-foreground">Perguntas das suas outras sessões. Elas entram no fim do roteiro.</p>
+              <p className="text-sm text-muted-foreground">{t("description")}</p>
             </div>
             <button
               type="button"
-              aria-label="Fechar"
+              aria-label={tCommon("close")}
               onClick={() => ref.current?.close()}
               className="grid size-9 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-muted"
             >
@@ -148,7 +154,7 @@ export function LibraryPicker({ sessionId, items }: { sessionId: string; items: 
           </div>
           <ul className="flex-1 divide-y overflow-y-auto">
             {filter.filtered.length === 0 ? (
-              <li className="p-6 text-center text-sm text-muted-foreground">Nenhuma pergunta encontrada.</li>
+              <li className="p-6 text-center text-sm text-muted-foreground">{t("empty")}</li>
             ) : (
               filter.filtered.map((item) => (
                 <li key={item.key}>
@@ -167,14 +173,14 @@ export function LibraryPicker({ sessionId, items }: { sessionId: string; items: 
           </ul>
           <div className="flex flex-wrap items-center justify-end gap-2 border-t p-4">
             <Button variant="outline" onClick={() => ref.current?.close()}>
-              Cancelar
+              {tCommon("cancel")}
             </Button>
             <Button onClick={add} disabled={pending || selected.length === 0}>
               {pending
-                ? "Adicionando…"
+                ? t("adding")
                 : selected.length === 0
-                  ? "Escolha perguntas"
-                  : `Adicionar ${plural(selected.length, "pergunta", "perguntas")}`}
+                  ? t("choose")
+                  : t("addCount", { count: selected.length })}
             </Button>
           </div>
         </div>

@@ -3,9 +3,12 @@
 // Módulo só de cliente; o pdf.js é carregado sob demanda para não pesar no resto do painel.
 
 import { MAX_SLIDES, SLIDE_RENDER_WIDTH, type SlideFormat } from "@/lib/domain/deck";
+import { messageKey } from "@/lib/domain/message-key";
 
-export const MAX_PDF_BYTES = 80 * 1024 * 1024;
+const MAX_PDF_MB = 80;
+export const MAX_PDF_BYTES = MAX_PDF_MB * 1024 * 1024;
 
+/** A mensagem é uma chave de tradução completa ("session.slides.errors.notPdf"); quem mostra traduz. */
 export class PdfConversionError extends Error {}
 
 function toBlob(canvas: HTMLCanvasElement, type: string, quality: number): Promise<Blob | null> {
@@ -19,7 +22,7 @@ async function encode(canvas: HTMLCanvasElement, preferred: SlideFormat): Promis
     if (webp?.type === "image/webp") return { blob: webp, format: "webp" };
   }
   const jpeg = await toBlob(canvas, "image/jpeg", 0.88);
-  if (!jpeg) throw new PdfConversionError("O navegador não conseguiu gerar as imagens dos slides.");
+  if (!jpeg) throw new PdfConversionError("session.slides.errors.encodeFailed");
   return { blob: jpeg, format: "jpeg" };
 }
 
@@ -27,8 +30,8 @@ export async function convertPdf(
   file: File,
   onProgress: (done: number, total: number) => void,
 ): Promise<{ slides: Blob[]; format: SlideFormat }> {
-  if (file.type && file.type !== "application/pdf") throw new PdfConversionError("Escolha um arquivo PDF.");
-  if (file.size > MAX_PDF_BYTES) throw new PdfConversionError("O PDF passa de 80 MB. Exporte com imagens comprimidas.");
+  if (file.type && file.type !== "application/pdf") throw new PdfConversionError("session.slides.errors.notPdf");
+  if (file.size > MAX_PDF_BYTES) throw new PdfConversionError(messageKey("session.slides.errors.tooLarge", { max: MAX_PDF_MB }));
 
   // Build "legacy": inclui polyfills para Safari e Chrome mais antigos, comuns em notebooks de palco.
   const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
@@ -42,12 +45,12 @@ export async function convertPdf(
     doc = await task.promise;
   } catch {
     void task.destroy();
-    throw new PdfConversionError("Não foi possível abrir o PDF. Ele pode estar protegido por senha ou corrompido.");
+    throw new PdfConversionError("session.slides.errors.openFailed");
   }
 
   try {
     const total = doc.numPages;
-    if (total > MAX_SLIDES) throw new PdfConversionError(`O PDF tem ${total} páginas; o limite é ${MAX_SLIDES}.`);
+    if (total > MAX_SLIDES) throw new PdfConversionError(messageKey("session.slides.errors.tooManyPages", { total, max: MAX_SLIDES }));
 
     const canvas = document.createElement("canvas");
     const slides: Blob[] = [];
@@ -67,7 +70,7 @@ export async function convertPdf(
       // O formato do primeiro slide vale para todos (o caminho no Storage depende dele).
       const encoded = await encode(canvas, format);
       if (pageNumber > 1 && encoded.format !== format) {
-        throw new PdfConversionError("O navegador não conseguiu gerar as imagens dos slides.");
+        throw new PdfConversionError("session.slides.errors.encodeFailed");
       }
       format = encoded.format;
       slides.push(encoded.blob);

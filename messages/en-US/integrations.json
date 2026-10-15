@@ -1,1 +1,108 @@
-{}
+{
+  "metaTitle": "Integrations",
+  "title": "Integrations",
+  "intro": "Use PulseStage from inside Claude, ChatGPT and other MCP-compatible assistants. Attach your presentation slides in the chat and ask for questions: the assistant creates the session and places each interaction after the right slide.",
+  "notReady": "Assistant connections aren't active on this server yet. Whoever runs PulseStage needs to turn on the OAuth server in Supabase (see the README).",
+  "server": {
+    "title": "MCP server address",
+    "description": "It's the same for every assistant. The first time, it opens PulseStage so you can sign in and allow access.",
+    "copyLabel": "MCP server address"
+  },
+  "connect": {
+    "title": "Connect",
+    "description": "Menu names may vary a little depending on each app's version.",
+    "allowStep": "Sign in with your PulseStage account and click <b>Allow access</b>.",
+    "claude": {
+      "step1": "In Claude (web or app), open <b>Settings → Connectors</b> and click <b>Add custom connector</b>.",
+      "step2": "Name: <b>PulseStage</b>. URL: the address above. Save and click <b>Connect</b>.",
+      "step4": "In a chat, turn on PulseStage in the tools menu and attach your presentation PDF."
+    },
+    "chatgpt": {
+      "step1": "In ChatGPT, open <b>Settings → Apps & Connectors → Advanced settings</b> and turn on <b>Developer mode</b> (custom connectors depend on your plan).",
+      "step2": "In <b>Apps & Connectors</b>, click <b>Create</b>. Name: <b>PulseStage</b>; MCP server URL: the address above; authentication: <b>OAuth</b>.",
+      "step4": "In a chat, pick PulseStage from the “+” menu and attach your presentation PDF."
+    },
+    "code": {
+      "terminal": "In your terminal:",
+      "commandLabel": "command",
+      "after": "Then, inside Claude Code, run <code>/mcp</code>, choose <b>pulsestage</b> and authenticate in your browser."
+    },
+    "others": {
+      "tab": "Others",
+      "text": "Any MCP client with remote (HTTP) servers and OAuth sign-in works, like Cursor and VS Code: add a server with the address above. The client figures out where to sign in on its own."
+    }
+  },
+  "usage": {
+    "title": "Using it with a finished presentation",
+    "description": "The assistant reads the slides in the chat; PulseStage only receives the questions.",
+    "step1": "Attach your presentation PDF to the chat and mention the audience and the length.",
+    "step2": "The assistant suggests the questions and <b>which slide</b> each one comes after (using the PDF page numbers). Tweak anything you like and approve.",
+    "step3": "It creates the session (or uses one you point to) and saves the questions in the right place.",
+    "step4": "Open the session in PulseStage, go to the <b>“Slides”</b> tab and upload <b>the same PDF</b>: the questions already show up between the slides. You can drag and edit them as usual.",
+    "note": "The assistant doesn't start or end the live session: that still happens in PulseStage. Ended sessions can't be edited, but it can read the results to review the presentation with you."
+  },
+  "examples": {
+    "title": "Example requests",
+    "copyLabel": "request “{title}”",
+    "fromSlides": {
+      "title": "From your slides",
+      "text": "I've attached my presentation. Use PulseStage to plan 5 interactions for this 50-minute talk for high school teachers. Show me the plan before creating anything."
+    },
+    "fromScratch": {
+      "title": "A class from scratch",
+      "text": "In PulseStage, create the session “Fractions – 6th grade” for tomorrow at 10 a.m., with a word cloud to kick things off and a 4-question quiz with a 20-second timer."
+    },
+    "adjust": {
+      "title": "Adjust the lineup",
+      "text": "In my session “Leading remote teams”, replace the question after slide 8 with a harder quiz and move the scale to the end."
+    },
+    "afterTalk": {
+      "title": "After the talk",
+      "text": "Analyze the results of my latest PulseStage session: what worked, where the audience struggled most and what to change next time."
+    }
+  },
+  "connected": {
+    "title": "Connected assistants",
+    "description": "Each one acts as you, with access to your sessions. Revoke the ones you no longer use. Details in <link>Privacy</link>.",
+    "unnamed": "Unnamed assistant"
+  },
+  "connectedApps": {
+    "emptyTitle": "No connected assistants",
+    "emptyDescription": "When you connect Claude, ChatGPT or another assistant, it shows up here.",
+    "connectedOn": "Connected on {date}",
+    "revokeTitle": "Revoke access for {name}?",
+    "revokeDescription": "The assistant immediately stops seeing and editing your sessions. To use it again, connect it again.",
+    "revokeConfirm": "Revoke access",
+    "revoke": "Revoke",
+    "revoked": "Access revoked."
+  },
+  "consent": {
+    "metaTitle": "Connect assistant",
+    "errorTitle": "Couldn't connect",
+    "expired": "The connection request has expired or was already used.",
+    "incomplete": "The connection link is incomplete.",
+    "tryAgain": "Go back to the assistant (Claude, ChatGPT or another) and ask it to connect PulseStage again.",
+    "howToConnect": "See how to connect",
+    "unnamedClient": "An AI assistant",
+    "eyebrow": "Connect to PulseStage",
+    "title": "{client} wants to access your account",
+    "actsAs": "It will act as <b>{email}</b> and then return to <site>{host}</site>.",
+    "canTitle": "Through PulseStage's tools, it will be able to:",
+    "can": {
+      "read": "See your sessions, lineups and their results (votes, averages, open-ended answers and survey comments)",
+      "write": "Create sessions and create, edit, move and delete questions"
+    },
+    "cannotTitle": "The tools don't allow it to:",
+    "cannot": {
+      "personal": "See names, emails or phone numbers of the people who took part",
+      "live": "Start, pause or end a live session",
+      "account": "Delete sessions or change your account"
+    },
+    "warning": "Only allow this if you just asked for it and you trust this app: it gets access to your account. You can revoke it anytime under Integrations in your dashboard.",
+    "allow": "Allow access",
+    "notYou": "Not you? <switch>Sign in with another account</switch>"
+  },
+  "errors": {
+    "revokeFailed": "Couldn't revoke access."
+  }
+}

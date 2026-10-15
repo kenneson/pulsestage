@@ -2,13 +2,15 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { deleteSurveyTemplateAction, duplicateSurveyTemplateAction } from "@/features/surveys/actions";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/components/ui/confirm-dialog";
 import { TrashIcon } from "@/components/icons";
 
-export function DuplicateTemplateButton({ templateId, label = "Duplicar e editar" }: { templateId: string; label?: string }) {
+export function DuplicateTemplateButton({ templateId, label }: { templateId: string; label?: string }) {
+  const t = useTranslations("surveys.templateActions");
   const [pending, startTransition] = useTransition();
   return (
     <Button
@@ -23,12 +25,14 @@ export function DuplicateTemplateButton({ templateId, label = "Duplicar e editar
         })
       }
     >
-      {pending ? "Duplicando…" : label}
+      {pending ? t("duplicating") : (label ?? t("duplicateAndEdit"))}
     </Button>
   );
 }
 
 export function DeleteTemplateButton({ templateId, name }: { templateId: string; name: string }) {
+  const t = useTranslations("surveys.templateActions");
+  const tCommon = useTranslations("common.actions");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [confirm, confirmDialog] = useConfirm();
@@ -42,10 +46,9 @@ export function DeleteTemplateButton({ templateId, name }: { templateId: string;
         className="text-destructive hover:text-destructive"
         onClick={async () => {
           const confirmed = await confirm({
-            title: `Excluir o modelo “${name}”?`,
-            description:
-              "Sessões que ainda não terminaram e usavam este modelo passam a usar a “Avaliação geral”. Relatórios de sessões encerradas não mudam.",
-            confirmLabel: "Excluir",
+            title: t("deleteTitle", { name }),
+            description: t("deleteDescription"),
+            confirmLabel: tCommon("delete"),
             destructive: true,
           });
           if (!confirmed) return;
@@ -55,12 +58,12 @@ export function DeleteTemplateButton({ templateId, name }: { templateId: string;
               toast.error(result.error);
               return;
             }
-            toast.success("Modelo excluído.");
+            toast.success(t("deleted"));
             router.refresh();
           });
         }}
       >
-        <TrashIcon /> Excluir
+        <TrashIcon /> {tCommon("delete")}
       </Button>
     </>
   );

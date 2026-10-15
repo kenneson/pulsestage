@@ -1,1 +1,149 @@
-{}
+{
+  "join": {
+    "metaTitle": "Entrar a una sesión",
+    "title": "Entrar a una sesión",
+    "description": "Escribe el código que aparece en la pantalla del presentador."
+  },
+  "codeForm": {
+    "placeholder": "Código",
+    "label": "Código de acceso de la sesión",
+    "submit": "Entrar"
+  },
+  "joinCode": {
+    "metaTitle": "Participar",
+    "notFoundTitle": "No encontramos la sesión",
+    "notFoundText": "Revisa el código en la pantalla del presentador e intenta de nuevo.",
+    "endedText": "Esta sesión ya terminó. ¿Qué tal si nos dejas tu opinión?",
+    "rateSession": "Evaluar la sesión",
+    "code": "Código {code}",
+    "notStarted": "La sesión aún no comienza. Podrás entrar en cuanto se inicie."
+  },
+  "joinForm": {
+    "nameLabel": "Tu nombre (opcional)",
+    "namePlaceholder": "Puedes participar sin nombre",
+    "nameHint": "Solo aparece en la tabla de posiciones del quiz, que puede mostrarse en la pantalla. Si lo dejas en blanco, participas de forma anónima.",
+    "avatarLegend": "Elige un avatar (opcional)",
+    "avatarHint": "Aparece junto a tu nombre en la tabla de posiciones del quiz.",
+    "materialSummary": "Quiero recibir el material (opcional)",
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "consent": "Autorizo al presentador a usar mis datos de contacto para enviarme materiales y comunicaciones sobre esta sesión. Mis datos de contacto se guardan separados de mis respuestas. <link>Política de privacidad</link>",
+    "submit": "Participar",
+    "submitting": "Entrando…",
+    "terms": "Al participar, aceptas la <link>política de privacidad</link>."
+  },
+  "participate": {
+    "metaTitle": "Participar"
+  },
+  "view": {
+    "connectionUnstable": "Conexión inestable. Intentando de nuevo…",
+    "endedTitle": "Sesión finalizada",
+    "endedText": "¡Gracias por participar! Tu opinión ayuda a mejorar la próxima presentación.",
+    "rateSession": "Evaluar la sesión",
+    "pausedTitle": "Sesión pausada",
+    "pausedText": "No te vayas, ya volvemos.",
+    "inNamed": "¡Ya estás dentro, {name}!",
+    "in": "¡Ya estás dentro!",
+    "waiting": "Esperando la próxima interacción…",
+    "answeredTitle": "Respuesta registrada",
+    "answeredText": "Mira el resultado en la pantalla del presentador.",
+    "askSpeaker": "Preguntar al presentador"
+  },
+  "answer": {
+    "secondsLeft": "{seconds}s",
+    "yourOrder": "Tu orden",
+    "restart": "Empezar de nuevo",
+    "position": "{position}.º",
+    "rankedItem": "{position}.º: {label}. Toca para quitarla.",
+    "rankFirst": "Toca primero tu favorita y luego la siguiente…",
+    "rankNext": "Toca tu {position}.ª opción",
+    "wordPlaceholder": "Una palabra o expresión corta",
+    "textPlaceholder": "Escribe tu respuesta",
+    "yourAnswer": "Tu respuesta",
+    "submitPreview": "Enviar (vista previa)",
+    "submit": "Enviar respuesta"
+  },
+  "questions": {
+    "title": "Preguntas del público",
+    "closed": "El presentador cerró las preguntas.",
+    "placeholder": "Escribe tu pregunta para el presentador",
+    "label": "Tu pregunta",
+    "showName": "Mostrar mi nombre ({name})",
+    "anonymousNote": "Tu pregunta se envía de forma anónima.",
+    "submit": "Enviar pregunta",
+    "moderatedNote": "El presentador aprueba las preguntas antes de que se muestren.",
+    "empty": "Nadie ha preguntado todavía. ¡Sé la primera persona!",
+    "voteHint": "Dale me gusta a las preguntas que también quieres que se respondan.",
+    "sent": "¡Pregunta enviada!",
+    "sentPending": "¡Pregunta enviada! Todos la verán cuando sea aprobada.",
+    "anonymous": "Anónima",
+    "mine": "Tuya",
+    "like": "Me gusta esta pregunta",
+    "unlike": "Quitar me gusta"
+  },
+  "raffle": {
+    "won": "¡Ganaste!",
+    "pickUpPhysical": "Busca al presentador para recoger tu premio.",
+    "deliveryDigital": "El presentador se pondrá en contacto contigo para coordinar la entrega.",
+    "prizeKind": "{kind, select, physical {Premio físico} digital {Premio digital} other {Premio}}",
+    "luckyNumber": "Tu número de la suerte",
+    "competingFor": "Participas por: {prizes}",
+    "watchScreen": "No pierdas de vista la pantalla.",
+    "teaser": "¡Hay sorteo!",
+    "teaserWithPrizes": "¡Hay sorteo: {prizes}!",
+    "answerSurvey": "Responde la encuesta al final de la sesión para recibir tu número de la suerte."
+  },
+  "reactions": {
+    "label": "Reaccionar"
+  },
+  "feedback": {
+    "metaTitle": "Encuesta de la sesión",
+    "eyebrow": "Encuesta sobre la sesión",
+    "notOpen": "La encuesta se abre en cuanto termine la sesión. Vuelve a este enlace más tarde.",
+    "alreadySent": "Ya respondiste esta encuesta. ¡Gracias!",
+    "raffleJoined": "¡Hay sorteo! Al enviar la encuesta, recibes tu número de la suerte.",
+    "raffleNotJoined": "Hay sorteo, pero solo participan quienes entraron a la sesión desde el celular, con el código o el código QR.",
+    "unavailable": "La encuesta de esta sesión no está disponible."
+  },
+  "survey": {
+    "thanksTitle": "¡Gracias!",
+    "thanksText": "Tus respuestas se enviaron y ayudarán a mejorar la próxima presentación.",
+    "submit": "Enviar respuestas",
+    "requiredNote": "* obligatoria",
+    "anonymityNote": "Tu nombre no aparece junto a tus respuestas."
+  },
+  "promo": {
+    "label": "Conoce al presentador"
+  },
+  "errors": {
+    "invalidEmail": "Correo electrónico no válido.",
+    "invalidPhone": "Teléfono no válido.",
+    "consentRequired": "Para guardar tus datos de contacto, marca la autorización.",
+    "sessionNotFoundCheckCode": "No encontramos la sesión. Revisa el código.",
+    "notStarted": "Esta sesión aún no comienza.",
+    "sessionFull": "Esta sesión alcanzó el límite de participantes.",
+    "joinFailed": "No fue posible entrar ahora. Intenta de nuevo.",
+    "invalidAnswerType": "Tipo de respuesta no válido.",
+    "invalidOption": "Alternativa no válida.",
+    "timeUp": "Se acabó el tiempo.",
+    "ratingOutOfRange": "La nota está fuera de la escala.",
+    "moreSpecificWord": "Prueba con una palabra más específica.",
+    "rejoin": "Vuelve a entrar a la sesión.",
+    "interactionClosed": "Esta interacción ya se cerró.",
+    "alreadyAnswered": "Ya respondiste esta interacción.",
+    "sendFailed": "No se pudo enviar. Intenta de nuevo.",
+    "invalidSession": "Sesión no válida.",
+    "sessionNotFound": "Sesión no encontrada.",
+    "surveyNotOpen": "La encuesta se abre cuando termine la sesión.",
+    "surveyUnavailable": "La encuesta de esta sesión no está disponible.",
+    "questionsClosed": "Las preguntas no están abiertas en esta sesión.",
+    "tooManyQuestions": "Enviaste varias preguntas seguidas. Espera unos minutos.",
+    "questionSendFailed": "No se pudo enviar la pregunta. Intenta de nuevo.",
+    "questionNotOpen": "Esta pregunta no está abierta.",
+    "ownQuestion": "No puedes darle me gusta a tu propia pregunta.",
+    "voteFailed": "No se pudo registrar. Intenta de nuevo.",
+    "tooManyReactions": "¡Calma! Demasiadas reacciones seguidas.",
+    "reactionsOff": "Las reacciones están desactivadas por ahora.",
+    "reactionFailed": "No se pudo enviar la reacción."
+  }
+}

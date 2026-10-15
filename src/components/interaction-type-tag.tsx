@@ -1,4 +1,5 @@
-import { INTERACTION_TYPE_META, type InteractionType } from "@/lib/domain/interactions";
+import { useTranslations } from "next-intl";
+import type { InteractionType } from "@/lib/domain/interactions";
 import { cn } from "@/lib/utils";
 
 // Papel de revisão do roteiro: cada tipo de interação tem a mesma cor em todo o produto.
@@ -11,7 +12,9 @@ export const TYPE_PAPER: Record<InteractionType, string> = {
   ranking: "bg-rev-violet",
 };
 
+// Sem "use client": também roda em Server Components (análise), com useTranslations síncrono.
 export function TypeTag({ type, className }: { type: InteractionType; className?: string }) {
+  const t = useTranslations("domain");
   return (
     <span
       className={cn(
@@ -20,7 +23,7 @@ export function TypeTag({ type, className }: { type: InteractionType; className?
         className,
       )}
     >
-      {INTERACTION_TYPE_META[type].label}
+      {t(`interactionTypes.${type}.label`)}
     </span>
   );
 }

@@ -1,1 +1,110 @@
-{}
+{
+  "nav": {
+    "overview": "Overview",
+    "sessions": "Sessions",
+    "surveys": "Surveys",
+    "library": "Library",
+    "raffles": "Giveaways",
+    "evolution": "Progress",
+    "publicProfile": "Public profile",
+    "invites": "Speaking requests",
+    "integrations": "Integrations",
+    "guide": "Guide",
+    "newSession": "New session",
+    "mainNav": "Main navigation",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "unreadInvites": "{count, plural, one {# new request} other {# new requests}}",
+    "settings": "Settings",
+    "profileAndAccount": "Profile and account",
+    "signOut": "Sign out"
+  },
+  "home": {
+    "metaTitle": "Overview",
+    "title": "Overview",
+    "greeting": "Hi, {name}",
+    "tagline": "Create, present, analyze, improve.",
+    "newSession": "New session",
+    "nextMeta": "code <b>{code}</b> · {count, plural, one {# question} other {# questions}}",
+    "openLive": "Open live room",
+    "summary": "Summary",
+    "stats": {
+      "sessions": "Sessions",
+      "sessionsHint": "{count, plural, one {# ended} other {# ended}}",
+      "overall": "Overall score",
+      "overallHint": "Usefulness, satisfaction or recommendation",
+      "dimensions": "Dimension average",
+      "dimensionsHint": "1-to-5 questions from your surveys",
+      "participation": "Average participation",
+      "participationHint": "People who answered something ÷ people who joined"
+    },
+    "recent": "Recent sessions",
+    "seeAll": "See all",
+    "emptyTitle": "No sessions yet",
+    "emptyDescription": "Create your first session, add interactions and share the code with your audience.",
+    "createSession": "Create session",
+    "seeGuide": "See the guide",
+    "steps": {
+      "title": "Getting started",
+      "createSession": "Create your first session",
+      "addQuestions": "Add questions",
+      "presentLive": "Present live",
+      "completeProfile": "Complete your profile",
+      "createTemplate": "Create a survey template",
+      "done": "(done)"
+    }
+  },
+  "sessionList": {
+    "meta": "{date} · code <b>{code}</b>"
+  },
+  "sessions": {
+    "metaTitle": "Sessions",
+    "title": "Sessions",
+    "newSession": "New session",
+    "emptyTitle": "No sessions",
+    "emptyDescription": "Your talks, classes and workshops show up here."
+  },
+  "library": {
+    "metaTitle": "Question library",
+    "title": "Question library",
+    "intro": "Every question you create lives here, just once, even if it appears in several sessions. Reuse it in one click.",
+    "newSession": "New session",
+    "emptyTitle": "Your library is empty",
+    "emptyDescription": "Questions show up here as soon as you create them in a session.",
+    "createSession": "Create session"
+  },
+  "libraryTable": {
+    "useInSession": "Use in a session",
+    "emptyTitle": "No questions found",
+    "emptyDescription": "Adjust your search or the type filter.",
+    "added": "Question added to “{name}”.",
+    "addedGeneric": "Question added to the session.",
+    "targetSession": "Target session",
+    "entersAtEnd": "The question goes at the end of the lineup.",
+    "adding": "Adding…",
+    "noOpenSessions": "No open sessions. <link>Create a session</link>."
+  },
+  "raffles": {
+    "metaTitle": "Giveaways",
+    "title": "Giveaways",
+    "intro": "The giveaways from your sessions, with the winners and prize delivery tracking. To create one, open the session and use the “Giveaway” tab.",
+    "emptyTitle": "No sessions with a giveaway",
+    "emptyDescription": "On the session page, the “Giveaway” tab turns on the giveaway and sets up the prizes.",
+    "seeSessions": "View sessions",
+    "pendingDeliveries": "{count, plural, one {prize drawn but not yet marked as delivered.} other {prizes drawn but not yet marked as delivered.}}",
+    "entrants": "{count, plural, one {# person entered} other {# people entered}}",
+    "editPrizes": "Edit prizes",
+    "noPrizes": "No prizes added.",
+    "winners": "{drawn} of {count, plural, one {# winner} other {# winners}}"
+  },
+  "winnerList": {
+    "delivered": "Delivered",
+    "ticket": "No. {number}",
+    "absent": "absent"
+  },
+  "copyField": {
+    "copyLabel": "Copy {label}",
+    "copied": "Copied",
+    "copyFailed": "Couldn't copy. Select the text and copy it."
+  }
+}

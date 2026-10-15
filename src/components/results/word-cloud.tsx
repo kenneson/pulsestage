@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import cloud from "d3-cloud";
+import { useTranslations } from "next-intl";
 import type { WordCount } from "@/lib/domain/results";
 import { cn } from "@/lib/utils";
 
@@ -120,6 +121,7 @@ function WordList({ words, variant }: { words: WordCount[]; variant: Variant }) 
 }
 
 export function WordCloud({ words, variant }: { words: WordCount[]; variant: Variant }) {
+  const t = useTranslations("results");
   const box = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
   const [placed, setPlaced] = useState<{ key: string; words: Placed[] } | null>(null);
@@ -158,7 +160,7 @@ export function WordCloud({ words, variant }: { words: WordCount[]; variant: Var
           width="100%"
           height={height}
           role="img"
-          aria-label={`Nuvem de palavras: ${words.map((w) => `${w.word} (${w.count})`).join(", ")}`}
+          aria-label={t("wordCloud", { words: words.map((w) => `${w.word} (${w.count})`).join(", ") })}
         >
           {placed.words.map((w) => (
             <text

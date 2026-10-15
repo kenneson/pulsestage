@@ -1,10 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { fetchAllRows } from "@/lib/supabase/fetch-all";
 import { loadSessionAnalytics } from "@/lib/data/analytics";
 import { getSpeakerProfile } from "@/lib/data/profile";
-import { INTERACTION_TYPE_META, isInteractionType } from "@/lib/domain/interactions";
+import { isInteractionType } from "@/lib/domain/interactions";
 import { parseQuizValue, participantLabel } from "@/lib/domain/metrics";
 import { csvFileName, toCsv, type CsvCell } from "@/lib/domain/csv";
 import { isUuid } from "@/lib/action-result";
@@ -47,15 +48,19 @@ function csvResponse(body: string, fileName: string) {
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const kind = request.nextUrl.searchParams.get("tipo");
+  // Idioma da requisição (o do painel de quem exporta).
+  const [t, tDomain] = await Promise.all([getTranslations("analytics.export"), getTranslations("domain")]);
   if (!isUuid(id) || (kind !== "interacoes" && kind !== "pesquisa")) {
-    return NextResponse.json({ error: "Parâmetros inválidos." }, { status: 400 });
+    return NextResponse.json({ error: t("errors.invalidParams") }, { status: 400 });
   }
 
   const supabase = await createClient();
   const [data, profile] = await Promise.all([loadSessionAnalytics(supabase, id), getSpeakerProfile()]);
-  if (!data) return NextResponse.json({ error: "Sessão não encontrada." }, { status: 404 });
+  if (!data) return NextResponse.json({ error: t("errors.notFound") }, { status: 404 });
   const tz = profile.timeZone;
   const people = new Map(data.participants.map((p) => [p.id, p]));
+  const anonymousParticipant = tDomain("anonymousParticipant");
+  const labels = { yes: tDomain("yes"), no: tDomain("no") };
 
   if (kind === "interacoes") {
     const interactions = new Map(data.interactionsWithOptions.map((i) => [i.id, i]));
@@ -75,9 +80,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         const quiz = interaction?.type === "quiz" ? parseQuizValue(r.value) : null;
         return [
           order.get(r.interaction_id) ?? null,
-          interaction && isInteractionType(interaction.type) ? INTERACTION_TYPE_META[interaction.type].label : interaction?.type,
+          interaction && isInteractionType(interaction.type) ? tDomain(`interactionTypes.${interaction.type}.label`) : interaction?.type,
           interaction?.title,
-          participantLabel(people.get(r.participant_id), r.participant_id),
+          participantLabel(people.get(r.participant_id), r.participant_id, anonymousParticipant),
           answer ?? null,
           quiz ? quiz.isCorrect : null,
           quiz ? quiz.points : null,
@@ -85,8 +90,18 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
           localTime(r.created_at, tz),
         ];
       });
-    const header = ["Ordem", "Tipo", "Pergunta", "Participante", "Resposta", "Acertou (quiz)", "Pontos", "Tempo (s)", "Respondido em"];
-    return csvResponse(toCsv(header, rows), csvFileName(data.session.title, "respostas"));
+    const header = [
+      t("responses.order"),
+      t("responses.type"),
+      t("responses.question"),
+      t("responses.participant"),
+      t("responses.answer"),
+      t("responses.correct"),
+      t("responses.points"),
+      t("responses.time"),
+      t("responses.answeredAt"),
+    ];
+    return csvResponse(toCsv(header, rows, labels), csvFileName(data.session.title, t("fileResponses")));
   }
 
   const [responses, answers] = await Promise.all([
@@ -113,7 +128,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     return [
       index + 1,
       localTime(r.created_at, tz),
-      r.participant_id ? participantLabel(people.get(r.participant_id), r.participant_id) : "Anônimo",
+      r.participant_id ? participantLabel(people.get(r.participant_id), r.participant_id, anonymousParticipant) : tDomain("anonymous"),
       ...questions.map((q) => {
         const a = given?.get(q.id);
         if (!a) return null;
@@ -123,6 +138,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       }),
     ];
   });
-  const header = ["Resposta", "Enviada em", "Participante", ...questions.map((q) => q.label)];
-  return csvResponse(toCsv(header, rows), csvFileName(data.session.title, "pesquisa"));
+  const header = [t("survey.response"), t("survey.sentAt"), t("survey.participant"), ...questions.map((q) => q.label)];
+  return csvResponse(toCsv(header, rows, labels), csvFileName(data.session.title, t("fileSurvey")));
 }

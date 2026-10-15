@@ -1,9 +1,10 @@
 "use client";
 
 import { useOptimistic, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { deleteContactAction, updateContactAction } from "@/features/speaker-profile/actions";
-import { ORG_KIND_LABEL, ORG_KINDS, type OrgKind } from "@/lib/domain/speaker-profile";
+import { ORG_KINDS, type OrgKind } from "@/lib/domain/speaker-profile";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/misc";
@@ -31,6 +32,9 @@ const isOrgKind = (v: string | null): v is OrgKind => v !== null && (ORG_KINDS a
 
 /** Convites recebidos pelo perfil público: abrir marca como lido; arquivar e excluir. */
 export function ContactInbox({ items }: { items: InboxItem[] }) {
+  const t = useTranslations("profile.invites");
+  const tDomain = useTranslations("domain");
+  const tCommon = useTranslations("common.actions");
   const [view, setView] = useState<"inbox" | "archived">("inbox");
   const [openId, setOpenId] = useState<string | null>(null);
   const [list, apply] = useOptimistic(items, (current, change: Change) =>
@@ -58,11 +62,11 @@ export function ContactInbox({ items }: { items: InboxItem[] }) {
   return (
     <div className="flex flex-col gap-4">
       {confirmDialog}
-      <div role="tablist" aria-label="Pastas" className="flex gap-1 border-b">
+      <div role="tablist" aria-label={t("folders")} className="flex gap-1 border-b">
         {(
           [
-            ["inbox", `Recebidos (${list.length - archivedCount})`],
-            ["archived", `Arquivados (${archivedCount})`],
+            ["inbox", t("inbox", { count: list.length - archivedCount })],
+            ["archived", t("archived", { count: archivedCount })],
           ] as const
         ).map(([key, label]) => (
           <button
@@ -83,12 +87,8 @@ export function ContactInbox({ items }: { items: InboxItem[] }) {
 
       {visible.length === 0 ? (
         <EmptyState
-          title={view === "archived" ? "Nenhum convite arquivado" : "Nenhum convite por aqui"}
-          description={
-            view === "archived"
-              ? undefined
-              : "Quando alguém usar “Convidar para palestrar” no seu perfil público, o convite aparece aqui."
-          }
+          title={view === "archived" ? t("emptyArchived") : t("emptyInbox")}
+          description={view === "archived" ? undefined : t("emptyInboxHint")}
         />
       ) : (
         <ul className="flex flex-col gap-3">
@@ -107,7 +107,7 @@ export function ContactInbox({ items }: { items: InboxItem[] }) {
                 >
                   <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                     <span className="flex items-center gap-2">
-                      {!item.read ? <span className="size-2 shrink-0 rounded-full bg-primary" aria-label="Não lido" /> : null}
+                      {!item.read ? <span className="size-2 shrink-0 rounded-full bg-primary" aria-label={t("unread")} /> : null}
                       <span className={cn("truncate", !item.read && "font-semibold")}>{item.name}</span>
                       {item.organization ? <span className="truncate text-sm text-muted-foreground">· {item.organization}</span> : null}
                     </span>
@@ -118,17 +118,17 @@ export function ContactInbox({ items }: { items: InboxItem[] }) {
                 {open ? (
                   <div className="flex flex-col gap-3 border-t px-4 py-3">
                     <div className="flex flex-wrap gap-2">
-                      {isOrgKind(item.orgKind) ? <Badge variant="secondary">{ORG_KIND_LABEL[item.orgKind]}</Badge> : null}
-                      {item.eventDate ? <Badge variant="outline">Data: {item.eventDate}</Badge> : null}
+                      {isOrgKind(item.orgKind) ? <Badge variant="secondary">{tDomain(`orgKinds.${item.orgKind}`)}</Badge> : null}
+                      {item.eventDate ? <Badge variant="outline">{t("eventDate", { date: item.eventDate })}</Badge> : null}
                       {item.eventCity ? <Badge variant="outline">{item.eventCity}</Badge> : null}
                     </div>
                     <p className="whitespace-pre-line break-words text-sm">{item.message}</p>
                     <div className="flex flex-wrap items-center gap-2">
                       <a
-                        href={`mailto:${item.email}?subject=${encodeURIComponent("Re: convite para palestrar")}`}
+                        href={`mailto:${item.email}?subject=${encodeURIComponent(t("replySubject"))}`}
                         className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90"
                       >
-                        <MailIcon /> Responder ({item.email})
+                        <MailIcon /> {t("reply", { email: item.email })}
                       </a>
                       <Button
                         variant="outline"
@@ -139,7 +139,7 @@ export function ContactInbox({ items }: { items: InboxItem[] }) {
                           )
                         }
                       >
-                        <ArchiveIcon /> {item.archived ? "Desarquivar" : "Arquivar"}
+                        <ArchiveIcon /> {item.archived ? t("unarchive") : t("archive")}
                       </Button>
                       <Button
                         variant="ghost"
@@ -148,7 +148,7 @@ export function ContactInbox({ items }: { items: InboxItem[] }) {
                           run({ id: item.id, read: false }, () => updateContactAction({ id: item.id, read: false }))
                         }
                       >
-                        Marcar como não lido
+                        {t("markUnread")}
                       </Button>
                       <Button
                         variant="ghost"
@@ -156,15 +156,15 @@ export function ContactInbox({ items }: { items: InboxItem[] }) {
                         className="text-destructive hover:text-destructive"
                         onClick={async () => {
                           const ok = await confirm({
-                            title: `Excluir o convite de ${item.name}?`,
-                            description: "O convite e os dados de contato são apagados. Não dá para desfazer.",
-                            confirmLabel: "Excluir",
+                            title: t("deleteTitle", { name: item.name }),
+                            description: t("deleteDescription"),
+                            confirmLabel: tCommon("delete"),
                             destructive: true,
                           });
                           if (ok) run({ id: item.id, removed: true }, () => deleteContactAction(item.id));
                         }}
                       >
-                        <TrashIcon /> Excluir
+                        <TrashIcon /> {tCommon("delete")}
                       </Button>
                     </div>
                   </div>

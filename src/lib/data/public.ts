@@ -167,8 +167,13 @@ export async function getSessionSurvey(admin: AdminSupabase, sessionId: string):
  * Ranking do quiz para o telão. Só existe enquanto o palestrante o mostra (show_leaderboard):
  * fora disso, quem tem o link do projetor não consegue ler nomes e pontos.
  * Sai só nome escolhido (ou "Participante XXXX"), pontos, acertos e posições.
+ * `anonymous`: palavra de "Participante XXXX" no idioma da sessão (domain.anonymousParticipant).
  */
-export async function getPublicLeaderboard(admin: AdminSupabase, sessionId: string): Promise<LeaderboardEntry[] | null> {
+export async function getPublicLeaderboard(
+  admin: AdminSupabase,
+  sessionId: string,
+  anonymous?: string,
+): Promise<LeaderboardEntry[] | null> {
   const state = await getLiveState(admin, sessionId);
   if (!state || state.status === "draft" || !state.show_leaderboard) return null;
 
@@ -200,5 +205,7 @@ export async function getPublicLeaderboard(admin: AdminSupabase, sessionId: stri
     responses.map((r) => ({ participantId: r.participant_id, interactionId: r.interaction_id, value: r.value })),
     participants,
     latest?.id ?? null,
+    undefined,
+    anonymous,
   );
 }

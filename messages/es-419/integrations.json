@@ -1,1 +1,108 @@
-{}
+{
+  "metaTitle": "Integraciones",
+  "title": "Integraciones",
+  "intro": "Usa PulseStage desde Claude, ChatGPT y otros asistentes compatibles con MCP. Adjunta las diapositivas de tu presentación en el chat y pide las preguntas: el asistente crea la sesión y coloca cada interacción después de la diapositiva correcta.",
+  "notReady": "La conexión con asistentes todavía no está activa en este servidor. Quien administra PulseStage debe activar el servidor OAuth en Supabase (consulta el README).",
+  "server": {
+    "title": "Dirección del servidor MCP",
+    "description": "Es la misma para todos los asistentes. La primera vez, abre PulseStage para que inicies sesión y permitas el acceso.",
+    "copyLabel": "dirección del servidor MCP"
+  },
+  "connect": {
+    "title": "Conectar",
+    "description": "Los nombres de los menús pueden variar un poco según la versión de cada aplicación.",
+    "allowStep": "Inicia sesión con tu cuenta de PulseStage y haz clic en <b>Permitir acceso</b>.",
+    "claude": {
+      "step1": "En Claude (sitio web o app), abre <b>Configuración → Conectores</b> y haz clic en <b>Agregar conector personalizado</b>.",
+      "step2": "Nombre: <b>PulseStage</b>. URL: la dirección de arriba. Guarda y haz clic en <b>Conectar</b>.",
+      "step4": "En una conversación, activa PulseStage en el menú de herramientas y adjunta el PDF de la presentación."
+    },
+    "chatgpt": {
+      "step1": "En ChatGPT, abre <b>Configuración → Aplicaciones y conectores → Configuración avanzada</b> y activa el <b>Modo de desarrollador</b> (los conectores propios dependen de tu plan).",
+      "step2": "En <b>Aplicaciones y conectores</b>, haz clic en <b>Crear</b>. Nombre: <b>PulseStage</b>; URL del servidor MCP: la dirección de arriba; autenticación: <b>OAuth</b>.",
+      "step4": "En una conversación, elige PulseStage en el menú “+” y adjunta el PDF de la presentación."
+    },
+    "code": {
+      "terminal": "En la terminal:",
+      "commandLabel": "comando",
+      "after": "Luego, dentro de Claude Code, ejecuta <code>/mcp</code>, elige <b>pulsestage</b> y autentícate en el navegador."
+    },
+    "others": {
+      "tab": "Otros",
+      "text": "Funciona cualquier cliente MCP con servidor remoto (HTTP) e inicio de sesión OAuth, como Cursor y VS Code: agrega un servidor con la dirección de arriba. El cliente encuentra solo dónde iniciar sesión."
+    }
+  },
+  "usage": {
+    "title": "Cómo usarlo con una presentación lista",
+    "description": "El asistente lee las diapositivas en el chat; PulseStage recibe solo las preguntas.",
+    "step1": "Adjunta el PDF de la presentación en la conversación e indica el público y la duración.",
+    "step2": "El asistente propone las preguntas y <b>después de qué diapositiva</b> entra cada una (según la numeración de las páginas del PDF). Ajusta lo que quieras y aprueba.",
+    "step3": "Crea la sesión (o usa una que le indiques) y guarda las preguntas en el lugar correcto.",
+    "step4": "Abre la sesión en PulseStage, ve a la pestaña <b>“Diapositivas”</b> y sube <b>el mismo PDF</b>: las preguntas ya aparecen entre las diapositivas. Puedes arrastrarlas y editarlas como siempre.",
+    "note": "El asistente no inicia ni finaliza la sesión en vivo: eso sigue en PulseStage. Las sesiones finalizadas no se editan, pero puede leer los resultados para analizar la presentación contigo."
+  },
+  "examples": {
+    "title": "Pedidos de ejemplo",
+    "copyLabel": "pedido “{title}”",
+    "fromSlides": {
+      "title": "A partir de las diapositivas",
+      "text": "Adjunté mi presentación. Usa PulseStage para planear 5 interacciones para esta charla de 50 minutos dirigida a profesores de secundaria. Muéstrame la propuesta antes de crearla."
+    },
+    "fromScratch": {
+      "title": "Una clase desde cero",
+      "text": "Crea en PulseStage la sesión “Fracciones – 6.º grado” para mañana a las 10:00, con una nube de palabras para empezar y un quiz de 4 preguntas con 20 segundos por pregunta."
+    },
+    "adjust": {
+      "title": "Ajustar el guion",
+      "text": "En mi sesión “Liderazgo de equipos remotos”, cambia la pregunta que va después de la diapositiva 8 por un quiz más difícil y mueve la escala al final."
+    },
+    "afterTalk": {
+      "title": "Después de la charla",
+      "text": "Analiza los resultados de mi última sesión en PulseStage: qué funcionó, dónde se equivocó más el público y qué cambiar la próxima vez."
+    }
+  },
+  "connected": {
+    "title": "Asistentes conectados",
+    "description": "Cada uno actúa como tú, con acceso a tus sesiones. Revoca los que ya no uses. Más detalles en <link>Privacidad</link>.",
+    "unnamed": "Asistente sin nombre"
+  },
+  "connectedApps": {
+    "emptyTitle": "No hay asistentes conectados",
+    "emptyDescription": "Cuando conectes Claude, ChatGPT u otro asistente, aparecerá aquí.",
+    "connectedOn": "Conectado el {date}",
+    "revokeTitle": "¿Revocar el acceso de {name}?",
+    "revokeDescription": "El asistente deja de ver y editar tus sesiones de inmediato. Para volver a usarlo, conéctalo otra vez.",
+    "revokeConfirm": "Revocar acceso",
+    "revoke": "Revocar",
+    "revoked": "Acceso revocado."
+  },
+  "consent": {
+    "metaTitle": "Conectar asistente",
+    "errorTitle": "No se pudo conectar",
+    "expired": "La solicitud de conexión expiró o ya se usó.",
+    "incomplete": "El enlace de conexión está incompleto.",
+    "tryAgain": "Vuelve al asistente (Claude, ChatGPT u otro) y pídele que conecte PulseStage de nuevo.",
+    "howToConnect": "Ver cómo conectar",
+    "unnamedClient": "Un asistente de IA",
+    "eyebrow": "Conectar con PulseStage",
+    "title": "{client} quiere acceder a tu cuenta",
+    "actsAs": "Actuará como <b>{email}</b> y después volverá a <site>{host}</site>.",
+    "canTitle": "Con las herramientas de PulseStage, podrá:",
+    "can": {
+      "read": "Ver tus sesiones, guiones y sus resultados (votos, promedios, respuestas abiertas y comentarios de la encuesta)",
+      "write": "Crear sesiones y crear, editar, mover y eliminar preguntas"
+    },
+    "cannotTitle": "Las herramientas no permiten:",
+    "cannot": {
+      "personal": "Ver nombres, correos electrónicos ni teléfonos de quienes participaron",
+      "live": "Iniciar, pausar ni finalizar una sesión en vivo",
+      "account": "Eliminar sesiones ni modificar tu cuenta"
+    },
+    "warning": "Permite el acceso solo si acabas de pedirlo y confías en esta aplicación: recibirá acceso a tu cuenta. Puedes revocarlo cuando quieras en Integraciones, en el panel.",
+    "allow": "Permitir acceso",
+    "notYou": "¿No eres tú? <switch>Iniciar sesión con otra cuenta</switch>"
+  },
+  "errors": {
+    "revokeFailed": "No se pudo revocar el acceso."
+  }
+}

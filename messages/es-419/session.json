@@ -1,1 +1,212 @@
-{}
+{
+  "new": {
+    "metaTitle": "Nueva sesión",
+    "title": "Nueva sesión",
+    "description": "Una charla, clase, taller o capacitación. Después agregas las interacciones."
+  },
+  "page": {
+    "metaTitle": "Editar sesión",
+    "joinCode": "Código",
+    "openLive": "Abrir sala en vivo",
+    "raffleRoom": "Sala del sorteo",
+    "viewAnalytics": "Ver análisis"
+  },
+  "tabs": {
+    "interactions": "Interacciones ({count})",
+    "slides": "Diapositivas",
+    "slidesCount": "Diapositivas ({count})",
+    "engagement": "Participación",
+    "raffle": "Sorteo",
+    "raffleCount": "Sorteo ({count})",
+    "info": "Información"
+  },
+  "cards": {
+    "interactionsTitle": "Interacciones",
+    "interactionsDescription": "En el orden en que se presentarán. Usa el ojo para ver lo que ve el participante.",
+    "slidesTitle": "Diapositivas",
+    "slidesDescription": "Presenta desde PulseStage: diapositivas y preguntas en la misma secuencia, sin cambiar de ventana.",
+    "engagementTitle": "Participación",
+    "engagementDescription": "Preguntas del público, reacciones en vivo y moderación. También puedes cambiarlo durante la sesión, en la sala en vivo.",
+    "raffleTitle": "Sorteo",
+    "raffleDescription": "Opcional. Sortea premios entre quienes respondieron la encuesta o entre todos los que entraron a la sesión."
+  },
+  "form": {
+    "title": "Título",
+    "titlePlaceholder": "Cómo la IA está cambiando el mercado laboral",
+    "description": "Descripción",
+    "descriptionPlaceholder": "De qué trata la sesión y para quién es.",
+    "date": "Fecha",
+    "time": "Hora",
+    "duration": "Duración (min)",
+    "locale": "Idioma de la sesión",
+    "localeHelp": "La pantalla y el celular del público se muestran en este idioma, igual que el filtro de groserías y las sugerencias de la IA.",
+    "joinCode": "Código de acceso (opcional)",
+    "joinCodePlaceholder": "Ej.: IA2026 — déjalo vacío para generarlo automáticamente",
+    "joinCodeLocked": "El código no puede cambiar después de que la sesión comenzó.",
+    "survey": "Encuesta posterior al evento",
+    "surveyLocked": "La sesión ya finalizó con esta encuesta.",
+    "platformTemplates": "Plantillas listas",
+    "myTemplates": "Mis plantillas",
+    "surveyHelp": "El público responde al finalizar la sesión.",
+    "manageTemplates": "Ver o crear plantillas",
+    "saveInfo": "Guardar información",
+    "create": "Crear sesión",
+    "saved": "Información guardada."
+  },
+  "controls": {
+    "startConfirmTitle": "¿Iniciar sin interacciones?",
+    "startConfirmDescription": "La sesión todavía no tiene ninguna interacción.",
+    "startConfirmLabel": "Iniciar de todos modos",
+    "starting": "Iniciando…",
+    "start": "Iniciar sesión",
+    "deleteConfirmTitle": "¿Eliminar \"{title}\"?",
+    "deleteConfirmDescription": "Se borrarán todos los datos de la sesión (respuestas, comentarios, insights). No se puede deshacer.",
+    "deleted": "Sesión eliminada.",
+    "copyTitle": "{title} (copia)",
+    "duplicateAria": "Duplicar {title}",
+    "duplicateTitle": "Duplicar sesión",
+    "duplicateDescription": "La copia incluye preguntas, diapositivas, encuesta y premios del sorteo. Las respuestas y los participantes se quedan en la original.",
+    "newName": "Nombre de la nueva sesión",
+    "dateOptional": "Fecha (opcional)",
+    "time": "Hora",
+    "duplicating": "Duplicando…",
+    "duplicateAndEdit": "Duplicar y editar"
+  },
+  "qr": {
+    "download": "Descargar código QR"
+  },
+  "slides": {
+    "converting": "Convirtiendo el PDF",
+    "uploading": "Subiendo las diapositivas",
+    "saving": "Guardando",
+    "ready": "{count, plural, one {# diapositiva lista.} other {# diapositivas listas.}}",
+    "removeConfirmTitle": "¿Quitar las diapositivas?",
+    "removeConfirmDescription": "Las preguntas siguen en el guion. Si subes otro PDF, vuelven a los mismos puntos.",
+    "removed": "Diapositivas eliminadas.",
+    "noSlidesReadOnly": "Esta sesión se presentó sin diapositivas.",
+    "emptyTitle": "Presenta tus diapositivas desde aquí, sin cambiar de ventana",
+    "emptyDescription": "Sube el PDF de la presentación. Las preguntas se intercalan entre las diapositivas y el control remoto avanza todo: diapositiva, pregunta, resultado, siguiente diapositiva.",
+    "choosePdf": "Elegir PDF",
+    "exportHelp": "PowerPoint: Archivo → Exportar → PDF · Google Slides: Archivo → Descargar → PDF · Keynote: Archivo → Exportar a → PDF · Canva: Compartir → Descargar → PDF. El PDF se convierte en tu navegador; solo se suben las imágenes de las diapositivas. No se conservan animaciones ni videos.",
+    "summary": "<num>{slides}</num> {slides, plural, one {diapositiva} other {diapositivas}} · {questions, plural, one {# pregunta} other {# preguntas}}.",
+    "readOnlyHint": "Cada pregunta entra en el punto marcado.",
+    "editHint": "Arrastra las preguntas al punto de la presentación en el que deben entrar, o usa el selector de cada una.",
+    "replacePdf": "Cambiar PDF",
+    "removeSlides": "Quitar diapositivas",
+    "slideAlt": "Diapositiva {number}",
+    "slideLabel": "Diapositiva {number}",
+    "placeAria": "Punto de la presentación de \"{title}\"",
+    "endAfter": "Al final (después de la diapositiva {slide})",
+    "errors": {
+      "noPages": "El PDF no tiene páginas.",
+      "uploadFailed": "No se pudieron subir las diapositivas. Revisa la conexión e inténtalo de nuevo.",
+      "processFailed": "No se pudo procesar el PDF.",
+      "notPdf": "Elige un archivo PDF.",
+      "tooLarge": "El PDF supera los {max} MB. Expórtalo con imágenes comprimidas.",
+      "openFailed": "No se pudo abrir el PDF. Puede estar protegido con contraseña o dañado.",
+      "tooManyPages": "El PDF tiene {total} páginas; el límite es {max}.",
+      "encodeFailed": "El navegador no pudo generar las imágenes de las diapositivas.",
+      "invalidUpload": "Envío inválido.",
+      "maxSlides": "Máximo {max} diapositivas.",
+      "verifyFailed": "No se pudieron verificar las diapositivas subidas.",
+      "incompleteUpload": "Algunas diapositivas no terminaron de subirse. Inténtalo de nuevo.",
+      "saveFailed": "No se pudieron guardar las diapositivas.",
+      "removeFailed": "No se pudieron quitar las diapositivas.",
+      "notLive": "Inicia o reanuda la sesión para mostrar diapositivas.",
+      "slideNotFound": "Diapositiva no encontrada.",
+      "changeFailed": "No se pudo cambiar la diapositiva."
+    }
+  },
+  "raffle": {
+    "enable": "Hacer un sorteo en esta sesión",
+    "enableHelp": "Cada persona que participa recibe un número aleatorio en el celular. En la sala en vivo, la tarjeta “Sorteo” lleva el sorteo a la pantalla, con suspenso y sonido, y muestra el nombre, el número y el avatar de quien ganó.",
+    "whoEnters": "Quién participa",
+    "entrants": "{entrants, plural, one {# persona participando} other {# personas participando}} ahora.",
+    "entrantsOf": "{entrants, plural, one {# persona participando} other {# personas participando}} ahora, de {participants, plural, one {# participante} other {# participantes}}.",
+    "surveyNote": "La encuesta se abre cuando finalizas la sesión; la sala en vivo sigue abierta para el sorteo.",
+    "prizes": "Premios",
+    "addPrize": "Premio",
+    "emptyTitle": "No hay premios registrados",
+    "emptyDescription": "Registra lo que se va a sortear: un libro, una mentoría, un cupón… Físico o digital.",
+    "registerPrize": "Registrar premio",
+    "winnersOf": "{drawn} de {quantity, plural, one {# ganador} other {# ganadores}}",
+    "winnerMessage": "Mensaje para quien gane:",
+    "moveUp": "Subir",
+    "moveDown": "Bajar",
+    "deleteConfirmTitle": "¿Eliminar el premio?",
+    "deleteConfirmWithWinners": "Los ganadores que ya salieron sorteados para este premio también se quitan de la lista.",
+    "legalNote": "Cada persona gana como máximo un premio. El sorteo se hace en el servidor, con un generador aleatorio criptográfico, antes de que la pantalla empiece la animación. Los sorteos promocionales organizados por empresas pueden requerir autorización previa según la legislación de tu país; verifícalo antes de anunciarlo.",
+    "form": {
+      "name": "Premio",
+      "namePlaceholder": "Libro autografiado",
+      "kind": "Tipo",
+      "quantity": "Ganadores",
+      "description": "Descripción (opcional)",
+      "descriptionPlaceholder": "Aparece en la pantalla junto con el premio",
+      "message": "Mensaje para quien gane (opcional)",
+      "messagePlaceholderDigital": "Código del cupón, enlace para canjearlo o cómo recibirlo",
+      "messagePlaceholderPhysical": "Dónde y cuándo retirar el premio",
+      "messageHelp": "Aparece solo en el celular de quien ganó, después de que la pantalla lo revela.",
+      "save": "Guardar premio",
+      "updated": "Premio actualizado.",
+      "created": "Premio registrado."
+    },
+    "errors": {
+      "saveSettingsFailed": "No se pudo guardar el sorteo.",
+      "savePrizeFailed": "No se pudo guardar el premio.",
+      "maxPrizes": "Máximo {max} premios por sesión.",
+      "deletePrizeFailed": "No se pudo eliminar el premio.",
+      "reorderFailed": "No se pudo cambiar el orden.",
+      "noEntrants": "Ya no queda nadie participando.",
+      "prizeFull": "Ya se sortearon todos los ganadores de este premio.",
+      "raffleDisabled": "Esta sesión no tiene sorteo.",
+      "notStarted": "Inicia la sesión antes de sortear.",
+      "drawFailed": "No se pudo sortear ahora.",
+      "winnerNotFound": "Ganador no encontrado.",
+      "forfeitFailed": "No se pudo quitar al ganador.",
+      "unavailable": "Primero inicia la sesión y configura el sorteo.",
+      "showFailed": "No se pudo cambiar el sorteo en la pantalla.",
+      "deliveryFailed": "No se pudo marcar la entrega.",
+      "loadFailed": "No se pudo cargar el sorteo."
+    }
+  },
+  "engagement": {
+    "qa_enabled": {
+      "label": "Preguntas del público",
+      "description": "Botón “Preguntar al presentador” en el celular. El público puede dar me gusta a las preguntas de los demás."
+    },
+    "qa_moderated": {
+      "label": "Aprobar las preguntas antes de que aparezcan",
+      "description": "Las preguntas nuevas quedan en espera hasta que las apruebes en la sala en vivo."
+    },
+    "reactions_enabled": {
+      "label": "Reacciones en vivo",
+      "description": "👏 ❤️ 😂 😮 🤔 en el celular durante la sesión; los emojis suben en la pantalla."
+    },
+    "profanity_filter": {
+      "label": "Filtro de groserías",
+      "description": "Las palabras de la nube, las respuestas abiertas y las preguntas con groserías no salen en la pantalla. Tú las ves y puedes liberarlas."
+    },
+    "moderate_open_text": {
+      "label": "Aprobar respuestas abiertas antes de la pantalla",
+      "description": "Cada respuesta abierta espera tu aprobación para aparecer en la pantalla."
+    }
+  },
+  "errors": {
+    "titleRequired": "Escribe el título.",
+    "titleTooLong": "El título es demasiado largo.",
+    "descriptionTooLong": "La descripción es demasiado larga.",
+    "invalidDuration": "Duración inválida.",
+    "invalidSurveyTemplate": "Plantilla de encuesta inválida.",
+    "invalidDateTime": "Fecha u hora inválidas.",
+    "invalidJoinCode": "El código debe tener de 4 a 10 letras o números.",
+    "invalidSession": "Sesión inválida.",
+    "sessionNotFound": "Sesión no encontrada.",
+    "sessionEnded": "La sesión ya finalizó.",
+    "joinCodeLocked": "El código solo se puede cambiar antes de iniciar la sesión.",
+    "joinCodeTaken": "Ese código ya está en uso.",
+    "deleteFailed": "No se pudo eliminar la sesión.",
+    "statusNotAllowed": "Ese cambio de estado no está permitido.",
+    "updateFailed": "No se pudo actualizar la sesión."
+  }
+}

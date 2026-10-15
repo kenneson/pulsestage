@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { scaleLinear } from "d3-scale";
 import type { Segment, SegmentKind, Timeline } from "@/lib/domain/timeline";
-import { formatClock, formatSpan } from "@/lib/domain/timing";
+import { formatClock } from "@/lib/domain/timing";
+import { spanText } from "@/i18n/text";
 import { cn } from "@/lib/utils";
 
 // Linha do tempo da palestra: uma faixa com o que esteve no telão a cada momento.
@@ -12,13 +14,7 @@ import { cn } from "@/lib/utils";
 
 export type TimelineInteractionMeta = { number: number; title: string; typeLabel: string };
 
-const KIND_LABEL: Record<SegmentKind, string> = {
-  slide: "Slides",
-  interaction: "Perguntas",
-  ranking: "Ranking do quiz",
-  join: "QR Code / abertura",
-  pause: "Pausa",
-};
+type TimelineT = ReturnType<typeof useTranslations<"analytics.timeline">>;
 
 const KIND_STYLE: Record<SegmentKind, string> = {
   slide: "bg-timeline-slide",
@@ -30,23 +26,25 @@ const KIND_STYLE: Record<SegmentKind, string> = {
 };
 
 // Sessões sem registro de eventos: entre as perguntas não se sabe o que estava no telão.
-const kindLabel = (kind: SegmentKind, recorded: boolean) => (kind === "join" && !recorded ? "Apresentação" : KIND_LABEL[kind]);
+const kindLabel = (t: TimelineT, kind: SegmentKind, recorded: boolean) =>
+  kind === "join" && !recorded ? t("kinds.presentation") : t(`kinds.${kind}`);
 
 function describe(
+  t: TimelineT,
   segment: Segment,
   meta: Record<string, TimelineInteractionMeta>,
   recorded: boolean,
 ): { short: string; long: string } {
   if (segment.kind === "slide" && segment.slide !== undefined) {
-    return { short: `S${segment.slide + 1}`, long: `Slide ${segment.slide + 1}` };
+    return { short: t("slideShort", { number: segment.slide + 1 }), long: t("slideLong", { number: segment.slide + 1 }) };
   }
   if (segment.kind === "interaction" && segment.interactionId) {
     const m = meta[segment.interactionId];
     return m
-      ? { short: `P${m.number}`, long: `${m.typeLabel}: ${m.title}` }
-      : { short: "P", long: "Pergunta (excluída do roteiro)" };
+      ? { short: t("questionShort", { number: m.number }), long: t("questionLong", { type: m.typeLabel, title: m.title }) }
+      : { short: t("deletedShort"), long: t("deletedLong") };
   }
-  return { short: "", long: kindLabel(segment.kind, recorded) };
+  return { short: "", long: kindLabel(t, segment.kind, recorded) };
 }
 
 export function TalkTimeline({
@@ -61,13 +59,15 @@ export function TalkTimeline({
   /** false: sessão anterior ao registro de eventos (só perguntas) */
   recorded: boolean;
 }) {
+  const t = useTranslations("analytics.timeline");
+  const tDomain = useTranslations("domain");
   const [hovered, setHovered] = useState<number | null>(null);
   const span = Math.max(1, timeline.span);
   const x = scaleLinear().domain([0, span]).range([0, 100]);
   // Marcações em minutos inteiros; em sessões de até 3 min, em segundos (0:30, 1:00…).
   const short = span < 180;
   const ticks = short
-    ? scaleLinear().domain([0, span]).ticks(6).filter((t) => t < span)
+    ? scaleLinear().domain([0, span]).ticks(6).filter((s) => s < span)
     : scaleLinear().domain([0, span / 60]).ticks(8).filter((m) => Number.isInteger(m) && m * 60 < span).map((m) => m * 60);
   const kinds = (["slide", "interaction", "ranking", "join", "pause"] as const).filter((k) => timeline.totals[k] > 0);
   const topSlides = timeline.slides.slice(0, 5);
@@ -76,11 +76,12 @@ export function TalkTimeline({
 
   return (
     <div className="flex flex-col gap-5">
-      <ul className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted-foreground" aria-label="Legenda">
+      <ul className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted-foreground" aria-label={t("legend")}>
         {kinds.map((k) => (
           <li key={k} className="flex items-center gap-2">
             <span aria-hidden className={cn("inline-block h-3 w-5 rounded-[4px]", KIND_STYLE[k])} />
-            {kindLabel(k, recorded)} <span className="font-display tabular-nums text-foreground">{formatSpan(timeline.totals[k])}</span>
+            {kindLabel(t, k, recorded)}{" "}
+            <span className="font-display tabular-nums text-foreground">{spanText(tDomain, timeline.totals[k])}</span>
           </li>
         ))}
       </ul>
@@ -92,21 +93,21 @@ export function TalkTimeline({
             className="pointer-events-none absolute top-9 z-10 w-max max-w-72 -translate-x-1/2 rounded-md border bg-card px-3 py-2 text-sm text-card-foreground shadow-md"
             style={{ left: `${Math.min(88, Math.max(12, x((active.start + active.end) / 2)))}%` }}
           >
-            <p className="truncate font-medium">{describe(active, interactions, recorded).long}</p>
+            <p className="truncate font-medium">{describe(t, active, interactions, recorded).long}</p>
             <p className="font-display text-xs text-muted-foreground tabular-nums">
-              {formatClock(active.start)}–{formatClock(active.end)} · {formatSpan(active.end - active.start)}
+              {formatClock(active.start)}–{formatClock(active.end)} · {spanText(tDomain, active.end - active.start)}
             </p>
           </div>
         ) : null}
 
         <div className="relative h-6" onMouseLeave={() => setHovered(null)}>
           {timeline.segments.map((segment, index) => {
-            const { long } = describe(segment, interactions, recorded);
+            const { long } = describe(t, segment, interactions, recorded);
             return (
               <button
                 key={`${segment.start}-${index}`}
                 type="button"
-                aria-label={`${long}, de ${formatClock(segment.start)} a ${formatClock(segment.end)}`}
+                aria-label={t("segmentLabel", { label: long, start: formatClock(segment.start), end: formatClock(segment.end) })}
                 onMouseEnter={() => setHovered(index)}
                 onFocus={() => setHovered(index)}
                 onBlur={() => setHovered(null)}
@@ -125,44 +126,41 @@ export function TalkTimeline({
         {/* Rótulos diretos só nos trechos largos; o resto fica no tooltip e na tabela. */}
         <div className="relative h-4 text-[11px] text-muted-foreground" aria-hidden>
           {timeline.segments.map((segment, index) =>
-            x(segment.end) - x(segment.start) >= 6 && describe(segment, interactions, recorded).short ? (
+            x(segment.end) - x(segment.start) >= 6 && describe(t, segment, interactions, recorded).short ? (
               <span
                 key={`l${index}`}
                 className="absolute top-0.5 -translate-x-1/2 font-display"
                 style={{ left: `${x((segment.start + segment.end) / 2)}%` }}
               >
-                {describe(segment, interactions, recorded).short}
+                {describe(t, segment, interactions, recorded).short}
               </span>
             ) : null,
           )}
         </div>
 
         <div className="relative mt-1 h-4 border-t text-[11px] text-muted-foreground" aria-hidden>
-          {ticks.map((t) => (
+          {ticks.map((tick) => (
             <span
-              key={t}
+              key={tick}
               className={cn(
                 "absolute top-1 whitespace-nowrap tabular-nums",
-                t === 0 ? "" : x(t) > 94 ? "-translate-x-full" : "-translate-x-1/2",
+                tick === 0 ? "" : x(tick) > 94 ? "-translate-x-full" : "-translate-x-1/2",
               )}
-              style={{ left: `${x(t)}%` }}
+              style={{ left: `${x(tick)}%` }}
             >
-              {short ? formatClock(t) : `${t / 60} min`}
+              {short ? formatClock(tick) : tDomain("duration.minutes", { minutes: tick / 60 })}
             </span>
           ))}
         </div>
       </div>
 
       {!recorded ? (
-        <p className="text-sm text-muted-foreground">
-          Sessão apresentada antes do registro de slides e pausas: aparecem só as perguntas. As próximas sessões mostram
-          tudo o que passou pelo telão.
-        </p>
+        <p className="text-sm text-muted-foreground">{t("notRecorded")}</p>
       ) : null}
 
       {topSlides.length > 0 ? (
         <div className="flex flex-col gap-2">
-          <p className="text-sm font-medium">Slides em que você mais ficou</p>
+          <p className="text-sm font-medium">{t("topSlides")}</p>
           <ol className="flex flex-col gap-2">
             {topSlides.map(({ slide, seconds }) => (
               <li key={slide} className="grid grid-cols-[4rem_5rem_1fr_auto] items-center gap-3 text-sm">
@@ -172,11 +170,11 @@ export function TalkTimeline({
                 ) : (
                   <span className="aspect-video w-16 rounded border bg-muted" />
                 )}
-                <span>Slide {slide + 1}</span>
+                <span>{t("slideLong", { number: slide + 1 })}</span>
                 <span className="h-2 overflow-hidden rounded-full bg-muted">
                   <span className="block h-full rounded-full bg-timeline-slide" style={{ width: `${(seconds / longestSlide) * 100}%` }} />
                 </span>
-                <span className="font-display tabular-nums">{formatSpan(seconds)}</span>
+                <span className="font-display tabular-nums">{spanText(tDomain, seconds)}</span>
               </li>
             ))}
           </ol>
@@ -184,22 +182,22 @@ export function TalkTimeline({
       ) : null}
 
       <details className="text-sm">
-        <summary className="cursor-pointer text-muted-foreground hover:text-foreground">Ver em tabela</summary>
+        <summary className="cursor-pointer text-muted-foreground hover:text-foreground">{t("viewTable")}</summary>
         <div className="mt-2 overflow-x-auto">
           <table className="w-full text-left">
             <thead className="text-muted-foreground">
               <tr>
-                <th className="py-1 pr-4 font-medium">Início</th>
-                <th className="py-1 pr-4 font-medium">Duração</th>
-                <th className="py-1 font-medium">No telão</th>
+                <th className="py-1 pr-4 font-medium">{t("start")}</th>
+                <th className="py-1 pr-4 font-medium">{t("duration")}</th>
+                <th className="py-1 font-medium">{t("onScreen")}</th>
               </tr>
             </thead>
             <tbody>
               {timeline.segments.map((segment, index) => (
                 <tr key={`t${index}`} className="border-t">
                   <td className="py-1 pr-4 font-display tabular-nums">{formatClock(segment.start)}</td>
-                  <td className="py-1 pr-4 tabular-nums">{formatSpan(segment.end - segment.start)}</td>
-                  <td className="py-1">{describe(segment, interactions, recorded).long}</td>
+                  <td className="py-1 pr-4 tabular-nums">{spanText(tDomain, segment.end - segment.start)}</td>
+                  <td className="py-1">{describe(t, segment, interactions, recorded).long}</td>
                 </tr>
               ))}
             </tbody>

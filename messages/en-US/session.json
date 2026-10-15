@@ -1,1 +1,212 @@
-{}
+{
+  "new": {
+    "metaTitle": "New session",
+    "title": "New session",
+    "description": "A talk, class, workshop, or training. You'll add the interactions next."
+  },
+  "page": {
+    "metaTitle": "Edit session",
+    "joinCode": "Code",
+    "openLive": "Open live room",
+    "raffleRoom": "Giveaway room",
+    "viewAnalytics": "View analytics"
+  },
+  "tabs": {
+    "interactions": "Interactions ({count})",
+    "slides": "Slides",
+    "slidesCount": "Slides ({count})",
+    "engagement": "Engagement",
+    "raffle": "Giveaway",
+    "raffleCount": "Giveaway ({count})",
+    "info": "Details"
+  },
+  "cards": {
+    "interactionsTitle": "Interactions",
+    "interactionsDescription": "In the order they'll be presented. Use the eye icon to see what participants see.",
+    "slidesTitle": "Slides",
+    "slidesDescription": "Present from PulseStage: slides and questions in one sequence, no window switching.",
+    "engagementTitle": "Engagement",
+    "engagementDescription": "Audience Q&A, live reactions, and moderation. You can also change these during the session, from the live room.",
+    "raffleTitle": "Giveaway",
+    "raffleDescription": "Optional. Give away prizes to people who answered the survey or to everyone who joined the session."
+  },
+  "form": {
+    "title": "Title",
+    "titlePlaceholder": "How AI is changing the job market",
+    "description": "Description",
+    "descriptionPlaceholder": "What the session is about and who it's for.",
+    "date": "Date",
+    "time": "Time",
+    "duration": "Duration (min)",
+    "locale": "Session language",
+    "localeHelp": "The big screen and the audience's phones use this language, and so do the profanity filter and AI suggestions.",
+    "joinCode": "Join code (optional)",
+    "joinCodePlaceholder": "E.g. AI2026 — leave blank to generate one automatically",
+    "joinCodeLocked": "The code can't change once the session has started.",
+    "survey": "Post-event survey",
+    "surveyLocked": "The session already ended with this survey.",
+    "platformTemplates": "Ready-made templates",
+    "myTemplates": "My templates",
+    "surveyHelp": "The audience answers it when the session ends.",
+    "manageTemplates": "View or create templates",
+    "saveInfo": "Save details",
+    "create": "Create session",
+    "saved": "Details saved."
+  },
+  "controls": {
+    "startConfirmTitle": "Start without interactions?",
+    "startConfirmDescription": "This session doesn't have any interactions yet.",
+    "startConfirmLabel": "Start anyway",
+    "starting": "Starting…",
+    "start": "Start session",
+    "deleteConfirmTitle": "Delete \"{title}\"?",
+    "deleteConfirmDescription": "All session data (responses, feedback, insights) will be deleted. This can't be undone.",
+    "deleted": "Session deleted.",
+    "copyTitle": "{title} (copy)",
+    "duplicateAria": "Duplicate {title}",
+    "duplicateTitle": "Duplicate session",
+    "duplicateDescription": "The copy includes questions, slides, the survey, and giveaway prizes. Responses and participants stay with the original.",
+    "newName": "New session name",
+    "dateOptional": "Date (optional)",
+    "time": "Time",
+    "duplicating": "Duplicating…",
+    "duplicateAndEdit": "Duplicate and edit"
+  },
+  "qr": {
+    "download": "Download QR code"
+  },
+  "slides": {
+    "converting": "Converting the PDF",
+    "uploading": "Uploading slides",
+    "saving": "Saving",
+    "ready": "{count, plural, one {# slide ready.} other {# slides ready.}}",
+    "removeConfirmTitle": "Remove the slides?",
+    "removeConfirmDescription": "Your questions stay in the lineup. If you upload another PDF, they go back to the same spots.",
+    "removed": "Slides removed.",
+    "noSlidesReadOnly": "This session was presented without slides.",
+    "emptyTitle": "Present your slides from here, no window switching",
+    "emptyDescription": "Upload your presentation PDF. Questions go between slides, and your clicker advances everything: slide, question, results, next slide.",
+    "choosePdf": "Choose PDF",
+    "exportHelp": "PowerPoint: File → Export → PDF · Google Slides: File → Download → PDF · Keynote: File → Export To → PDF · Canva: Share → Download → PDF. The PDF is converted in your browser; only the slide images are uploaded. Animations and videos aren't kept.",
+    "summary": "<num>{slides}</num> {slides, plural, one {slide} other {slides}} · {questions, plural, one {# question} other {# questions}}.",
+    "readOnlyHint": "Each question comes in at the marked spot.",
+    "editHint": "Drag questions to the point in the presentation where they should come in, or use each one's selector.",
+    "replacePdf": "Replace PDF",
+    "removeSlides": "Remove slides",
+    "slideAlt": "Slide {number}",
+    "slideLabel": "Slide {number}",
+    "placeAria": "Position in the presentation for \"{title}\"",
+    "endAfter": "At the end (after slide {slide})",
+    "errors": {
+      "noPages": "The PDF has no pages.",
+      "uploadFailed": "Couldn't upload the slides. Check your connection and try again.",
+      "processFailed": "Couldn't process the PDF.",
+      "notPdf": "Choose a PDF file.",
+      "tooLarge": "The PDF is over {max} MB. Export it with compressed images.",
+      "openFailed": "Couldn't open the PDF. It may be password-protected or corrupted.",
+      "tooManyPages": "The PDF has {total} pages; the limit is {max}.",
+      "encodeFailed": "Your browser couldn't create the slide images.",
+      "invalidUpload": "Invalid upload.",
+      "maxSlides": "Up to {max} slides.",
+      "verifyFailed": "Couldn't verify the uploaded slides.",
+      "incompleteUpload": "Some slides didn't finish uploading. Try again.",
+      "saveFailed": "Couldn't save the slides.",
+      "removeFailed": "Couldn't remove the slides.",
+      "notLive": "Start or resume the session to show slides.",
+      "slideNotFound": "Slide not found.",
+      "changeFailed": "Couldn't change the slide."
+    }
+  },
+  "raffle": {
+    "enable": "Run a giveaway in this session",
+    "enableHelp": "Everyone who's entered gets a random number on their phone. In the live room, the “Giveaway” card puts the drawing on the big screen, with suspense and sound, and shows the winner's name, number, and avatar.",
+    "whoEnters": "Who's entered",
+    "entrants": "{entrants, plural, one {# person entered} other {# people entered}} so far.",
+    "entrantsOf": "{entrants, plural, one {# person entered} other {# people entered}} so far, out of {participants, plural, one {# participant} other {# participants}}.",
+    "surveyNote": "The survey opens when you end the session; the live room stays open for the giveaway.",
+    "prizes": "Prizes",
+    "addPrize": "Prize",
+    "emptyTitle": "No prizes yet",
+    "emptyDescription": "Add what you'll give away: a book, a mentoring session, a coupon… Physical or digital.",
+    "registerPrize": "Add prize",
+    "winnersOf": "{drawn} of {quantity, plural, one {# winner} other {# winners}}",
+    "winnerMessage": "Message for the winner:",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "deleteConfirmTitle": "Delete this prize?",
+    "deleteConfirmWithWinners": "Winners already drawn for it will also be removed from the list.",
+    "legalNote": "Each person can win at most one prize. The drawing happens on the server, with a cryptographic random number generator, before the big screen starts the animation. Promotional giveaways run by companies may require prior authorization under local law; check before announcing one.",
+    "form": {
+      "name": "Prize",
+      "namePlaceholder": "Signed book",
+      "kind": "Type",
+      "quantity": "Winners",
+      "description": "Description (optional)",
+      "descriptionPlaceholder": "Shown on the big screen with the prize",
+      "message": "Message for the winner (optional)",
+      "messagePlaceholderDigital": "Coupon code, redemption link, or how to claim it",
+      "messagePlaceholderPhysical": "Where and when to pick up the prize",
+      "messageHelp": "Shown only on the winner's phone, after the big screen reveals it.",
+      "save": "Save prize",
+      "updated": "Prize updated.",
+      "created": "Prize added."
+    },
+    "errors": {
+      "saveSettingsFailed": "Couldn't save the giveaway.",
+      "savePrizeFailed": "Couldn't save the prize.",
+      "maxPrizes": "Up to {max} prizes per session.",
+      "deletePrizeFailed": "Couldn't delete the prize.",
+      "reorderFailed": "Couldn't change the order.",
+      "noEntrants": "No one is entered anymore.",
+      "prizeFull": "All winners for this prize have already been drawn.",
+      "raffleDisabled": "This session doesn't have a giveaway.",
+      "notStarted": "Start the session before drawing.",
+      "drawFailed": "Couldn't draw right now.",
+      "winnerNotFound": "Winner not found.",
+      "forfeitFailed": "Couldn't remove the winner.",
+      "unavailable": "Start the session and set up the giveaway first.",
+      "showFailed": "Couldn't update the giveaway on the big screen.",
+      "deliveryFailed": "Couldn't mark it as delivered.",
+      "loadFailed": "Couldn't load the giveaway."
+    }
+  },
+  "engagement": {
+    "qa_enabled": {
+      "label": "Audience Q&A",
+      "description": "An “Ask the speaker” button on phones. The audience can upvote each other's questions."
+    },
+    "qa_moderated": {
+      "label": "Approve questions before they appear",
+      "description": "New questions wait until you approve them in the live room."
+    },
+    "reactions_enabled": {
+      "label": "Live reactions",
+      "description": "👏 ❤️ 😂 😮 🤔 on phones during the session; the emojis float up on the big screen."
+    },
+    "profanity_filter": {
+      "label": "Profanity filter",
+      "description": "Word cloud entries, open-ended answers, and questions with profanity stay off the big screen. You can see them and let them through."
+    },
+    "moderate_open_text": {
+      "label": "Approve open-ended answers before the big screen",
+      "description": "Each open-ended answer waits for your approval before it appears on the big screen."
+    }
+  },
+  "errors": {
+    "titleRequired": "Enter a title.",
+    "titleTooLong": "Title is too long.",
+    "descriptionTooLong": "Description is too long.",
+    "invalidDuration": "Invalid duration.",
+    "invalidSurveyTemplate": "Invalid survey template.",
+    "invalidDateTime": "Invalid date or time.",
+    "invalidJoinCode": "The code must be 4 to 10 letters or numbers.",
+    "invalidSession": "Invalid session.",
+    "sessionNotFound": "Session not found.",
+    "sessionEnded": "The session has already ended.",
+    "joinCodeLocked": "The code can only be changed before the session starts.",
+    "joinCodeTaken": "That code is already in use.",
+    "deleteFailed": "Couldn't delete the session.",
+    "statusNotAllowed": "That status change isn't allowed.",
+    "updateFailed": "Couldn't update the session."
+  }
+}

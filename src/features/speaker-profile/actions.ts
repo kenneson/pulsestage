@@ -2,11 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isUniqueViolation } from "@/lib/supabase/errors";
-import { fail, firstIssue, formValues, isUuid, ok, type ActionResult } from "@/lib/action-result";
+import { fail, formValues, isUuid, ok, type ActionResult } from "@/lib/action-result";
+import { getMessageTranslator } from "@/i18n/server";
 import { getContactTarget } from "@/lib/data/speaker-profile";
 import { notifySpeakerByEmail, requesterIpHash } from "@/lib/data/contact-email";
 import {
@@ -63,14 +65,15 @@ export async function savePublicProfileAction(
     ...lists,
   };
 
+  const [tr, t] = await Promise.all([getMessageTranslator(), getTranslations("profile")]);
   const parsed = publicProfileSchema.safeParse({ ...text, ...flags, ...lists });
-  if (!parsed.success) return { error: firstIssue(parsed.error), values };
+  if (!parsed.success) return { error: tr.issue(parsed.error), values };
   const input = parsed.data;
 
   const { supabase, user } = await requireUser();
   const { data: current } = await supabase.from("profiles").select("name, public_slug").eq("id", user.id).maybeSingle();
   if (input.publicEnabled && !current?.name?.trim()) {
-    return { error: "Preencha seu nome em Conta antes de publicar o perfil.", values };
+    return { error: t("errors.nameMissing"), values };
   }
 
   const { error } = await supabase
@@ -92,17 +95,18 @@ export async function savePublicProfileAction(
       promote_on_survey: input.promoteOnSurvey,
     })
     .eq("id", user.id);
-  if (isUniqueViolation(error)) return { error: "Esse endereço já está em uso. Escolha outro.", values };
-  if (error) return { error: "Não foi possível salvar o perfil público.", values };
+  if (isUniqueViolation(error)) return { error: t("errors.slugTaken"), values };
+  if (error) return { error: t("errors.saveFailed"), values };
 
   refreshPublic(input.slug);
   if (current?.public_slug && current.public_slug !== input.slug) refreshPublic(current.public_slug);
-  return { success: input.publicEnabled ? "Perfil público salvo e publicado." : "Perfil salvo (ainda não publicado)." };
+  return { success: input.publicEnabled ? t("form.savedPublished") : t("form.savedDraft") };
 }
 
 /** Mostra ou esconde uma sessão encerrada na lista do perfil público. */
 export async function setSessionListedAction(sessionId: string, listed: boolean): Promise<ActionResult> {
-  if (!isUuid(sessionId) || typeof listed !== "boolean") return fail("Dados inválidos.");
+  const [tErrors, t] = await Promise.all([getTranslations("errors"), getTranslations("profile.errors")]);
+  if (!isUuid(sessionId) || typeof listed !== "boolean") return fail(tErrors("invalidData"));
   const { supabase, user } = await requireUser();
   const { data, error } = await supabase
     .from("sessions")
@@ -111,7 +115,7 @@ export async function setSessionListedAction(sessionId: string, listed: boolean)
     .eq("status", "completed")
     .select("id")
     .maybeSingle();
-  if (error || !data) return fail("Não foi possível atualizar a sessão.");
+  if (error || !data) return fail(t("sessionUpdateFailed"));
   const { data: profile } = await supabase.from("profiles").select("public_slug").eq("id", user.id).maybeSingle();
   refreshPublic(profile?.public_slug ?? null);
   return ok(null);
@@ -128,8 +132,9 @@ const contactUpdateSchema = z.object({
 });
 
 export async function updateContactAction(raw: z.input<typeof contactUpdateSchema>): Promise<ActionResult> {
+  const [tErrors, t] = await Promise.all([getTranslations("errors"), getTranslations("profile.errors")]);
   const parsed = contactUpdateSchema.safeParse(raw);
-  if (!parsed.success) return fail("Dados inválidos.");
+  if (!parsed.success) return fail(tErrors("invalidData"));
   const { id, read, archived } = parsed.data;
   const now = new Date().toISOString();
   const patch: { read_at?: string | null; archived_at?: string | null } = {};
@@ -139,16 +144,17 @@ export async function updateContactAction(raw: z.input<typeof contactUpdateSchem
 
   const { supabase } = await requireUser();
   const { error } = await supabase.from("contact_requests").update(patch).eq("id", id);
-  if (error) return fail("Não foi possível atualizar o convite.");
+  if (error) return fail(t("inviteUpdateFailed"));
   revalidatePath("/dashboard", "layout");
   return ok(null);
 }
 
 export async function deleteContactAction(id: string): Promise<ActionResult> {
-  if (!isUuid(id)) return fail("Dados inválidos.");
+  const [tErrors, t] = await Promise.all([getTranslations("errors"), getTranslations("profile.errors")]);
+  if (!isUuid(id)) return fail(tErrors("invalidData"));
   const { supabase } = await requireUser();
   const { error } = await supabase.from("contact_requests").delete().eq("id", id);
-  if (error) return fail("Não foi possível excluir o convite.");
+  if (error) return fail(t("inviteDeleteFailed"));
   revalidatePath("/dashboard", "layout");
   return ok(null);
 }
@@ -177,13 +183,14 @@ export async function sendContactRequestAction(
   const trap = formData.get("website");
   if (typeof trap === "string" && trap.trim() !== "") return { sent: true };
 
-  if (typeof slug !== "string" || !SLUG_RE.test(slug)) return { error: "Perfil não encontrado." };
+  const [tr, t] = await Promise.all([getMessageTranslator(), getTranslations("profile.errors")]);
+  if (typeof slug !== "string" || !SLUG_RE.test(slug)) return { error: t("profileNotFound") };
   const parsed = contactRequestSchema.safeParse(raw);
-  if (!parsed.success) return { error: firstIssue(parsed.error), values };
+  if (!parsed.success) return { error: tr.issue(parsed.error), values };
 
   const admin = createAdminClient();
   const target = await getContactTarget(admin, slug);
-  if (!target) return { error: "Este palestrante não está recebendo convites pelo PulseStage.", values };
+  if (!target) return { error: t("notReceiving"), values };
 
   const ipHash = await requesterIpHash();
   const hourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
@@ -203,10 +210,10 @@ export async function sendContactRequestAction(
       .gte("created_at", dayAgo),
   ]);
   if ((byOrigin.count ?? 0) >= CONTACT_LIMIT_PER_HOUR) {
-    return { error: "Você enviou vários convites seguidos. Tente de novo daqui a uma hora.", values };
+    return { error: t("tooManyFromYou"), values };
   }
   if ((bySpeaker.count ?? 0) >= CONTACT_LIMIT_PER_DAY) {
-    return { error: "Este palestrante recebeu muitos convites hoje. Tente de novo amanhã.", values };
+    return { error: t("tooManyForSpeaker"), values };
   }
 
   const input = parsed.data;
@@ -221,8 +228,8 @@ export async function sendContactRequestAction(
     event_city: input.eventCity ?? null,
     ip_hash: ipHash,
   });
-  if (error) return { error: "Não foi possível enviar o convite. Tente de novo.", values };
+  if (error) return { error: t("sendFailed"), values };
 
-  if (target.email) await notifySpeakerByEmail(target.email, target.name, input);
+  if (target.email) await notifySpeakerByEmail(target.email, target.name, target.locale, input);
   return { sent: true };
 }

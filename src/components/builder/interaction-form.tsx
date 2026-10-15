@@ -1,12 +1,12 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { saveInteractionAction } from "@/features/interactions/actions";
 import {
   hasOptions,
   hasOptionStyle,
-  INTERACTION_TYPE_META,
   interactionInputSchema,
   type InteractionInput,
   type InteractionType,
@@ -20,6 +20,7 @@ import { ShapeGlyph, shapeText } from "@/components/option-shape";
 import { optionImageSrc } from "@/lib/option-images/url";
 import { OptionImageError, uploadOptionImage } from "@/lib/option-images/upload";
 import type { ActionResult } from "@/lib/action-result";
+import { translateAnyMessage, translateMessage } from "@/i18n/errors";
 
 export type EditableOption = { id?: string; label: string; isCorrect: boolean; points: number; imagePath: string | null };
 
@@ -103,6 +104,8 @@ function OptionImagePicker({
   onChange: (path: string | null) => void;
   onBusy: (busy: boolean) => void;
 }) {
+  const t = useTranslations("builder.images");
+  const tRoot = useTranslations();
   const input = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -112,7 +115,7 @@ function OptionImagePicker({
     try {
       onChange(await uploadOptionImage(file));
     } catch (e) {
-      toast.error(e instanceof OptionImageError ? e.message : "Falha ao enviar a imagem.");
+      toast.error(e instanceof OptionImageError ? translateAnyMessage(tRoot, e.message) : t("uploadFailed"));
     } finally {
       setUploading(false);
       onBusy(false);
@@ -126,7 +129,7 @@ function OptionImagePicker({
         <img src={optionImageSrc(path)} alt="" className="size-10 rounded-md border object-cover" />
         <button
           type="button"
-          aria-label={`Remover imagem da alternativa ${index + 1}`}
+          aria-label={t("remove", { number: index + 1 })}
           onClick={() => onChange(null)}
           className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full border bg-background text-muted-foreground hover:text-foreground"
         >
@@ -141,8 +144,8 @@ function OptionImagePicker({
       <Button
         variant="ghost"
         size="icon"
-        aria-label={`Adicionar imagem à alternativa ${index + 1}`}
-        title="Adicionar imagem"
+        aria-label={t("add", { number: index + 1 })}
+        title={t("addTitle")}
         disabled={uploading}
         onClick={() => input.current?.click()}
       >
@@ -191,10 +194,13 @@ export function InteractionForm({
   /** Sem `actions`, há um único "Salvar" que cria ou edita pelo roteiro. */
   actions?: InteractionFormAction[];
 }) {
+  const t = useTranslations("builder.form");
+  const tCommon = useTranslations("common.actions");
+  const tDomain = useTranslations("domain");
+  const tErrors = useTranslations("errors");
   const [draft, setDraft] = useState<InteractionDraft>(initial);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
-  const meta = INTERACTION_TYPE_META[draft.type];
 
   const setSettings = (patch: Partial<NormalizedSettings>) =>
     setDraft((d) => ({ ...d, settings: { ...d.settings, ...patch } }));
@@ -208,8 +214,8 @@ export function InteractionForm({
     }));
 
   const defaultAction: InteractionFormAction = {
-    label: "Salvar",
-    pendingLabel: "Salvando…",
+    label: tCommon("save"),
+    pendingLabel: tCommon("saving"),
     submit: (input) => saveInteractionAction(sessionId, draft.id, input),
   };
   const formActions = actions ?? [defaultAction];
@@ -222,7 +228,8 @@ export function InteractionForm({
     const input = toInput(draft);
     const check = interactionInputSchema.safeParse(input);
     if (!check.success) {
-      setError(check.error.issues[0]?.message ?? "Revise os campos.");
+      const issue = check.error.issues[0];
+      setError(issue ? translateMessage(tErrors, issue.message) : t("reviewFields"));
       return;
     }
     setError(null);
@@ -234,29 +241,29 @@ export function InteractionForm({
         setError(result.error);
         return;
       }
-      if (!actions) toast.success(draft.id ? "Interação atualizada." : "Interação criada.");
+      if (!actions) toast.success(draft.id ? t("updated") : t("created"));
       onDone();
     });
   }
 
   return (
     <div className="flex flex-col gap-4 rounded-xl border bg-background p-4">
-      <p className="text-sm font-medium text-primary">{meta.label}</p>
+      <p className="text-sm font-medium text-primary">{tDomain(`interactionTypes.${draft.type}.label`)}</p>
 
       <Field>
-        <Label htmlFor="interaction-title">Pergunta</Label>
+        <Label htmlFor="interaction-title">{t("question")}</Label>
         <Input
           id="interaction-title"
           value={draft.title}
           onChange={(e) => setDraft({ ...draft, title: e.target.value })}
           maxLength={300}
-          placeholder="Você já utiliza IA no seu trabalho?"
+          placeholder={t("questionPlaceholder")}
           autoFocus
         />
       </Field>
 
       <Field>
-        <Label htmlFor="interaction-description">Descrição (opcional)</Label>
+        <Label htmlFor="interaction-description">{t("description")}</Label>
         <Textarea
           id="interaction-description"
           value={draft.description}
@@ -268,14 +275,14 @@ export function InteractionForm({
 
       {hasOptionStyle(draft.type) ? (
         <Field className="max-w-xs">
-          <Label htmlFor="option-style">Aparência das alternativas</Label>
+          <Label htmlFor="option-style">{t("optionStyle")}</Label>
           <Select
             id="option-style"
             value={draft.settings.optionStyle}
             onChange={(e) => setSettings({ optionStyle: e.target.value === "shapes" ? "shapes" : "text" })}
           >
-            <option value="text">Texto</option>
-            <option value="shapes">Formas e cores</option>
+            <option value="text">{t("optionStyleText")}</option>
+            <option value="shapes">{t("optionStyleShapes")}</option>
           </Select>
         </Field>
       ) : null}
@@ -283,8 +290,7 @@ export function InteractionForm({
       {hasOptions(draft.type) ? (
         <div className="flex flex-col gap-2">
           <Label>
-            Alternativas
-            {draft.type === "quiz" ? " (marque a correta)" : draft.type === "ranking" ? " (a plateia vai ordenar)" : ""}
+            {draft.type === "quiz" ? t("optionsQuiz") : draft.type === "ranking" ? t("optionsRanking") : t("options")}
           </Label>
           {draft.options.map((option, index) => (
             <div key={option.id ?? `new-${index}`} className="flex items-center gap-2">
@@ -293,7 +299,7 @@ export function InteractionForm({
                 <input
                   type="radio"
                   name="correct-option"
-                  aria-label={`Alternativa ${index + 1} é a correta`}
+                  aria-label={t("isCorrect", { number: index + 1 })}
                   checked={option.isCorrect}
                   onChange={() => setOption(index, { isCorrect: true })}
                   disabled={locked}
@@ -303,8 +309,8 @@ export function InteractionForm({
               <Input
                 value={option.label}
                 onChange={(e) => setOption(index, { label: e.target.value })}
-                placeholder={option.imagePath ? "Descreva a imagem" : `Alternativa ${index + 1}`}
-                aria-label={`Alternativa ${index + 1}`}
+                placeholder={option.imagePath ? t("describeImage") : t("option", { number: index + 1 })}
+                aria-label={t("option", { number: index + 1 })}
                 maxLength={200}
               />
               <OptionImagePicker
@@ -316,8 +322,8 @@ export function InteractionForm({
               {draft.type === "quiz" ? (
                 <Input
                   type="number"
-                  aria-label="Pontos"
-                  title="Pontos se acertar"
+                  aria-label={t("points")}
+                  title={t("pointsHint")}
                   value={option.points}
                   min={0}
                   max={10000}
@@ -329,7 +335,7 @@ export function InteractionForm({
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label="Remover alternativa"
+                aria-label={t("removeOption")}
                 disabled={locked || draft.options.length <= 2}
                 onClick={() => setDraft({ ...draft, options: draft.options.filter((_, i) => i !== index) })}
               >
@@ -346,15 +352,15 @@ export function InteractionForm({
                 setDraft({ ...draft, options: [...draft.options, newOption()] })
               }
             >
-              <PlusIcon /> Alternativa
+              <PlusIcon /> {t("addOption")}
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">
-            Com imagem, o texto da alternativa aparece embaixo dela e serve de descrição para leitores de tela.
+            {t("imageHint")}
           </p>
           {locked ? (
             <p className="text-xs text-muted-foreground">
-              Já existem respostas: você pode corrigir o texto, mas não adicionar, remover ou trocar a correta.
+              {t("lockedHint")}
             </p>
           ) : null}
         </div>
@@ -363,16 +369,16 @@ export function InteractionForm({
       {draft.type === "quiz" ? (
         <div className="flex flex-wrap items-end gap-4">
           <Field className="w-full max-w-xs">
-            <Label htmlFor="quiz-timer">Tempo para responder</Label>
+            <Label htmlFor="quiz-timer">{t("timer")}</Label>
             <Select
               id="quiz-timer"
               value={draft.settings.timerSeconds ?? 0}
               onChange={(e) => setSettings({ timerSeconds: Number(e.target.value) || null })}
             >
-              <option value={0}>Sem limite</option>
+              <option value={0}>{t("noLimit")}</option>
               {[10, 15, 20, 30, 45, 60, 90].map((s) => (
                 <option key={s} value={s}>
-                  {s} segundos
+                  {t("timerSeconds", { seconds: s })}
                 </option>
               ))}
             </Select>
@@ -385,12 +391,12 @@ export function InteractionForm({
               onChange={(e) => setSettings({ speedBonus: e.target.checked })}
               className="size-4"
             />
-            Bônus de velocidade
+            {t("speedBonus")}
           </label>
           <p className="w-full text-xs text-muted-foreground">
             {draft.settings.timerSeconds === null
-              ? "O bônus de velocidade precisa de tempo para responder."
-              : "Com bônus, quem acerta na hora leva os pontos cheios; no fim do tempo, a metade."}
+              ? t("speedBonusNeedsTimer")
+              : t("speedBonusHint")}
           </p>
         </div>
       ) : null}
@@ -398,14 +404,14 @@ export function InteractionForm({
       {draft.type === "rating" ? (
         <div className="grid gap-4 sm:grid-cols-2">
           <Field>
-            <Label htmlFor="rating-min">Mínimo</Label>
+            <Label htmlFor="rating-min">{t("min")}</Label>
             <Select id="rating-min" value={draft.settings.min} onChange={(e) => setSettings({ min: Number(e.target.value) })}>
               <option value={0}>0</option>
               <option value={1}>1</option>
             </Select>
           </Field>
           <Field>
-            <Label htmlFor="rating-max">Máximo</Label>
+            <Label htmlFor="rating-max">{t("max")}</Label>
             <Select id="rating-max" value={draft.settings.max} onChange={(e) => setSettings({ max: Number(e.target.value) })}>
               {[3, 4, 5, 7, 10].map((v) => (
                 <option key={v} value={v}>
@@ -415,22 +421,22 @@ export function InteractionForm({
             </Select>
           </Field>
           <Field>
-            <Label htmlFor="rating-min-label">Rótulo do mínimo</Label>
+            <Label htmlFor="rating-min-label">{t("minLabel")}</Label>
             <Input
               id="rating-min-label"
               value={draft.settings.minLabel ?? ""}
               onChange={(e) => setSettings({ minLabel: e.target.value || null })}
-              placeholder="Nada"
+              placeholder={t("minLabelPlaceholder")}
               maxLength={40}
             />
           </Field>
           <Field>
-            <Label htmlFor="rating-max-label">Rótulo do máximo</Label>
+            <Label htmlFor="rating-max-label">{t("maxLabel")}</Label>
             <Input
               id="rating-max-label"
               value={draft.settings.maxLabel ?? ""}
               onChange={(e) => setSettings({ maxLabel: e.target.value || null })}
-              placeholder="Muito"
+              placeholder={t("maxLabelPlaceholder")}
               maxLength={40}
             />
           </Field>
@@ -440,7 +446,7 @@ export function InteractionForm({
       {draft.type === "word_cloud" || draft.type === "open_text" ? (
         <div className="flex flex-wrap items-end gap-4">
           <Field className="w-40">
-            <Label htmlFor="max-length">Limite de caracteres</Label>
+            <Label htmlFor="max-length">{t("maxLength")}</Label>
             <Input
               id="max-length"
               type="number"
@@ -458,7 +464,7 @@ export function InteractionForm({
                 onChange={(e) => setSettings({ showOnDisplay: e.target.checked })}
                 className="size-4"
               />
-              Mostrar respostas na tela do projetor
+              {t("showOnDisplay")}
             </label>
           ) : null}
         </div>
@@ -478,7 +484,7 @@ export function InteractionForm({
           </Button>
         ))}
         <Button variant="ghost" onClick={onCancel} disabled={pending}>
-          Cancelar
+          {tCommon("cancel")}
         </Button>
       </div>
     </div>

@@ -1,11 +1,16 @@
 "use client";
 
+import { useLocale, useTranslations } from "next-intl";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { PulsePoint } from "@/lib/domain/metrics";
+import { formatInt } from "@/lib/format";
 
 export function PulseChart({ points }: { points: PulsePoint[] }) {
+  const t = useTranslations("analytics.pulse");
+  const tDomain = useTranslations("domain");
+  const locale = useLocale();
   const data = points.map((p, index) => ({
-    label: p.minute !== null ? `${p.minute} min` : `#${index + 1}`,
+    label: p.minute !== null ? tDomain("duration.minutes", { minutes: p.minute }) : `#${index + 1}`,
     title: p.title,
     rate: p.rate === null ? null : Math.round(p.rate * 100),
     responses: p.responses,
@@ -28,7 +33,11 @@ export function PulseChart({ points }: { points: PulsePoint[] }) {
                 <div className="max-w-64 rounded-md border bg-background px-3 py-2 text-xs shadow-md">
                   <p className="font-medium">{d.title}</p>
                   <p className="text-muted-foreground">
-                    {d.rate ?? "—"}% · {d.responses} de {d.eligible} presentes
+                    {t("tooltip", {
+                      rate: d.rate === null ? "—" : `${d.rate}%`,
+                      responses: formatInt(d.responses, locale),
+                      eligible: formatInt(d.eligible, locale),
+                    })}
                   </p>
                 </div>
               );

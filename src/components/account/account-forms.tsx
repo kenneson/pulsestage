@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
   changePasswordAction,
@@ -14,6 +15,7 @@ import {
   type AccountFormState,
 } from "@/features/account/actions";
 import { TIME_ZONE_OPTIONS } from "@/lib/datetime";
+import { LOCALE_NAME, LOCALES, type Locale } from "@/lib/domain/locale";
 import { Avatar } from "@/components/avatar";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Label, Select, Textarea } from "@/components/ui/input";
@@ -33,6 +35,8 @@ function useFeedback(state: AccountFormState) {
 }
 
 export function AvatarForm({ src, name, email }: { src: string | null; name: string | null; email: string }) {
+  const t = useTranslations("account.avatar");
+  const tCommon = useTranslations("common.actions");
   const router = useRouter();
   const [state, action, pending] = useActionState(uploadAvatarAction, initial);
   const [removing, startRemoving] = useTransition();
@@ -51,11 +55,11 @@ export function AvatarForm({ src, name, email }: { src: string | null; name: str
             name="avatar"
             accept="image/png,image/jpeg,image/webp"
             className="sr-only"
-            aria-label="Escolher foto"
+            aria-label={t("choose")}
             onChange={() => formRef.current?.requestSubmit()}
           />
           <Button variant="outline" size="sm" disabled={pending} onClick={() => fileRef.current?.click()}>
-            <CameraIcon /> {pending ? "Enviando…" : "Trocar foto"}
+            <CameraIcon /> {pending ? tCommon("sending") : t("change")}
           </Button>
           {src ? (
             <Button
@@ -70,11 +74,11 @@ export function AvatarForm({ src, name, email }: { src: string | null; name: str
                 })
               }
             >
-              Remover
+              {tCommon("remove")}
             </Button>
           ) : null}
         </div>
-        <span className="text-xs text-muted-foreground">PNG, JPG ou WebP, até 2 MB.</span>
+        <span className="text-xs text-muted-foreground">{t("hint")}</span>
         {feedback}
       </div>
     </form>
@@ -82,54 +86,85 @@ export function AvatarForm({ src, name, email }: { src: string | null; name: str
 }
 
 export function ProfileForm({ name, email, bio }: { name: string | null; email: string; bio: string | null }) {
+  const t = useTranslations("account.profile");
+  const tCommon = useTranslations("common.actions");
   const [state, action, pending] = useActionState(updateProfileAction, initial);
   const feedback = useFeedback(state);
   return (
     <form action={action} className="grid gap-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <Field>
-          <Label htmlFor="name">Nome</Label>
+          <Label htmlFor="name">{t("name")}</Label>
           <Input id="name" name="name" defaultValue={name ?? ""} maxLength={120} required autoComplete="name" />
         </Field>
         <Field>
-          <Label htmlFor="email">E-mail</Label>
+          <Label htmlFor="email">{t("email")}</Label>
           <Input id="email" value={email} disabled readOnly />
         </Field>
       </div>
       <Field>
-        <Label htmlFor="bio">Mini-bio</Label>
-        <Textarea id="bio" name="bio" defaultValue={bio ?? ""} maxLength={400} placeholder="Ex.: Palestrante sobre IA no trabalho e produtividade." />
-        <p className="text-xs text-muted-foreground">Aparece para a plateia na tela de entrada da sessão, no relatório em PDF e no seu perfil público.</p>
+        <Label htmlFor="bio">{t("bio")}</Label>
+        <Textarea id="bio" name="bio" defaultValue={bio ?? ""} maxLength={400} placeholder={t("bioPlaceholder")} />
+        <p className="text-xs text-muted-foreground">{t("bioHint")}</p>
       </Field>
       {feedback}
       <div>
         <Button type="submit" disabled={pending}>
-          {pending ? "Salvando…" : "Salvar perfil"}
+          {pending ? tCommon("saving") : t("save")}
         </Button>
       </div>
     </form>
   );
 }
 
+/** Modelo para o seletor de pesquisa padrão. `locale` null = modelo do próprio speaker. */
+export type SurveyOption = { id: string; name: string; locale: Locale | null };
+
 export function PreferencesForm({
+  locale,
   timeZone,
   defaultSurveyTemplateId,
   defaultDuration,
   surveyOptions,
 }: {
+  locale: Locale;
   timeZone: string;
   defaultSurveyTemplateId: string;
   defaultDuration: number | null;
-  surveyOptions: { id: string; name: string }[];
+  surveyOptions: SurveyOption[];
 }) {
+  const t = useTranslations("account.preferences");
+  const tCommon = useTranslations("common");
   const [state, action, pending] = useActionState(updatePreferencesAction, initial);
   const feedback = useFeedback(state);
   const knownZone = TIME_ZONE_OPTIONS.some((o) => o.value === timeZone);
+  // Idioma escolhido no formulário: os modelos prontos dele aparecem primeiro.
+  const [chosenLocale, setChosenLocale] = useState<Locale>(locale);
+  const mine = surveyOptions.filter((o) => o.locale === null);
+  const localeGroups = [chosenLocale, ...LOCALES.filter((l) => l !== chosenLocale)]
+    .map((l) => ({ locale: l, options: surveyOptions.filter((o) => o.locale === l) }))
+    .filter((group) => group.options.length > 0);
   return (
     <form action={action} className="grid gap-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <Field>
-          <Label htmlFor="timeZone">Fuso horário</Label>
+          <Label htmlFor="locale">{t("locale")}</Label>
+          <Select
+            id="locale"
+            name="locale"
+            value={chosenLocale}
+            onChange={(e) => setChosenLocale(LOCALES.find((l) => l === e.target.value) ?? locale)}
+          >
+            {LOCALES.map((l) => (
+              <option key={l} value={l} lang={l}>
+                {LOCALE_NAME[l]}
+              </option>
+            ))}
+          </Select>
+          <p className="text-xs text-muted-foreground">{t("localeHint")}</p>
+        </Field>
+        <Field>
+          <Label htmlFor="timeZone">{t("timeZone")}</Label>
           <Select id="timeZone" name="timeZone" defaultValue={timeZone}>
             {knownZone ? null : <option value={timeZone}>{timeZone}</option>}
             {TIME_ZONE_OPTIONS.map((o) => (
@@ -138,32 +173,45 @@ export function PreferencesForm({
               </option>
             ))}
           </Select>
-          <p className="text-xs text-muted-foreground">Usado para as datas e horários das suas sessões.</p>
+          <p className="text-xs text-muted-foreground">{t("timeZoneHint")}</p>
         </Field>
         <Field>
-          <Label htmlFor="defaultSurveyTemplateId">Pesquisa padrão para novas sessões</Label>
+          <Label htmlFor="defaultSurveyTemplateId">{t("defaultSurvey")}</Label>
           <Select id="defaultSurveyTemplateId" name="defaultSurveyTemplateId" defaultValue={defaultSurveyTemplateId}>
-            {surveyOptions.map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.name}
-              </option>
+            {mine.length > 0 ? (
+              <optgroup label={t("myTemplates")}>
+                {mine.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.name}
+                  </option>
+                ))}
+              </optgroup>
+            ) : null}
+            {localeGroups.map((group) => (
+              <optgroup key={group.locale} label={LOCALE_NAME[group.locale]}>
+                {group.options.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.name}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </Select>
         </Field>
         <Field>
-          <Label htmlFor="defaultDuration">Duração padrão (min)</Label>
+          <Label htmlFor="defaultDuration">{t("defaultDuration")}</Label>
           <Input id="defaultDuration" name="defaultDuration" type="number" min={1} max={1440} defaultValue={defaultDuration ?? 60} />
         </Field>
         <Field>
-          <span className="text-sm font-medium leading-none">Tema</span>
+          <span className="text-sm font-medium leading-none">{tCommon("theme.label")}</span>
           <ThemeChoice />
-          <p className="text-xs text-muted-foreground">Vale para este navegador.</p>
+          <p className="text-xs text-muted-foreground">{t("themeHint")}</p>
         </Field>
       </div>
       {feedback}
       <div>
         <Button type="submit" disabled={pending}>
-          {pending ? "Salvando…" : "Salvar preferências"}
+          {pending ? tCommon("actions.saving") : t("save")}
         </Button>
       </div>
     </form>
@@ -171,24 +219,25 @@ export function PreferencesForm({
 }
 
 export function PasswordForm() {
+  const t = useTranslations("account.password");
   const [state, action, pending] = useActionState(changePasswordAction, initial);
   const feedback = useFeedback(state);
   return (
     <form action={action} className="grid gap-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <Field>
-          <Label htmlFor="password">Nova senha</Label>
-          <Input id="password" name="password" type="password" minLength={8} autoComplete="new-password" required placeholder="Mínimo de 8 caracteres" />
+          <Label htmlFor="password">{t("new")}</Label>
+          <Input id="password" name="password" type="password" minLength={8} autoComplete="new-password" required placeholder={t("newPlaceholder")} />
         </Field>
         <Field>
-          <Label htmlFor="confirm">Confirmar nova senha</Label>
+          <Label htmlFor="confirm">{t("confirm")}</Label>
           <Input id="confirm" name="confirm" type="password" minLength={8} autoComplete="new-password" required />
         </Field>
       </div>
       {feedback}
       <div>
         <Button type="submit" disabled={pending}>
-          {pending ? "Trocando…" : "Trocar senha"}
+          {pending ? t("changing") : t("change")}
         </Button>
       </div>
     </form>
@@ -196,6 +245,7 @@ export function PasswordForm() {
 }
 
 export function SignOutOthersButton() {
+  const t = useTranslations("account.signOutOthers");
   const [pending, startTransition] = useTransition();
   const [confirm, confirmDialog] = useConfirm();
   return (
@@ -206,32 +256,35 @@ export function SignOutOthersButton() {
         disabled={pending}
         onClick={async () => {
           const confirmed = await confirm({
-            title: "Sair de todos os outros dispositivos?",
-            description: "Você continua conectado aqui. Nos outros navegadores será preciso entrar de novo.",
-            confirmLabel: "Sair dos outros",
+            title: t("confirmTitle"),
+            description: t("confirmDescription"),
+            confirmLabel: t("confirmLabel"),
           });
           if (!confirmed) return;
           startTransition(async () => {
             const result = await signOutOthersAction();
             if (!result.ok) toast.error(result.error);
-            else toast.success("Pronto: os outros dispositivos foram desconectados.");
+            else toast.success(t("done"));
           });
         }}
       >
-        <LogOutIcon /> Sair de todos os outros dispositivos
+        <LogOutIcon /> {t("button")}
       </Button>
     </>
   );
 }
 
 export function DeleteAccountForm() {
+  const t = useTranslations("account.delete");
+  // A palavra de confirmação muda com o idioma; o servidor confere a mesma.
+  const word = t("confirmWord");
   const [state, action, pending] = useActionState(deleteAccountAction, initial);
   const [typed, setTyped] = useState("");
   return (
     <form action={action} className="flex flex-col gap-3">
       <Field>
         <Label htmlFor="confirm-delete">
-          Digite <strong className="font-display">EXCLUIR</strong> para confirmar
+          {t.rich("typeToConfirm", { word, b: (chunks) => <strong className="font-display">{chunks}</strong> })}
         </Label>
         <Input
           id="confirm-delete"
@@ -244,8 +297,8 @@ export function DeleteAccountForm() {
       </Field>
       {state.error ? <Alert>{state.error}</Alert> : null}
       <div>
-        <Button type="submit" variant="destructive" disabled={pending || typed !== "EXCLUIR"}>
-          <TrashIcon /> {pending ? "Excluindo…" : "Excluir minha conta"}
+        <Button type="submit" variant="destructive" disabled={pending || typed !== word}>
+          <TrashIcon /> {pending ? t("deleting") : t("button")}
         </Button>
       </div>
     </form>

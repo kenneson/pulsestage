@@ -1,6 +1,8 @@
 "use client";
 
+import { useLocale } from "next-intl";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { formatScore } from "@/lib/format";
 
 /** Uma linha por sessão: rótulo do eixo X + média de cada dimensão (1–5) ou null. */
 export type EvolutionPoint = { label: string } & Record<string, number | string | null>;
@@ -9,6 +11,7 @@ export type EvolutionSeries = { key: string; name: string };
 const COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)"];
 
 export function EvolutionChart({ points, series }: { points: EvolutionPoint[]; series: EvolutionSeries[] }) {
+  const locale = useLocale();
   return (
     <div className="h-72 w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -18,7 +21,7 @@ export function EvolutionChart({ points, series }: { points: EvolutionPoint[]; s
           <YAxis domain={[1, 5]} tick={{ fontSize: 12 }} stroke="var(--muted-foreground)" />
           <Tooltip
             contentStyle={{ background: "var(--card)", borderColor: "var(--border)", color: "var(--card-foreground)" }}
-            formatter={(value) => (typeof value === "number" ? value.toFixed(1).replace(".", ",") : "—")}
+            formatter={(value) => (typeof value === "number" ? formatScore(value, locale) : "—")}
           />
           <Legend />
           {series.map((s, index) => (

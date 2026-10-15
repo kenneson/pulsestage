@@ -1,1 +1,149 @@
-{}
+{
+  "join": {
+    "metaTitle": "Entrar numa sessão",
+    "title": "Entrar numa sessão",
+    "description": "Digite o código que aparece na tela do palestrante."
+  },
+  "codeForm": {
+    "placeholder": "Código",
+    "label": "Código da sessão",
+    "submit": "Entrar"
+  },
+  "joinCode": {
+    "metaTitle": "Participar",
+    "notFoundTitle": "Sessão não encontrada",
+    "notFoundText": "Confira o código na tela do palestrante e tente de novo.",
+    "endedText": "Esta sessão já terminou. Que tal deixar sua avaliação?",
+    "rateSession": "Avaliar a sessão",
+    "code": "Código {code}",
+    "notStarted": "A sessão ainda não começou. Você poderá entrar assim que ela iniciar."
+  },
+  "joinForm": {
+    "nameLabel": "Seu nome (opcional)",
+    "namePlaceholder": "Pode participar sem nome",
+    "nameHint": "Aparece só no ranking do quiz, que pode ser mostrado no telão. Em branco, você fica anônimo.",
+    "avatarLegend": "Escolha um avatar (opcional)",
+    "avatarHint": "Aparece ao lado do seu nome no ranking do quiz.",
+    "materialSummary": "Quero receber o material (opcional)",
+    "email": "E-mail",
+    "phone": "Telefone",
+    "consent": "Autorizo o palestrante a usar meu contato para enviar materiais e comunicações sobre esta sessão. Meu contato fica separado das minhas respostas. <link>Política de privacidade</link>",
+    "submit": "Participar",
+    "submitting": "Entrando…",
+    "terms": "Ao participar, você concorda com a <link>política de privacidade</link>."
+  },
+  "participate": {
+    "metaTitle": "Participar"
+  },
+  "view": {
+    "connectionUnstable": "Conexão instável. Tentando de novo…",
+    "endedTitle": "Sessão encerrada",
+    "endedText": "Obrigado por participar! Sua opinião ajuda a próxima apresentação.",
+    "rateSession": "Avaliar a sessão",
+    "pausedTitle": "Sessão pausada",
+    "pausedText": "Fique por aqui, já voltamos.",
+    "inNamed": "Você está dentro, {name}!",
+    "in": "Você está dentro!",
+    "waiting": "Aguardando a próxima interação…",
+    "answeredTitle": "Resposta registrada",
+    "answeredText": "Acompanhe o resultado na tela do palestrante.",
+    "askSpeaker": "Perguntar ao palestrante"
+  },
+  "answer": {
+    "secondsLeft": "{seconds}s",
+    "yourOrder": "Sua ordem",
+    "restart": "Recomeçar",
+    "position": "{position}º",
+    "rankedItem": "{position}º: {label}. Toque para tirar.",
+    "rankFirst": "Toque primeiro na sua preferida, depois na seguinte…",
+    "rankNext": "Toque na sua {position}ª opção",
+    "wordPlaceholder": "Uma palavra ou expressão curta",
+    "textPlaceholder": "Escreva sua resposta",
+    "yourAnswer": "Sua resposta",
+    "submitPreview": "Enviar (pré-visualização)",
+    "submit": "Enviar resposta"
+  },
+  "questions": {
+    "title": "Perguntas da plateia",
+    "closed": "As perguntas foram fechadas pelo palestrante.",
+    "placeholder": "Escreva sua pergunta para o palestrante",
+    "label": "Sua pergunta",
+    "showName": "Mostrar meu nome ({name})",
+    "anonymousNote": "Sua pergunta vai anônima.",
+    "submit": "Enviar pergunta",
+    "moderatedNote": "O palestrante aprova as perguntas antes de elas aparecerem.",
+    "empty": "Ninguém perguntou ainda. Seja a primeira pessoa!",
+    "voteHint": "Curta as perguntas que você também quer ver respondidas.",
+    "sent": "Pergunta enviada!",
+    "sentPending": "Pergunta enviada! Ela aparece para todos depois de aprovada.",
+    "anonymous": "Anônima",
+    "mine": "Sua",
+    "like": "Curtir esta pergunta",
+    "unlike": "Tirar curtida"
+  },
+  "raffle": {
+    "won": "Você ganhou!",
+    "pickUpPhysical": "Procure o palestrante para retirar o prêmio.",
+    "deliveryDigital": "O palestrante vai combinar a entrega com você.",
+    "prizeKind": "{kind, select, physical {Prêmio físico} digital {Prêmio digital} other {Prêmio}}",
+    "luckyNumber": "Seu número da sorte",
+    "competingFor": "Concorrendo a: {prizes}",
+    "watchScreen": "Fique de olho no telão.",
+    "teaser": "Tem sorteio!",
+    "teaserWithPrizes": "Tem sorteio: {prizes}!",
+    "answerSurvey": "Responda a pesquisa no final da sessão para receber seu número da sorte."
+  },
+  "reactions": {
+    "label": "Reagir"
+  },
+  "feedback": {
+    "metaTitle": "Pesquisa da sessão",
+    "eyebrow": "Pesquisa sobre a sessão",
+    "notOpen": "A pesquisa abre assim que a sessão terminar. Volte a este link depois.",
+    "alreadySent": "Você já respondeu esta pesquisa. Obrigado!",
+    "raffleJoined": "Tem sorteio! Ao enviar a pesquisa, você recebe seu número da sorte.",
+    "raffleNotJoined": "Tem sorteio, mas ele vale só para quem entrou na sessão pelo celular, com o código ou o QR Code.",
+    "unavailable": "A pesquisa desta sessão não está disponível."
+  },
+  "survey": {
+    "thanksTitle": "Obrigado!",
+    "thanksText": "Suas respostas foram enviadas e vão ajudar a próxima apresentação.",
+    "submit": "Enviar respostas",
+    "requiredNote": "* obrigatória",
+    "anonymityNote": "Seu nome não aparece junto das suas respostas."
+  },
+  "promo": {
+    "label": "Conheça o palestrante"
+  },
+  "errors": {
+    "invalidEmail": "E-mail inválido.",
+    "invalidPhone": "Telefone inválido.",
+    "consentRequired": "Para guardar seu contato, marque a autorização.",
+    "sessionNotFoundCheckCode": "Sessão não encontrada. Confira o código.",
+    "notStarted": "Essa sessão ainda não começou.",
+    "sessionFull": "Essa sessão atingiu o limite de participantes.",
+    "joinFailed": "Não foi possível entrar agora. Tente de novo.",
+    "invalidAnswerType": "Tipo de resposta inválido.",
+    "invalidOption": "Alternativa inválida.",
+    "timeUp": "O tempo acabou.",
+    "ratingOutOfRange": "Nota fora da escala.",
+    "moreSpecificWord": "Tente uma palavra mais específica.",
+    "rejoin": "Entre na sessão novamente.",
+    "interactionClosed": "Esta interação foi encerrada.",
+    "alreadyAnswered": "Você já respondeu esta interação.",
+    "sendFailed": "Não foi possível enviar. Tente de novo.",
+    "invalidSession": "Sessão inválida.",
+    "sessionNotFound": "Sessão não encontrada.",
+    "surveyNotOpen": "A pesquisa abre quando a sessão terminar.",
+    "surveyUnavailable": "A pesquisa desta sessão não está disponível.",
+    "questionsClosed": "As perguntas não estão abertas nesta sessão.",
+    "tooManyQuestions": "Você enviou várias perguntas seguidas. Espere alguns minutos.",
+    "questionSendFailed": "Não foi possível enviar a pergunta. Tente de novo.",
+    "questionNotOpen": "Esta pergunta não está aberta.",
+    "ownQuestion": "Você não pode curtir a própria pergunta.",
+    "voteFailed": "Não foi possível registrar. Tente de novo.",
+    "tooManyReactions": "Calma! Muitas reações seguidas.",
+    "reactionsOff": "Reações desligadas agora.",
+    "reactionFailed": "Não foi possível reagir."
+  }
+}

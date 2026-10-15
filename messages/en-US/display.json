@@ -1,1 +1,56 @@
-{}
+{
+  "meta": {
+    "title": "Projector"
+  },
+  "join": {
+    "prompt": "Go to <host>{host}</host> and enter the code"
+  },
+  "completed": {
+    "title": "Thanks for joining in!",
+    "subtitle": "It takes 1 minute: rate the session."
+  },
+  "paused": {
+    "title": "Session paused",
+    "subtitle": "We'll be right back."
+  },
+  "slideAlt": "Slide {slide}",
+  "footer": {
+    "joinAt": "Join at {host}",
+    "responses": "{count, plural, one {# response} other {# responses}}",
+    "participants": "{count, plural, one {# participant} other {# participants}}",
+    "connected": "{count, plural, one {# connected} other {# connected}}",
+    "code": "Code <code>{code}</code>"
+  },
+  "questions": {
+    "eyebrow": "Audience question",
+    "title": "Audience Q&A",
+    "anonymous": "Anonymous",
+    "openCount": "{count, plural, one {# open question} other {# open questions}}",
+    "empty": "Send your question from your phone at <host>{host}</host>"
+  },
+  "leaderboard": {
+    "title": "Quiz leaderboard",
+    "rank": "{rank, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}",
+    "new": "new",
+    "points": "{points, number} pts",
+    "loading": "Loading the leaderboard…",
+    "loadFailed": "Couldn't load the leaderboard.",
+    "empty": "No one has answered the quiz yet."
+  },
+  "raffle": {
+    "title": "Giveaway",
+    "loading": "Loading the giveaway…",
+    "loadFailed": "Couldn't load the giveaway.",
+    "prizeFallback": "Prize",
+    "soundHint": "Click the screen to turn on sound",
+    "drawing": "Drawing",
+    "entrants": "{count, plural, one {# person entered} other {# people entered}}",
+    "entrantsBig": "<num>{count, number}</num> {count, plural, one {person entered} other {people entered}}",
+    "ticket": "No. {number}",
+    "congrats": "Congratulations! 🎉",
+    "prizeMeta": "{kind} · {quantity, plural, one {# winner} other {# winners}}",
+    "hintSurveyOpen": "Answer the survey to get your lucky number on your phone.",
+    "hintSurveyLater": "At the end, answer the survey to get your lucky number.",
+    "hintEveryone": "Your lucky number is on your phone."
+  }
+}

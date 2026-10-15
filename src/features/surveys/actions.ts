@@ -2,10 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { getMessageTranslator } from "@/i18n/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSurveyTemplate } from "@/lib/data/surveys";
 import { draftToRows, questionToDraft, templateDraftSchema } from "@/lib/domain/survey";
-import { fail, firstIssue, isUuid, ok, type ActionResult } from "@/lib/action-result";
+import { fail, isUuid, ok, type ActionResult } from "@/lib/action-result";
 
 const MAX_TEMPLATES_PER_SPEAKER = 50;
 
@@ -21,20 +23,21 @@ export async function saveSurveyTemplateAction(
   templateId: string | null,
   payload: string,
 ): Promise<ActionResult<{ id: string }>> {
-  if (templateId !== null && !isUuid(templateId)) return fail("Modelo inválido.");
+  const [t, tr] = await Promise.all([getTranslations("surveys.errors"), getMessageTranslator()]);
+  if (templateId !== null && !isUuid(templateId)) return fail(t("invalidTemplate"));
   let json: unknown;
   try {
     json = JSON.parse(payload);
   } catch {
-    return fail("Dados inválidos.");
+    return fail(tr.message("invalidData"));
   }
   const parsed = templateDraftSchema.safeParse(json);
-  if (!parsed.success) return fail(firstIssue(parsed.error));
+  if (!parsed.success) return fail(tr.issue(parsed.error));
   const draft = parsed.data;
 
   const supabase = await createClient();
   const userId = await currentUserId(supabase);
-  if (!userId) return fail("Entre novamente.");
+  if (!userId) return fail(t("signInAgain"));
 
   let id = templateId;
   if (id === null) {
@@ -42,34 +45,34 @@ export async function saveSurveyTemplateAction(
       .from("survey_templates")
       .select("id", { count: "exact", head: true })
       .eq("owner_id", userId);
-    if ((count ?? 0) >= MAX_TEMPLATES_PER_SPEAKER) return fail(`Limite de ${MAX_TEMPLATES_PER_SPEAKER} modelos atingido.`);
+    if ((count ?? 0) >= MAX_TEMPLATES_PER_SPEAKER) return fail(t("limitReached", { max: MAX_TEMPLATES_PER_SPEAKER }));
     const created = await supabase
       .from("survey_templates")
       .insert({ owner_id: userId, name: draft.name, description: draft.description || null })
       .select("id")
       .single();
-    if (created.error) return fail("Não foi possível criar o modelo.");
+    if (created.error) return fail(t("createFailed"));
     id = created.data.id;
   } else {
     const existing = await getSurveyTemplate(supabase, id);
-    if (!existing || existing.owner_id !== userId) return fail("Modelo não encontrado.");
+    if (!existing || existing.owner_id !== userId) return fail(t("notFound"));
     const updated = await supabase
       .from("survey_templates")
       .update({ name: draft.name, description: draft.description || null })
       .eq("id", id);
-    if (updated.error) return fail("Não foi possível salvar o modelo.");
+    if (updated.error) return fail(t("saveFailed"));
   }
 
   // Troca as perguntas. Sem transação no cliente: se a inserção falhar, restaura as antigas.
   const previous = await supabase.from("survey_template_questions").select("*").eq("template_id", id);
   const removed = await supabase.from("survey_template_questions").delete().eq("template_id", id);
-  if (previous.error || removed.error) return fail("Não foi possível salvar as perguntas.");
+  if (previous.error || removed.error) return fail(t("questionsSaveFailed"));
   const inserted = await supabase
     .from("survey_template_questions")
     .insert(draftToRows(draft).map((row) => ({ ...row, template_id: id })));
   if (inserted.error) {
     if (previous.data.length > 0) await supabase.from("survey_template_questions").insert(previous.data);
-    return fail("Não foi possível salvar as perguntas.");
+    return fail(t("questionsSaveFailed"));
   }
 
   revalidatePath("/dashboard/pesquisas");
@@ -78,15 +81,16 @@ export async function saveSurveyTemplateAction(
 
 /** Copia um modelo (da plataforma ou próprio) para os modelos do speaker e abre o editor. */
 export async function duplicateSurveyTemplateAction(templateId: string): Promise<ActionResult> {
-  if (!isUuid(templateId)) return fail("Modelo inválido.");
+  const [t, tSurveys] = await Promise.all([getTranslations("surveys.errors"), getTranslations("surveys")]);
+  if (!isUuid(templateId)) return fail(t("invalidTemplate"));
   const supabase = await createClient();
   const source = await getSurveyTemplate(supabase, templateId);
-  if (!source) return fail("Modelo não encontrado.");
+  if (!source) return fail(t("notFound"));
 
   const result = await saveSurveyTemplateAction(
     null,
     JSON.stringify({
-      name: `${source.name} (cópia)`.slice(0, 120),
+      name: tSurveys("copyName", { name: source.name }).slice(0, 120),
       description: source.description ?? undefined,
       questions: source.questions.map(questionToDraft),
     }),
@@ -96,13 +100,14 @@ export async function duplicateSurveyTemplateAction(templateId: string): Promise
 }
 
 export async function deleteSurveyTemplateAction(templateId: string): Promise<ActionResult> {
-  if (!isUuid(templateId)) return fail("Modelo inválido.");
+  const t = await getTranslations("surveys.errors");
+  if (!isUuid(templateId)) return fail(t("invalidTemplate"));
   const supabase = await createClient();
   const userId = await currentUserId(supabase);
-  if (!userId) return fail("Entre novamente.");
+  if (!userId) return fail(t("signInAgain"));
   // Sessões que usavam o modelo voltam ao padrão (on delete set null); as já encerradas guardam a cópia.
   const { error } = await supabase.from("survey_templates").delete().eq("id", templateId).eq("owner_id", userId);
-  if (error) return fail("Não foi possível excluir o modelo.");
+  if (error) return fail(t("deleteFailed"));
   revalidatePath("/dashboard/pesquisas");
   return ok(null);
 }

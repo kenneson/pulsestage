@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { fetchAllRows } from "@/lib/supabase/fetch-all";
 
@@ -6,11 +7,12 @@ import { fetchAllRows } from "@/lib/supabase/fetch-all";
 // Usa o cliente com RLS: só sai o que ele já pode ver.
 
 export async function GET() {
+  const t = await getTranslations("account");
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
+  if (!user) return NextResponse.json({ error: t("errors.unauthenticated") }, { status: 401 });
 
   const [profile, sessions, templates, contacts] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
@@ -62,7 +64,7 @@ export async function GET() {
   return new NextResponse(JSON.stringify(body, null, 2), {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
-      "Content-Disposition": `attachment; filename="pulsestage-meus-dados-${date}.json"`,
+      "Content-Disposition": `attachment; filename="${t("export.fileName", { date })}"`,
       "Cache-Control": "no-store",
     },
   });

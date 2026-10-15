@@ -1,1 +1,56 @@
-{}
+{
+  "meta": {
+    "title": "Projetor"
+  },
+  "join": {
+    "prompt": "Acesse <host>{host}</host> e use o código"
+  },
+  "completed": {
+    "title": "Obrigado pela participação!",
+    "subtitle": "Leva 1 minuto: avalie a sessão."
+  },
+  "paused": {
+    "title": "Sessão pausada",
+    "subtitle": "Voltamos em instantes."
+  },
+  "slideAlt": "Slide {slide}",
+  "footer": {
+    "joinAt": "Participe em {host}",
+    "responses": "{count, plural, one {# resposta} other {# respostas}}",
+    "participants": "{count, plural, one {# participante} other {# participantes}}",
+    "connected": "{count, plural, one {# conectado} other {# conectados}}",
+    "code": "Código <code>{code}</code>"
+  },
+  "questions": {
+    "eyebrow": "Pergunta da plateia",
+    "title": "Perguntas da plateia",
+    "anonymous": "Anônima",
+    "openCount": "{count, plural, one {# pergunta aberta} other {# perguntas abertas}}",
+    "empty": "Mande sua pergunta pelo celular em <host>{host}</host>"
+  },
+  "leaderboard": {
+    "title": "Ranking do quiz",
+    "rank": "{rank}º",
+    "new": "novo",
+    "points": "{points, number} pts",
+    "loading": "Carregando o ranking…",
+    "loadFailed": "Não foi possível carregar o ranking.",
+    "empty": "Ninguém respondeu ao quiz ainda."
+  },
+  "raffle": {
+    "title": "Sorteio",
+    "loading": "Carregando o sorteio…",
+    "loadFailed": "Não foi possível carregar o sorteio.",
+    "prizeFallback": "Prêmio",
+    "soundHint": "Clique na tela para ativar o som",
+    "drawing": "Sorteando",
+    "entrants": "{count, plural, one {# pessoa concorrendo} other {# pessoas concorrendo}}",
+    "entrantsBig": "<num>{count, number}</num> {count, plural, one {pessoa concorrendo} other {pessoas concorrendo}}",
+    "ticket": "nº {number}",
+    "congrats": "Parabéns! 🎉",
+    "prizeMeta": "{kind} · {quantity, plural, one {# ganhador} other {# ganhadores}}",
+    "hintSurveyOpen": "Responda a pesquisa e receba seu número da sorte no celular.",
+    "hintSurveyLater": "Ao final, responda a pesquisa para receber seu número da sorte.",
+    "hintEveryone": "Seu número da sorte está no seu celular."
+  }
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useOptimistic, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
   deletePrizeAction,
@@ -12,14 +13,12 @@ import type { RafflePrizeAdmin, RaffleState } from "@/lib/data/raffle";
 import {
   MAX_PRIZE_QUANTITY,
   MAX_PRIZES,
-  PRIZE_KIND_LABEL,
   prizeInputSchema,
   RAFFLE_ELIGIBILITIES,
-  RAFFLE_ELIGIBILITY_META,
   type PrizeKind,
   type RaffleEligibility,
 } from "@/lib/domain/raffle";
-import { plural } from "@/lib/format";
+import { translateMessage } from "@/i18n/errors";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -54,6 +53,10 @@ function PrizeForm({
   initial: PrizeDraft;
   onDone: () => void;
 }) {
+  const t = useTranslations("session.raffle.form");
+  const tActions = useTranslations("common.actions");
+  const tDomain = useTranslations("domain");
+  const tErrors = useTranslations("errors");
   const [draft, setDraft] = useState(initial);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -62,7 +65,7 @@ function PrizeForm({
   function save() {
     const check = prizeInputSchema.safeParse(draft);
     if (!check.success) {
-      setError(check.error.issues[0]?.message ?? "Revise os campos.");
+      setError(translateMessage(tErrors, check.error.issues[0]?.message));
       return;
     }
     setError(null);
@@ -72,7 +75,7 @@ function PrizeForm({
         setError(result.error);
         return;
       }
-      toast.success(prizeId ? "Prêmio atualizado." : "Prêmio cadastrado.");
+      toast.success(prizeId ? t("updated") : t("created"));
       onDone();
     });
   }
@@ -81,25 +84,25 @@ function PrizeForm({
     <div className="flex flex-col gap-4 rounded-xl border bg-background p-4">
       <div className="grid gap-4 sm:grid-cols-[1fr_10rem_8rem]">
         <Field>
-          <Label htmlFor="prize-name">Prêmio</Label>
+          <Label htmlFor="prize-name">{t("name")}</Label>
           <Input
             id="prize-name"
             value={draft.name}
             onChange={(e) => set({ name: e.target.value })}
             maxLength={120}
-            placeholder="Livro autografado"
+            placeholder={t("namePlaceholder")}
             autoFocus
           />
         </Field>
         <Field>
-          <Label htmlFor="prize-kind">Tipo</Label>
+          <Label htmlFor="prize-kind">{t("kind")}</Label>
           <Select id="prize-kind" value={draft.kind} onChange={(e) => set({ kind: e.target.value === "digital" ? "digital" : "physical" })}>
-            <option value="physical">{PRIZE_KIND_LABEL.physical}</option>
-            <option value="digital">{PRIZE_KIND_LABEL.digital}</option>
+            <option value="physical">{tDomain("prizeKinds.physical")}</option>
+            <option value="digital">{tDomain("prizeKinds.digital")}</option>
           </Select>
         </Field>
         <Field>
-          <Label htmlFor="prize-quantity">Ganhadores</Label>
+          <Label htmlFor="prize-quantity">{t("quantity")}</Label>
           <Input
             id="prize-quantity"
             type="number"
@@ -111,38 +114,34 @@ function PrizeForm({
         </Field>
       </div>
       <Field>
-        <Label htmlFor="prize-description">Descrição (opcional)</Label>
+        <Label htmlFor="prize-description">{t("description")}</Label>
         <Input
           id="prize-description"
           value={draft.description}
           onChange={(e) => set({ description: e.target.value })}
           maxLength={300}
-          placeholder="Aparece no telão junto com o prêmio"
+          placeholder={t("descriptionPlaceholder")}
         />
       </Field>
       <Field>
-        <Label htmlFor="prize-message">Mensagem para quem ganhar (opcional)</Label>
+        <Label htmlFor="prize-message">{t("message")}</Label>
         <Textarea
           id="prize-message"
           value={draft.winnerMessage}
           onChange={(e) => set({ winnerMessage: e.target.value })}
           maxLength={500}
           className="min-h-16"
-          placeholder={
-            draft.kind === "digital"
-              ? "Código do cupom, link de resgate ou como receber"
-              : "Onde e quando retirar o prêmio"
-          }
+          placeholder={draft.kind === "digital" ? t("messagePlaceholderDigital") : t("messagePlaceholderPhysical")}
         />
-        <p className="text-xs text-muted-foreground">Aparece só no celular de quem ganhou, depois que o telão revela.</p>
+        <p className="text-xs text-muted-foreground">{t("messageHelp")}</p>
       </Field>
       {error ? <Alert>{error}</Alert> : null}
       <div className="flex gap-2">
         <Button onClick={save} disabled={pending}>
-          {pending ? "Salvando…" : "Salvar prêmio"}
+          {pending ? tActions("saving") : t("save")}
         </Button>
         <Button variant="ghost" onClick={onDone} disabled={pending}>
-          Cancelar
+          {tActions("cancel")}
         </Button>
       </div>
     </div>
@@ -151,6 +150,9 @@ function PrizeForm({
 
 /** Aba "Sorteio" da sessão: liga o sorteio, escolhe quem concorre e cadastra os prêmios. */
 export function RaffleEditor({ sessionId, state }: { sessionId: string; state: RaffleState }) {
+  const t = useTranslations("session.raffle");
+  const tActions = useTranslations("common.actions");
+  const tDomain = useTranslations("domain");
   const [confirm, confirmDialog] = useConfirm();
   const [pending, startTransition] = useTransition();
   const [editing, setEditing] = useState<string | "new" | null>(null);
@@ -182,18 +184,15 @@ export function RaffleEditor({ sessionId, state }: { sessionId: string; state: R
           onChange={(e) => saveEligibility(e.target.checked ? "survey" : null)}
         />
         <span>
-          <span className="font-medium">Fazer sorteio nesta sessão</span>
-          <span className="block text-sm text-muted-foreground">
-            Cada pessoa que concorre recebe um número aleatório no celular. Na sala ao vivo, o card “Sorteio” leva o
-            sorteio ao telão, com suspense e som, e mostra nome, número e avatar de quem ganhou.
-          </span>
+          <span className="font-medium">{t("enable")}</span>
+          <span className="block text-sm text-muted-foreground">{t("enableHelp")}</span>
         </span>
       </label>
 
       {enabled ? (
         <>
           <fieldset className="flex flex-col gap-2">
-            <legend className="mb-2 text-sm font-medium">Quem concorre</legend>
+            <legend className="mb-2 text-sm font-medium">{t("whoEnters")}</legend>
             {RAFFLE_ELIGIBILITIES.map((option) => (
               <label
                 key={option}
@@ -211,37 +210,38 @@ export function RaffleEditor({ sessionId, state }: { sessionId: string; state: R
                   onChange={() => saveEligibility(option)}
                 />
                 <span>
-                  <span className="font-medium">{RAFFLE_ELIGIBILITY_META[option].label}</span>
-                  <span className="block text-sm text-muted-foreground">{RAFFLE_ELIGIBILITY_META[option].description}</span>
+                  <span className="font-medium">{tDomain(`raffleEligibility.${option}.label`)}</span>
+                  <span className="block text-sm text-muted-foreground">
+                    {tDomain(`raffleEligibility.${option}.description`)}
+                  </span>
                 </span>
               </label>
             ))}
             <p className="text-sm text-muted-foreground">
-              {plural(state.entrants, "pessoa concorrendo", "pessoas concorrendo")} agora
-              {state.participants > 0 ? `, de ${plural(state.participants, "participante", "participantes")}` : ""}.
-              {eligibility === "survey"
-                ? " A pesquisa abre quando você encerra a sessão; a sala ao vivo continua aberta para o sorteio."
-                : ""}
+              {state.participants > 0
+                ? t("entrantsOf", { entrants: state.entrants, participants: state.participants })
+                : t("entrants", { entrants: state.entrants })}
+              {eligibility === "survey" ? ` ${t("surveyNote")}` : ""}
             </p>
           </fieldset>
 
           <section className="flex flex-col gap-3">
             <div className="flex items-center justify-between gap-2">
-              <h3 className="font-medium">Prêmios</h3>
+              <h3 className="font-medium">{t("prizes")}</h3>
               {editing === null && state.prizes.length < MAX_PRIZES ? (
                 <Button variant="outline" size="sm" onClick={() => setEditing("new")}>
-                  <PlusIcon /> Prêmio
+                  <PlusIcon /> {t("addPrize")}
                 </Button>
               ) : null}
             </div>
 
             {state.prizes.length === 0 && editing !== "new" ? (
               <EmptyState
-                title="Nenhum prêmio cadastrado"
-                description="Cadastre o que será sorteado: um livro, uma mentoria, um cupom… Físico ou digital."
+                title={t("emptyTitle")}
+                description={t("emptyDescription")}
                 action={
                   <Button size="sm" onClick={() => setEditing("new")}>
-                    <GiftIcon /> Cadastrar prêmio
+                    <GiftIcon /> {t("registerPrize")}
                   </Button>
                 }
               />
@@ -259,16 +259,19 @@ export function RaffleEditor({ sessionId, state }: { sessionId: string; state: R
                       <span className="w-7 shrink-0 pt-0.5 font-display text-xl font-bold leading-none tabular-nums">{index + 1}</span>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <Badge variant="outline">{PRIZE_KIND_LABEL[prize.kind]}</Badge>
+                          <Badge variant="outline">{tDomain(`prizeKinds.${prize.kind}`)}</Badge>
                           <span className="text-xs text-muted-foreground">
-                            {prize.winners.filter((w) => !w.forfeitedAt).length} de {plural(prize.quantity, "ganhador", "ganhadores")}
+                            {t("winnersOf", {
+                              drawn: prize.winners.filter((w) => !w.forfeitedAt).length,
+                              quantity: prize.quantity,
+                            })}
                           </span>
                         </div>
                         <p className="mt-1 font-medium">{prize.name}</p>
                         {prize.description ? <p className="text-sm text-muted-foreground">{prize.description}</p> : null}
                         {prize.winnerMessage ? (
                           <p className="mt-1 text-xs text-muted-foreground">
-                            Mensagem para quem ganhar: <span className="text-foreground">{prize.winnerMessage}</span>
+                            {t("winnerMessage")} <span className="text-foreground">{prize.winnerMessage}</span>
                           </p>
                         ) : null}
                       </div>
@@ -276,7 +279,7 @@ export function RaffleEditor({ sessionId, state }: { sessionId: string; state: R
                         <Button
                           variant="ghost"
                           size="icon"
-                          aria-label="Subir"
+                          aria-label={t("moveUp")}
                           disabled={pending || index === 0}
                           onClick={() => run(() => movePrizeAction(sessionId, prize.id, -1))}
                         >
@@ -285,28 +288,25 @@ export function RaffleEditor({ sessionId, state }: { sessionId: string; state: R
                         <Button
                           variant="ghost"
                           size="icon"
-                          aria-label="Descer"
+                          aria-label={t("moveDown")}
                           disabled={pending || index === state.prizes.length - 1}
                           onClick={() => run(() => movePrizeAction(sessionId, prize.id, 1))}
                         >
                           <ArrowDownIcon />
                         </Button>
-                        <Button variant="ghost" size="icon" aria-label="Editar" onClick={() => setEditing(prize.id)}>
+                        <Button variant="ghost" size="icon" aria-label={tActions("edit")} onClick={() => setEditing(prize.id)}>
                           <EditIcon />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          aria-label="Excluir"
+                          aria-label={tActions("delete")}
                           disabled={pending}
                           onClick={async () => {
                             const ok = await confirm({
-                              title: "Excluir o prêmio?",
-                              description:
-                                prize.winners.length > 0
-                                  ? "Os ganhadores já sorteados para ele também saem da lista."
-                                  : undefined,
-                              confirmLabel: "Excluir",
+                              title: t("deleteConfirmTitle"),
+                              description: prize.winners.length > 0 ? t("deleteConfirmWithWinners") : undefined,
+                              confirmLabel: tActions("delete"),
                               destructive: true,
                             });
                             if (ok) run(() => deletePrizeAction(sessionId, prize.id));
@@ -328,11 +328,7 @@ export function RaffleEditor({ sessionId, state }: { sessionId: string; state: R
             </ol>
           </section>
 
-          <p className="text-xs text-muted-foreground">
-            Cada pessoa ganha no máximo um prêmio. O sorteio é feito no servidor, com gerador aleatório criptográfico,
-            antes de o telão começar a animação. Sorteios promocionais feitos por empresas podem exigir autorização
-            prévia (Lei 5.768/1971); confira antes de divulgar.
-          </p>
+          <p className="text-xs text-muted-foreground">{t("legalNote")}</p>
         </>
       ) : null}
     </div>

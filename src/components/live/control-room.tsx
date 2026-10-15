@@ -4,10 +4,10 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { setSessionStatusAction } from "@/features/sessions/actions";
 import type { PublicInteraction } from "@/lib/domain/interactions";
-import { INTERACTION_TYPE_META } from "@/lib/domain/interactions";
 import { EMPTY_SNAPSHOT } from "@/lib/domain/results";
 import type { DeckItem } from "@/lib/domain/deck";
 import { toSessionStatus, type SessionStatus } from "@/lib/domain/session";
@@ -16,7 +16,6 @@ import { useInteractionResults } from "@/lib/realtime/use-interaction-results";
 import type { ResultsMap } from "@/lib/domain/results";
 import { usePresence } from "@/lib/realtime/use-presence";
 import type { LiveState } from "@/lib/realtime/schemas";
-import { plural } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -83,6 +82,9 @@ export function ControlRoom({
   raffle,
   engagement,
 }: Props) {
+  const t = useTranslations("live.controlRoom");
+  const tDomain = useTranslations("domain");
+  const tCommon = useTranslations("common.actions");
   const router = useRouter();
   const [statusPending, startTransition] = useTransition();
   const [confirm, confirmDialog] = useConfirm();
@@ -142,9 +144,11 @@ export function ControlRoom({
     });
 
   function itemLabel(item: DeckItem): string {
-    if (item.kind === "slide") return `Slide ${item.index + 1}`;
+    if (item.kind === "slide") return t("slide", { slide: item.index + 1 });
     const interaction = byId.get(item.id);
-    return interaction ? `${INTERACTION_TYPE_META[interaction.type].label}: ${interaction.title}` : "Interação";
+    return interaction
+      ? t("itemLabel", { type: tDomain(`interactionTypes.${interaction.type}.label`), title: interaction.title })
+      : t("interactionFallback");
   }
 
   const participantCount = live?.participant_count ?? 0;
@@ -170,11 +174,11 @@ export function ControlRoom({
             {status !== "draft" ? (
               <TalkTimer clock={clock} plannedMinutes={plannedMinutes} running={status === "live"} paused={status === "paused"} />
             ) : null}
-            {!connected ? <Badge variant="warning">Reconectando…</Badge> : null}
+            {!connected ? <Badge variant="warning">{t("reconnecting")}</Badge> : null}
           </div>
           <h1 className="mt-2 truncate text-2xl font-semibold tracking-tight">{session.title}</h1>
           <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <UsersIcon /> {plural(participantCount, "participante", "participantes")} · {online} conectados agora
+            <UsersIcon /> {t("participants", { count: participantCount })} · {t("connectedNow", { count: online })}
           </p>
           {engagement.reactions_enabled ? <ReactionTotals sessionId={session.id} running={status === "live"} /> : null}
         </div>
@@ -185,21 +189,21 @@ export function ControlRoom({
             rel="noreferrer"
             className={buttonVariants({ variant: "outline" })}
           >
-            <ExternalIcon /> Tela do projetor
+            <ExternalIcon /> {t("projectorScreen")}
           </a>
           {status === "draft" ? (
             <Button onClick={() => changeStatus("live")} disabled={pending}>
-              <PlayIcon /> Iniciar sessão
+              <PlayIcon /> {t("startSession")}
             </Button>
           ) : null}
           {status === "live" ? (
             <Button variant="outline" onClick={() => changeStatus("paused")} disabled={pending}>
-              <PauseIcon /> Pausar
+              <PauseIcon /> {t("pause")}
             </Button>
           ) : null}
           {status === "paused" ? (
             <Button onClick={() => changeStatus("live")} disabled={pending}>
-              <PlayIcon /> Retomar
+              <PlayIcon /> {t("resume")}
             </Button>
           ) : null}
           {status === "live" || status === "paused" ? (
@@ -208,22 +212,20 @@ export function ControlRoom({
               disabled={pending}
               onClick={async () => {
                 const confirmed = await confirm({
-                  title: "Encerrar a sessão?",
-                  description: raffle
-                    ? "Os participantes verão o link de avaliação. Não dá para reabrir. O sorteio continua nesta sala."
-                    : "Os participantes verão o link de avaliação. Não dá para reabrir.",
-                  confirmLabel: "Encerrar",
+                  title: t("endConfirm.title"),
+                  description: raffle ? t("endConfirm.descriptionRaffle") : t("endConfirm.description"),
+                  confirmLabel: t("endConfirm.confirm"),
                   destructive: true,
                 });
                 if (confirmed) changeStatus("completed");
               }}
             >
-              Encerrar sessão
+              {t("endSession")}
             </Button>
           ) : null}
           {status === "completed" ? (
             <Link href={`/dashboard/sessions/${session.id}/analytics`} className={buttonVariants()}>
-              Ver analytics
+              {t("viewAnalytics")}
             </Link>
           ) : null}
         </div>
@@ -235,19 +237,19 @@ export function ControlRoom({
             <div className="min-w-0">
               {raffleOn ? (
                 <>
-                  <p className="font-display text-xs font-bold uppercase tracking-wider text-muted-foreground">No telão</p>
-                  <CardTitle className="mt-1 text-xl">Sorteio</CardTitle>
+                  <p className="font-display text-xs font-bold uppercase tracking-wider text-muted-foreground">{t("onScreen")}</p>
+                  <CardTitle className="mt-1 text-xl">{t("raffle")}</CardTitle>
                 </>
               ) : leaderboardOn ? (
                 <>
-                  <p className="font-display text-xs font-bold uppercase tracking-wider text-muted-foreground">No telão</p>
-                  <CardTitle className="mt-1 text-xl">Ranking do quiz</CardTitle>
+                  <p className="font-display text-xs font-bold uppercase tracking-wider text-muted-foreground">{t("onScreen")}</p>
+                  <CardTitle className="mt-1 text-xl">{t("leaderboard")}</CardTitle>
                 </>
               ) : questionsOn ? (
                 <>
-                  <p className="font-display text-xs font-bold uppercase tracking-wider text-muted-foreground">No telão</p>
+                  <p className="font-display text-xs font-bold uppercase tracking-wider text-muted-foreground">{t("onScreen")}</p>
                   <CardTitle className="mt-1 text-xl">
-                    {live?.question_id ? "Pergunta da plateia em destaque" : "Perguntas da plateia"}
+                    {live?.question_id ? t("highlightedQuestion") : t("audienceQuestions")}
                   </CardTitle>
                 </>
               ) : active ? (
@@ -255,66 +257,68 @@ export function ControlRoom({
                   <TypeTag type={active.type} />
                   <CardTitle className="mt-2 text-xl">{active.title}</CardTitle>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {plural((results[active.id] ?? EMPTY_SNAPSHOT).total, "resposta", "respostas")} de{" "}
-                    {participantCount}
+                    {t("responsesOf", { count: (results[active.id] ?? EMPTY_SNAPSHOT).total, participants: participantCount })}
                   </p>
                 </>
               ) : hasSlides && slideOnScreen !== null && status === "live" ? (
                 <>
-                  <p className="font-display text-xs font-bold uppercase tracking-wider text-muted-foreground">No telão</p>
+                  <p className="font-display text-xs font-bold uppercase tracking-wider text-muted-foreground">{t("onScreen")}</p>
                   <CardTitle className="mt-1 text-xl">
-                    Slide {slideOnScreen + 1} <span className="text-muted-foreground">de {slideUrls.length}</span>
+                    {t.rich("slideOf", {
+                      slide: slideOnScreen + 1,
+                      total: slideUrls.length,
+                      muted: (chunks) => <span className="text-muted-foreground">{chunks}</span>,
+                    })}
                   </CardTitle>
                 </>
               ) : (
                 <CardTitle className="text-xl">
-                  {hasSlides && status === "live" ? "QR Code no telão" : "Nenhuma interação ativa"}
+                  {hasSlides && status === "live" ? t("qrOnScreen") : t("noActive")}
                 </CardTitle>
               )}
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
               {hasQuiz && status === "live" ? (
                 <Button variant="outline" size="sm" disabled={pending} onClick={() => toggleLeaderboard(!leaderboardOn)}>
-                  {leaderboardOn ? "Ocultar ranking" : "Mostrar ranking"}
+                  {leaderboardOn ? t("hideLeaderboard") : t("showLeaderboard")}
                 </Button>
               ) : null}
               {active?.type === "quiz" ? (
                 <Button variant="outline" size="sm" onClick={() => setShowAnswer((v) => !v)}>
-                  {showAnswer ? "Ocultar resposta" : "Mostrar resposta"}
+                  {showAnswer ? t("hideAnswer") : t("showAnswer")}
                 </Button>
               ) : null}
               {active ? (
                 <Button variant="outline" size="sm" disabled={pending} onClick={controls.closeActive}>
-                  <StopIcon /> Encerrar
+                  <StopIcon /> {t("closeQuestion")}
                 </Button>
               ) : null}
               {hasSlides ? (
                 <Button
                   variant="outline"
                   size="sm"
-                  aria-label="Voltar ao slide anterior"
+                  aria-label={t("previousSlide")}
                   disabled={pending || !controls.previous}
                   onClick={() => controls.previous && controls.goTo(controls.previous)}
                 >
-                  <ChevronLeftIcon /> Anterior
+                  <ChevronLeftIcon /> {t("previous")}
                 </Button>
               ) : null}
               <Button size="sm" disabled={pending || !next} onClick={() => next && controls.goTo(next)}>
-                <NextIcon /> Próxima
+                <NextIcon /> {t("next")}
               </Button>
             </div>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             {raffleOn ? (
               <p className="py-10 text-center text-muted-foreground">
-                O sorteio está no telão. Sorteie pelo card “Sorteio”; o nome aparece lá depois que o telão revela.
+                {t("raffleOnScreenHint")}
               </p>
             ) : leaderboardOn ? (
               <QuizLeaderboard sessionId={session.id} version={live?.leaderboard_at ?? null} variant="compact" />
             ) : questionsOn ? (
               <p className="py-10 text-center text-muted-foreground">
-                As perguntas da plateia estão no telão. Use o card “Perguntas da plateia” para destacar, marcar como
-                respondida ou tirar do telão. Clique em Próxima para seguir o roteiro.
+                {t("questionsOnScreenHint")}
               </p>
             ) : active ? (
               <>
@@ -331,32 +335,30 @@ export function ControlRoom({
               // eslint-disable-next-line @next/next/no-img-element -- URL assinada do Storage
               <img
                 src={slideUrls[slideOnScreen]}
-                alt={`Slide ${slideOnScreen + 1}`}
+                alt={t("slide", { slide: slideOnScreen + 1 })}
                 className="aspect-video w-full rounded-lg border bg-muted object-contain"
               />
             ) : (
               <p className="py-10 text-center text-muted-foreground">
                 {status === "live"
                   ? next
-                    ? `A seguir: ${itemLabel(next)}. Clique em Próxima ou pressione →.`
-                    : "Todo o roteiro foi apresentado."
+                    ? t("upNextHint", { item: itemLabel(next) })
+                    : t("lineupDone")
                   : status === "paused"
-                    ? "Sessão pausada. Retome para continuar."
+                    ? t("pausedHint")
                     : status === "draft"
-                      ? "Inicie a sessão para começar."
-                      : "Sessão encerrada."}
+                      ? t("draftHint")
+                      : t("endedHint")}
               </p>
             )}
             {status === "live" && (active || slideOnScreen !== null) ? (
               <p className="text-sm text-muted-foreground">
-                {next ? (
-                  <>
-                    A seguir: <span className="font-medium text-foreground">{itemLabel(next)}</span>
-                    {hasSlides ? " · → ou PageDown avança, ← volta" : " · → avança"}
-                  </>
-                ) : (
-                  "Fim do roteiro."
-                )}
+                {next
+                  ? t.rich(hasSlides ? "upNextSlides" : "upNextKeys", {
+                      item: itemLabel(next),
+                      strong: (chunks) => <span className="font-medium text-foreground">{chunks}</span>,
+                    })
+                  : t("lineupEnd")}
               </p>
             ) : null}
           </CardContent>
@@ -378,14 +380,14 @@ export function ControlRoom({
               <div className="rounded-xl bg-white p-3">
                 <QRCodeSVG value={joinUrl} size={168} marginSize={0} />
               </div>
-              <p className="text-sm text-muted-foreground">Código de entrada</p>
+              <p className="text-sm text-muted-foreground">{t("joinCode")}</p>
               <p className="font-display text-3xl font-bold tracking-widest">{session.joinCode}</p>
               <p className="break-all text-xs text-muted-foreground">{joinUrl}</p>
               <div className="flex flex-wrap justify-center gap-2">
                 <QrDownloadButton joinUrl={joinUrl} code={session.joinCode} />
                 {hasSlides && status === "live" ? (
                   <Button variant="outline" size="sm" disabled={pending || (slideOnScreen === null && !active)} onClick={controls.showJoinScreen}>
-                    <QrCodeIcon /> Mostrar no telão
+                    <QrCodeIcon /> {t("showOnScreen")}
                   </Button>
                 ) : null}
               </div>
@@ -394,7 +396,7 @@ export function ControlRoom({
 
           <Card>
             <CardHeader className="flex-row items-center justify-between gap-2">
-              <CardTitle>Roteiro</CardTitle>
+              <CardTitle>{t("lineup")}</CardTitle>
               {status === "live" || status === "paused" ? (
                 <AddInteractionDialog
                   sessionId={session.id}
@@ -434,7 +436,9 @@ export function ControlRoom({
                               loading="lazy"
                               className="aspect-video w-14 shrink-0 rounded border bg-muted object-cover"
                             />
-                            <span className="min-w-0 flex-1 truncate text-muted-foreground">Slide {item.index + 1}</span>
+                            <span className="min-w-0 flex-1 truncate text-muted-foreground">
+                              {t("slide", { slide: item.index + 1 })}
+                            </span>
                           </>
                         ) : (
                           <>
@@ -445,7 +449,7 @@ export function ControlRoom({
                           </>
                         )}
                         {onScreen ? (
-                          <Badge variant="live">{item.kind === "slide" ? "No telão" : "Ativa"}</Badge>
+                          <Badge variant="live">{item.kind === "slide" ? t("onScreen") : t("active")}</Badge>
                         ) : total > 0 ? (
                           <span className="text-xs text-muted-foreground tabular-nums">{total}</span>
                         ) : null}
@@ -456,9 +460,9 @@ export function ControlRoom({
               </ol>
               {deck.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  Nenhuma interação.{" "}
+                  {t("noInteractions")}{" "}
                   <Link href={`/dashboard/sessions/${session.id}`} className="text-primary hover:underline">
-                    Adicionar
+                    {tCommon("add")}
                   </Link>
                 </p>
               ) : null}
@@ -467,7 +471,7 @@ export function ControlRoom({
 
           <Card>
             <CardHeader>
-              <CardTitle>Participação</CardTitle>
+              <CardTitle>{t("participation")}</CardTitle>
             </CardHeader>
             <CardContent>
               <EngagementSettings sessionId={session.id} initial={engagement} compact />

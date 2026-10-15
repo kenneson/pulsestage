@@ -2,9 +2,10 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { addLiveInteractionAction } from "@/features/interactions/actions";
-import { INTERACTION_TYPE_META, INTERACTION_TYPES, type InteractionType } from "@/lib/domain/interactions";
+import { INTERACTION_TYPES, type InteractionType } from "@/lib/domain/interactions";
 import type { DeckItem } from "@/lib/domain/deck";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,9 @@ export function AddInteractionDialog({
   /** depois de criar (ex.: reler o estado ao vivo) */
   onChanged?: () => void;
 }) {
+  const t = useTranslations("builder.addLive");
+  const tCommon = useTranslations("common.actions");
+  const tDomain = useTranslations("domain");
   const router = useRouter();
   const ref = useRef<HTMLDialogElement>(null);
   const [type, setType] = useState<InteractionType | null>(null);
@@ -49,7 +53,7 @@ export function AddInteractionDialog({
   async function add(input: InteractionInput, launch: boolean): Promise<ActionResult<{ id: string }>> {
     const result = await addLiveInteractionAction(sessionId, input, { after, launch });
     if (result.ok) {
-      toast.success(launch ? "Pergunta no ar." : "Pergunta adicionada. Ela é a próxima do roteiro.");
+      toast.success(launch ? t("launched") : t("addedNext"));
       return result;
     }
     // A pergunta já existe: fecha o diálogo para um segundo clique não criar outra igual.
@@ -61,10 +65,10 @@ export function AddInteractionDialog({
   }
 
   const actions: InteractionFormAction[] = [
-    { label: "Lançar agora", pendingLabel: "Lançando…", disabled: !canLaunch, submit: (input) => add(input, true) },
+    { label: t("launchNow"), pendingLabel: t("launching"), disabled: !canLaunch, submit: (input) => add(input, true) },
     {
-      label: "Deixar como próxima",
-      pendingLabel: "Salvando…",
+      label: t("keepNext"),
+      pendingLabel: tCommon("saving"),
       variant: "outline",
       submit: (input) => add(input, false),
     },
@@ -73,7 +77,7 @@ export function AddInteractionDialog({
   return (
     <>
       <Button variant="outline" size="sm" onClick={open}>
-        <PlusIcon /> Nova pergunta
+        <PlusIcon /> {t("open")}
       </Button>
       <dialog
         ref={ref}
@@ -85,13 +89,13 @@ export function AddInteractionDialog({
           <div className="flex items-start justify-between gap-4">
             <div className="flex flex-col gap-1">
               <h2 id="add-interaction-title" className="text-lg font-semibold">
-                Nova pergunta
+                {t("title")}
               </h2>
               <p className="text-sm text-muted-foreground">
-                Entra logo depois do que está no telão. Lance agora ou deixe como a próxima do roteiro.
+                {t("description")}
               </p>
             </div>
-            <Button variant="ghost" size="icon" aria-label="Fechar" onClick={close}>
+            <Button variant="ghost" size="icon" aria-label={tCommon("close")} onClick={close}>
               <XIcon />
             </Button>
           </div>
@@ -111,16 +115,16 @@ export function AddInteractionDialog({
             />
           ) : (
             <div className="flex flex-wrap gap-2">
-              {INTERACTION_TYPES.map((t) => (
-                <Button key={t} variant="outline" onClick={() => setType(t)} title={INTERACTION_TYPE_META[t].description}>
-                  <span aria-hidden className={cn("size-2.5 rounded-sm", TYPE_PAPER[t])} />
-                  {INTERACTION_TYPE_META[t].label}
+              {INTERACTION_TYPES.map((kind) => (
+                <Button key={kind} variant="outline" onClick={() => setType(kind)} title={tDomain(`interactionTypes.${kind}.description`)}>
+                  <span aria-hidden className={cn("size-2.5 rounded-sm", TYPE_PAPER[kind])} />
+                  {tDomain(`interactionTypes.${kind}.label`)}
                 </Button>
               ))}
             </div>
           )}
           {!canLaunch ? (
-            <p className="text-xs text-muted-foreground">Sessão pausada: retome para lançar a pergunta.</p>
+            <p className="text-xs text-muted-foreground">{t("pausedHint")}</p>
           ) : null}
         </div>
       </dialog>

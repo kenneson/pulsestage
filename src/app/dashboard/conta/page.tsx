@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSpeakerProfile } from "@/lib/data/profile";
 import { generalTemplateId, listSurveyTemplates } from "@/lib/data/surveys";
+import { localeOrDefault } from "@/lib/domain/locale";
 import { buttonVariants } from "@/components/ui/button";
 import {
   AvatarForm,
@@ -13,7 +15,10 @@ import {
 } from "@/components/account/account-forms";
 import { CheckIcon, DownloadIcon, LockIcon, MailIcon, SettingsIcon, ShieldIcon, UserIcon } from "@/components/icons";
 
-export const metadata: Metadata = { title: "Conta e configurações" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("account.page");
+  return { title: t("metaTitle") };
+}
 
 function Section({
   id,
@@ -45,64 +50,76 @@ function Section({
   );
 }
 
+// Âncoras ficam em português (links do guia e do painel apontam para elas).
 const SECTIONS = [
-  { id: "perfil", label: "Perfil", icon: UserIcon },
-  { id: "preferencias", label: "Preferências", icon: SettingsIcon },
-  { id: "seguranca", label: "Segurança", icon: LockIcon },
-  { id: "privacidade", label: "Privacidade", icon: ShieldIcon },
-];
+  { id: "perfil", label: "profile", icon: UserIcon },
+  { id: "preferencias", label: "preferences", icon: SettingsIcon },
+  { id: "seguranca", label: "security", icon: LockIcon },
+  { id: "privacidade", label: "privacy", icon: ShieldIcon },
+] as const;
 
 export default async function AccountPage() {
   const profile = await getSpeakerProfile();
   const supabase = await createClient();
-  const [{ data: auth }, templates] = await Promise.all([supabase.auth.getUser(), listSurveyTemplates(supabase)]);
+  const [{ data: auth }, templates, t, tSections] = await Promise.all([
+    supabase.auth.getUser(),
+    listSurveyTemplates(supabase),
+    getTranslations("account"),
+    getTranslations("account.sections"),
+  ]);
   const providers = new Set((auth.user?.identities ?? []).map((i) => i.provider));
   const defaultSurvey = profile.defaultSurveyTemplateId ?? generalTemplateId(templates, profile.locale) ?? "";
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Conta e configurações</h1>
-        <p className="text-muted-foreground">Seu perfil, preferências, acesso e dados.</p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("page.title")}</h1>
+        <p className="text-muted-foreground">{t("page.description")}</p>
       </div>
 
-      <nav aria-label="Seções da conta" className="flex flex-wrap gap-1 border-b">
+      <nav aria-label={t("page.navLabel")} className="flex flex-wrap gap-1 border-b">
         {SECTIONS.map((s) => (
           <a
             key={s.id}
             href={`#${s.id}`}
             className="inline-flex min-h-11 items-center gap-2 px-3 text-sm font-medium text-muted-foreground hover:text-foreground"
           >
-            <s.icon /> {s.label}
+            <s.icon /> {tSections(s.label)}
           </a>
         ))}
       </nav>
 
-      <Section id="perfil" title="Perfil">
+      <Section id="perfil" title={tSections("profile")}>
         <AvatarForm src={profile.avatarUrl} name={profile.name} email={profile.email} />
         <ProfileForm name={profile.name} email={profile.email} bio={profile.bio} />
       </Section>
 
-      <Section id="preferencias" title="Preferências" description="Valores usados ao criar uma sessão e para mostrar datas.">
+      <Section id="preferencias" title={tSections("preferences")} description={tSections("preferencesDescription")}>
         <PreferencesForm
+          locale={profile.locale}
           timeZone={profile.timeZone}
           defaultSurveyTemplateId={defaultSurvey}
           defaultDuration={profile.defaultDurationMinutes}
-          surveyOptions={templates.map((t) => ({ id: t.id, name: t.isPlatform ? t.name : `${t.name} (meu)` }))}
+          surveyOptions={templates.map((x) => ({
+            id: x.id,
+            name: x.name,
+            // null = modelo do próprio speaker (aparece em "Meus modelos").
+            locale: x.isPlatform ? localeOrDefault(x.locale) : null,
+          }))}
         />
       </Section>
 
-      <Section id="seguranca" title="Segurança">
+      <Section id="seguranca" title={tSections("security")}>
         <ul className="divide-y rounded-md border">
           <li className="flex items-center gap-3 px-4 py-3">
             <MailIcon className="text-muted-foreground" />
-            <span className="flex-1">E-mail e senha</span>
+            <span className="flex-1">{t("security.emailPassword")}</span>
             {providers.has("email") ? (
               <span className="inline-flex items-center gap-1.5 text-sm font-medium text-primary">
-                <CheckIcon /> Ativo
+                <CheckIcon /> {t("security.active")}
               </span>
             ) : (
-              <span className="text-sm text-muted-foreground">Defina uma senha abaixo para ativar</span>
+              <span className="text-sm text-muted-foreground">{t("security.activateHint")}</span>
             )}
           </li>
           <li className="flex items-center gap-3 px-4 py-3">
@@ -115,10 +132,10 @@ export default async function AccountPage() {
             <span className="flex-1">Google</span>
             {providers.has("google") ? (
               <span className="inline-flex items-center gap-1.5 text-sm font-medium text-primary">
-                <CheckIcon /> Conectado
+                <CheckIcon /> {t("security.connected")}
               </span>
             ) : (
-              <span className="text-sm text-muted-foreground">Entre com o Google uma vez para conectar</span>
+              <span className="text-sm text-muted-foreground">{t("security.connectHint")}</span>
             )}
           </li>
         </ul>
@@ -128,25 +145,20 @@ export default async function AccountPage() {
         </div>
       </Section>
 
-      <Section id="privacidade" title="Privacidade e dados">
+      <Section id="privacidade" title={tSections("privacyTitle")}>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="max-w-md">
-            <p className="font-medium">Exportar meus dados</p>
-            <p className="text-sm text-muted-foreground">
-              Um arquivo JSON com seu perfil, sessões, perguntas, respostas, pesquisas, insights e convites recebidos.
-            </p>
+            <p className="font-medium">{t("privacy.exportTitle")}</p>
+            <p className="text-sm text-muted-foreground">{t("privacy.exportDescription")}</p>
           </div>
           <a href="/dashboard/conta/exportar" className={buttonVariants({ variant: "outline" })} download>
-            <DownloadIcon /> Exportar
+            <DownloadIcon /> {t("privacy.export")}
           </a>
         </div>
         <div className="flex flex-col gap-4 rounded-md border border-destructive/30 bg-destructive/5 p-4">
           <div>
-            <p className="font-semibold text-destructive">Excluir conta</p>
-            <p className="text-sm text-muted-foreground">
-              Apaga para sempre seu perfil (inclusive o público), todas as sessões, respostas, pesquisas, insights, convites recebidos e os contatos de participantes.
-              Não dá para desfazer.
-            </p>
+            <p className="font-semibold text-destructive">{t("privacy.deleteTitle")}</p>
+            <p className="text-sm text-muted-foreground">{t("privacy.deleteDescription")}</p>
           </div>
           <DeleteAccountForm />
         </div>

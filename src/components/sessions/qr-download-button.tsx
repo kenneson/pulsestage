@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { useTranslations } from "next-intl";
 import { QRCodeCanvas } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 import { DownloadIcon } from "@/components/icons";
@@ -10,6 +11,7 @@ const FOOTER = 240;
 
 /** Baixa um PNG com QR Code, código e endereço de entrada, pronto para colar num slide. */
 export function QrDownloadButton({ joinUrl, code }: { joinUrl: string; code: string }) {
+  const t = useTranslations("session.qr");
   const qrRef = useRef<HTMLCanvasElement>(null);
 
   function download() {
@@ -43,7 +45,7 @@ export function QrDownloadButton({ joinUrl, code }: { joinUrl: string; code: str
     <>
       <QRCodeCanvas ref={qrRef} value={joinUrl} size={QR_SIZE} marginSize={4} className="hidden" aria-hidden />
       <Button variant="outline" size="sm" onClick={download}>
-        <DownloadIcon /> Baixar QR Code
+        <DownloadIcon /> {t("download")}
       </Button>
     </>
   );

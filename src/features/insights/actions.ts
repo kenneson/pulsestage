@@ -2,7 +2,7 @@
 
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { loadSessionAnalytics } from "@/lib/data/analytics";
 import { aiConfigProblem, generateInsights, getAIProvider } from "@/lib/ai";
@@ -17,30 +17,40 @@ type InsightInsert = Database["public"]["Tables"]["insights"]["Insert"];
 const MIN_INTERVAL_MS = 60_000;
 
 export async function generateInsightsAction(sessionId: string): Promise<ActionResult<{ generationId: string }>> {
-  if (!isUuid(sessionId)) return fail("Sessão inválida.");
+  const [t, tInsights, locale] = await Promise.all([
+    getTranslations("analytics.errors"),
+    getTranslations("analytics.insights"),
+    getLocale(),
+  ]);
+  if (!isUuid(sessionId)) return fail(t("invalidSession"));
 
   const provider = getAIProvider();
-  if (!provider) return fail(`A IA não está configurada. ${aiConfigProblem() ?? ""}`.trim(), "not_configured");
+  if (!provider) {
+    // O diagnóstico de aiConfigProblem() é escrito em português: só acompanha a mensagem no painel em português.
+    const detail = locale === "pt-BR" ? (aiConfigProblem() ?? "") : "";
+    return fail(`${t("notConfigured")} ${detail}`.trim(), "not_configured");
+  }
 
   const supabase = await createClient();
   const data = await loadSessionAnalytics(supabase, sessionId);
-  if (!data) return fail("Sessão não encontrada.");
-  if (data.session.status !== "completed") return fail("Gere insights depois de encerrar a sessão.");
+  if (!data) return fail(t("notFound"));
+  if (data.session.status !== "completed") return fail(t("notCompleted"));
   if (data.responses.length === 0 && data.survey.responseCount === 0) {
-    return fail("Ainda não há respostas nem pesquisas para analisar.");
+    return fail(t("noData"));
   }
 
   const last = data.latestInsights[0];
   if (last && Date.now() - Date.parse(last.created_at) < MIN_INTERVAL_MS) {
-    return fail("Aguarde um minuto antes de gerar novamente.");
+    return fail(t("tooSoon"));
   }
 
   const options = data.interactionsWithOptions.flatMap((i) => i.options);
   let output: InsightOutput;
   try {
-    output = await generateInsights(provider, buildInsightInput(data, options), await getLocale());
+    output = await generateInsights(provider, buildInsightInput(data, options), locale);
   } catch (error) {
-    return fail(error instanceof AIProviderError ? error.message : "Falha ao gerar insights.");
+    // A mensagem do provedor vem em português e com detalhes técnicos: o painel mostra uma genérica no idioma dele.
+    return fail(error instanceof AIProviderError ? t("aiFailed") : t("generateFailed"));
   }
 
   const generationId = randomUUID();
@@ -55,8 +65,8 @@ export async function generateInsightsAction(sessionId: string): Promise<ActionR
   const confidence = output.data_quality.confidence;
 
   const rows: InsightInsert[] = [
-    { ...base, type: "summary", title: "Resumo", description: output.summary, confidence },
-    { ...base, type: "data_quality", title: "Qualidade dos dados", description: output.data_quality.note, confidence },
+    { ...base, type: "summary", title: tInsights("summaryTitle"), description: output.summary, confidence },
+    { ...base, type: "data_quality", title: tInsights("dataQualityTitle"), description: output.data_quality.note, confidence },
     ...output.strengths.map(
       (s): InsightInsert => ({
         ...base,
@@ -91,7 +101,7 @@ export async function generateInsightsAction(sessionId: string): Promise<ActionR
   ];
 
   const { error } = await supabase.from("insights").insert(rows);
-  if (error) return fail("Não foi possível salvar os insights.");
+  if (error) return fail(t("saveFailed"));
 
   revalidatePath(`/dashboard/sessions/${sessionId}/analytics`);
   return ok({ generationId });

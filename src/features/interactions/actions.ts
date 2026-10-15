@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getOwnedSession } from "@/lib/data/sessions";
 import { hasDbErrorCode } from "@/lib/supabase/errors";
@@ -9,10 +10,10 @@ import { interactionInputSchema, type ParsedInteractionInput } from "@/lib/domai
 import { insertAfterItem, MAX_SLIDES } from "@/lib/domain/deck";
 import { optionImagesOf, removeUnusedOptionImages } from "@/lib/data/option-images";
 import { createInteraction, foreignImage, updateInteraction } from "./core";
-import { aiConfigProblem, getAIProvider, suggestInteractions } from "@/lib/ai";
-import { AIProviderError } from "@/lib/ai/types";
+import { getAIProvider, suggestInteractions } from "@/lib/ai";
 import { localeOrDefault } from "@/lib/domain/locale";
-import { fail, firstIssue, isUuid, ok, type ActionResult } from "@/lib/action-result";
+import { fail, isUuid, ok, type ActionResult } from "@/lib/action-result";
+import { getMessageTranslator } from "@/i18n/server";
 
 function revalidateSession(sessionId: string) {
   revalidatePath(`/dashboard/sessions/${sessionId}`, "layout");
@@ -23,23 +24,24 @@ export async function saveInteractionAction(
   interactionId: string | null,
   rawInput: unknown,
 ): Promise<ActionResult<{ id: string }>> {
-  if (!isUuid(sessionId) || (interactionId !== null && !isUuid(interactionId))) return fail("Dados inválidos.");
+  const [tr, t] = await Promise.all([getMessageTranslator(), getTranslations("builder.errors")]);
+  if (!isUuid(sessionId) || (interactionId !== null && !isUuid(interactionId))) return fail(tr.message("errors.invalidData"));
 
   const parsed = interactionInputSchema.safeParse(rawInput);
-  if (!parsed.success) return fail(firstIssue(parsed.error));
+  if (!parsed.success) return fail(tr.issue(parsed.error));
   const input = parsed.data;
 
   const supabase = await createClient();
   const session = await getOwnedSession(supabase, sessionId);
-  if (!session) return fail("Sessão não encontrada.");
-  if (session.status === "completed") return fail("A sessão já foi encerrada.");
-  if (foreignImage(input, session.speaker_id)) return fail("Imagem inválida.");
+  if (!session) return fail(t("sessionNotFound"));
+  if (session.status === "completed") return fail(t("sessionEnded"));
+  if (foreignImage(input, session.speaker_id)) return fail(tr.message("validation.invalidImage"));
 
   const saved =
     interactionId === null
       ? await createInteraction(supabase, sessionId, input)
       : await updateInteraction(supabase, sessionId, interactionId, input);
-  if (!saved.ok) return saved;
+  if (!saved.ok) return fail(tr.message(saved.error), saved.code);
   revalidateSession(sessionId);
   return saved;
 }
@@ -53,23 +55,25 @@ export async function suggestInteractionsAction(
   sessionId: string,
   rawAvoid: unknown,
 ): Promise<ActionResult<{ suggestions: ParsedInteractionInput[] }>> {
+  const [tr, t] = await Promise.all([getMessageTranslator(), getTranslations("builder.errors")]);
   const avoid = avoidSchema.safeParse(rawAvoid);
-  if (!isUuid(sessionId) || !avoid.success) return fail("Dados inválidos.");
+  if (!isUuid(sessionId) || !avoid.success) return fail(tr.message("errors.invalidData"));
 
+  // O detalhe de aiConfigProblem() é em português (fica para a análise); aqui vai a mensagem traduzida.
   const provider = getAIProvider();
-  if (!provider) return fail(`A IA não está configurada. ${aiConfigProblem() ?? ""}`.trim(), "not_configured");
+  if (!provider) return fail(t("aiNotConfigured"), "not_configured");
 
   const supabase = await createClient();
   const session = await getOwnedSession(supabase, sessionId);
-  if (!session) return fail("Sessão não encontrada.");
-  if (session.status === "completed") return fail("A sessão já foi encerrada.");
+  if (!session) return fail(t("sessionNotFound"));
+  if (session.status === "completed") return fail(t("sessionEnded"));
 
   const last = lastSuggestion.get(session.speaker_id) ?? 0;
-  if (Date.now() - last < SUGGEST_INTERVAL_MS) return fail("Aguarde alguns segundos antes de gerar de novo.");
+  if (Date.now() - last < SUGGEST_INTERVAL_MS) return fail(t("tooSoon"));
   lastSuggestion.set(session.speaker_id, Date.now());
 
   const { data: existing, error } = await supabase.from("interactions").select("title").eq("session_id", sessionId);
-  if (error) return fail("Não foi possível carregar o roteiro.");
+  if (error) return fail(t("lineupLoadFailed"));
 
   try {
     const suggestions = await suggestInteractions(
@@ -84,13 +88,15 @@ export async function suggestInteractionsAction(
       localeOrDefault(session.locale),
     );
     return ok({ suggestions });
-  } catch (e) {
-    return fail(e instanceof AIProviderError ? e.message : "Falha ao gerar sugestões.");
+  } catch {
+    // AIProviderError traz texto em português: mostra a mensagem genérica no idioma do painel.
+    return fail(t("suggestFailed"));
   }
 }
 
 export async function deleteInteractionAction(sessionId: string, interactionId: string): Promise<ActionResult> {
-  if (!isUuid(sessionId) || !isUuid(interactionId)) return fail("Dados inválidos.");
+  const [tr, t] = await Promise.all([getMessageTranslator(), getTranslations("builder.errors")]);
+  if (!isUuid(sessionId) || !isUuid(interactionId)) return fail(tr.message("errors.invalidData"));
   const supabase = await createClient();
 
   const { data: interaction } = await supabase
@@ -99,12 +105,12 @@ export async function deleteInteractionAction(sessionId: string, interactionId: 
     .eq("id", interactionId)
     .eq("session_id", sessionId)
     .maybeSingle();
-  if (!interaction) return fail("Interação não encontrada.");
-  if (interaction.is_active) return fail("Encerre a interação antes de excluí-la.");
+  if (!interaction) return fail(tr.message("core.interactionNotFound"));
+  if (interaction.is_active) return fail(t("endBeforeDelete"));
 
   const images = await optionImagesOf(supabase, { interactionId });
   const { error } = await supabase.from("interactions").delete().eq("id", interactionId);
-  if (error) return fail("Não foi possível excluir a interação.");
+  if (error) return fail(t("deleteFailed"));
   await removeUnusedOptionImages(supabase, images);
 
   revalidateSession(sessionId);
@@ -120,8 +126,9 @@ const arrangementSchema = z
 
 /** Nova ordem do roteiro e o ponto do deck (depois de quantos slides) de cada interação. */
 export async function arrangeInteractionsAction(sessionId: string, raw: unknown): Promise<ActionResult> {
+  const [tr, t] = await Promise.all([getMessageTranslator(), getTranslations("builder.errors")]);
   const parsed = arrangementSchema.safeParse(raw);
-  if (!isUuid(sessionId) || !parsed.success) return fail("Dados inválidos.");
+  if (!isUuid(sessionId) || !parsed.success) return fail(tr.message("errors.invalidData"));
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("arrange_interactions", {
@@ -130,7 +137,7 @@ export async function arrangeInteractionsAction(sessionId: string, raw: unknown)
     // O gerador de tipos não expressa elementos nulos em int[]; null = "no fim".
     p_after_slides: parsed.data.afterSlides as number[],
   });
-  if (error) return fail("Não foi possível reordenar.");
+  if (error) return fail(t("reorderFailed"));
 
   revalidateSession(sessionId);
   return ok(null);
@@ -140,7 +147,8 @@ export async function setActiveInteractionAction(
   sessionId: string,
   interactionId: string | null,
 ): Promise<ActionResult> {
-  if (!isUuid(sessionId) || (interactionId !== null && !isUuid(interactionId))) return fail("Dados inválidos.");
+  const [tr, t] = await Promise.all([getMessageTranslator(), getTranslations("builder.errors")]);
+  if (!isUuid(sessionId) || (interactionId !== null && !isUuid(interactionId))) return fail(tr.message("errors.invalidData"));
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("set_active_interaction", {
@@ -149,9 +157,9 @@ export async function setActiveInteractionAction(
   });
 
   if (error) {
-    if (hasDbErrorCode(error, "session_not_live")) return fail("Inicie ou retome a sessão para ativar interações.");
-    if (hasDbErrorCode(error, "interaction_not_found")) return fail("Interação não encontrada.");
-    return fail("Não foi possível alterar a interação ativa.");
+    if (hasDbErrorCode(error, "session_not_live")) return fail(t("startToActivate"));
+    if (hasDbErrorCode(error, "interaction_not_found")) return fail(tr.message("core.interactionNotFound"));
+    return fail(t("activeChangeFailed"));
   }
   return ok(null);
 }
@@ -177,20 +185,21 @@ export async function addLiveInteractionAction(
   rawInput: unknown,
   rawPlacement: unknown,
 ): Promise<ActionResult<{ id: string }>> {
+  const [tr, t] = await Promise.all([getMessageTranslator(), getTranslations("builder.errors")]);
   const parsed = interactionInputSchema.safeParse(rawInput);
   const placement = livePlacementSchema.safeParse(rawPlacement);
-  if (!isUuid(sessionId) || !placement.success) return fail("Dados inválidos.");
-  if (!parsed.success) return fail(firstIssue(parsed.error));
+  if (!isUuid(sessionId) || !placement.success) return fail(tr.message("errors.invalidData"));
+  if (!parsed.success) return fail(tr.issue(parsed.error));
 
   const supabase = await createClient();
   const session = await getOwnedSession(supabase, sessionId);
-  if (!session) return fail("Sessão não encontrada.");
-  if (session.status === "completed") return fail("A sessão já foi encerrada.");
-  if (placement.data.launch && session.status !== "live") return fail("Retome a sessão para lançar a pergunta.");
-  if (foreignImage(parsed.data, session.speaker_id)) return fail("Imagem inválida.");
+  if (!session) return fail(t("sessionNotFound"));
+  if (session.status === "completed") return fail(t("sessionEnded"));
+  if (placement.data.launch && session.status !== "live") return fail(t("resumeToLaunch"));
+  if (foreignImage(parsed.data, session.speaker_id)) return fail(tr.message("validation.invalidImage"));
 
   const created = await createInteraction(supabase, sessionId, parsed.data);
-  if (!created.ok) return created;
+  if (!created.ok) return fail(tr.message(created.error), created.code);
   const id = created.data.id;
   revalidateSession(sessionId);
 
@@ -199,7 +208,7 @@ export async function addLiveInteractionAction(
     .select("id, after_slide")
     .eq("session_id", sessionId)
     .order("position");
-  if (rowsError) return fail("A pergunta foi criada no fim do roteiro, mas não foi possível posicioná-la.", "created");
+  if (rowsError) return fail(t("createdNotPlaced"), "created");
   const arrangement = insertAfterItem(
     rows.map((r) => ({ id: r.id, afterSlide: r.after_slide })),
     id,
@@ -212,11 +221,11 @@ export async function addLiveInteractionAction(
     // O gerador de tipos não expressa elementos nulos em int[]; null = "no fim".
     p_after_slides: arrangement.afterSlides as number[],
   });
-  if (arrangeError) return fail("A pergunta foi criada no fim do roteiro, mas não foi possível posicioná-la.", "created");
+  if (arrangeError) return fail(t("createdNotPlaced"), "created");
 
   if (placement.data.launch) {
     const { error } = await supabase.rpc("set_active_interaction", { p_session_id: sessionId, p_interaction_id: id });
-    if (error) return fail("A pergunta foi criada como a próxima, mas não foi possível lançá-la.", "created");
+    if (error) return fail(t("createdNotLaunched"), "created");
   }
   return ok({ id });
 }

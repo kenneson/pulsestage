@@ -1,1 +1,229 @@
-{}
+{
+  "lowSample": "Muestra pequeña ({count, plural, one {# encuesta} other {# encuestas}}): interprétala con cautela.",
+  "responses": "{count, plural, one {# respuesta} other {# respuestas}}",
+  "evolution": {
+    "metaTitle": "Evolución",
+    "title": "Evolución",
+    "description": "Cómo cambian tus evaluaciones de una sesión a otra.",
+    "emptyTitle": "Ninguna sesión finalizada",
+    "emptyDescription": "Finaliza una sesión para empezar a seguir tu evolución.",
+    "chartTitle": "Dimensiones de las encuestas (1–5)",
+    "chartDescription": "Las dimensiones que más aparecen en tus encuestas. Las sesiones con pocas respuestas varían más: revisa el número de encuestas en la tabla.",
+    "notEnough": "Se necesitan al menos 2 sesiones con encuestas respondidas para mostrar la tendencia.",
+    "table": {
+      "session": "Sesión",
+      "date": "Fecha",
+      "participants": "Participantes",
+      "participation": "Participación",
+      "headline": "Nota general (0–10)",
+      "scaleAverage": "Promedio (1–5)",
+      "strongest": "Punto más fuerte",
+      "surveys": "Encuestas"
+    }
+  },
+  "session": {
+    "metaTitle": "Análisis de la sesión",
+    "questionFallback": "Pregunta",
+    "viewInteractions": "Ver interacciones",
+    "export": "Exportar",
+    "exportPdf": "Informe en PDF",
+    "exportResponses": "Respuestas en vivo (CSV)",
+    "exportSurvey": "Encuesta (CSV)",
+    "liveRoom": "Sala en vivo",
+    "partial": "La sesión aún no ha finalizado: las cifras de abajo son parciales.",
+    "stats": {
+      "participants": "Participantes",
+      "responders": "{count, plural, one {# respondió algo} other {# respondieron algo}}",
+      "responses": "Respuestas",
+      "responseRate": "Tasa de respuesta {rate}",
+      "participation": "Participación",
+      "participationHint": "Quienes respondieron ÷ quienes entraron",
+      "surveys": "Encuestas respondidas",
+      "surveyRate": "{rate} de los participantes"
+    },
+    "scorecard": {
+      "title": "Evaluación",
+      "namedSurvey": "Encuesta “{name}”.",
+      "defaultSurvey": "Encuesta posterior al evento.",
+      "description": "Tus puntos fuertes y débiles según el público.",
+      "emptyTitle": "Sin encuestas respondidas",
+      "emptyDescription": "El enlace de la encuesta aparece en el celular y en el proyector al finalizar la sesión."
+    },
+    "pulse": {
+      "title": "Señal de participación",
+      "description": "Respuestas ÷ participantes presentes en cada interacción. Mide participación, no atención.",
+      "empty": "No se activó ninguna interacción"
+    },
+    "timeline": {
+      "title": "Línea de tiempo de la presentación",
+      "description": "Lo que estuvo en pantalla en cada momento. Muestra a dónde se fue el tiempo, no la atención del público."
+    },
+    "insightsTitle": "Insights",
+    "results": {
+      "title": "Resultados por interacción",
+      "empty": "No hay interacciones en esta sesión",
+      "ofPresent": "{rate} de los presentes",
+      "median": "Mediana {value}",
+      "quiz": "Aciertos {rate} · tiempo promedio {time}"
+    },
+    "ranking": {
+      "title": "Tabla de posiciones del quiz",
+      "position": "{n}.º",
+      "correct": "{count, plural, one {# acierto} other {# aciertos}}",
+      "points": "{points} pts"
+    },
+    "survey": {
+      "title": "Resultados de la encuesta",
+      "template": "Plantilla “{name}”"
+    }
+  },
+  "report": {
+    "metaTitle": "Informe de la sesión",
+    "back": "Volver al análisis",
+    "printHint": "En la ventana de impresión, elige “Guardar como PDF”.",
+    "header": "Informe de la sesión",
+    "surveyName": "encuesta “{name}”",
+    "numbers": "Cifras",
+    "participants": "Participantes",
+    "liveResponses": "Respuestas en vivo",
+    "participation": "Participación",
+    "surveys": "Encuestas respondidas",
+    "strengthsAndWeaknesses": "Puntos fuertes y por mejorar",
+    "audienceRating": "Evaluación del público",
+    "perQuestion": "Participación en cada pregunta",
+    "aiAnalysis": "Análisis de la IA",
+    "comments": "Lo que dijo el público",
+    "people": "{count, plural, one {# persona} other {# personas}}",
+    "footerNote": "La participación mide quién respondió, no la atención.",
+    "generatedAt": "Generado el {date}"
+  },
+  "export": {
+    "fileResponses": "respuestas",
+    "fileSurvey": "encuesta",
+    "responses": {
+      "order": "Orden",
+      "type": "Tipo",
+      "question": "Pregunta",
+      "participant": "Participante",
+      "answer": "Respuesta",
+      "correct": "Acertó (quiz)",
+      "points": "Puntos",
+      "time": "Tiempo (s)",
+      "answeredAt": "Respondido el"
+    },
+    "survey": {
+      "response": "Respuesta",
+      "sentAt": "Enviada el",
+      "participant": "Participante"
+    },
+    "errors": {
+      "invalidParams": "Parámetros no válidos.",
+      "notFound": "No se encontró la sesión."
+    }
+  },
+  "survey": {
+    "strongest": "Puntos más fuertes",
+    "weakest": "Puntos por mejorar",
+    "comparisonNote": "Comparación entre las dimensiones de esta sesión, según la posición relativa en cada escala.",
+    "noDimensions": "Esta plantilla no tiene preguntas de calificación asociadas a una dimensión. Los resultados de cada pregunta están abajo.",
+    "interaction": "Interacción (participación en las preguntas en vivo)",
+    "mean": "Promedio <strong>{mean}</strong> de {max}",
+    "noResponses": "Sin respuestas."
+  },
+  "openText": {
+    "empty": "Ninguna respuesta.",
+    "searchPlaceholder": "Buscar en las respuestas",
+    "count": "{shown} de {total}"
+  },
+  "print": {
+    "button": "Guardar PDF"
+  },
+  "pulse": {
+    "tooltip": "{rate} · {responses} de {eligible} presentes"
+  },
+  "engagement": {
+    "questions": {
+      "title": "Preguntas del público",
+      "sent": "{count, plural, one {# pregunta enviada} other {# preguntas enviadas}}",
+      "answered": "{count, plural, one {# respondida} other {# respondidas}}",
+      "hidden": "{count, plural, one {# oculta} other {# ocultas}}",
+      "tip": "Buenas candidatas para contenido o preguntas frecuentes la próxima vez.",
+      "none": "No hay preguntas visibles.",
+      "anonymous": "Anónima"
+    },
+    "reactions": {
+      "title": "Reacciones del público",
+      "total": "{count, plural, one {# reacción} other {# reacciones}} durante la sesión.",
+      "peaksTitle": "Momentos con más reacciones",
+      "peakMinute": "min {minute}",
+      "count": "{count, plural, one {# reacción} other {# reacciones}}"
+    }
+  },
+  "timeline": {
+    "kinds": {
+      "slide": "Diapositivas",
+      "interaction": "Preguntas",
+      "ranking": "Tabla de posiciones",
+      "join": "Código QR / apertura",
+      "pause": "Pausa",
+      "presentation": "Presentación"
+    },
+    "slideShort": "D{number}",
+    "slideLong": "Diapositiva {number}",
+    "questionShort": "P{number}",
+    "questionLong": "{type}: {title}",
+    "deletedShort": "P",
+    "deletedLong": "Pregunta (eliminada del guion)",
+    "segmentLabel": "{label}, de {start} a {end}",
+    "legend": "Leyenda",
+    "notRecorded": "Sesión presentada antes del registro de diapositivas y pausas: solo aparecen las preguntas. Las próximas sesiones muestran todo lo que pasó por la pantalla.",
+    "topSlides": "Diapositivas en las que más te detuviste",
+    "viewTable": "Ver en tabla",
+    "start": "Inicio",
+    "duration": "Duración",
+    "onScreen": "En pantalla"
+  },
+  "insights": {
+    "generated": "Insights generados.",
+    "generatedAt": "Generado el {date}",
+    "intro": "Análisis con IA basado solo en los datos de esta sesión.",
+    "analyzing": "Analizando…",
+    "regenerate": "Generar de nuevo",
+    "generate": "Generar insights",
+    "notConfigured": "IA no configurada.",
+    "defaultProblem": "Define AI_PROVIDER y AI_API_KEY en el entorno.",
+    "vercelHint": "En Vercel: Settings → Environment Variables, marca el entorno Production y haz Redeploy para que se aplique. El resto del análisis funciona con normalidad.",
+    "emptyTitle": "Ningún insight generado",
+    "emptyDescription": "Los insights separan lo observado, la interpretación y la recomendación.",
+    "confidence": {
+      "low": "Confianza baja",
+      "medium": "Confianza media",
+      "high": "Confianza alta",
+      "other": "Confianza {level}"
+    },
+    "priority": {
+      "low": "Prioridad baja",
+      "medium": "Prioridad media",
+      "high": "Prioridad alta",
+      "other": "Prioridad {level}"
+    },
+    "sections": {
+      "strength": "Puntos fuertes",
+      "attention_point": "Puntos de atención",
+      "recommendation": "Recomendaciones para la próxima sesión"
+    },
+    "summaryTitle": "Resumen",
+    "dataQualityTitle": "Calidad de los datos"
+  },
+  "errors": {
+    "invalidSession": "Sesión no válida.",
+    "notConfigured": "La IA no está configurada.",
+    "notFound": "No se encontró la sesión.",
+    "notCompleted": "Genera los insights después de finalizar la sesión.",
+    "noData": "Todavía no hay respuestas ni encuestas para analizar.",
+    "tooSoon": "Espera un minuto antes de generar de nuevo.",
+    "aiFailed": "La IA no pudo generar los insights en este momento. Inténtalo de nuevo en unos instantes.",
+    "generateFailed": "No se pudieron generar los insights.",
+    "saveFailed": "No se pudieron guardar los insights."
+  }
+}

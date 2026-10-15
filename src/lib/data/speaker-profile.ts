@@ -3,6 +3,7 @@ import { cache } from "react";
 import type { AdminSupabase } from "@/lib/supabase/admin";
 import type { ServerSupabase } from "@/lib/supabase/server";
 import type { ProfileRow } from "@/lib/supabase/types";
+import { localeOrDefault, type Locale } from "@/lib/domain/locale";
 import {
   AUDIENCES,
   FORMATS,
@@ -142,16 +143,22 @@ export const getPublicProfile = cache(async (admin: AdminSupabase, slug: string)
 export async function getContactTarget(
   admin: AdminSupabase,
   slug: string,
-): Promise<{ speakerId: string; name: string; email: string | null } | null> {
+): Promise<{ speakerId: string; name: string | null; email: string | null; locale: Locale } | null> {
   const { data, error } = await admin
     .from("profiles")
-    .select("id, name, public_enabled, contact_enabled")
+    .select("id, name, locale, public_enabled, contact_enabled")
     .eq("public_slug", slug)
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!data || !data.public_enabled || !data.contact_enabled) return null;
   const { data: user } = await admin.auth.admin.getUserById(data.id);
-  return { speakerId: data.id, name: data.name?.trim() || FALLBACK_NAME, email: user.user?.email ?? null };
+  // Nome vazio: o e-mail usa uma saudação sem nome, no idioma do perfil do palestrante.
+  return {
+    speakerId: data.id,
+    name: data.name?.trim() || null,
+    email: user.user?.email ?? null,
+    locale: localeOrDefault(data.locale),
+  };
 }
 
 // O diretório lê todos os perfis públicos e filtra no servidor (lib/domain/speaker-profile.ts).

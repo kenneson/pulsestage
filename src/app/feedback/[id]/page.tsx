@@ -1,24 +1,36 @@
 import type { Metadata } from "next";
+import { cache } from "react";
 import { notFound } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getPublicSession, getSessionSurvey } from "@/lib/data/public";
 import { getParticipantIdFromCookie, hasSentFeedback } from "@/lib/participant/token";
 import { isUuid } from "@/lib/action-result";
+import { SessionIntl } from "@/i18n/session-intl";
 import { Logo } from "@/components/logo";
 import { SurveyForm } from "@/components/participant/survey-form";
 import { RaffleTicketLive } from "@/components/participant/raffle-ticket";
 import { getSurveyPromo } from "@/lib/data/speaker-profile";
 import { SpeakerPromoCard } from "@/components/speaker-profile/speaker-promo-card";
 
-export const metadata: Metadata = { title: "Pesquisa da sessão", robots: { index: false } };
+// Uma leitura por requisição, compartilhada entre os metadados e a página.
+const loadSession = cache((id: string) => (isUuid(id) ? getPublicSession(createAdminClient(), id) : Promise.resolve(null)));
+
+// A pesquisa fala o idioma da sessão (as perguntas vêm do modelo escolhido nesse idioma).
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const session = await loadSession((await params).id);
+  const t = await getTranslations({ locale: session?.locale ?? (await getLocale()), namespace: "participant.feedback" });
+  return { title: t("metaTitle"), robots: { index: false } };
+}
 
 export default async function FeedbackPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   if (!isUuid(id)) notFound();
 
   const admin = createAdminClient();
-  const session = await getPublicSession(admin, id);
+  const session = await loadSession(id);
   if (!session) notFound();
+  const t = await getTranslations({ locale: session.locale, namespace: "participant.feedback" });
 
   const [survey, raffle, promo] = await Promise.all([
     session.status === "completed" ? getSessionSurvey(admin, id) : Promise.resolve(null),
@@ -43,42 +55,40 @@ export default async function FeedbackPage({ params }: { params: Promise<{ id: s
     ticket || promo ? (
       <>
         {ticket}
-        {promo ? <SpeakerPromoCard promo={promo} className="mt-4 w-full" /> : null}
+        {promo ? <SpeakerPromoCard promo={promo} locale={session.locale} className="mt-4 w-full" /> : null}
       </>
     ) : null;
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-6 px-5 py-8">
-      <Logo />
-      <div>
-        <p className="text-sm text-muted-foreground">Pesquisa sobre a sessão</p>
-        <h1 className="mt-1 text-2xl font-semibold">{session.title}</h1>
-      </div>
-      {session.status !== "completed" ? (
-        <p className="rounded-lg bg-muted p-4 text-muted-foreground">
-          A pesquisa abre assim que a sessão terminar. Volte a este link depois.
-        </p>
-      ) : alreadySent ? (
-        <>
-          <p className="rounded-lg bg-muted p-4">Você já respondeu esta pesquisa. Obrigado!</p>
-          {afterSurvey}
-        </>
-      ) : (
-        survey && survey.questions.length > 0 ? (
+    <SessionIntl locale={session.locale}>
+      <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-6 px-5 py-8">
+        <Logo />
+        <div>
+          <p className="text-sm text-muted-foreground">{t("eyebrow")}</p>
+          <h1 className="mt-1 text-2xl font-semibold">{session.title}</h1>
+        </div>
+        {session.status !== "completed" ? (
+          <p className="rounded-lg bg-muted p-4 text-muted-foreground">{t("notOpen")}</p>
+        ) : alreadySent ? (
           <>
-            {raffleMode === "survey" ? (
-              <p className="rounded-lg border border-dashed p-4 text-sm">
-                {participantId
-                  ? "Tem sorteio! Ao enviar a pesquisa, você recebe seu número da sorte."
-                  : "Tem sorteio, mas ele vale só para quem entrou na sessão pelo celular, com o código ou o QR Code."}
-              </p>
-            ) : null}
-            <SurveyForm sessionId={id} questions={survey.questions} after={afterSurvey} />
+            <p className="rounded-lg bg-muted p-4">{t("alreadySent")}</p>
+            {afterSurvey}
           </>
         ) : (
-          <p className="rounded-lg bg-muted p-4 text-muted-foreground">A pesquisa desta sessão não está disponível.</p>
-        )
-      )}
-    </main>
+          survey && survey.questions.length > 0 ? (
+            <>
+              {raffleMode === "survey" ? (
+                <p className="rounded-lg border border-dashed p-4 text-sm">
+                  {participantId ? t("raffleJoined") : t("raffleNotJoined")}
+                </p>
+              ) : null}
+              <SurveyForm sessionId={id} questions={survey.questions} after={afterSurvey} />
+            </>
+          ) : (
+            <p className="rounded-lg bg-muted p-4 text-muted-foreground">{t("unavailable")}</p>
+          )
+        )}
+      </main>
+    </SessionIntl>
   );
 }

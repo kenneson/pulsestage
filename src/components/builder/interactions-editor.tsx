@@ -2,16 +2,17 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { arrangeInteractionsAction, deleteInteractionAction } from "@/features/interactions/actions";
-import { gapLabel, moveInteraction } from "@/lib/domain/deck";
+import { moveInteraction } from "@/lib/domain/deck";
 import {
-  INTERACTION_TYPE_META,
   INTERACTION_TYPES,
   type InteractionType,
   type PublicInteraction,
 } from "@/lib/domain/interactions";
 import { cn } from "@/lib/utils";
+import { gapText } from "@/i18n/text";
 import { Badge } from "@/components/ui/badge";
 import { TYPE_PAPER, TypeTag } from "@/components/interaction-type-tag";
 import { Button } from "@/components/ui/button";
@@ -47,6 +48,9 @@ export function InteractionsEditor({
   /** com slides, subir/descer também muda o ponto da apresentação em que a pergunta entra */
   slideCount?: number;
 }) {
+  const t = useTranslations("builder.editor");
+  const tCommon = useTranslations("common.actions");
+  const tDomain = useTranslations("domain");
   const router = useRouter();
   const [editing, setEditing] = useState<string | null>(null);
   const [creating, setCreating] = useState<InteractionType | null>(null);
@@ -75,16 +79,16 @@ export function InteractionsEditor({
 
   async function remove(item: EditorItem) {
     const confirmed = await confirm({
-      title: `Excluir "${item.interaction.title}"?`,
-      description: item.responses > 0 ? `As ${item.responses} respostas também serão apagadas.` : undefined,
-      confirmLabel: "Excluir",
+      title: t("deleteTitle", { title: item.interaction.title }),
+      description: item.responses > 0 ? t("deleteResponses", { count: item.responses }) : undefined,
+      confirmLabel: tCommon("delete"),
       destructive: true,
     });
     if (!confirmed) return;
     startTransition(async () => {
       const result = await deleteInteractionAction(sessionId, item.interaction.id);
       if (!result.ok) toast.error(result.error);
-      else toast.success("Interação excluída.");
+      else toast.success(t("deleted"));
       router.refresh();
     });
   }
@@ -95,8 +99,8 @@ export function InteractionsEditor({
         {confirmDialog}
         {items.length === 0 && !creating ? (
           <EmptyState
-            title="Nenhuma interação"
-            description="Adicione enquetes, quizzes, escalas, nuvens de palavras ou perguntas abertas."
+            title={t("emptyTitle")}
+            description={t("emptyDescription")}
           />
         ) : null}
 
@@ -119,19 +123,19 @@ export function InteractionsEditor({
             return (
               <li key={interaction.id} className="rounded-xl border bg-background">
                 <div className="flex items-start gap-3 p-4">
-                  <span className="w-7 shrink-0 pt-0.5 font-display text-xl font-bold leading-none tabular-nums" aria-label={`Deixa ${index + 1}`}>
+                  <span className="w-7 shrink-0 pt-0.5 font-display text-xl font-bold leading-none tabular-nums" aria-label={t("cue", { number: index + 1 })}>
                     {index + 1}
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <TypeTag type={interaction.type} />
-                      {item.isActive ? <Badge variant="live">Ativa</Badge> : null}
+                      {item.isActive ? <Badge variant="live">{t("active")}</Badge> : null}
                       {item.responses > 0 ? (
-                        <span className="text-xs text-muted-foreground">{item.responses} respostas</span>
+                        <span className="text-xs text-muted-foreground">{t("responses", { count: item.responses })}</span>
                       ) : null}
                       {slideCount > 0 ? (
                         <span className="text-xs text-muted-foreground">
-                          {gapLabel(interaction.afterSlide, slideCount)}
+                          {gapText(tDomain, interaction.afterSlide, slideCount)}
                         </span>
                       ) : null}
                     </div>
@@ -146,29 +150,29 @@ export function InteractionsEditor({
                     <Button
                       variant="ghost"
                       size="icon"
-                      aria-label="Pré-visualizar"
+                      aria-label={t("preview")}
                       onClick={() => setPreviewing(previewing === interaction.id ? null : interaction.id)}
                     >
                       <EyeIcon />
                     </Button>
                     {!readOnly ? (
                       <>
-                        <Button variant="ghost" size="icon" aria-label="Subir" disabled={pending || index === 0} onClick={() => move(index, -1)}>
+                        <Button variant="ghost" size="icon" aria-label={t("moveUp")} disabled={pending || index === 0} onClick={() => move(index, -1)}>
                           <ArrowUpIcon />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          aria-label="Descer"
+                          aria-label={t("moveDown")}
                           disabled={pending || index === items.length - 1}
                           onClick={() => move(index, 1)}
                         >
                           <ArrowDownIcon />
                         </Button>
-                        <Button variant="ghost" size="icon" aria-label="Editar" onClick={() => setEditing(interaction.id)}>
+                        <Button variant="ghost" size="icon" aria-label={tCommon("edit")} onClick={() => setEditing(interaction.id)}>
                           <EditIcon />
                         </Button>
-                        <Button variant="ghost" size="icon" aria-label="Excluir" disabled={pending} onClick={() => remove(item)}>
+                        <Button variant="ghost" size="icon" aria-label={tCommon("delete")} disabled={pending} onClick={() => remove(item)}>
                           <TrashIcon />
                         </Button>
                       </>
@@ -199,13 +203,13 @@ export function InteractionsEditor({
         ) : !readOnly ? (
           <div className="flex flex-col gap-2 rounded-xl border border-dashed p-4">
             <p className="flex items-center gap-2 text-sm font-medium">
-              <PlusIcon /> Adicionar interação
+              <PlusIcon /> {t("addInteraction")}
             </p>
             <div className="flex flex-wrap gap-2">
               {INTERACTION_TYPES.map((type) => (
-                <Button key={type} variant="outline" size="sm" onClick={() => setCreating(type)} title={INTERACTION_TYPE_META[type].description}>
+                <Button key={type} variant="outline" size="sm" onClick={() => setCreating(type)} title={tDomain(`interactionTypes.${type}.description`)}>
                   <span aria-hidden className={cn("size-2.5 rounded-sm", TYPE_PAPER[type])} />
-                  {INTERACTION_TYPE_META[type].label}
+                  {tDomain(`interactionTypes.${type}.label`)}
                 </Button>
               ))}
             </div>
@@ -219,7 +223,7 @@ export function InteractionsEditor({
                   disabled={ai.loading}
                   onClick={ai.generate}
                 >
-                  <SparklesIcon /> Gerar com IA
+                  <SparklesIcon /> {t("generateWithAI")}
                 </Button>
               ) : null}
             </div>

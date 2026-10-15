@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { fetchAllRows } from "@/lib/supabase/fetch-all";
 import { getOwnedSession, getSessionInteractions } from "@/lib/data/sessions";
@@ -27,7 +28,10 @@ import { getSlideUrls } from "@/lib/data/slides";
 import { getRaffleState } from "@/lib/data/raffle";
 import { RaffleEditor } from "@/components/raffle/raffle-editor";
 
-export const metadata: Metadata = { title: "Editar sessão" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("session.page");
+  return { title: t("metaTitle") };
+}
 
 const TAB_ALIASES: Record<string, string> = {
   sorteio: "raffle",
@@ -104,7 +108,13 @@ export default async function SessionBuilderPage({
     afterSlide: interaction.afterSlide,
   }));
 
-  const { timeZone } = await getSpeakerProfile();
+  const [{ timeZone }, locale, t, tTabs, tCards] = await Promise.all([
+    getSpeakerProfile(),
+    getLocale(),
+    getTranslations("session.page"),
+    getTranslations("session.tabs"),
+    getTranslations("session.cards"),
+  ]);
   const when = utcToZonedParts(session.scheduled_at, timeZone);
   const status = session.status;
 
@@ -115,11 +125,11 @@ export default async function SessionBuilderPage({
           <div className="flex items-center gap-2">
             <StatusBadge status={status} />
             <span className="text-sm text-muted-foreground">
-              Código <span className="font-display font-semibold text-foreground">{session.join_code}</span>
+              {t("joinCode")} <span className="font-display font-semibold text-foreground">{session.join_code}</span>
             </span>
           </div>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight">{session.title}</h1>
-          <p className="text-sm text-muted-foreground">{formatDateTime(session.scheduled_at, timeZone)}</p>
+          <p className="text-sm text-muted-foreground">{formatDateTime(session.scheduled_at, timeZone, locale)}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <DeleteSessionButton sessionId={id} title={session.title} />
@@ -128,17 +138,17 @@ export default async function SessionBuilderPage({
           {status === "draft" ? <StartSessionButton sessionId={id} hasInteractions={items.length > 0} /> : null}
           {status === "live" || status === "paused" ? (
             <Link href={`/dashboard/sessions/${id}/live`} className={buttonVariants()}>
-              Abrir sala ao vivo
+              {t("openLive")}
             </Link>
           ) : null}
           {status === "completed" && session.raffle_eligibility ? (
             <Link href={`/dashboard/sessions/${id}/live`} className={buttonVariants({ variant: "outline" })}>
-              Sala do sorteio
+              {t("raffleRoom")}
             </Link>
           ) : null}
           {status === "completed" ? (
             <Link href={`/dashboard/sessions/${id}/analytics`} className={buttonVariants()}>
-              Ver analytics
+              {t("viewAnalytics")}
             </Link>
           ) : null}
         </div>
@@ -149,14 +159,12 @@ export default async function SessionBuilderPage({
         tabs={[
           {
             id: "interactions",
-            label: `Interações (${items.length})`,
+            label: tTabs("interactions", { count: items.length }),
             content: (
               <Card>
                 <CardHeader>
-                  <CardTitle>Interações</CardTitle>
-                  <CardDescription>
-                    Na ordem em que serão apresentadas. Use o olho para ver como o participante enxerga.
-                  </CardDescription>
+                  <CardTitle>{tCards("interactionsTitle")}</CardTitle>
+                  <CardDescription>{tCards("interactionsDescription")}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <InteractionsEditor
@@ -173,14 +181,12 @@ export default async function SessionBuilderPage({
           },
           {
             id: "slides",
-            label: slideUrls.length > 0 ? `Slides (${slideUrls.length})` : "Slides",
+            label: slideUrls.length > 0 ? tTabs("slidesCount", { count: slideUrls.length }) : tTabs("slides"),
             content: (
               <Card>
                 <CardHeader>
-                  <CardTitle>Slides</CardTitle>
-                  <CardDescription>
-                    Apresente pelo PulseStage: slides e perguntas na mesma sequência, sem trocar de janela.
-                  </CardDescription>
+                  <CardTitle>{tCards("slidesTitle")}</CardTitle>
+                  <CardDescription>{tCards("slidesDescription")}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <SlidesEditor
@@ -196,14 +202,12 @@ export default async function SessionBuilderPage({
           },
           {
             id: "engagement",
-            label: "Participação",
+            label: tTabs("engagement"),
             content: (
               <Card>
                 <CardHeader>
-                  <CardTitle>Participação</CardTitle>
-                  <CardDescription>
-                    Perguntas da plateia, reações ao vivo e moderação. Dá para mudar também durante a sessão, na sala ao vivo.
-                  </CardDescription>
+                  <CardTitle>{tCards("engagementTitle")}</CardTitle>
+                  <CardDescription>{tCards("engagementDescription")}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <EngagementSettings
@@ -222,14 +226,12 @@ export default async function SessionBuilderPage({
           },
           {
             id: "raffle",
-            label: raffle.eligibility ? `Sorteio (${raffle.prizes.length})` : "Sorteio",
+            label: raffle.eligibility ? tTabs("raffleCount", { count: raffle.prizes.length }) : tTabs("raffle"),
             content: (
               <Card>
                 <CardHeader>
-                  <CardTitle>Sorteio</CardTitle>
-                  <CardDescription>
-                    Opcional. Sorteie prêmios entre quem respondeu a pesquisa ou entre todos que entraram na sessão.
-                  </CardDescription>
+                  <CardTitle>{tCards("raffleTitle")}</CardTitle>
+                  <CardDescription>{tCards("raffleDescription")}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <RaffleEditor sessionId={id} state={raffle} />
@@ -239,7 +241,7 @@ export default async function SessionBuilderPage({
           },
           {
             id: "info",
-            label: "Informações",
+            label: tTabs("info"),
             content: (
               <Card>
                 <CardContent>

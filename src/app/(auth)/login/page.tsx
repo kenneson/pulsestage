@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { LoginForm } from "@/components/auth/auth-forms";
 import { safeNextPath } from "@/lib/action-result";
+import { getPublicHref } from "@/i18n/seo";
 
-export const metadata: Metadata = { title: "Entrar" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("auth.login");
+  return { title: t("metaTitle") };
+}
 
-const NOTICES: Record<string, string> = {
-  confirmacao: "Não foi possível confirmar o e-mail. Tente entrar ou peça um novo link.",
-  google: "Não foi possível entrar com o Google. Tente de novo.",
-};
+const NOTICES = { confirmacao: "confirmation", google: "google" } as const;
 
 export default async function LoginPage({
   searchParams,
@@ -15,10 +17,7 @@ export default async function LoginPage({
   searchParams: Promise<{ next?: string; error?: string }>;
 }) {
   const { next, error } = await searchParams;
-  return (
-    <LoginForm
-      next={next ? safeNextPath(next) : undefined}
-      notice={error && Object.hasOwn(NOTICES, error) ? NOTICES[error] : undefined}
-    />
-  );
+  const [t, href] = await Promise.all([getTranslations("auth.login.notices"), getPublicHref()]);
+  const notice = error && Object.hasOwn(NOTICES, error) ? t(NOTICES[error as keyof typeof NOTICES]) : undefined;
+  return <LoginForm next={next ? safeNextPath(next) : undefined} notice={notice} signupHref={href("/signup")} />;
 }

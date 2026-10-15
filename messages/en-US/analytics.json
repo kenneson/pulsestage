@@ -1,1 +1,229 @@
-{}
+{
+  "lowSample": "Small sample ({count, plural, one {# survey} other {# surveys}}): interpret with caution.",
+  "responses": "{count, plural, one {# response} other {# responses}}",
+  "evolution": {
+    "metaTitle": "Progress",
+    "title": "Progress",
+    "description": "How your ratings change from one session to the next.",
+    "emptyTitle": "No ended sessions",
+    "emptyDescription": "End a session to start tracking your progress.",
+    "chartTitle": "Survey dimensions (1–5)",
+    "chartDescription": "The dimensions that show up most in your surveys. Sessions with few responses swing more: check the number of surveys in the table.",
+    "notEnough": "You need at least 2 sessions with completed surveys to show a trend.",
+    "table": {
+      "session": "Session",
+      "date": "Date",
+      "participants": "Participants",
+      "participation": "Participation",
+      "headline": "Overall score (0–10)",
+      "scaleAverage": "Average (1–5)",
+      "strongest": "Top strength",
+      "surveys": "Surveys"
+    }
+  },
+  "session": {
+    "metaTitle": "Session analytics",
+    "questionFallback": "Question",
+    "viewInteractions": "View interactions",
+    "export": "Export",
+    "exportPdf": "PDF report",
+    "exportResponses": "Live responses (CSV)",
+    "exportSurvey": "Survey (CSV)",
+    "liveRoom": "Live room",
+    "partial": "This session hasn't ended yet: the numbers below are partial.",
+    "stats": {
+      "participants": "Participants",
+      "responders": "{count, plural, one {# answered something} other {# answered something}}",
+      "responses": "Responses",
+      "responseRate": "Response rate {rate}",
+      "participation": "Participation",
+      "participationHint": "Who answered ÷ who joined",
+      "surveys": "Completed surveys",
+      "surveyRate": "{rate} of participants"
+    },
+    "scorecard": {
+      "title": "Scorecard",
+      "namedSurvey": "“{name}” survey.",
+      "defaultSurvey": "Post-event survey.",
+      "description": "Your strengths and weaknesses according to the audience.",
+      "emptyTitle": "No completed surveys",
+      "emptyDescription": "The survey link shows up on phones and on the projector when you end the session."
+    },
+    "pulse": {
+      "title": "Participation signal",
+      "description": "Responses ÷ participants present for each interaction. It measures participation, not attention.",
+      "empty": "No interactions were launched"
+    },
+    "timeline": {
+      "title": "Talk timeline",
+      "description": "What was on the big screen at each moment. It shows where the time went, not how attentive the audience was."
+    },
+    "insightsTitle": "Insights",
+    "results": {
+      "title": "Results by interaction",
+      "empty": "No interactions in this session",
+      "ofPresent": "{rate} of those present",
+      "median": "Median {value}",
+      "quiz": "Correct {rate} · average time {time}"
+    },
+    "ranking": {
+      "title": "Quiz leaderboard",
+      "position": "{n, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}",
+      "correct": "{count, plural, one {# correct} other {# correct}}",
+      "points": "{points} pts"
+    },
+    "survey": {
+      "title": "Survey results",
+      "template": "“{name}” template"
+    }
+  },
+  "report": {
+    "metaTitle": "Session report",
+    "back": "Back to analytics",
+    "printHint": "In the print dialog, choose “Save as PDF”.",
+    "header": "Session report",
+    "surveyName": "“{name}” survey",
+    "numbers": "Numbers",
+    "participants": "Participants",
+    "liveResponses": "Live responses",
+    "participation": "Participation",
+    "surveys": "Completed surveys",
+    "strengthsAndWeaknesses": "Strengths and areas to improve",
+    "audienceRating": "Audience ratings",
+    "perQuestion": "Participation in each question",
+    "aiAnalysis": "AI analysis",
+    "comments": "What the audience said",
+    "people": "{count, plural, one {# person} other {# people}}",
+    "footerNote": "Participation measures who answered, not attention.",
+    "generatedAt": "Generated on {date}"
+  },
+  "export": {
+    "fileResponses": "responses",
+    "fileSurvey": "survey",
+    "responses": {
+      "order": "Order",
+      "type": "Type",
+      "question": "Question",
+      "participant": "Participant",
+      "answer": "Answer",
+      "correct": "Correct (quiz)",
+      "points": "Points",
+      "time": "Time (s)",
+      "answeredAt": "Answered at"
+    },
+    "survey": {
+      "response": "Response",
+      "sentAt": "Submitted at",
+      "participant": "Participant"
+    },
+    "errors": {
+      "invalidParams": "Invalid parameters.",
+      "notFound": "Session not found."
+    }
+  },
+  "survey": {
+    "strongest": "Top strengths",
+    "weakest": "Areas to improve",
+    "comparisonNote": "Compares this session's dimensions by their relative position on each scale.",
+    "noDimensions": "This template has no rating questions tagged with a dimension. The results for each question are below.",
+    "interaction": "Interaction (participation in live questions)",
+    "mean": "Average <strong>{mean}</strong> out of {max}",
+    "noResponses": "No responses."
+  },
+  "openText": {
+    "empty": "No responses.",
+    "searchPlaceholder": "Search responses",
+    "count": "{shown} of {total}"
+  },
+  "print": {
+    "button": "Save PDF"
+  },
+  "pulse": {
+    "tooltip": "{rate} · {responses} of {eligible} present"
+  },
+  "engagement": {
+    "questions": {
+      "title": "Audience Q&A",
+      "sent": "{count, plural, one {# question submitted} other {# questions submitted}}",
+      "answered": "{count, plural, one {# answered} other {# answered}}",
+      "hidden": "{count, plural, one {# hidden} other {# hidden}}",
+      "tip": "Good candidates for content or an FAQ next time.",
+      "none": "No visible questions.",
+      "anonymous": "Anonymous"
+    },
+    "reactions": {
+      "title": "Audience reactions",
+      "total": "{count, plural, one {# reaction} other {# reactions}} during the session.",
+      "peaksTitle": "Moments with the most reactions",
+      "peakMinute": "min {minute}",
+      "count": "{count, plural, one {# reaction} other {# reactions}}"
+    }
+  },
+  "timeline": {
+    "kinds": {
+      "slide": "Slides",
+      "interaction": "Questions",
+      "ranking": "Quiz leaderboard",
+      "join": "QR code / opening",
+      "pause": "Pause",
+      "presentation": "Presentation"
+    },
+    "slideShort": "S{number}",
+    "slideLong": "Slide {number}",
+    "questionShort": "Q{number}",
+    "questionLong": "{type}: {title}",
+    "deletedShort": "Q",
+    "deletedLong": "Question (removed from the lineup)",
+    "segmentLabel": "{label}, from {start} to {end}",
+    "legend": "Legend",
+    "notRecorded": "This session was presented before slides and pauses were recorded, so only the questions appear. Future sessions show everything that was on the big screen.",
+    "topSlides": "Slides you spent the most time on",
+    "viewTable": "View as table",
+    "start": "Start",
+    "duration": "Duration",
+    "onScreen": "On the big screen"
+  },
+  "insights": {
+    "generated": "Insights generated.",
+    "generatedAt": "Generated on {date}",
+    "intro": "AI analysis based only on this session's data.",
+    "analyzing": "Analyzing…",
+    "regenerate": "Generate again",
+    "generate": "Generate insights",
+    "notConfigured": "AI isn't configured.",
+    "defaultProblem": "Set AI_PROVIDER and AI_API_KEY in the environment.",
+    "vercelHint": "On Vercel: Settings → Environment Variables, check the Production environment and Redeploy for it to take effect. The rest of analytics works as usual.",
+    "emptyTitle": "No insights generated",
+    "emptyDescription": "Insights separate what was observed, how to interpret it and what to do next.",
+    "confidence": {
+      "low": "Low confidence",
+      "medium": "Medium confidence",
+      "high": "High confidence",
+      "other": "Confidence: {level}"
+    },
+    "priority": {
+      "low": "Low priority",
+      "medium": "Medium priority",
+      "high": "High priority",
+      "other": "Priority: {level}"
+    },
+    "sections": {
+      "strength": "Strengths",
+      "attention_point": "Points to watch",
+      "recommendation": "Recommendations for your next session"
+    },
+    "summaryTitle": "Summary",
+    "dataQualityTitle": "Data quality"
+  },
+  "errors": {
+    "invalidSession": "Invalid session.",
+    "notConfigured": "AI isn't configured.",
+    "notFound": "Session not found.",
+    "notCompleted": "Generate insights after you end the session.",
+    "noData": "There are no responses or surveys to analyze yet.",
+    "tooSoon": "Wait a minute before generating again.",
+    "aiFailed": "The AI couldn't generate insights right now. Try again in a moment.",
+    "generateFailed": "Couldn't generate insights.",
+    "saveFailed": "Couldn't save the insights."
+  }
+}

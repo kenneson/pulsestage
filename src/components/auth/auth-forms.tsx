@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
+import { useTranslations } from "next-intl";
 import { TimeZoneInput } from "./time-zone-input";
 import { signInAction, signInWithGoogleAction, signUpAction, type AuthFormState } from "@/features/auth/actions";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import { Alert } from "@/components/ui/misc";
 const initial: AuthFormState = {};
 
 function GoogleSubmit() {
+  const t = useTranslations("auth.google");
   const { pending } = useFormStatus();
   return (
     <Button type="submit" variant="outline" disabled={pending} className="w-full">
@@ -22,13 +24,14 @@ function GoogleSubmit() {
         <path fill="#FBBC05" d="M5.3 14.4c-.2-.7-.4-1.5-.4-2.4s.1-1.6.4-2.4V6.5h-4C.5 8.2 0 10 0 12s.5 3.8 1.3 5.5l4-3.1z" />
         <path fill="#EA4335" d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4C17.9 1.2 15.2 0 12 0 7.3 0 3.3 2.6 1.3 6.5l4 3.1c1-2.8 3.6-4.8 6.7-4.8z" />
       </svg>
-      {pending ? "Redirecionando…" : "Continuar com Google"}
+      {pending ? t("redirecting") : t("continue")}
     </Button>
   );
 }
 
 /** Formulário próprio: não pode ficar dentro do form de e-mail/senha. */
 function GoogleSignIn({ next }: { next?: string }) {
+  const t = useTranslations("auth.google");
   return (
     <>
       <form action={signInWithGoogleAction}>
@@ -38,20 +41,22 @@ function GoogleSignIn({ next }: { next?: string }) {
       </form>
       <div className="flex items-center gap-3 text-xs text-muted-foreground">
         <span className="h-px flex-1 bg-border" />
-        ou com e-mail
+        {t("orEmail")}
         <span className="h-px flex-1 bg-border" />
       </div>
     </>
   );
 }
 
-export function LoginForm({ next, notice }: { next?: string; notice?: string }) {
+/** `signupHref`: link do cadastro já com o prefixo de idioma da página (getPublicHref no servidor). */
+export function LoginForm({ next, notice, signupHref }: { next?: string; notice?: string; signupHref: string }) {
+  const t = useTranslations("auth.login");
   const [state, action, pending] = useActionState(signInAction, initial);
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-xl">Entrar</CardTitle>
-        <CardDescription>Acesse suas sessões e analytics.</CardDescription>
+        <CardTitle className="text-xl">{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
         <GoogleSignIn next={next} />
@@ -59,22 +64,25 @@ export function LoginForm({ next, notice }: { next?: string; notice?: string }) 
           {next ? <input type="hidden" name="next" value={next} /> : null}
           {notice ? <Alert tone="info">{notice}</Alert> : null}
           <Field>
-            <Label htmlFor="email">E-mail</Label>
+            <Label htmlFor="email">{t("email")}</Label>
             <Input id="email" name="email" type="email" autoComplete="email" required />
           </Field>
           <Field>
-            <Label htmlFor="password">Senha</Label>
+            <Label htmlFor="password">{t("password")}</Label>
             <Input id="password" name="password" type="password" autoComplete="current-password" required />
           </Field>
           {state.error ? <Alert>{state.error}</Alert> : null}
           <Button type="submit" disabled={pending} className="w-full">
-            {pending ? "Entrando…" : "Entrar"}
+            {pending ? t("submitting") : t("submit")}
           </Button>
           <p className="text-center text-sm text-muted-foreground">
-            Não tem conta?{" "}
-            <Link href="/signup" className="font-medium text-primary hover:underline">
-              Criar conta
-            </Link>
+            {t.rich("noAccount", {
+              link: (chunks) => (
+                <Link href={signupHref} className="font-medium text-primary hover:underline">
+                  {chunks}
+                </Link>
+              ),
+            })}
           </p>
         </form>
       </CardContent>
@@ -82,13 +90,15 @@ export function LoginForm({ next, notice }: { next?: string; notice?: string }) 
   );
 }
 
-export function SignUpForm() {
+/** Links já com o prefixo de idioma da página (getPublicHref no servidor). */
+export function SignUpForm({ loginHref, privacyHref }: { loginHref: string; privacyHref: string }) {
+  const t = useTranslations("auth.signup");
   const [state, action, pending] = useActionState(signUpAction, initial);
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-xl">Criar conta</CardTitle>
-        <CardDescription>Comece a criar sessões interativas.</CardDescription>
+        <CardTitle className="text-xl">{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
         {state.message ? (
@@ -99,34 +109,39 @@ export function SignUpForm() {
             <form action={action} className="grid gap-4">
               <TimeZoneInput />
               <Field>
-                <Label htmlFor="name">Nome</Label>
+                <Label htmlFor="name">{t("name")}</Label>
                 <Input id="name" name="name" autoComplete="name" required maxLength={120} />
               </Field>
               <Field>
-                <Label htmlFor="email">E-mail</Label>
+                <Label htmlFor="email">{t("email")}</Label>
                 <Input id="email" name="email" type="email" autoComplete="email" required />
               </Field>
               <Field>
-                <Label htmlFor="password">Senha</Label>
+                <Label htmlFor="password">{t("password")}</Label>
                 <Input id="password" name="password" type="password" autoComplete="new-password" minLength={8} required />
-                <p className="text-xs text-muted-foreground">Mínimo de 8 caracteres.</p>
+                <p className="text-xs text-muted-foreground">{t("passwordHint")}</p>
               </Field>
               {state.error ? <Alert>{state.error}</Alert> : null}
               <Button type="submit" disabled={pending} className="w-full">
-                {pending ? "Criando…" : "Criar conta"}
+                {pending ? t("submitting") : t("submit")}
               </Button>
               <p className="text-center text-xs text-muted-foreground">
-                Ao criar a conta, você concorda com a{" "}
-                <Link href="/privacidade" className="underline hover:text-foreground">
-                  política de privacidade
-                </Link>
-                .
+                {t.rich("privacy", {
+                  link: (chunks) => (
+                    <Link href={privacyHref} className="underline hover:text-foreground">
+                      {chunks}
+                    </Link>
+                  ),
+                })}
               </p>
               <p className="text-center text-sm text-muted-foreground">
-                Já tem conta?{" "}
-                <Link href="/login" className="font-medium text-primary hover:underline">
-                  Entrar
-                </Link>
+                {t.rich("hasAccount", {
+                  link: (chunks) => (
+                    <Link href={loginHref} className="font-medium text-primary hover:underline">
+                      {chunks}
+                    </Link>
+                  ),
+                })}
               </p>
             </form>
           </div>

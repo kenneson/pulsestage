@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { submitAnswerAction } from "@/features/participant/actions";
 import {
   currentInteractionResponseSchema,
@@ -56,6 +57,7 @@ export function ParticipateView({
   /** nome e avatar escolhidos ao entrar */
   me: { name: string | null; avatar: string | null };
 }) {
+  const t = useTranslations("participant.view");
   const [current, setCurrent] = useState<CurrentInteractionResponse>(initialCurrent);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,9 +74,9 @@ export function ParticipateView({
         }
       })
       .catch(() => {
-        if (id === requestId.current) setError("Conexão instável. Tentando de novo…");
+        if (id === requestId.current) setError(t("connectionUnstable"));
       });
-  }, [sessionId]);
+  }, [sessionId, t]);
 
   const { state: live, connected } = useLiveState(sessionId, initialLive, refresh);
   usePresence(sessionId, "participant");
@@ -123,17 +125,17 @@ export function ParticipateView({
 
   if (status === "completed") {
     body = (
-      <Screen title="Sessão encerrada" text="Obrigado por participar! Sua opinião ajuda a próxima apresentação.">
+      <Screen title={t("endedTitle")} text={t("endedText")}>
         <Link href={`/feedback/${sessionId}`} className={buttonVariants({ size: "xl", className: "mt-4 w-full" })}>
-          Avaliar a sessão
+          {t("rateSession")}
         </Link>
       </Screen>
     );
   } else if (status === "paused") {
-    body = <Screen title="Sessão pausada" text="Fique por aqui, já voltamos." />;
+    body = <Screen title={t("pausedTitle")} text={t("pausedText")} />;
   } else if (!current.interaction || current.status !== "live") {
     body = (
-      <Screen title={me.name ? `Você está dentro, ${me.name}!` : "Você está dentro!"} text="Aguardando a próxima interação…">
+      <Screen title={me.name ? t("inNamed", { name: me.name }) : t("in")} text={t("waiting")}>
         {me.avatar ? (
           <span aria-hidden className="order-first grid size-24 place-items-center rounded-full bg-muted text-6xl leading-none">
             {me.avatar}
@@ -144,7 +146,7 @@ export function ParticipateView({
     );
   } else if (current.answered) {
     body = (
-      <Screen title="Resposta registrada" text="Acompanhe o resultado na tela do palestrante.">
+      <Screen title={t("answeredTitle")} text={t("answeredText")}>
         <span className="mt-2 grid size-14 place-items-center rounded-full bg-primary/15 text-primary">
           <CheckIcon width={28} height={28} />
         </span>
@@ -191,7 +193,7 @@ export function ParticipateView({
           {showReactions ? <ReactionBar sessionId={sessionId} /> : null}
           {showQuestions ? (
             <Button variant="outline" size="lg" className="w-full" onClick={() => setQuestionsOpen(true)}>
-              <MessageQuestionIcon /> Perguntar ao palestrante
+              <MessageQuestionIcon /> {t("askSpeaker")}
             </Button>
           ) : null}
         </footer>

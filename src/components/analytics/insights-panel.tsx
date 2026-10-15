@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { generateInsightsAction } from "@/features/insights/actions";
 import { Badge } from "@/components/ui/badge";
@@ -19,14 +20,12 @@ export type InsightView = {
   confidence: string;
 };
 
-const CONFIDENCE_LABEL: Record<string, string> = { low: "baixa", medium: "média", high: "alta" };
-const PRIORITY_LABEL: Record<string, string> = { low: "Baixa", medium: "Média", high: "Alta" };
+// Confiança e prioridade chegam em inglês no JSON da IA ("low", "medium", "high").
+const LEVELS = ["low", "medium", "high"] as const;
+type Level = (typeof LEVELS)[number];
+const isLevel = (value: string): value is Level => (LEVELS as readonly string[]).includes(value);
 
-const SECTIONS = [
-  { type: "strength", title: "Pontos fortes" },
-  { type: "attention_point", title: "Pontos de atenção" },
-  { type: "recommendation", title: "Recomendações para a próxima sessão" },
-] as const;
+const SECTIONS = ["strength", "attention_point", "recommendation"] as const;
 
 export function InsightsPanel({
   sessionId,
@@ -44,6 +43,7 @@ export function InsightsPanel({
   generatedAt: string | null;
   meta: string | null;
 }) {
+  const t = useTranslations("analytics.insights");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -54,7 +54,7 @@ export function InsightsPanel({
         toast.error(result.error);
         return;
       }
-      toast.success("Insights gerados.");
+      toast.success(t("generated"));
       router.refresh();
     });
 
@@ -65,45 +65,52 @@ export function InsightsPanel({
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">
-          {generatedAt ? `Gerado em ${generatedAt}${meta ? ` · ${meta}` : ""}` : "Análise com IA baseada apenas nos dados desta sessão."}
+          {generatedAt ? `${t("generatedAt", { date: generatedAt })}${meta ? ` · ${meta}` : ""}` : t("intro")}
         </p>
         <Button onClick={generate} disabled={pending || !configured}>
-          <SparklesIcon /> {pending ? "Analisando…" : insights.length > 0 ? "Gerar novamente" : "Gerar insights"}
+          <SparklesIcon /> {pending ? t("analyzing") : insights.length > 0 ? t("regenerate") : t("generate")}
         </Button>
       </div>
 
       {!configured ? (
         <Alert tone="info">
-          IA não configurada. {problem ?? "Defina AI_PROVIDER e AI_API_KEY no ambiente."} Na Vercel: Settings →
-          Environment Variables, marque o ambiente Production e faça Redeploy para valer. O restante do analytics
-          funciona normalmente.
+          {t("notConfigured")} {problem ?? t("defaultProblem")} {t("vercelHint")}
         </Alert>
       ) : null}
 
       {insights.length === 0 ? (
-        <EmptyState title="Nenhum insight gerado" description="Os insights separam o que foi observado, a interpretação e a recomendação." />
+        <EmptyState title={t("emptyTitle")} description={t("emptyDescription")} />
       ) : (
         <>
           {summary ? <p className="leading-relaxed">{summary.description}</p> : null}
           {quality ? (
             <Alert tone="info">
-              <span className="font-medium">Confiança {CONFIDENCE_LABEL[quality.confidence] ?? quality.confidence}:</span>{" "}
+              <span className="font-medium">
+                {isLevel(quality.confidence)
+                  ? t(`confidence.${quality.confidence}`)
+                  : t("confidence.other", { level: quality.confidence })}
+                :
+              </span>{" "}
               {quality.description}
             </Alert>
           ) : null}
           {SECTIONS.map((section) => {
-            const items = insights.filter((i) => i.type === section.type);
+            const items = insights.filter((i) => i.type === section);
             if (items.length === 0) return null;
             return (
-              <div key={section.type} className="flex flex-col gap-3">
-                <h3 className="font-semibold">{section.title}</h3>
+              <div key={section} className="flex flex-col gap-3">
+                <h3 className="font-semibold">{t(`sections.${section}`)}</h3>
                 <ul className="flex flex-col gap-3">
                   {items.map((item) => (
                     <li key={item.id} className="rounded-lg border p-4">
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="font-medium">{item.title}</p>
                         {item.priority ? (
-                          <Badge variant="outline">Prioridade {PRIORITY_LABEL[item.priority] ?? item.priority}</Badge>
+                          <Badge variant="outline">
+                            {isLevel(item.priority)
+                              ? t(`priority.${item.priority}`)
+                              : t("priority.other", { level: item.priority })}
+                          </Badge>
                         ) : null}
                       </div>
                       <p className="mt-1 text-sm text-muted-foreground">{item.description}</p>

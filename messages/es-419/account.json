@@ -1,1 +1,110 @@
-{}
+{
+  "page": {
+    "metaTitle": "Cuenta y configuración",
+    "title": "Cuenta y configuración",
+    "description": "Tu perfil, preferencias, acceso y datos.",
+    "navLabel": "Secciones de la cuenta"
+  },
+  "sections": {
+    "profile": "Perfil",
+    "preferences": "Preferencias",
+    "preferencesDescription": "Valores que se usan al crear una sesión y para mostrar fechas.",
+    "security": "Seguridad",
+    "privacy": "Privacidad",
+    "privacyTitle": "Privacidad y datos"
+  },
+  "security": {
+    "emailPassword": "Correo electrónico y contraseña",
+    "active": "Activo",
+    "activateHint": "Define una contraseña abajo para activarlo",
+    "connected": "Conectado",
+    "connectHint": "Inicia sesión con Google una vez para conectarlo"
+  },
+  "privacy": {
+    "exportTitle": "Exportar mis datos",
+    "exportDescription": "Un archivo JSON con tu perfil, sesiones, preguntas, respuestas, encuestas, insights e invitaciones recibidas.",
+    "export": "Exportar",
+    "deleteTitle": "Eliminar cuenta",
+    "deleteDescription": "Borra para siempre tu perfil (incluido el público), todas las sesiones, respuestas, encuestas, insights, invitaciones recibidas y los contactos de participantes. No se puede deshacer."
+  },
+  "avatar": {
+    "choose": "Elegir foto",
+    "change": "Cambiar foto",
+    "hint": "PNG, JPG o WebP, hasta 2 MB."
+  },
+  "profile": {
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "bio": "Biografía breve",
+    "bioPlaceholder": "Ej.: Presentador sobre IA en el trabajo y productividad.",
+    "bioHint": "La ve el público en la pantalla de entrada de la sesión, en el informe en PDF y en tu perfil público.",
+    "save": "Guardar perfil"
+  },
+  "preferences": {
+    "locale": "Idioma",
+    "localeHint": "Idioma del panel, de las sesiones nuevas y de los correos electrónicos.",
+    "timeZone": "Zona horaria",
+    "timeZoneHint": "Se usa para las fechas y horas de tus sesiones.",
+    "defaultSurvey": "Encuesta predeterminada para sesiones nuevas",
+    "myTemplates": "Mis plantillas",
+    "defaultDuration": "Duración predeterminada (min)",
+    "themeHint": "Se aplica a este navegador.",
+    "save": "Guardar preferencias"
+  },
+  "password": {
+    "new": "Nueva contraseña",
+    "newPlaceholder": "Mínimo 8 caracteres",
+    "confirm": "Confirmar nueva contraseña",
+    "changing": "Cambiando…",
+    "change": "Cambiar contraseña"
+  },
+  "signOutOthers": {
+    "button": "Cerrar sesión en todos los demás dispositivos",
+    "confirmTitle": "¿Cerrar sesión en todos los demás dispositivos?",
+    "confirmDescription": "Seguirás conectado aquí. En los demás navegadores tendrás que iniciar sesión de nuevo.",
+    "confirmLabel": "Cerrar en los demás",
+    "done": "Listo: se desconectaron los demás dispositivos."
+  },
+  "delete": {
+    "confirmWord": "ELIMINAR",
+    "typeToConfirm": "Escribe <b>{word}</b> para confirmar",
+    "deleting": "Eliminando…",
+    "button": "Eliminar mi cuenta"
+  },
+  "export": {
+    "fileName": "pulsestage-mis-datos-{date}.json"
+  },
+  "success": {
+    "profileSaved": "Perfil guardado.",
+    "photoUpdated": "Foto actualizada.",
+    "preferencesSaved": "Preferencias guardadas.",
+    "passwordChanged": "Contraseña cambiada."
+  },
+  "errors": {
+    "bioTooLong": "La biografía breve puede tener hasta 400 caracteres.",
+    "profileSaveFailed": "No se pudo guardar el perfil.",
+    "chooseImage": "Elige una imagen.",
+    "imageType": "Usa una imagen PNG, JPG o WebP.",
+    "imageTooLarge": "La imagen puede pesar hasta 2 MB.",
+    "uploadFailed": "No se pudo subir la imagen.",
+    "photoSaveFailed": "No se pudo guardar la foto.",
+    "photoRemoveFailed": "No se pudo quitar la foto.",
+    "invalidLocale": "Idioma no válido.",
+    "invalidTimeZone": "Zona horaria no válida.",
+    "invalidSurvey": "Plantilla de encuesta no válida.",
+    "invalidDuration": "Duración no válida.",
+    "preferencesSaveFailed": "No se pudieron guardar las preferencias.",
+    "passwordRequired": "Escribe la nueva contraseña.",
+    "passwordTooShort": "La contraseña debe tener al menos 8 caracteres.",
+    "passwordTooLong": "La contraseña puede tener hasta 72 caracteres.",
+    "confirmRequired": "Confirma la nueva contraseña.",
+    "passwordMismatch": "Las contraseñas no coinciden.",
+    "passwordSame": "La nueva contraseña debe ser diferente de la actual.",
+    "reauthenticate": "Por seguridad, vuelve a iniciar sesión y repite el cambio.",
+    "passwordChangeFailed": "No se pudo cambiar la contraseña.",
+    "signOutOthersFailed": "No se pudieron cerrar las demás sesiones.",
+    "typeToConfirm": "Escribe {word} para confirmar.",
+    "deleteFailed": "No se pudo eliminar la cuenta. Inténtalo de nuevo.",
+    "unauthenticated": "No autenticado."
+  }
+}

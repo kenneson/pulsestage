@@ -1,1 +1,135 @@
-{}
+{
+  "page": {
+    "metaTitle": "Sala en vivo"
+  },
+  "controlRoom": {
+    "reconnecting": "Reconectando…",
+    "participants": "{count, plural, one {# participante} other {# participantes}}",
+    "connectedNow": "{count, plural, one {# conectado ahora} other {# conectados ahora}}",
+    "projectorScreen": "Pantalla del proyector",
+    "startSession": "Iniciar sesión",
+    "pause": "Pausar",
+    "resume": "Reanudar",
+    "endSession": "Finalizar sesión",
+    "endConfirm": {
+      "title": "¿Finalizar la sesión?",
+      "description": "Los participantes verán el enlace de evaluación. No se puede volver a abrir.",
+      "descriptionRaffle": "Los participantes verán el enlace de evaluación. No se puede volver a abrir. El sorteo sigue en esta sala.",
+      "confirm": "Finalizar"
+    },
+    "viewAnalytics": "Ver análisis",
+    "onScreen": "En pantalla",
+    "raffle": "Sorteo",
+    "leaderboard": "Tabla de posiciones del quiz",
+    "highlightedQuestion": "Pregunta del público destacada",
+    "audienceQuestions": "Preguntas del público",
+    "responsesOf": "{count, plural, one {# respuesta} other {# respuestas}} de {participants, number}",
+    "slideOf": "Diapositiva {slide} <muted>de {total}</muted>",
+    "qrOnScreen": "Código QR en pantalla",
+    "noActive": "Ninguna interacción activa",
+    "showLeaderboard": "Mostrar tabla de posiciones",
+    "hideLeaderboard": "Ocultar tabla de posiciones",
+    "showAnswer": "Mostrar respuesta",
+    "hideAnswer": "Ocultar respuesta",
+    "closeQuestion": "Cerrar",
+    "previousSlide": "Volver a la diapositiva anterior",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "raffleOnScreenHint": "El sorteo está en pantalla. Sortea desde la tarjeta “Sorteo”; el nombre aparece ahí cuando la pantalla lo revela.",
+    "questionsOnScreenHint": "Las preguntas del público están en pantalla. Usa la tarjeta “Preguntas del público” para destacar, marcar como respondida o quitar de la pantalla. Haz clic en Siguiente para seguir con el guion.",
+    "slide": "Diapositiva {slide}",
+    "upNextHint": "A continuación: {item}. Haz clic en Siguiente o presiona →.",
+    "lineupDone": "Ya presentaste todo el guion.",
+    "pausedHint": "Sesión en pausa. Reanúdala para continuar.",
+    "draftHint": "Inicia la sesión para comenzar.",
+    "endedHint": "Sesión finalizada.",
+    "upNextSlides": "A continuación: <strong>{item}</strong> · → o AvPág avanza, ← retrocede",
+    "upNextKeys": "A continuación: <strong>{item}</strong> · → avanza",
+    "lineupEnd": "Fin del guion.",
+    "itemLabel": "{type}: {title}",
+    "interactionFallback": "Interacción",
+    "joinCode": "Código de acceso",
+    "showOnScreen": "Mostrar en pantalla",
+    "lineup": "Guion",
+    "active": "Activa",
+    "noInteractions": "Ninguna interacción.",
+    "participation": "Participación"
+  },
+  "moderation": {
+    "moderateWords": "Moderar palabras",
+    "moderateResponses": "Moderar respuestas",
+    "hiddenCount": "{count, plural, one {# oculta} other {# ocultas}}",
+    "waitingCount": "{count, plural, one {# pendiente} other {# pendientes}}",
+    "wordsOnScreenHint": "En pantalla. Haz clic en la × para ocultar la palabra (y los próximos envíos de ella).",
+    "hideWord": "Ocultar “{word}”",
+    "onScreen": "En pantalla",
+    "offScreen": "Fuera de pantalla",
+    "profanityFilter": "filtro de groserías",
+    "approve": "Aprobar",
+    "noWords": "Todavía no hay palabras.",
+    "noResponses": "Todavía no hay respuestas."
+  },
+  "questionsCard": {
+    "title": "Preguntas del público",
+    "showOnScreen": "Mostrar en pantalla",
+    "hideFromScreen": "Ocultar de la pantalla",
+    "disabled": "Desactivadas en esta sesión. Actívalas en “Participación”, más abajo, para que el público pueda preguntar.",
+    "tabsLabel": "Preguntas",
+    "tabs": {
+      "open": "Abiertas",
+      "pending": "Pendientes",
+      "answered": "Respondidas",
+      "hidden": "Ocultas"
+    },
+    "tab": "{label} ({count, number})",
+    "emptyOpen": "No hay preguntas abiertas. El público pregunta desde el celular.",
+    "anonymous": "Anónima",
+    "filtered": "bloqueada por el filtro",
+    "onScreen": "En pantalla",
+    "approve": "Aprobar",
+    "highlight": "Destacar",
+    "removeFromScreen": "Quitar de la pantalla",
+    "markAnswered": "Respondida",
+    "reopen": "Reabrir"
+  },
+  "rafflePanel": {
+    "title": "Sorteo",
+    "show": "Mostrar sorteo",
+    "hide": "Ocultar sorteo",
+    "entrantsSurveyDone": "<num>{count, number}</num> {count, plural, one {persona participa} other {personas participan}} (quienes respondieron la encuesta).",
+    "entrantsSurveyPending": "<num>{count, number}</num> {count, plural, one {persona participa} other {personas participan}}. Solo participa quien responda la encuesta: se abre cuando finalizas la sesión.",
+    "entrantsEveryone": "<num>{count, number}</num> {count, plural, one {persona participa} other {personas participan}}.",
+    "suspense": "Sorteando… la pantalla lo revela en <num>{seconds}s</num>",
+    "noPrizes": "No hay premios registrados. <link>Registrar</link>",
+    "progress": "{drawn, number} de {quantity, plural, one {# ganador} other {# ganadores}}",
+    "draw": "Sortear",
+    "absent": "¿Ausente?",
+    "absentConfirm": {
+      "title": "¿{name} no está presente?",
+      "description": "La persona sale del sorteo y se sortea a otra para el mismo premio, con animación en la pantalla.",
+      "confirm": "Sortear a otra persona"
+    },
+    "startToDraw": "Inicia la sesión para sortear."
+  },
+  "reactionTotals": {
+    "label": "Reacciones del público"
+  },
+  "talkTimer": {
+    "label": "Tiempo de presentación: {time}",
+    "labelPlanned": "Tiempo de presentación: {time} de {planned, plural, one {# minuto previsto} other {# minutos previstos}}",
+    "paused": "en pausa"
+  },
+  "errors": {
+    "leaderboardNotLive": "Inicia o reanuda la sesión para mostrar la tabla de posiciones.",
+    "leaderboardFailed": "No se pudo cambiar la tabla de posiciones en la pantalla.",
+    "questionsLoadFailed": "No se pudieron cargar las preguntas.",
+    "questionUpdateFailed": "No se pudo actualizar la pregunta.",
+    "screenNotLive": "Inicia o reanuda la sesión para usar la pantalla.",
+    "questionNotOpen": "Esa pregunta no está abierta.",
+    "screenFailed": "No se pudo cambiar la pantalla.",
+    "moderationLoadFailed": "No se pudo cargar la moderación.",
+    "responseUpdateFailed": "No se pudo actualizar la respuesta.",
+    "wordUpdateFailed": "No se pudo actualizar la palabra.",
+    "reactionsLoadFailed": "No se pudieron cargar las reacciones."
+  }
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { saveInteractionAction, suggestInteractionsAction } from "@/features/interactions/actions";
 import type { ParsedInteractionInput } from "@/lib/domain/interactions";
@@ -34,14 +35,16 @@ export function useAISuggestions(sessionId: string) {
   return { open, close: () => setOpen(false), suggestions, setSuggestions, error, loading, generate };
 }
 
-function detail(s: ParsedInteractionInput): string | null {
+type AIT = ReturnType<typeof useTranslations<"builder.ai">>;
+
+function detail(t: AIT, s: ParsedInteractionInput): string | null {
   switch (s.type) {
     case "multiple_choice":
       return s.options.map((o) => o.label).join(" · ");
     case "quiz":
       return s.options.map((o) => (o.isCorrect ? `${o.label} ✓` : o.label)).join(" · ");
     case "rating":
-      return [`De ${s.settings.min} a ${s.settings.max}`, s.settings.minLabel, s.settings.maxLabel].filter(Boolean).join(" · ");
+      return [t("ratingRange", { min: s.settings.min, max: s.settings.max }), s.settings.minLabel, s.settings.maxLabel].filter(Boolean).join(" · ");
     default:
       return null;
   }
@@ -56,6 +59,7 @@ export function AISuggestionsPanel({
   ai: ReturnType<typeof useAISuggestions>;
   onAdded: () => void;
 }) {
+  const t = useTranslations("builder.ai");
   const [adding, setAdding] = useState<string | null>(null);
 
   async function add(suggestion: ParsedInteractionInput) {
@@ -66,7 +70,7 @@ export function AISuggestionsPanel({
       toast.error(result.error);
       return;
     }
-    toast.success("Pergunta adicionada ao roteiro.");
+    toast.success(t("added"));
     ai.setSuggestions((list) => list.filter((s) => s !== suggestion));
     onAdded();
   }
@@ -76,17 +80,17 @@ export function AISuggestionsPanel({
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-col gap-1">
           <h2 id="ai-suggestions" className="flex items-center gap-2 font-semibold">
-            <SparklesIcon className="text-primary" /> Sugestões da IA
+            <SparklesIcon className="text-primary" /> {t("title")}
           </h2>
-          <p className="text-sm text-muted-foreground">A partir do título e da descrição da sessão. Revise antes de usar.</p>
+          <p className="text-sm text-muted-foreground">{t("description")}</p>
         </div>
-        <Button variant="ghost" size="icon" aria-label="Fechar sugestões" onClick={ai.close}>
+        <Button variant="ghost" size="icon" aria-label={t("close")} onClick={ai.close}>
           <XIcon />
         </Button>
       </div>
 
       {ai.loading ? (
-        <div className="flex flex-col gap-2.5" aria-label="Gerando sugestões">
+        <div className="flex flex-col gap-2.5" aria-label={t("generating")}>
           {[0, 1, 2].map((i) => (
             <Skeleton key={i} className="h-24" />
           ))}
@@ -94,18 +98,18 @@ export function AISuggestionsPanel({
       ) : ai.error ? (
         <Alert>{ai.error}</Alert>
       ) : ai.suggestions.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Todas as sugestões foram para o roteiro. Gere outras se quiser mais.</p>
+        <p className="text-sm text-muted-foreground">{t("allAdded")}</p>
       ) : (
         <ul className="flex flex-col gap-2.5">
           {ai.suggestions.map((s) => {
-            const extra = detail(s);
+            const extra = detail(t, s);
             return (
               <li key={s.title} className="flex flex-col gap-2 rounded-md border p-3">
                 <TypeTag type={s.type} />
                 <p className="text-sm font-medium">{s.title}</p>
                 {extra ? <p className="text-sm text-muted-foreground">{extra}</p> : null}
                 <Button variant="outline" size="sm" className="w-fit" disabled={adding !== null} onClick={() => add(s)}>
-                  <PlusIcon /> {adding === s.title ? "Adicionando..." : "Adicionar ao roteiro"}
+                  <PlusIcon /> {adding === s.title ? t("adding") : t("addToLineup")}
                 </Button>
               </li>
             );
@@ -114,7 +118,7 @@ export function AISuggestionsPanel({
       )}
 
       <Button variant="outline" onClick={ai.generate} disabled={ai.loading}>
-        <RefreshIcon /> Gerar outras sugestões
+        <RefreshIcon /> {t("regenerate")}
       </Button>
     </aside>
   );

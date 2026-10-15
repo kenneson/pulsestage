@@ -1,125 +1,66 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import { buttonVariants } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 import { StageDemo } from "@/components/landing/stage-demo";
 import { JoinCodeForm } from "@/components/join-code-form";
 import { ShapeGlyph, shapeBg } from "@/components/option-shape";
 import { CheckIcon } from "@/components/icons";
 import { MAX_PARTICIPANTS_PER_SESSION } from "@/lib/domain/session";
+import { formatInt, formatScore } from "@/lib/format";
+import { IntlProvider } from "@/i18n/provider";
+import { getPublicHref, localeAlternates, ogLocale } from "@/i18n/seo";
 
-const STEPS = [
-  {
-    title: "Crie a sessão",
-    text: "Cadastre sua palestra ou aula e escreva as perguntas na ordem em que vai usá-las. Leva poucos minutos.",
-  },
-  {
-    title: "A plateia entra pelo celular",
-    text: "Mostre o QR Code ou o código na tela. Cada pessoa responde do próprio celular, sem instalar nada e sem criar conta.",
-  },
-  {
-    title: "Veja e aprenda",
-    text: "Os resultados aparecem ao vivo na tela. No fim, o público avalia a sessão e você recebe um relatório.",
-  },
-];
+// Textos em messages/<idioma>/landing.json; aqui ficam só a ordem, as cores e os dados simulados.
+
+const STEPS = ["create", "join", "learn"] as const;
 
 // Cada tipo de pergunta tem a sua cor em todo o produto (papel de revisão do roteiro).
 const QUESTION_TYPES = [
-  {
-    paper: "bg-rev-blue",
-    type: "Enquete",
-    text: "Uma escolha entre alternativas. Boa para abrir a sessão e conhecer quem está na sala.",
-    example: "Você já usa IA no seu trabalho?",
-  },
-  {
-    paper: "bg-rev-pink",
-    type: "Escala",
-    text: "Uma nota entre dois extremos, como de 1 a 5.",
-    example: "De 1 a 5, quanto isso se aplica ao seu dia?",
-  },
-  {
-    paper: "bg-rev-yellow",
-    type: "Nuvem de palavras",
-    text: "Respostas curtas agrupadas: as palavras mais repetidas crescem na tela.",
-    example: "Uma palavra para o seu momento profissional.",
-  },
-  {
-    paper: "bg-rev-green",
-    type: "Pergunta aberta",
-    text: "Resposta livre. Você lê tudo no seu painel e escolhe o que comentar.",
-    example: "O que você quer me perguntar?",
-  },
-  {
-    paper: "bg-rev-gold",
-    type: "Quiz",
-    text: "Pergunta com resposta certa, pontos, tempo opcional e ranking dos participantes.",
-    example: "Qual destes é um modelo de linguagem?",
-  },
-  {
-    paper: "bg-rev-violet",
-    type: "Ranking",
-    text: "A plateia ordena as alternativas por prioridade, tocando nelas em ordem. O telão mostra a ordem do grupo.",
-    example: "Ordene o que mais importa no seu trabalho.",
-  },
-];
+  { paper: "bg-rev-blue", type: "multiple_choice" },
+  { paper: "bg-rev-pink", type: "rating" },
+  { paper: "bg-rev-yellow", type: "word_cloud" },
+  { paper: "bg-rev-green", type: "open_text" },
+  { paper: "bg-rev-gold", type: "quiz" },
+  { paper: "bg-rev-violet", type: "ranking" },
+] as const;
 
 // Recursos que valem a sessão inteira, fora do roteiro.
-const AUDIENCE_TOOLS = [
-  { title: "Perguntas da plateia", text: "Qualquer um pergunta pelo celular, anônimo ou com nome, e curte as dos outros. Você leva a mais votada ao telão." },
-  { title: "Reações ao vivo", text: "👏 ❤️ 😂 😮 🤔 a qualquer momento. Os emojis sobem no telão e mostram onde a palestra empolgou." },
-  { title: "Seguro para escolas", text: "Filtro de palavrões e aprovação antes do telão para respostas abertas, nuvem e perguntas." },
-];
+const AUDIENCE_TOOLS = ["questions", "reactions", "safe"] as const;
 
-const HERO_FACTS = [
-  "Alunos e participantes entram pelo QR Code, sem app e sem cadastro",
-  "Seus slides e as perguntas numa sequência só, no mesmo passador",
-  "Quiz com ranking, sorteio de prêmios e relatório com IA no fim",
-];
-
-// Fatos do produto (limites e recursos), não números de uso.
-const PRODUCT_FACTS = [
-  { value: "0", text: "apps para a plateia instalar" },
-  { value: MAX_PARTICIPANTS_PER_SESSION.toLocaleString("pt-BR"), text: "pessoas por sessão" },
-  { value: "6", text: "tipos de pergunta para misturar" },
-  { value: "1", text: "tela para slides e perguntas" },
-];
+const HERO_FACTS = ["qr", "slides", "quiz"] as const;
 
 // Uma faixa de deck: slides (escuros, como no telão) e perguntas no papel do seu tipo.
-const DECK: ({ kind: "slide"; n: number; title: string } | { kind: "question"; paper: string; type: string; text: string })[] = [
-  { kind: "slide", n: 1, title: "Abertura" },
-  { kind: "question", paper: "bg-rev-blue", type: "Enquete", text: "Você já usa IA no trabalho?" },
-  { kind: "slide", n: 2, title: "O que muda" },
-  { kind: "slide", n: 3, title: "Na prática" },
-  { kind: "question", paper: "bg-rev-yellow", type: "Nuvem", text: "Uma palavra para o seu momento" },
-  { kind: "slide", n: 4, title: "Riscos" },
-  { kind: "question", paper: "bg-rev-gold", type: "Quiz", text: "Qual destes é um modelo de linguagem?" },
-  { kind: "slide", n: 5, title: "Próximos passos" },
-  { kind: "slide", n: 6, title: "Obrigado!" },
+type DeckText = "opening" | "whatChanges" | "inPractice" | "risks" | "nextSteps" | "thanks";
+const DECK: (
+  | { kind: "slide"; n: number; title: DeckText }
+  | { kind: "question"; paper: string; type: "poll" | "cloud" | "quiz" }
+)[] = [
+  { kind: "slide", n: 1, title: "opening" },
+  { kind: "question", paper: "bg-rev-blue", type: "poll" },
+  { kind: "slide", n: 2, title: "whatChanges" },
+  { kind: "slide", n: 3, title: "inPractice" },
+  { kind: "question", paper: "bg-rev-yellow", type: "cloud" },
+  { kind: "slide", n: 4, title: "risks" },
+  { kind: "question", paper: "bg-rev-gold", type: "quiz" },
+  { kind: "slide", n: 5, title: "nextSteps" },
+  { kind: "slide", n: 6, title: "thanks" },
 ];
 
-const SLIDE_POINTS = [
-  "Envie o PDF exportado do PowerPoint, Google Slides, Keynote ou Canva. O arquivo é convertido no seu navegador.",
-  "Arraste cada pergunta para o ponto exato da apresentação em que ela deve entrar.",
-  "No palco, o passador ou a seta do teclado avança tudo: slide, pergunta, resultado, próximo slide.",
-  "Surgiu uma dúvida na sala? Crie uma pergunta nova durante a palestra e lance na hora.",
-];
+const SLIDE_POINTS = ["pdf", "drag", "clicker", "live"] as const;
 
-const GAME_POINTS = [
-  { title: "Avatares", text: "Cada pessoa escolhe um bichinho ao entrar e aparece com ele no ranking." },
-  { title: "Formas e cores", text: "Alternativas no estilo dos jogos de quiz, com forma, cor e até imagem." },
-  { title: "Bônus de velocidade", text: "No quiz com tempo, quem acerta primeiro leva mais pontos." },
-  { title: "Ranking animado", text: "O telão mostra quem subiu e quem caiu depois de cada pergunta." },
-  { title: "Sorteio de prêmios", text: "Roleta de números com suspense, som e confete. Físico ou digital." },
-  { title: "Incentivo à pesquisa", text: "Se quiser, só concorre ao sorteio quem responde a pesquisa no fim." },
-];
+const GAME_POINTS = ["avatars", "shapes", "speed", "leaderboard", "raffle", "survey"] as const;
 
 const QUIZ_TILES = ["GPT", "Excel", "Linux", "HTML"];
 
 const RANKING = [
-  { avatar: "🦉", name: "Carla", points: "1.950", move: "↑2" },
-  { avatar: "🦊", name: "Ana", points: "1.820", move: "↓1" },
-  { avatar: "🐼", name: "Bruno", points: "1.610", move: "↓1" },
+  { avatar: "🦉", name: "Carla", points: 1950, move: "↑2" },
+  { avatar: "🦊", name: "Ana", points: 1820, move: "↓1" },
+  { avatar: "🐼", name: "Bruno", points: 1610, move: "↓1" },
 ];
 
 // Exemplo ilustrativo (dados simulados) do relatório depois da sessão.
@@ -131,120 +72,33 @@ const PULSE = [
   { minute: 52, rate: 0.74 },
 ];
 
-const NOTES: { text: string; confidence: "alta" | "média" | "baixa"; sample: string }[] = [
-  {
-    text: "A nuvem de palavras teve a maior participação da sessão. Repita o formato no meio da próxima.",
-    confidence: "alta",
-    sample: "64 respostas",
-  },
-  {
-    text: "A participação caiu no quiz dos 25 minutos. Os 20 segundos de tempo podem ter sido curtos.",
-    confidence: "média",
-    sample: "22 respostas",
-  },
-  {
-    text: "Alguns comentários pedem mais exemplos práticos. Vale confirmar na próxima sessão.",
-    confidence: "baixa",
-    sample: "3 comentários",
-  },
+const NOTES: { id: "cloud" | "quiz" | "comments"; confidence: "high" | "medium" | "low"; sample: { kind: "responses" | "comments"; count: number } }[] = [
+  { id: "cloud", confidence: "high", sample: { kind: "responses", count: 64 } },
+  { id: "quiz", confidence: "medium", sample: { kind: "responses", count: 22 } },
+  { id: "comments", confidence: "low", sample: { kind: "comments", count: 3 } },
 ];
 
 const SCORECARD = [
-  { label: "Utilidade", value: "8,6", scale: "/10" },
-  { label: "Clareza", value: "4,4", scale: "/5" },
-  { label: "Engajamento", value: "4,1", scale: "/5" },
-  { label: "Conteúdo", value: "4,5", scale: "/5" },
-  { label: "Aplicabilidade", value: "3,9", scale: "/5" },
-];
+  { dimension: "utilidade", value: 8.6, scale: "/10" },
+  { dimension: "clareza", value: 4.4, scale: "/5" },
+  { dimension: "engajamento", value: 4.1, scale: "/5" },
+  { dimension: "conteudo", value: 4.5, scale: "/5" },
+  { dimension: "aplicabilidade", value: 3.9, scale: "/5" },
+] as const;
 
-const AUDIENCES = [
-  {
-    who: "Universidades e faculdades",
-    text: "Aulas expositivas com a turma inteira participando, verificação de entendimento em tempo real e avaliação da disciplina no fim.",
-  },
-  {
-    who: "Escolas: fundamental e médio",
-    text: "Quiz com ranking, avatares e sorteio deixam a revisão divertida. Os alunos respondem pelo celular, sem criar conta e com o nome que quiserem.",
-  },
-  {
-    who: "Empresas e treinamentos",
-    text: "Treinamentos, onboarding e reuniões gerais com a opinião de todos em segundos e um relatório pronto para o RH.",
-  },
-  {
-    who: "Palestrantes e eventos",
-    text: "Quebre o gelo na abertura, puxe a plateia no meio e descubra depois o que realmente marcou.",
-  },
-];
+const AUDIENCES = ["universities", "schools", "companies", "events"] as const;
 
 // Conversa de exemplo da seção de IA (dados simulados, rotulados).
 const AI_PLAN = [
-  { where: "Depois do slide 2", paper: "bg-rev-yellow", type: "Nuvem de palavras", text: "Em uma palavra: o que você espera da IA na escola?" },
-  { where: "Depois do slide 7", paper: "bg-rev-gold", type: "Quiz", text: "O que é um modelo de linguagem?" },
-  { where: "Depois do slide 12", paper: "bg-rev-pink", type: "Escala", text: "Quanto você se sente pronto para usar IA em aula?" },
-  { where: "No fim", paper: "bg-rev-green", type: "Pergunta aberta", text: "Que dúvida ficou?" },
-];
+  { slide: 2, paper: "bg-rev-yellow", type: "word_cloud", text: "cloud" },
+  { slide: 7, paper: "bg-rev-gold", type: "quiz", text: "quiz" },
+  { slide: 12, paper: "bg-rev-pink", type: "rating", text: "scale" },
+  { slide: null, paper: "bg-rev-green", type: "open_text", text: "open" },
+] as const;
 
-const AI_POINTS = [
-  {
-    title: "Seus slides viram roteiro",
-    text: "Anexe o PDF da apresentação no chat. O assistente lê os slides e sugere a pergunta certa para cada momento.",
-  },
-  {
-    title: "Cada pergunta no lugar certo",
-    text: "As perguntas já chegam marcadas com o slide em que entram. Envie o mesmo PDF na sessão e está tudo encaixado.",
-  },
-  {
-    title: "Você aprova antes",
-    text: "O assistente mostra a proposta e só grava quando você confirmar. Depois, ajuste no PulseStage como sempre.",
-  },
-  {
-    title: "Análise depois da palestra",
-    text: "Peça um balanço da sessão: o assistente lê os resultados e a pesquisa, sem nomes nem contatos da plateia.",
-  },
-];
+const AI_POINTS = ["slides", "placement", "approval", "analysis"] as const;
 
-const FAQ = [
-  {
-    q: "A plateia precisa baixar algum aplicativo?",
-    a: "Não. As pessoas apontam a câmera do celular para o QR Code ou digitam o código no navegador. Não precisam de conta, e o nome é opcional.",
-  },
-  {
-    q: "Quanto custa?",
-    a: "Nada durante o beta. Você cria sua conta com Google ou e-mail e usa todos os recursos, sem cartão de crédito.",
-  },
-  {
-    q: "Funciona junto com meus slides?",
-    a: "Sim. Envie o PDF da apresentação e apresente pelo PulseStage: slides e perguntas ficam na mesma sequência e o passador avança tudo, sem trocar de janela. Animações e vídeos dos slides não são mantidos; se precisar deles, apresente pelo seu programa e alterne para a tela de resultados na hora de cada pergunta.",
-  },
-  {
-    q: "Como funciona o sorteio?",
-    a: "Você cadastra os prêmios e escolhe quem concorre: todos que entraram ou só quem respondeu a pesquisa no fim. Cada pessoa recebe um número no celular. O ganhador é escolhido pelo servidor e revelado no telão com animação; a mensagem do prêmio, como um cupom, aparece só no celular de quem ganhou.",
-  },
-  {
-    q: "A plateia pode mandar perguntas durante a palestra?",
-    a: "Sim. Pelo celular, a qualquer momento, anônima ou com nome. Os outros curtem as perguntas que também querem ver respondidas, e você destaca a mais votada no telão, marca como respondida ou oculta. Se preferir, aprove cada pergunta antes de ela aparecer.",
-  },
-  {
-    q: "É seguro usar com alunos de escola?",
-    a: "Sim. O filtro de palavrões vem ligado: nuvem de palavras, respostas abertas e perguntas com palavrões não vão ao telão, e você pode liberar se for engano. Também dá para aprovar as respostas abertas antes de elas aparecerem e tirar qualquer palavra da nuvem na hora.",
-  },
-  {
-    q: "Funciona com o Claude ou o ChatGPT?",
-    a: "Sim. O PulseStage tem um servidor MCP: você conecta sua conta ao Claude, ao ChatGPT ou a outro assistente compatível, anexa os slides no chat e pede as perguntas. O assistente cria a sessão e coloca cada pergunta depois do slide certo. Ele não inicia a sessão ao vivo; isso continua com você.",
-  },
-  {
-    q: "Quantas pessoas podem participar?",
-    a: `Até ${MAX_PARTICIPANTS_PER_SESSION.toLocaleString("pt-BR")} participantes por sessão. Cada pessoa responde uma vez por pergunta.`,
-  },
-  {
-    q: "Consigo levar os resultados para fora?",
-    a: "Sim. Cada sessão gera um relatório em PDF e exporta as respostas e a pesquisa em planilha (CSV). Você também pode duplicar uma sessão para repetir a palestra.",
-  },
-  {
-    q: "E os dados de quem participa?",
-    a: "A participação pode ser anônima. Contato só é guardado com autorização e fica separado das respostas. A análise com IA usa apenas dados agregados, nunca nomes ou contatos.",
-  },
-];
+const FAQ = ["app", "price", "slides", "raffle", "questions", "schools", "assistants", "capacity", "export", "data"] as const;
 
 function SectionHeading({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -273,7 +127,33 @@ const stagger = (i: number) => ({ "--i": i }) as React.CSSProperties;
 
 const paperShadow = "shadow-[0_24px_48px_-32px_color-mix(in_oklch,var(--foreground)_40%,transparent)]";
 
-export default function Home() {
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("landing.meta");
+  const [alternates, locale] = await Promise.all([localeAlternates("/"), ogLocale()]);
+  return {
+    title: { absolute: t("title") },
+    description: t("description"),
+    alternates,
+    openGraph: { type: "website", siteName: "PulseStage", title: t("title"), description: t("description"), locale },
+  };
+}
+
+export default async function Home() {
+  const [t, tDomain, locale, href] = await Promise.all([
+    getTranslations("landing"),
+    getTranslations("domain"),
+    getLocale(),
+    getPublicHref(),
+  ]);
+  const maxParticipants = formatInt(MAX_PARTICIPANTS_PER_SESSION, locale);
+  // Fatos do produto (limites e recursos), não números de uso.
+  const productFacts = [
+    { value: formatInt(0, locale), text: t("facts.apps") },
+    { value: maxParticipants, text: t("facts.participants") },
+    { value: formatInt(6, locale), text: t("facts.types") },
+    { value: formatInt(1, locale), text: t("facts.screen") },
+  ];
+  const chartValues = new Intl.ListFormat(locale, { type: "conjunction" }).format(PULSE.map((p) => `${Math.round(p.rate * 100)}%`));
   const chartMax = 60;
   return (
     <div className="flex min-h-dvh flex-col">
@@ -282,23 +162,25 @@ export default function Home() {
           <Logo />
           <nav className="flex items-center gap-1 sm:gap-2">
             <a href="#como-funciona" className={cn(buttonVariants({ variant: "ghost" }), "hidden md:inline-flex")}>
-              Como funciona
+              {t("nav.howItWorks")}
             </a>
             <a href="#recursos" className={cn(buttonVariants({ variant: "ghost" }), "hidden md:inline-flex")}>
-              Recursos
+              {t("nav.features")}
             </a>
             <a href="#ia" className={cn(buttonVariants({ variant: "ghost" }), "hidden lg:inline-flex")}>
-              Com IA
+              {t("nav.withAi")}
             </a>
-            <Link href="/palestrantes" className={cn(buttonVariants({ variant: "ghost" }), "hidden md:inline-flex")}>
-              Palestrantes
+            <Link href={href("/palestrantes")} className={cn(buttonVariants({ variant: "ghost" }), "hidden md:inline-flex")}>
+              {t("nav.speakers")}
             </Link>
+            <LocaleSwitcher compact className="sm:hidden" />
+            <LocaleSwitcher className="hidden sm:inline-flex" />
             <ThemeToggle />
-            <Link href="/login" className={buttonVariants({ variant: "ghost" })}>
-              Entrar
+            <Link href={href("/login")} className={buttonVariants({ variant: "ghost" })}>
+              {t("nav.signIn")}
             </Link>
-            <Link href="/signup" className={cn(buttonVariants(), "hidden sm:inline-flex")}>
-              Criar conta grátis
+            <Link href={href("/signup")} className={cn(buttonVariants(), "hidden sm:inline-flex")}>
+              {t("nav.signUp")}
             </Link>
           </nav>
         </header>
@@ -311,26 +193,30 @@ export default function Home() {
               className="script-line max-w-5xl text-balance font-display text-[clamp(2.4rem,5.6vw,5rem)] font-extrabold leading-[1.02] tracking-[-0.025em]"
               style={line(0)}
             >
-              Aulas, palestras e treinamentos com{" "}
-              <mark className="highlighter box-decoration-clone rounded-md px-1.5 text-highlight-foreground">todo mundo participando</mark>.
+              {t.rich("hero.title", {
+                mark: (chunks) => (
+                  <mark className="highlighter box-decoration-clone rounded-md px-1.5 text-highlight-foreground">{chunks}</mark>
+                ),
+              })}
             </h1>
 
             <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-end lg:gap-14">
               <div className="flex flex-col gap-6">
                 <p className="script-line max-w-[58ch] text-lg leading-relaxed text-muted-foreground" style={line(1)}>
-                  Enquetes, quiz, nuvem de palavras e sorteio respondidos pelo celular, com o resultado no telão em
-                  segundos e seus slides na mesma tela. Para universidades, escolas e empresas. Depois, um relatório
-                  mostra o que funcionou para a próxima ser ainda melhor.
+                  {t("hero.lead")}
                 </p>
                 <div className="script-line flex flex-wrap items-center gap-x-5 gap-y-3" style={line(2)}>
-                  <Link href="/signup" className={buttonVariants({ size: "lg" })}>
-                    Criar minha sessão grátis
+                  <Link href={href("/signup")} className={buttonVariants({ size: "lg" })}>
+                    {t("hero.cta")}
                   </Link>
                   <span className="text-sm text-muted-foreground">
-                    Grátis durante o beta, sem cartão ·{" "}
-                    <Link href="/login" className="font-medium text-foreground underline-offset-4 hover:underline">
-                      já tenho conta
-                    </Link>
+                    {t.rich("hero.beta", {
+                      link: (chunks) => (
+                        <Link href={href("/login")} className="font-medium text-foreground underline-offset-4 hover:underline">
+                          {chunks}
+                        </Link>
+                      ),
+                    })}
                   </span>
                 </div>
               </div>
@@ -338,18 +224,21 @@ export default function Home() {
                 {HERO_FACTS.map((fact) => (
                   <li key={fact} className="flex items-start gap-2.5">
                     <CheckIcon className="mt-1 shrink-0 text-primary" />
-                    <span>{fact}</span>
+                    <span>{t(`hero.facts.${fact}`)}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
             <div className="slide-in-right mx-auto w-full max-w-4xl">
-              <StageDemo />
+              {/* A área landing não vai ao navegador por padrão: o palco (cliente) recebe só o que usa. */}
+              <IntlProvider namespaces={["common", "domain", "landing"]}>
+                <StageDemo />
+              </IntlProvider>
             </div>
 
             <div className="script-line flex flex-col gap-3 border-t border-dashed pt-6 sm:flex-row sm:items-center sm:justify-between" style={line(4)}>
-              <p className="text-sm font-medium">Vai participar de uma aula ou palestra? Digite o código que aparece na tela.</p>
+              <p className="text-sm font-medium">{t("hero.joinPrompt")}</p>
               <div className="w-full sm:max-w-sm">
                 <JoinCodeForm />
               </div>
@@ -358,9 +247,9 @@ export default function Home() {
         </section>
 
         {/* Fatos do produto. */}
-        <section aria-label="O PulseStage em números do produto" className="mx-auto w-full max-w-6xl px-4 pb-16 md:px-6 md:pb-20">
+        <section aria-label={t("facts.ariaLabel")} className="mx-auto w-full max-w-6xl px-4 pb-16 md:px-6 md:pb-20">
           <dl className="grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-4">
-            {PRODUCT_FACTS.map((fact, index) => (
+            {productFacts.map((fact, index) => (
               <div key={fact.text} className="reveal flex flex-col gap-1 border-t-2 border-foreground pt-4" style={stagger(index)}>
                 <dt className="sr-only">{fact.text}</dt>
                 <dd className="font-display text-[clamp(2.4rem,5vw,3.75rem)] font-bold leading-none tabular-nums">{fact.value}</dd>
@@ -373,17 +262,15 @@ export default function Home() {
         {/* Como funciona: três passos (a ordem importa). */}
         <section id="como-funciona" className="border-t">
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 py-20 md:px-6 md:py-24">
-            <SectionHeading title="Como funciona">
-              Três passos, do cadastro ao relatório. Você continua apresentando do seu jeito.
-            </SectionHeading>
+            <SectionHeading title={t("steps.title")}>{t("steps.lead")}</SectionHeading>
             <ol className="grid gap-10 md:grid-cols-3 md:gap-8">
               {STEPS.map((step, index) => (
-                <li key={step.title} className="reveal flex flex-col gap-3 border-t-2 border-foreground pt-5" style={stagger(index)}>
+                <li key={step} className="reveal flex flex-col gap-3 border-t-2 border-foreground pt-5" style={stagger(index)}>
                   <span className="font-display text-5xl font-bold leading-none tabular-nums" aria-hidden>
                     {index + 1}
                   </span>
-                  <h3 className="text-xl font-semibold">{step.title}</h3>
-                  <p className="leading-relaxed text-muted-foreground">{step.text}</p>
+                  <h3 className="text-xl font-semibold">{t(`steps.${step}.title`)}</h3>
+                  <p className="leading-relaxed text-muted-foreground">{t(`steps.${step}.text`)}</p>
                 </li>
               ))}
             </ol>
@@ -394,14 +281,12 @@ export default function Home() {
         <section className="border-t bg-muted/40">
           <div className="mx-auto grid w-full max-w-6xl gap-12 px-4 py-20 md:px-6 md:py-24 lg:grid-cols-[2fr_3fr] lg:gap-16">
             <div className="flex flex-col gap-10">
-              <SectionHeading title="Seis tipos de pergunta, e a plateia com voz o tempo todo">
-                Misture os formatos ao longo da apresentação. Cada tipo tem a sua cor, no seu painel e na tela do projetor.
-              </SectionHeading>
+              <SectionHeading title={t("questionTypes.title")}>{t("questionTypes.lead")}</SectionHeading>
               <dl className="flex flex-col gap-5">
                 {AUDIENCE_TOOLS.map((tool, index) => (
-                  <div key={tool.title} className="reveal flex flex-col gap-1 border-t pt-4" style={stagger(index)}>
-                    <dt className="font-display text-lg font-bold">{tool.title}</dt>
-                    <dd className="leading-relaxed text-muted-foreground">{tool.text}</dd>
+                  <div key={tool} className="reveal flex flex-col gap-1 border-t pt-4" style={stagger(index)}>
+                    <dt className="font-display text-lg font-bold">{t(`audienceTools.${tool}.title`)}</dt>
+                    <dd className="leading-relaxed text-muted-foreground">{t(`audienceTools.${tool}.text`)}</dd>
                   </div>
                 ))}
               </dl>
@@ -416,9 +301,11 @@ export default function Home() {
                   )}
                   style={{ marginLeft: `${index * 0.75}rem`, zIndex: QUESTION_TYPES.length - index }}
                 >
-                  <h3 className="font-display text-xl font-bold">{item.type}</h3>
-                  <p className="mt-1 max-w-[52ch] text-sm leading-relaxed">{item.text}</p>
-                  <p className="mt-2 font-display text-sm italic opacity-80">Ex.: “{item.example}”</p>
+                  <h3 className="font-display text-xl font-bold">{tDomain(`interactionTypes.${item.type}.label`)}</h3>
+                  <p className="mt-1 max-w-[52ch] text-sm leading-relaxed">{t(`questionTypes.${item.type}.text`)}</p>
+                  <p className="mt-2 font-display text-sm italic opacity-80">
+                    {t("questionTypes.example", { text: t(`questionTypes.${item.type}.example`) })}
+                  </p>
                 </li>
               ))}
             </ol>
@@ -429,51 +316,54 @@ export default function Home() {
         <section id="recursos" className="border-t">
           <div className="mx-auto grid w-full max-w-6xl gap-12 px-4 py-20 md:px-6 md:py-24 lg:grid-cols-[2fr_3fr] lg:gap-16">
             <div className="flex flex-col gap-8">
-              <SectionHeading title="Seus slides e suas perguntas numa sequência só">
-                Nada de trocar de janela no meio da palestra. Você apresenta pelo PulseStage e a interação entra no
-                momento certo.
-              </SectionHeading>
+              <SectionHeading title={t("slides.title")}>{t("slides.lead")}</SectionHeading>
               <ul className="reveal flex flex-col gap-4 leading-relaxed">
                 {SLIDE_POINTS.map((point) => (
                   <li key={point} className="flex items-start gap-2.5">
                     <CheckIcon className="mt-1 shrink-0 text-primary" />
-                    <span>{point}</span>
+                    <span>{t(`slides.points.${point}`)}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
             <figure className={cn("reveal flex flex-col gap-6 self-center rounded-sm bg-card p-6 dark:border sm:p-8", paperShadow)}>
-              <ol className="grid grid-cols-2 gap-3 sm:grid-cols-3" aria-label="Exemplo de sequência da apresentação">
+              <ol className="grid grid-cols-2 gap-3 sm:grid-cols-3" aria-label={t("slides.deckLabel")}>
                 {DECK.map((item, index) =>
                   item.kind === "slide" ? (
                     <li key={`s${item.n}`} className="flex flex-col gap-1.5">
                       <span className="dark flex aspect-video flex-col justify-between rounded-sm border bg-background p-2 text-foreground">
-                        <span className="text-xs font-semibold leading-tight">{item.title}</span>
+                        <span className="text-xs font-semibold leading-tight">{t(`slides.deck.${item.title}`)}</span>
                         <span aria-hidden className="flex flex-col gap-1">
                           <span className="h-0.5 w-3/4 rounded-full bg-foreground/30" />
                           <span className="h-0.5 w-1/2 rounded-full bg-foreground/30" />
                         </span>
                       </span>
-                      <span className="font-display text-xs text-muted-foreground">Slide {item.n}</span>
+                      <span className="font-display text-xs text-muted-foreground">{t("slides.slideNumber", { n: item.n })}</span>
                     </li>
                   ) : (
                     <li key={`q${index}`} className="flex flex-col gap-1.5">
                       <span className={cn("flex aspect-video flex-col justify-between rounded-sm p-2 text-rev-foreground", item.paper)}>
-                        <span className="font-display text-[0.65rem] font-bold uppercase tracking-wider">{item.type}</span>
-                        <span className="text-xs font-medium leading-tight">{item.text}</span>
+                        <span className="font-display text-[0.65rem] font-bold uppercase tracking-wider">
+                          {item.type === "poll"
+                            ? tDomain("interactionTypes.multiple_choice.label")
+                            : item.type === "cloud"
+                              ? t("slides.deck.cloudType")
+                              : tDomain("interactionTypes.quiz.label")}
+                        </span>
+                        <span className="text-xs font-medium leading-tight">{t(`slides.deck.${item.type}Question`)}</span>
                       </span>
-                      <span className="font-display text-xs text-muted-foreground">Pergunta</span>
+                      <span className="font-display text-xs text-muted-foreground">{t("slides.question")}</span>
                     </li>
                   ),
                 )}
               </ol>
               <figcaption className="flex flex-wrap items-center gap-3 border-t border-dashed pt-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1.5">
-                  <Kbd>→</Kbd> ou o passador avança
+                  {t.rich("slides.advance", { kbd: (chunks) => <Kbd>{chunks}</Kbd> })}
                 </span>
                 <span aria-hidden>·</span>
-                <span>arraste as perguntas para mudar a ordem</span>
+                <span>{t("slides.reorder")}</span>
               </figcaption>
             </figure>
           </div>
@@ -482,15 +372,12 @@ export default function Home() {
         {/* Gamificação e sorteio. */}
         <section className="border-t bg-muted/40">
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 py-20 md:px-6 md:py-24">
-            <SectionHeading title="Quiz, ranking e sorteio: a sala inteira quer jogar">
-              Recursos de jogo para a plateia participar do começo ao fim, e um sorteio para fechar a palestra em clima
-              de festa.
-            </SectionHeading>
+            <SectionHeading title={t("game.title")}>{t("game.lead")}</SectionHeading>
 
             <div className="grid gap-6 lg:grid-cols-3">
               {/* Celular: alternativas com forma e cor. */}
               <div className={cn("reveal flex flex-col gap-3 rounded-sm bg-card p-5 dark:border", paperShadow)} style={stagger(0)}>
-                <p className="font-semibold leading-snug">Qual destes é um modelo de linguagem?</p>
+                <p className="font-semibold leading-snug">{t("game.quizQuestion")}</p>
                 <div className="grid grid-cols-2 gap-2" aria-hidden>
                   {QUIZ_TILES.map((label, i) => (
                     <span
@@ -506,35 +393,37 @@ export default function Home() {
                     </span>
                   ))}
                 </div>
-                <p className="rounded-md bg-primary/15 py-2 text-center text-sm font-semibold text-primary">Certa! +950 pontos</p>
-                <p className="mt-auto text-xs text-muted-foreground">No celular da plateia · exemplo</p>
+                <p className="rounded-md bg-primary/15 py-2 text-center text-sm font-semibold text-primary">
+                  {t("game.correct", { points: formatInt(950, locale) })}
+                </p>
+                <p className="mt-auto text-xs text-muted-foreground">{t("game.onPhone")}</p>
               </div>
 
               {/* Telão: ranking. */}
               <div className="reveal dark flex flex-col gap-3 rounded-sm border bg-background p-5 text-foreground" style={stagger(1)}>
-                <p className="text-center text-lg font-semibold">Ranking do quiz</p>
+                <p className="text-center text-lg font-semibold">{t("game.leaderboard")}</p>
                 <ol className="flex flex-col gap-2">
                   {RANKING.map((r, i) => (
                     <li
                       key={r.name}
                       className={cn("flex items-center gap-3 rounded-md px-3 py-2", i === 0 ? "bg-primary/20" : "bg-muted")}
                     >
-                      <span className="w-6 font-display font-bold tabular-nums">{i + 1}º</span>
+                      <span className="w-6 font-display font-bold tabular-nums">{t("game.place", { n: i + 1 })}</span>
                       <span aria-hidden className="text-xl leading-none">
                         {r.avatar}
                       </span>
                       <span className="flex-1 font-semibold">{r.name}</span>
                       <span className="text-xs text-muted-foreground tabular-nums">{r.move}</span>
-                      <span className="font-display font-bold tabular-nums">{r.points}</span>
+                      <span className="font-display font-bold tabular-nums">{formatInt(r.points, locale)}</span>
                     </li>
                   ))}
                 </ol>
-                <p className="mt-auto text-xs text-muted-foreground">No telão · exemplo</p>
+                <p className="mt-auto text-xs text-muted-foreground">{t("game.onScreen")}</p>
               </div>
 
               {/* Sorteio. */}
               <div className="reveal dark flex flex-col items-center gap-3 rounded-sm border bg-background p-5 text-center text-foreground" style={stagger(2)}>
-                <p className="text-sm text-muted-foreground">Sorteando: Livro autografado</p>
+                <p className="text-sm text-muted-foreground">{t("game.drawing", { prize: t("game.prize") })}</p>
                 <span className="rounded-xl border-4 border-dashed border-primary px-6 font-display text-6xl font-bold leading-tight text-primary tabular-nums">
                   042
                 </span>
@@ -542,17 +431,17 @@ export default function Home() {
                   <span aria-hidden className="text-2xl leading-none">
                     🦉
                   </span>
-                  Carla · Parabéns!
+                  {t("game.winner", { name: "Carla" })}
                 </p>
-                <p className="mt-auto text-xs text-muted-foreground">No telão · exemplo</p>
+                <p className="mt-auto text-xs text-muted-foreground">{t("game.onScreen")}</p>
               </div>
             </div>
 
             <dl className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
               {GAME_POINTS.map((point, index) => (
-                <div key={point.title} className="reveal flex flex-col gap-1 border-t pt-4" style={stagger(index % 3)}>
-                  <dt className="font-display text-lg font-bold">{point.title}</dt>
-                  <dd className="leading-relaxed text-muted-foreground">{point.text}</dd>
+                <div key={point} className="reveal flex flex-col gap-1 border-t pt-4" style={stagger(index % 3)}>
+                  <dt className="font-display text-lg font-bold">{t(`game.points.${point}.title`)}</dt>
+                  <dd className="leading-relaxed text-muted-foreground">{t(`game.points.${point}.text`)}</dd>
                 </div>
               ))}
             </dl>
@@ -563,22 +452,16 @@ export default function Home() {
         <section id="ia" className="border-t">
           <div className="mx-auto grid w-full max-w-6xl gap-12 px-4 py-20 md:px-6 md:py-24 lg:grid-cols-[5fr_6fr] lg:items-center lg:gap-16">
             <div className="flex flex-col gap-8">
-              <SectionHeading title="Monte as perguntas conversando com o Claude ou o ChatGPT">
-                Já tem a apresentação pronta? Conecte o PulseStage ao seu assistente de IA, anexe os slides e peça as
-                interações. Ele cria a sessão com cada pergunta no ponto certo da apresentação.
-              </SectionHeading>
+              <SectionHeading title={t("ai.title")}>{t("ai.lead")}</SectionHeading>
               <dl className="grid gap-x-8 gap-y-6 sm:grid-cols-2">
                 {AI_POINTS.map((point, index) => (
-                  <div key={point.title} className="reveal flex flex-col gap-1 border-t pt-4" style={stagger(index % 2)}>
-                    <dt className="font-display text-lg font-bold">{point.title}</dt>
-                    <dd className="leading-relaxed text-muted-foreground">{point.text}</dd>
+                  <div key={point} className="reveal flex flex-col gap-1 border-t pt-4" style={stagger(index % 2)}>
+                    <dt className="font-display text-lg font-bold">{t(`ai.points.${point}.title`)}</dt>
+                    <dd className="leading-relaxed text-muted-foreground">{t(`ai.points.${point}.text`)}</dd>
                   </div>
                 ))}
               </dl>
-              <p className="reveal text-sm text-muted-foreground">
-                Funciona com o Claude, o ChatGPT e outros assistentes compatíveis com MCP (Model Context Protocol). Você
-                conecta uma vez, pelo painel, em Integrações.
-              </p>
+              <p className="reveal text-sm text-muted-foreground">{t("ai.compat")}</p>
             </div>
 
             <figure className={cn("reveal flex flex-col gap-4 rounded-sm bg-card p-5 dark:border sm:p-6", paperShadow)}>
@@ -588,36 +471,37 @@ export default function Home() {
                     PDF
                   </span>
                   <span className="flex flex-col leading-tight">
-                    <span className="font-medium">ia-na-escola.pdf</span>
-                    <span className="text-xs text-muted-foreground">18 páginas</span>
+                    <span className="font-medium">{t("ai.fileName")}</span>
+                    <span className="text-xs text-muted-foreground">{t("ai.pages", { count: 18 })}</span>
                   </span>
                 </span>
-                <p className="rounded-2xl rounded-tr-sm bg-primary px-4 py-2.5 text-sm text-primary-foreground">
-                  Crie no PulseStage as interações desta palestra de 50 minutos para professores.
-                </p>
+                <p className="rounded-2xl rounded-tr-sm bg-primary px-4 py-2.5 text-sm text-primary-foreground">{t("ai.request")}</p>
               </div>
 
               <div className="flex max-w-[92%] flex-col gap-3 rounded-2xl rounded-tl-sm bg-muted px-4 py-3 text-sm">
-                <p>Proposta para os seus slides:</p>
+                <p>{t("ai.proposal")}</p>
                 <ol className="flex flex-col gap-2">
                   {AI_PLAN.map((item) => (
-                    <li key={item.where} className={cn("flex flex-col gap-0.5 rounded-md px-3 py-2 text-rev-foreground", item.paper)}>
+                    <li key={item.text} className={cn("flex flex-col gap-0.5 rounded-md px-3 py-2 text-rev-foreground", item.paper)}>
                       <span className="text-[11px] font-semibold uppercase tracking-wide opacity-80">
-                        {item.where} · {item.type}
+                        {item.slide === null ? t("ai.atEnd") : t("ai.afterSlide", { n: item.slide })} ·{" "}
+                        {tDomain(`interactionTypes.${item.type}.label`)}
                       </span>
-                      <span className="font-medium leading-snug">{item.text}</span>
+                      <span className="font-medium leading-snug">{t(`ai.plan.${item.text}`)}</span>
                     </li>
                   ))}
                 </ol>
-                <p>Posso gravar?</p>
+                <p>{t("ai.confirmQuestion")}</p>
               </div>
 
-              <p className="ml-auto rounded-2xl rounded-tr-sm bg-primary px-4 py-2.5 text-sm text-primary-foreground">Pode!</p>
+              <p className="ml-auto rounded-2xl rounded-tr-sm bg-primary px-4 py-2.5 text-sm text-primary-foreground">
+                {t("ai.confirmAnswer")}
+              </p>
 
               <p className="inline-flex w-fit items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium">
-                <CheckIcon className="text-primary" /> PulseStage · 4 perguntas gravadas na sessão
+                <CheckIcon className="text-primary" /> {t("ai.saved", { count: AI_PLAN.length })}
               </p>
-              <figcaption className="text-xs text-muted-foreground">Exemplo de conversa com um assistente de IA</figcaption>
+              <figcaption className="text-xs text-muted-foreground">{t("ai.caption")}</figcaption>
             </figure>
           </div>
         </section>
@@ -626,29 +510,24 @@ export default function Home() {
         <section className="border-t">
           <div className="mx-auto grid w-full max-w-6xl gap-12 px-4 py-20 md:px-6 md:py-24 lg:grid-cols-[2fr_3fr] lg:gap-16">
             <div className="flex flex-col gap-6">
-              <SectionHeading title="Depois: o relatório da sessão">
-                Ao encerrar, a plateia responde uma pesquisa pelo celular. Você vê seus pontos fortes e fracos, onde o
-                público mais participou, quanto tempo ficou em cada slide e sugestões da IA para a próxima vez. Tudo
-                exportável em PDF e planilha.
-              </SectionHeading>
-              <p className="reveal text-sm leading-relaxed text-muted-foreground">
-                Os números medem participação, não atenção. E cada sugestão da IA mostra em quantas respostas se baseia:
-                quanto menos respostas, mais fraco o sublinhado.
-              </p>
+              <SectionHeading title={t("report.title")}>{t("report.lead")}</SectionHeading>
+              <p className="reveal text-sm leading-relaxed text-muted-foreground">{t("report.note")}</p>
             </div>
 
             <article className={cn("reveal flex flex-col gap-8 rounded-sm bg-card p-6 dark:border sm:p-8", paperShadow)}>
               <header className="flex flex-wrap items-baseline justify-between gap-2 border-b pb-4">
-                <h3 className="font-display text-lg font-bold uppercase">Relatório: “IA no trabalho”</h3>
-                <span className="text-xs text-muted-foreground">exemplo com dados simulados</span>
+                <h3 className="font-display text-lg font-bold uppercase">
+                  {t("report.heading", { title: t("report.sampleTitle") })}
+                </h3>
+                <span className="text-xs text-muted-foreground">{t("report.simulated")}</span>
               </header>
 
               <figure className="flex flex-col gap-3">
-                <figcaption className="text-sm font-semibold">Participação em cada pergunta</figcaption>
+                <figcaption className="text-sm font-semibold">{t("report.chartTitle")}</figcaption>
                 <svg
                   viewBox="0 0 300 120"
                   role="img"
-                  aria-label="Participação por pergunta: 82%, 91%, 58%, 66% e 74%"
+                  aria-label={t("report.chartAria", { values: chartValues })}
                   className="h-auto w-full font-display"
                 >
                   {[0.25, 0.5, 0.75, 1].map((g) => (
@@ -674,7 +553,7 @@ export default function Home() {
                           {Math.round(p.rate * 100)}%
                         </text>
                         <text x={x} y="113" textAnchor="middle" fontSize="8" fill="var(--muted-foreground)">
-                          {p.minute} min
+                          {t("report.minute", { minute: p.minute })}
                         </text>
                       </g>
                     );
@@ -683,24 +562,24 @@ export default function Home() {
               </figure>
 
               <div className="flex flex-col gap-3">
-                <p className="text-sm font-semibold">Sugestões da IA</p>
+                <p className="text-sm font-semibold">{t("report.suggestions")}</p>
                 <ol className="flex flex-col gap-4">
                   {NOTES.map((note, index) => (
-                    <li key={index} className="grid grid-cols-[1.5rem_1fr] gap-x-2">
+                    <li key={note.id} className="grid grid-cols-[1.5rem_1fr] gap-x-2">
                       <span className="font-display font-bold tabular-nums">{index + 1}.</span>
                       <div className="flex flex-col gap-1">
                         <p
                           className={cn(
                             "leading-relaxed underline decoration-2 underline-offset-[6px]",
-                            note.confidence === "alta" && "decoration-foreground",
-                            note.confidence === "média" && "decoration-foreground/50",
-                            note.confidence === "baixa" && "decoration-foreground/40 decoration-dashed decoration-1",
+                            note.confidence === "high" && "decoration-foreground",
+                            note.confidence === "medium" && "decoration-foreground/50",
+                            note.confidence === "low" && "decoration-foreground/40 decoration-dashed decoration-1",
                           )}
                         >
-                          {note.text}
+                          {t(`report.notes.${note.id}`)}
                         </p>
                         <span className="text-xs text-muted-foreground">
-                          confiança {note.confidence} · {note.sample}
+                          {t(`report.confidence.${note.confidence}`)} · {t(`report.${note.sample.kind}`, { count: note.sample.count })}
                         </span>
                       </div>
                     </li>
@@ -709,13 +588,13 @@ export default function Home() {
               </div>
 
               <div className="flex flex-col gap-3 border-t pt-5">
-                <p className="text-sm font-semibold">Avaliação do público</p>
+                <p className="text-sm font-semibold">{t("report.rating")}</p>
                 <dl className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3 xl:grid-cols-5">
                   {SCORECARD.map((s) => (
-                    <div key={s.label} className="flex flex-col">
-                      <dt className="text-xs text-muted-foreground">{s.label}</dt>
+                    <div key={s.dimension} className="flex flex-col">
+                      <dt className="text-xs text-muted-foreground">{tDomain(`dimensions.${s.dimension}`)}</dt>
                       <dd className="font-display text-xl font-bold tabular-nums">
-                        {s.value}
+                        {formatScore(s.value, locale)}
                         <span className="text-sm font-normal text-muted-foreground">{s.scale}</span>
                       </dd>
                     </div>
@@ -729,14 +608,12 @@ export default function Home() {
         {/* Para quem é. */}
         <section className="border-t bg-muted/40">
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 py-20 md:px-6 md:py-24">
-            <SectionHeading title="Da sala de aula ao auditório">
-              Funciona em sala de aula, auditório, reunião ou treinamento, presencial ou online com tela compartilhada.
-            </SectionHeading>
+            <SectionHeading title={t("audiences.title")}>{t("audiences.lead")}</SectionHeading>
             <dl className="grid gap-10 sm:grid-cols-2 md:gap-8 lg:grid-cols-4">
               {AUDIENCES.map((a, index) => (
-                <div key={a.who} className="reveal flex flex-col gap-2 border-t pt-5" style={stagger(index)}>
-                  <dt className="font-display text-xl font-bold">{a.who}</dt>
-                  <dd className="leading-relaxed text-muted-foreground">{a.text}</dd>
+                <div key={a} className="reveal flex flex-col gap-2 border-t pt-5" style={stagger(index)}>
+                  <dt className="font-display text-xl font-bold">{t(`audiences.${a}.who`)}</dt>
+                  <dd className="leading-relaxed text-muted-foreground">{t(`audiences.${a}.text`)}</dd>
                 </div>
               ))}
             </dl>
@@ -746,12 +623,12 @@ export default function Home() {
         {/* Perguntas frequentes. */}
         <section className="border-t">
           <div className="mx-auto grid w-full max-w-6xl gap-12 px-4 py-20 md:px-6 md:py-24 lg:grid-cols-[2fr_3fr] lg:gap-16">
-            <SectionHeading title="Perguntas frequentes">O essencial antes de usar na sua próxima apresentação.</SectionHeading>
+            <SectionHeading title={t("faq.title")}>{t("faq.lead")}</SectionHeading>
             <div className="reveal flex flex-col divide-y rounded-sm bg-card dark:border">
               {FAQ.map((item) => (
-                <details key={item.q} className="group px-5 py-4 [&_summary::-webkit-details-marker]:hidden">
+                <details key={item} className="group px-5 py-4 [&_summary::-webkit-details-marker]:hidden">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold">
-                    {item.q}
+                    {t(`faq.items.${item}.q`)}
                     <span
                       aria-hidden
                       className="grid size-6 shrink-0 place-items-center rounded-full border text-sm transition-transform duration-200 ease-out group-open:rotate-45"
@@ -759,7 +636,9 @@ export default function Home() {
                       +
                     </span>
                   </summary>
-                  <p className="mt-3 max-w-[60ch] leading-relaxed text-muted-foreground">{item.a}</p>
+                  <p className="mt-3 max-w-[60ch] leading-relaxed text-muted-foreground">
+                    {item === "capacity" ? t("faq.items.capacity.a", { max: maxParticipants }) : t(`faq.items.${item}.a`)}
+                  </p>
                 </details>
               ))}
             </div>
@@ -770,18 +649,15 @@ export default function Home() {
         <section className="dark border-t bg-background text-foreground">
           <div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-8 px-4 py-24 md:px-6 md:py-32">
             <h2 className="reveal max-w-4xl font-display text-[clamp(2.6rem,6vw,5.5rem)] font-bold leading-[0.98] tracking-[-0.025em] text-balance">
-              Sua próxima aula ou palestra começa aqui.
+              {t("cta.title")}
             </h2>
-            <p className="reveal max-w-xl text-lg leading-relaxed text-muted-foreground">
-              Crie a primeira sessão em poucos minutos, com Google ou e-mail. Grátis durante o beta, sem cartão de
-              crédito.
-            </p>
+            <p className="reveal max-w-xl text-lg leading-relaxed text-muted-foreground">{t("cta.lead")}</p>
             <div className="reveal flex flex-wrap items-center gap-4">
-              <Link href="/signup" className={buttonVariants({ size: "lg" })}>
-                Criar minha sessão grátis
+              <Link href={href("/signup")} className={buttonVariants({ size: "lg" })}>
+                {t("cta.primary")}
               </Link>
-              <Link href="/login" className={buttonVariants({ size: "lg", variant: "outline" })}>
-                Entrar
+              <Link href={href("/login")} className={buttonVariants({ size: "lg", variant: "outline" })}>
+                {t("cta.signIn")}
               </Link>
             </div>
           </div>
@@ -790,14 +666,15 @@ export default function Home() {
 
       <footer className="border-t">
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-6 text-sm text-muted-foreground md:px-6">
-          <span>PulseStage · interação ao vivo para palestras e aulas</span>
-          <span className="flex gap-4">
-            <Link href="/palestrantes" className="underline-offset-4 hover:text-foreground hover:underline">
-              Encontre um palestrante
+          <span>{t("footer.tagline")}</span>
+          <span className="flex flex-wrap items-center gap-4">
+            <Link href={href("/palestrantes")} className="underline-offset-4 hover:text-foreground hover:underline">
+              {t("footer.findSpeaker")}
             </Link>
-            <Link href="/privacidade" className="underline-offset-4 hover:text-foreground hover:underline">
-              Privacidade
+            <Link href={href("/privacidade")} className="underline-offset-4 hover:text-foreground hover:underline">
+              {t("footer.privacy")}
             </Link>
+            <LocaleSwitcher />
           </span>
         </div>
       </footer>

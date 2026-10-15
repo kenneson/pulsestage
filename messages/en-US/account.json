@@ -1,1 +1,110 @@
-{}
+{
+  "page": {
+    "metaTitle": "Account and settings",
+    "title": "Account and settings",
+    "description": "Your profile, preferences, access, and data.",
+    "navLabel": "Account sections"
+  },
+  "sections": {
+    "profile": "Profile",
+    "preferences": "Preferences",
+    "preferencesDescription": "Defaults for new sessions and how dates are shown.",
+    "security": "Security",
+    "privacy": "Privacy",
+    "privacyTitle": "Privacy and data"
+  },
+  "security": {
+    "emailPassword": "Email and password",
+    "active": "Active",
+    "activateHint": "Set a password below to turn it on",
+    "connected": "Connected",
+    "connectHint": "Sign in with Google once to connect it"
+  },
+  "privacy": {
+    "exportTitle": "Export my data",
+    "exportDescription": "A JSON file with your profile, sessions, questions, responses, surveys, insights, and speaking requests you've received.",
+    "export": "Export",
+    "deleteTitle": "Delete account",
+    "deleteDescription": "Permanently deletes your profile (including your public one), all sessions, responses, surveys, insights, speaking requests you've received, and participant contact details. This can't be undone."
+  },
+  "avatar": {
+    "choose": "Choose photo",
+    "change": "Change photo",
+    "hint": "PNG, JPG, or WebP, up to 2 MB."
+  },
+  "profile": {
+    "name": "Name",
+    "email": "Email",
+    "bio": "Short bio",
+    "bioPlaceholder": "E.g., Speaker on AI at work and productivity.",
+    "bioHint": "Shown to your audience on the session join screen, in the PDF report, and on your public profile.",
+    "save": "Save profile"
+  },
+  "preferences": {
+    "locale": "Language",
+    "localeHint": "Language for the dashboard, new sessions, and emails.",
+    "timeZone": "Time zone",
+    "timeZoneHint": "Used for your sessions' dates and times.",
+    "defaultSurvey": "Default survey for new sessions",
+    "myTemplates": "My templates",
+    "defaultDuration": "Default duration (min)",
+    "themeHint": "Applies to this browser.",
+    "save": "Save preferences"
+  },
+  "password": {
+    "new": "New password",
+    "newPlaceholder": "At least 8 characters",
+    "confirm": "Confirm new password",
+    "changing": "Changing…",
+    "change": "Change password"
+  },
+  "signOutOthers": {
+    "button": "Sign out of all other devices",
+    "confirmTitle": "Sign out of all other devices?",
+    "confirmDescription": "You'll stay signed in here. You'll need to sign in again in other browsers.",
+    "confirmLabel": "Sign out others",
+    "done": "Done: your other devices have been signed out."
+  },
+  "delete": {
+    "confirmWord": "DELETE",
+    "typeToConfirm": "Type <b>{word}</b> to confirm",
+    "deleting": "Deleting…",
+    "button": "Delete my account"
+  },
+  "export": {
+    "fileName": "pulsestage-my-data-{date}.json"
+  },
+  "success": {
+    "profileSaved": "Profile saved.",
+    "photoUpdated": "Photo updated.",
+    "preferencesSaved": "Preferences saved.",
+    "passwordChanged": "Password changed."
+  },
+  "errors": {
+    "bioTooLong": "Your short bio can be up to 400 characters.",
+    "profileSaveFailed": "Couldn't save your profile.",
+    "chooseImage": "Choose an image.",
+    "imageType": "Use a PNG, JPG, or WebP image.",
+    "imageTooLarge": "The image can be up to 2 MB.",
+    "uploadFailed": "Couldn't upload the image.",
+    "photoSaveFailed": "Couldn't save the photo.",
+    "photoRemoveFailed": "Couldn't remove the photo.",
+    "invalidLocale": "Invalid language.",
+    "invalidTimeZone": "Invalid time zone.",
+    "invalidSurvey": "Invalid survey template.",
+    "invalidDuration": "Invalid duration.",
+    "preferencesSaveFailed": "Couldn't save your preferences.",
+    "passwordRequired": "Enter the new password.",
+    "passwordTooShort": "Your password must be at least 8 characters.",
+    "passwordTooLong": "Your password can be up to 72 characters.",
+    "confirmRequired": "Confirm the new password.",
+    "passwordMismatch": "The passwords don't match.",
+    "passwordSame": "Your new password must be different from the current one.",
+    "reauthenticate": "For security, sign in again and repeat the change.",
+    "passwordChangeFailed": "Couldn't change the password.",
+    "signOutOthersFailed": "Couldn't end your other sessions.",
+    "typeToConfirm": "Type {word} to confirm.",
+    "deleteFailed": "Couldn't delete your account. Try again.",
+    "unauthenticated": "Not authenticated."
+  }
+}

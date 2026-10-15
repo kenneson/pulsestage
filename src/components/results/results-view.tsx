@@ -1,11 +1,15 @@
+import { useLocale, useTranslations } from "next-intl";
 import type { PublicInteraction } from "@/lib/domain/interactions";
 import { optionBars, ratingBars, ratingStats, wordList, type Bar, type ResultsSnapshot } from "@/lib/domain/results";
-import { formatInt, formatPercent, formatScore, plural } from "@/lib/format";
+import { formatInt, formatPercent, formatScore } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { ShapeGlyph, shapeBg, shapeText } from "@/components/option-shape";
 import { optionImageSrc } from "@/lib/option-images/url";
 import { WordCloud } from "./word-cloud";
 import { rankingResults } from "@/lib/domain/ranking";
+
+// Sem "use client": roda no telão e na sala ao vivo (cliente, idioma da sessão via SessionIntl) e na análise
+// (Server Component, idioma do painel). Só useTranslations/useLocale, nunca idioma fixo.
 
 type Variant = "compact" | "display";
 
@@ -25,6 +29,7 @@ function Bars({
   decor?: Map<string, Decor>;
   shapes?: boolean;
 }) {
+  const locale = useLocale();
   const big = variant === "display";
   const max = Math.max(...bars.map((b) => b.pct), 0);
   return (
@@ -54,7 +59,7 @@ function Bars({
               </span>
               <span className="tabular-nums text-muted-foreground">
                 {formatPercent(bar.pct)}
-                {big ? null : <span className="ml-2 text-xs">({formatInt(bar.count)})</span>}
+                {big ? null : <span className="ml-2 text-xs">({formatInt(bar.count, locale)})</span>}
               </span>
             </div>
             <div className={cn("w-full overflow-hidden rounded-full bg-muted", big ? "h-6" : "h-2.5")}>
@@ -104,6 +109,8 @@ function OpenTexts({ snapshot, variant }: { snapshot: ResultsSnapshot; variant: 
 
 /** Ranking: alternativas da preferida para a menos preferida, com a posição média. */
 function RankingResults({ interaction, snapshot, variant }: { interaction: PublicInteraction; snapshot: ResultsSnapshot; variant: Variant }) {
+  const t = useTranslations("results");
+  const locale = useLocale();
   if (snapshot.total === 0) return <Waiting variant={variant} />;
   const big = variant === "display";
   const rows = rankingResults(interaction.options, snapshot);
@@ -118,12 +125,12 @@ function RankingResults({ interaction, snapshot, variant }: { interaction: Publi
               index === 0 ? "bg-primary text-primary-foreground" : "bg-muted",
             )}
           >
-            {index + 1}º
+            {t("position", { position: index + 1 })}
           </span>
           <div className={cn("flex items-baseline justify-between gap-4", big ? "text-3xl" : "text-sm")}>
             <span className="min-w-0 font-medium">{row.label}</span>
             <span className={cn("shrink-0 tabular-nums text-muted-foreground", big ? "text-2xl" : "text-xs")}>
-              posição média {formatScore(row.averagePosition)}
+              {t("averagePosition", { value: formatScore(row.averagePosition, locale) })}
             </span>
           </div>
           <div className={cn("w-full overflow-hidden rounded-full bg-muted", big ? "h-5" : "h-2")}>
@@ -139,9 +146,10 @@ function RankingResults({ interaction, snapshot, variant }: { interaction: Publi
 }
 
 function Waiting({ variant }: { variant: Variant }) {
+  const t = useTranslations("results");
   return (
     <p className={cn("py-6 text-center text-muted-foreground", variant === "display" ? "text-3xl" : "text-sm")}>
-      Aguardando respostas…
+      {t("waiting")}
     </p>
   );
 }
@@ -159,6 +167,8 @@ export function ResultsView({
   correctOptionId?: string | null;
   hideOpenText?: boolean;
 }) {
+  const t = useTranslations("results");
+  const locale = useLocale();
   const { settings } = interaction;
 
   switch (interaction.type) {
@@ -178,9 +188,9 @@ export function ResultsView({
       return (
         <div className="grid gap-4">
           <p className={cn("font-semibold tabular-nums", variant === "display" ? "text-center text-7xl" : "text-3xl")}>
-            {formatScore(stats.mean)}
+            {formatScore(stats.mean, locale)}
             <span className={cn("ml-2 font-normal text-muted-foreground", variant === "display" ? "text-3xl" : "text-base")}>
-              média · {plural(stats.total, "resposta", "respostas")}
+              {t("mean", { count: stats.total })}
             </span>
           </p>
           <Bars bars={ratingBars(settings.min, settings.max, snapshot)} variant={variant} />
@@ -199,7 +209,7 @@ export function ResultsView({
       if (hideOpenText) {
         return (
           <p className="py-6 text-center text-3xl text-muted-foreground">
-            {plural(snapshot.total, "resposta recebida", "respostas recebidas")}
+            {t("received", { count: snapshot.total })}
           </p>
         );
       }

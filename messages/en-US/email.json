@@ -1,1 +1,14 @@
-{}
+{
+  "contactRequest": {
+    "subject": "Speaking request: {from}",
+    "greeting": "Hi {name},",
+    "greetingNoName": "Hi,",
+    "intro": "{name} sent you a speaking request through your public profile on PulseStage.",
+    "organization": "Organization: {organization}",
+    "organizationKind": "Organization: {organization} ({kind})",
+    "eventDate": "Event date: {date}",
+    "eventCity": "City: {city}",
+    "reply": "Reply to this email to get in touch with {name} ({email}).",
+    "inbox": "Your speaking requests: {url}"
+  }
+}

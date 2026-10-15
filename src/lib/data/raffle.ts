@@ -58,11 +58,16 @@ type WinnerRow = {
   participants: { display_name: string | null; avatar: string | null } | null;
 };
 
-function winnerView(row: WinnerRow): RaffleWinnerView {
+/** `anonymous`: palavra de "Participante XXXX" no idioma de quem lê (domain.anonymousParticipant). */
+function winnerView(row: WinnerRow, anonymous?: string): RaffleWinnerView {
   return {
     id: row.id,
     number: row.number,
-    name: participantLabel({ id: row.participant_id, display_name: row.participants?.display_name ?? null }, row.participant_id),
+    name: participantLabel(
+      { id: row.participant_id, display_name: row.participants?.display_name ?? null },
+      row.participant_id,
+      anonymous,
+    ),
     avatar: avatarOf(row.participants?.avatar)?.emoji ?? null,
   };
 }
@@ -113,8 +118,16 @@ async function eligibleIds(client: Client, sessionId: string, mode: RaffleEligib
   );
 }
 
-/** Painel do speaker: prêmios, ganhadores (inclusive ausentes) e quantos ainda concorrem. */
-export async function getRaffleState(client: Client, sessionId: string, eligibility: string | null): Promise<RaffleState> {
+/**
+ * Painel do speaker: prêmios, ganhadores (inclusive ausentes) e quantos ainda concorrem.
+ * `anonymous`: palavra de "Participante XXXX" no idioma do painel (domain.anonymousParticipant).
+ */
+export async function getRaffleState(
+  client: Client,
+  sessionId: string,
+  eligibility: string | null,
+  anonymous?: string,
+): Promise<RaffleState> {
   const mode = isRaffleEligibility(eligibility) ? eligibility : null;
   const [prizes, winners, participantsCount] = await Promise.all([
     loadPrizes(client, sessionId),
@@ -138,7 +151,7 @@ export async function getRaffleState(client: Client, sessionId: string, eligibil
       winners: winners
         .filter((w) => w.prize_id === p.id)
         .map((w) => ({
-          ...winnerView(w),
+          ...winnerView(w, anonymous),
           prizeId: w.prize_id,
           drawnAt: w.drawn_at,
           forfeitedAt: w.forfeited_at,
@@ -151,8 +164,13 @@ export async function getRaffleState(client: Client, sessionId: string, eligibil
 /**
  * Sorteio no telão. Só existe enquanto o palestrante o mostra; o ganhador mais recente só sai
  * depois do suspense (o telão anima a roleta enquanto isso). Mensagens dos prêmios nunca saem daqui.
+ * `anonymous`: palavra de "Participante XXXX" no idioma da sessão (domain.anonymousParticipant).
  */
-export async function getPublicRaffle(admin: AdminSupabase, sessionId: string): Promise<RaffleDisplay | null> {
+export async function getPublicRaffle(
+  admin: AdminSupabase,
+  sessionId: string,
+  anonymous?: string,
+): Promise<RaffleDisplay | null> {
   const [session, live] = await Promise.all([
     admin.from("sessions").select("status, raffle_eligibility").eq("id", sessionId).maybeSingle(),
     admin.from("session_live_state").select("*").eq("session_id", sessionId).maybeSingle(),
@@ -199,14 +217,14 @@ export async function getPublicRaffle(admin: AdminSupabase, sessionId: string): 
       description: p.description,
       kind: toPrizeKind(p.kind),
       quantity: p.quantity,
-      winners: active.filter((w) => w.prize_id === p.id).map(winnerView),
+      winners: active.filter((w) => w.prize_id === p.id).map((w) => winnerView(w, anonymous)),
     })),
     latest:
       showsDraw && state.raffle_drawn_at && state.raffle_prize_id
         ? {
             prizeId: state.raffle_prize_id,
             drawnAt: state.raffle_drawn_at,
-            winner: latestRow && !pending ? winnerView(latestRow) : null,
+            winner: latestRow && !pending ? winnerView(latestRow, anonymous) : null,
           }
         : null,
     serverNow: now,

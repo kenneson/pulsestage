@@ -1,1 +1,8 @@
-{}
+{
+  "waiting": "Aguardando respostas…",
+  "position": "{position}º",
+  "averagePosition": "posição média {value}",
+  "mean": "média · {count, plural, one {# resposta} other {# respostas}}",
+  "received": "{count, plural, one {# resposta recebida} other {# respostas recebidas}}",
+  "wordCloud": "Nuvem de palavras: {words}"
+}
