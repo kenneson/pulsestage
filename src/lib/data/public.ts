@@ -175,7 +175,8 @@ export async function getPublicLeaderboard(
   anonymous?: string,
 ): Promise<LeaderboardEntry[] | null> {
   const state = await getLiveState(admin, sessionId);
-  if (!state || state.status === "draft" || !state.show_leaderboard) return null;
+  // Só durante a sessão: depois de encerrada, o link do telão não expõe mais os nomes.
+  if (!state || (state.status !== "live" && state.status !== "paused") || !state.show_leaderboard) return null;
 
   const { data: quizzes, error } = await admin
     .from("interactions")

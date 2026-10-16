@@ -208,5 +208,15 @@
     "deleteFailed": "No se pudo eliminar la sesión.",
     "statusNotAllowed": "Ese cambio de estado no está permitido.",
     "updateFailed": "No se pudo actualizar la sesión."
+  },
+  "rehearsal": {
+    "title": "Ensayo: {title}",
+    "errors": {
+      "notFound": "Sesión no encontrada.",
+      "alreadyRehearsal": "Esto ya es un ensayo.",
+      "ended": "La sesión ya finalizó.",
+      "startFailed": "No se pudo iniciar el ensayo.",
+      "endFailed": "No se pudo terminar el ensayo."
+    }
   }
 }

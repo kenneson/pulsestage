@@ -11,7 +11,7 @@ import {
   type PublicQuestion,
   type QuestionStatus,
 } from "@/lib/domain/questions";
-import { emptyTally, tallyReactions, type ReactionTally } from "@/lib/domain/reactions";
+import { emptyTally, isReactionKind, tallyReactions, type ReactionTally } from "@/lib/domain/reactions";
 
 // Perguntas da plateia e reações ao vivo. Para o celular e o telão (secret key), só o que cada
 // tela mostra: nada de ids de participante. Para o palestrante, leitura pelo RLS.
@@ -160,6 +160,15 @@ export async function listSessionQuestions(supabase: ServerSupabase, sessionId: 
         answeredAt: q.answered_at,
       })),
   );
+}
+
+/** Total de reações por tipo, contado no banco (reaction_totals; o RLS limita ao dono). */
+export async function getReactionTotals(supabase: ServerSupabase, sessionId: string): Promise<ReactionTally> {
+  const { data, error } = await supabase.rpc("reaction_totals", { p_session_id: sessionId });
+  if (error) throw new Error(error.message);
+  const tally = emptyTally();
+  for (const row of data) if (isReactionKind(row.kind)) tally[row.kind] = row.total;
+  return tally;
 }
 
 export async function loadReactions(supabase: ServerSupabase, sessionId: string): Promise<{ kind: string; created_at: string }[]> {

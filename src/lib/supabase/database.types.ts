@@ -1014,6 +1014,7 @@ export type Database = {
           ended_at: string | null
           estimated_duration_minutes: number | null
           id: string
+          is_test: boolean
           join_code: string
           locale: string
           moderate_open_text: boolean
@@ -1025,6 +1026,7 @@ export type Database = {
           qa_moderated: boolean
           raffle_eligibility: string | null
           reactions_enabled: boolean
+          rehearsal_of: string | null
           scheduled_at: string | null
           slide_count: number
           slides_batch: string | null
@@ -1042,6 +1044,7 @@ export type Database = {
           ended_at?: string | null
           estimated_duration_minutes?: number | null
           id?: string
+          is_test?: boolean
           join_code?: string
           locale?: string
           moderate_open_text?: boolean
@@ -1053,6 +1056,7 @@ export type Database = {
           qa_moderated?: boolean
           raffle_eligibility?: string | null
           reactions_enabled?: boolean
+          rehearsal_of?: string | null
           scheduled_at?: string | null
           slide_count?: number
           slides_batch?: string | null
@@ -1070,6 +1074,7 @@ export type Database = {
           ended_at?: string | null
           estimated_duration_minutes?: number | null
           id?: string
+          is_test?: boolean
           join_code?: string
           locale?: string
           moderate_open_text?: boolean
@@ -1081,6 +1086,7 @@ export type Database = {
           qa_moderated?: boolean
           raffle_eligibility?: string | null
           reactions_enabled?: boolean
+          rehearsal_of?: string | null
           scheduled_at?: string | null
           slide_count?: number
           slides_batch?: string | null
@@ -1149,18 +1155,21 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          ip_hash: string | null
           participant_id: string | null
           session_id: string
         }
         Insert: {
           created_at?: string
           id?: string
+          ip_hash?: string | null
           participant_id?: string | null
           session_id: string
         }
         Update: {
           created_at?: string
           id?: string
+          ip_hash?: string | null
           participant_id?: string | null
           session_id?: string
         }
@@ -1293,6 +1302,13 @@ export type Database = {
         Returns: boolean
       }
       raffle_ticket: { Args: { p_participant_id: string }; Returns: number }
+      reaction_totals: {
+        Args: { p_session_id: string }
+        Returns: {
+          kind: string
+          total: number
+        }[]
+      }
       reorder_interactions: {
         Args: { p_ids: string[]; p_session_id: string }
         Returns: undefined

@@ -106,8 +106,13 @@ export async function deleteSurveyTemplateAction(templateId: string): Promise<Ac
   const userId = await currentUserId(supabase);
   if (!userId) return fail(t("signInAgain"));
   // Sessões que usavam o modelo voltam ao padrão (on delete set null); as já encerradas guardam a cópia.
-  const { error } = await supabase.from("survey_templates").delete().eq("id", templateId).eq("owner_id", userId);
-  if (error) return fail(t("deleteFailed"));
+  const { data, error } = await supabase
+    .from("survey_templates")
+    .delete()
+    .eq("id", templateId)
+    .eq("owner_id", userId)
+    .select("id");
+  if (error || data.length === 0) return fail(t("deleteFailed"));
   revalidatePath("/dashboard/pesquisas");
   return ok(null);
 }

@@ -1,18 +1,14 @@
 import "server-only";
-import { createHmac } from "node:crypto";
-import { headers } from "next/headers";
 import { serverEnv } from "@/lib/env.server";
+import { requesterIpHash as ipHash } from "@/lib/request-ip";
 import { publicEnv } from "@/lib/env";
 import { getTranslations } from "next-intl/server";
 import type { Locale } from "@/lib/domain/locale";
 import type { ContactRequestInput } from "@/lib/domain/speaker-profile";
 
-/** Hash do IP de quem envia o convite (com segredo do servidor): limita abuso sem guardar o IP. */
+/** Hash do IP de quem envia o convite: limita abuso sem guardar o IP. */
 export async function requesterIpHash(): Promise<string | null> {
-  const h = await headers();
-  const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip")?.trim();
-  if (!ip) return null;
-  return createHmac("sha256", serverEnv().PARTICIPANT_TOKEN_SECRET).update(`contact:${ip}`).digest("base64url");
+  return ipHash("contact");
 }
 
 /**

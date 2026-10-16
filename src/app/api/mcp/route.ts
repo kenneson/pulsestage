@@ -1,4 +1,5 @@
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
+import { hitWindow } from "@/lib/domain/rate-limit";
 import { authenticate, unauthorized } from "@/lib/mcp/auth";
 import { buildMcpServer } from "@/lib/mcp/server";
 
@@ -14,11 +15,7 @@ const MAX_CALLS = 60;
 const calls = new Map<string, number[]>();
 
 function rateLimited(userId: string): boolean {
-  const now = Date.now();
-  const recent = (calls.get(userId) ?? []).filter((t) => now - t < WINDOW_MS);
-  recent.push(now);
-  calls.set(userId, recent);
-  return recent.length > MAX_CALLS;
+  return hitWindow(calls, userId, Date.now(), WINDOW_MS, MAX_CALLS);
 }
 
 async function handle(req: Request): Promise<Response> {

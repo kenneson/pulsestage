@@ -144,6 +144,8 @@
     "voteFailed": "Couldn't save that. Please try again.",
     "tooManyReactions": "Easy there! Too many reactions in a row.",
     "reactionsOff": "Reactions are off right now.",
-    "reactionFailed": "Couldn't send your reaction."
+    "reactionFailed": "Couldn't send your reaction.",
+    "surveyTooMany": "Too many responses were sent from this network. Please try again later.",
+    "consentPurpose": "Receive materials and communications about this session"
   }
 }

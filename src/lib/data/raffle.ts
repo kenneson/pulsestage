@@ -8,6 +8,7 @@ import {
   eligibleParticipants,
   isRaffleEligibility,
   RAFFLE_REVEAL_MS,
+  raffleOnPublicScreen,
   toPrizeKind,
   winnerRevealed,
   winnerVisibleToDisplay,
@@ -172,7 +173,7 @@ export async function getPublicRaffle(
   anonymous?: string,
 ): Promise<RaffleDisplay | null> {
   const [session, live] = await Promise.all([
-    admin.from("sessions").select("status, raffle_eligibility").eq("id", sessionId).maybeSingle(),
+    admin.from("sessions").select("status, raffle_eligibility, ended_at").eq("id", sessionId).maybeSingle(),
     admin.from("session_live_state").select("*").eq("session_id", sessionId).maybeSingle(),
   ]);
   if (session.error) throw new Error(session.error.message);
@@ -181,6 +182,8 @@ export async function getPublicRaffle(
   if (!session.data || !live.data?.show_raffle || !isRaffleEligibility(mode)) return null;
 
   const now = Date.now();
+  // O sorteio costuma ser no fim: o telão segue funcionando por um dia, depois para de expor nomes.
+  if (!raffleOnPublicScreen(session.data.ended_at, now)) return null;
   const state = live.data;
   const pending =
     state.raffle_drawn_at && !winnerVisibleToDisplay(state.raffle_drawn_at, now) ? state.raffle_winner_id : null;

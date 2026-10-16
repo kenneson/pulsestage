@@ -12,6 +12,7 @@ import { getSpeakerProfile } from "@/lib/data/profile";
 import { hasDbErrorCode, isUniqueViolation } from "@/lib/supabase/errors";
 import { zonedToUtcIso } from "@/lib/datetime";
 import { insertSession, isVisibleTemplate } from "./core";
+import { cloneSession } from "@/features/library/core";
 import { LOCALES, type Locale } from "@/lib/domain/locale";
 import { getMessageTranslator } from "@/i18n/server";
 import {
@@ -172,12 +173,8 @@ export async function deleteSessionAction(sessionId: string): Promise<ActionResu
   const supabase = await createClient();
   const session = await getOwnedSession(supabase, sessionId);
   if (!session) return fail(t("sessionNotFound"));
-  const images = await optionImagesOf(supabase, { sessionId });
-  const { error } = await supabase.from("sessions").delete().eq("id", sessionId);
-  if (error) return fail(t("deleteFailed"));
   // Slides e imagens das alternativas ficam no Storage, fora do cascade do banco.
-  await removeSlideFiles(supabase, `${session.speaker_id}/${sessionId}`);
-  await removeUnusedOptionImages(supabase, images);
+  if (!(await removeSessionWithFiles(supabase, session))) return fail(t("deleteFailed"));
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/sessions");
   return ok(null);
@@ -208,4 +205,55 @@ export async function setSessionStatusAction(
   revalidatePath(`/dashboard/sessions/${sessionId}`, "layout");
   revalidatePath("/dashboard");
   return ok({ status });
+}
+
+/** Apaga uma sessão e os arquivos dela no Storage (slides e imagens que nenhuma outra alternativa usa). */
+async function removeSessionWithFiles(supabase: Awaited<ReturnType<typeof createClient>>, session: { id: string; speaker_id: string }) {
+  const images = await optionImagesOf(supabase, { sessionId: session.id });
+  const { error } = await supabase.from("sessions").delete().eq("id", session.id);
+  if (error) return false;
+  await removeSlideFiles(supabase, `${session.speaker_id}/${session.id}`);
+  await removeUnusedOptionImages(supabase, images);
+  return true;
+}
+
+/**
+ * "Testar sessão": cria um ensaio (cópia oculta, com as mesmas perguntas, slides e prêmios), já ao vivo.
+ * O ensaio não aparece em listas, estatísticas nem no perfil público; um ensaio anterior da mesma
+ * sessão é apagado. Devolve o id do ensaio (a tela abre a sala ao vivo dele).
+ */
+export async function startRehearsalAction(sessionId: string): Promise<ActionResult<{ id: string }>> {
+  const [tr, t] = await Promise.all([getMessageTranslator(), getTranslations("session.rehearsal")]);
+  if (!isUuid(sessionId)) return fail(tr.message("errors.invalidData"));
+  const supabase = await createClient();
+  const source = await getOwnedSession(supabase, sessionId);
+  if (!source) return fail(t("errors.notFound"));
+  if (source.is_test) return fail(t("errors.alreadyRehearsal"));
+  if (source.status === "completed") return fail(t("errors.ended"));
+
+  const { data: previous } = await supabase.from("sessions").select("id, speaker_id").eq("rehearsal_of", source.id);
+  for (const old of previous ?? []) await removeSessionWithFiles(supabase, old);
+
+  const cloned = await cloneSession(supabase, source, {
+    title: t("title", { title: source.title }).slice(0, 200),
+    scheduledAt: null,
+    rehearsalOf: source.id,
+  });
+  if (!cloned.ok) return fail(tr.message(cloned.error));
+
+  const { error } = await supabase.from("sessions").update({ status: "live" }).eq("id", cloned.data.id);
+  if (error) return fail(t("errors.startFailed"));
+  return ok({ id: cloned.data.id });
+}
+
+/** Encerra o ensaio: apaga a sessão de teste (respostas e arquivos) e volta para a sessão original. */
+export async function endRehearsalAction(rehearsalId: string): Promise<ActionResult<{ sourceId: string | null }>> {
+  const [tr, t] = await Promise.all([getMessageTranslator(), getTranslations("session.rehearsal")]);
+  if (!isUuid(rehearsalId)) return fail(tr.message("errors.invalidData"));
+  const supabase = await createClient();
+  const session = await getOwnedSession(supabase, rehearsalId);
+  if (!session || !session.is_test) return fail(t("errors.notFound"));
+  if (!(await removeSessionWithFiles(supabase, session))) return fail(t("errors.endFailed"));
+  if (session.rehearsal_of) revalidatePath(`/dashboard/sessions/${session.rehearsal_of}`);
+  return ok({ sourceId: session.rehearsal_of });
 }

@@ -4,7 +4,7 @@ import type { ServerSupabase } from "@/lib/supabase/server";
 import { hasOptions, type ParsedInteractionInput } from "@/lib/domain/interactions";
 import type { Arrangement } from "@/lib/domain/deck";
 import { droppedImages, imageOwner } from "@/lib/domain/gamification";
-import { removeUnusedOptionImages } from "@/lib/data/option-images";
+import { optionImagesOf, removeUnusedOptionImages } from "@/lib/data/option-images";
 import { fail, ok, type ActionResult } from "@/lib/action-result";
 
 // Escrita de interações compartilhada pelas Server Actions do painel e pelo MCP.
@@ -156,4 +156,33 @@ export async function saveArrangement(
     p_after_slides: arrangement.afterSlides as number[],
   });
   return !error;
+}
+
+/**
+ * Exclui uma interação (e as respostas dela). Só em sessão do próprio speaker que não foi encerrada:
+ * apagar respostas de uma sessão encerrada mudaria analytics, ranking e os números públicos do perfil.
+ */
+export async function deleteInteraction(
+  supabase: ServerSupabase,
+  sessionId: string,
+  interactionId: string,
+): Promise<ActionResult> {
+  const { data: session } = await supabase.from("sessions").select("status").eq("id", sessionId).maybeSingle();
+  if (!session) return fail("core.interactionNotFound");
+  if (session.status === "completed") return fail("core.sessionEnded");
+
+  const { data: interaction } = await supabase
+    .from("interactions")
+    .select("id, is_active")
+    .eq("id", interactionId)
+    .eq("session_id", sessionId)
+    .maybeSingle();
+  if (!interaction) return fail("core.interactionNotFound");
+  if (interaction.is_active) return fail("core.interactionActive");
+
+  const images = await optionImagesOf(supabase, { interactionId });
+  const { error } = await supabase.from("interactions").delete().eq("id", interactionId);
+  if (error) return fail("core.interactionDeleteFailed");
+  await removeUnusedOptionImages(supabase, images);
+  return ok(null);
 }

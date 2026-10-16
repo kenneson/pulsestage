@@ -144,6 +144,8 @@
     "voteFailed": "Não foi possível registrar. Tente de novo.",
     "tooManyReactions": "Calma! Muitas reações seguidas.",
     "reactionsOff": "Reações desligadas agora.",
-    "reactionFailed": "Não foi possível reagir."
+    "reactionFailed": "Não foi possível reagir.",
+    "surveyTooMany": "Muitas respostas enviadas desta rede. Tente de novo mais tarde.",
+    "consentPurpose": "Receber materiais e comunicações sobre esta sessão"
   }
 }

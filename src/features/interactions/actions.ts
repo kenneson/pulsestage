@@ -8,10 +8,10 @@ import { getOwnedSession } from "@/lib/data/sessions";
 import { hasDbErrorCode } from "@/lib/supabase/errors";
 import { interactionInputSchema, type ParsedInteractionInput } from "@/lib/domain/interactions";
 import { insertAfterItem, MAX_SLIDES } from "@/lib/domain/deck";
-import { optionImagesOf, removeUnusedOptionImages } from "@/lib/data/option-images";
-import { createInteraction, foreignImage, updateInteraction } from "./core";
+import { createInteraction, deleteInteraction, foreignImage, updateInteraction } from "./core";
 import { getAIProvider, suggestInteractions } from "@/lib/ai";
 import { localeOrDefault } from "@/lib/domain/locale";
+import { pruneOldest } from "@/lib/domain/rate-limit";
 import { fail, isUuid, ok, type ActionResult } from "@/lib/action-result";
 import { getMessageTranslator } from "@/i18n/server";
 
@@ -71,6 +71,7 @@ export async function suggestInteractionsAction(
   const last = lastSuggestion.get(session.speaker_id) ?? 0;
   if (Date.now() - last < SUGGEST_INTERVAL_MS) return fail(t("tooSoon"));
   lastSuggestion.set(session.speaker_id, Date.now());
+  pruneOldest(lastSuggestion);
 
   const { data: existing, error } = await supabase.from("interactions").select("title").eq("session_id", sessionId);
   if (error) return fail(t("lineupLoadFailed"));
@@ -97,21 +98,13 @@ export async function suggestInteractionsAction(
 export async function deleteInteractionAction(sessionId: string, interactionId: string): Promise<ActionResult> {
   const [tr, t] = await Promise.all([getMessageTranslator(), getTranslations("builder.errors")]);
   if (!isUuid(sessionId) || !isUuid(interactionId)) return fail(tr.message("errors.invalidData"));
-  const supabase = await createClient();
-
-  const { data: interaction } = await supabase
-    .from("interactions")
-    .select("id, is_active")
-    .eq("id", interactionId)
-    .eq("session_id", sessionId)
-    .maybeSingle();
-  if (!interaction) return fail(tr.message("core.interactionNotFound"));
-  if (interaction.is_active) return fail(t("endBeforeDelete"));
-
-  const images = await optionImagesOf(supabase, { interactionId });
-  const { error } = await supabase.from("interactions").delete().eq("id", interactionId);
-  if (error) return fail(t("deleteFailed"));
-  await removeUnusedOptionImages(supabase, images);
+  const result = await deleteInteraction(await createClient(), sessionId, interactionId);
+  if (!result.ok) {
+    // Mensagens do painel para os casos que já tinham texto próprio.
+    if (result.error === "core.interactionActive") return fail(t("endBeforeDelete"));
+    if (result.error === "core.interactionDeleteFailed") return fail(t("deleteFailed"));
+    return fail(tr.message(result.error));
+  }
 
   revalidateSession(sessionId);
   return ok(null);

@@ -1,6 +1,7 @@
 "use server";
 
 import { z } from "zod";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { LOCALES } from "@/lib/domain/locale";
 import { setLocaleCookie } from "@/i18n/cookie";
@@ -9,7 +10,7 @@ import { fail, ok, type ActionResult } from "@/lib/action-result";
 /** Seletor de idioma: cookie e, com login, o perfil (padrão das sessões novas e dos e-mails). */
 export async function setLocaleAction(raw: unknown): Promise<ActionResult> {
   const parsed = z.enum(LOCALES).safeParse(raw);
-  if (!parsed.success) return fail("invalid_locale");
+  if (!parsed.success) return fail((await getTranslations("errors"))("invalidData"));
   await setLocaleCookie(parsed.data);
 
   const supabase = await createClient();

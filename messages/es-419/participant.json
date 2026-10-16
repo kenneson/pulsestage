@@ -144,6 +144,8 @@
     "voteFailed": "No se pudo registrar. Intenta de nuevo.",
     "tooManyReactions": "¡Calma! Demasiadas reacciones seguidas.",
     "reactionsOff": "Las reacciones están desactivadas por ahora.",
-    "reactionFailed": "No se pudo enviar la reacción."
+    "reactionFailed": "No se pudo enviar la reacción.",
+    "surveyTooMany": "Se enviaron demasiadas respuestas desde esta red. Intenta de nuevo más tarde.",
+    "consentPurpose": "Recibir materiales y comunicaciones sobre esta sesión"
   }
 }

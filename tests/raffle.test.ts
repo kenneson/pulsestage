@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
+  raffleOnPublicScreen,
   formatTicket,
   landingSchedule,
   prizeInputSchema,
@@ -71,4 +72,11 @@ test("eligibleParticipants: pesquisa filtra quem respondeu; todos inclui todo mu
   const respondents = new Set(["b"]);
   assert.deepEqual(eligibleParticipants("survey", ["a", "b", "c"], respondents), ["b"]);
   assert.deepEqual(eligibleParticipants("everyone", ["a", "b", "c"], respondents), ["a", "b", "c"]);
+});
+
+test("raffleOnPublicScreen: em andamento sempre; encerrada, só por um dia", () => {
+  const now = Date.parse("2026-10-16T12:00:00Z");
+  assert.equal(raffleOnPublicScreen(null, now), true);
+  assert.equal(raffleOnPublicScreen("2026-10-16T08:00:00Z", now), true);
+  assert.equal(raffleOnPublicScreen("2026-10-14T08:00:00Z", now), false);
 });

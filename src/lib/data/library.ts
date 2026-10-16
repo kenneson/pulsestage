@@ -16,7 +16,8 @@ export async function loadLibrary(supabase: ServerSupabase): Promise<LibraryItem
     }>((from, to) =>
       supabase
         .from("interactions")
-        .select("id, session_id, type, title, created_at, interaction_options(label, position)")
+        .select("id, session_id, type, title, created_at, interaction_options(label, position), sessions!inner(is_test)")
+        .eq("sessions.is_test", false)
         .order("created_at")
         .range(from, to),
     ),

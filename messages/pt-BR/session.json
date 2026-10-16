@@ -208,5 +208,15 @@
     "deleteFailed": "Não foi possível excluir a sessão.",
     "statusNotAllowed": "Essa mudança de status não é permitida.",
     "updateFailed": "Não foi possível atualizar a sessão."
+  },
+  "rehearsal": {
+    "title": "Ensaio: {title}",
+    "errors": {
+      "notFound": "Sessão não encontrada.",
+      "alreadyRehearsal": "Isto já é um ensaio.",
+      "ended": "A sessão já foi encerrada.",
+      "startFailed": "Não foi possível iniciar o ensaio.",
+      "endFailed": "Não foi possível encerrar o ensaio."
+    }
   }
 }

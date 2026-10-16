@@ -50,6 +50,11 @@ export const DIMENSION_LABEL: Record<Dimension, string> = {
 };
 
 export const MAX_QUESTIONS = 20;
+/**
+ * Respostas anônimas (sem ter entrado na sessão) por IP, por sessão, em uma hora. Alto de propósito:
+ * numa escola, a turma toda sai pelo mesmo IP. Essas respostas não contam nos números públicos.
+ */
+export const ANONYMOUS_SURVEY_LIMIT_PER_IP = 40;
 export const MAX_OPTIONS = 8;
 export const TEXT_MAX_LENGTH = 1000;
 /** Dimensões consideradas "nota geral" (0–10) no dashboard e na evolução. */

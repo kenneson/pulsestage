@@ -22,9 +22,14 @@ import {
   toInteractionInput,
   toInteractionView,
 } from "@/lib/domain/mcp";
-import { createInteraction, foreignImage, saveArrangement, updateInteraction } from "@/features/interactions/core";
+import {
+  createInteraction,
+  deleteInteraction,
+  foreignImage,
+  saveArrangement,
+  updateInteraction,
+} from "@/features/interactions/core";
 import { insertSession, isVisibleTemplate } from "@/features/sessions/core";
-import { optionImagesOf, removeUnusedOptionImages } from "@/lib/data/option-images";
 import type { SessionRow } from "@/lib/supabase/types";
 import type { McpContext } from "./auth";
 import { summarizeForAssistant } from "./results";
@@ -143,6 +148,7 @@ export function buildMcpServer(ctx: McpContext): McpServer {
       let query = ctx.supabase
         .from("sessions")
         .select("id, title, status, scheduled_at, join_code, slide_count, created_at, interactions(count)")
+        .eq("is_test", false)
         .order("created_at", { ascending: false })
         .limit(limit ?? 20);
       if (status) query = query.eq("status", status);
@@ -457,18 +463,8 @@ export function buildMcpServer(ctx: McpContext): McpServer {
     async ({ session_id, interaction_id }) => {
       const session = await editableSession(ctx, session_id);
       if (typeof session === "string") return error(session);
-      const { data: interaction } = await ctx.supabase
-        .from("interactions")
-        .select("id, is_active")
-        .eq("id", interaction_id)
-        .eq("session_id", session.id)
-        .maybeSingle();
-      if (!interaction) return error("Interação não encontrada (confira com get_session).");
-      if (interaction.is_active) return error("A interação está aberta para a plateia agora: encerre-a no app antes.");
-      const images = await optionImagesOf(ctx.supabase, { interactionId: interaction_id });
-      const { error: dbError } = await ctx.supabase.from("interactions").delete().eq("id", interaction_id);
-      if (dbError) return error("Não foi possível excluir a interação.");
-      await removeUnusedOptionImages(ctx.supabase, images);
+      const deleted = await deleteInteraction(ctx.supabase, session.id, interaction_id);
+      if (!deleted.ok) return error((await speakerPrefs(ctx)).translate(deleted.error));
       return json({ deleted: true, session: await sessionView(ctx, session) });
     },
   );

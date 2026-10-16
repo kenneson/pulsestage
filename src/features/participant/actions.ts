@@ -23,7 +23,9 @@ import {
 } from "@/lib/domain/interactions";
 import { MAX_PARTICIPANTS_PER_SESSION, normalizeJoinCode } from "@/lib/domain/session";
 import { normalizeTerm } from "@/lib/domain/words";
-import { parseSurveyAnswers } from "@/lib/domain/survey";
+import { ANONYMOUS_SURVEY_LIMIT_PER_IP, parseSurveyAnswers } from "@/lib/domain/survey";
+import { requesterIpHash } from "@/lib/request-ip";
+import { hitWindow, pruneOldest } from "@/lib/domain/rate-limit";
 import { avatarKeySchema, quizPoints } from "@/lib/domain/gamification";
 import { bordaPoints, isValidRanking } from "@/lib/domain/ranking";
 import { containsProfanity } from "@/lib/domain/profanity";
@@ -75,17 +77,31 @@ const joinSchema = z
     error: "participant.errors.consentRequired",
   });
 
+// ponytail: limite em memória, por instância do servidor.
+const codeMisses = new Map<string, number[]>();
+const CODE_MISS_WINDOW_MS = 10 * 60 * 1000;
+const CODE_MISS_MAX = 30;
+
 export async function joinSessionAction(code: string, _prev: JoinFormState, formData: FormData): Promise<JoinFormState> {
   const values = formValues(formData, ["name", "avatar", "email", "phone"] as const);
   const parsed = joinSchema.safeParse({ ...values, consent: formData.get("consent") === "on" });
 
   const admin = createAdminClient();
+  // Contra tentativa de adivinhar códigos: poucos erros de código por IP (acertos não contam, então uma
+  // turma inteira saindo pelo mesmo IP da escola entra normalmente).
+  const ip = await requesterIpHash("join");
+  if (ip && (codeMisses.get(ip) ?? []).filter((t) => Date.now() - t < CODE_MISS_WINDOW_MS).length >= CODE_MISS_MAX) {
+    return { error: (await texts()).tr.message("errors.tooManyRequests") };
+  }
   const session = await findSessionByCode(admin, normalizeJoinCode(code));
   const { tr, t } = await texts(session?.locale);
   if (!parsed.success) return { error: tr.issue(parsed.error) };
-  if (!session) return { error: t("sessionNotFoundCheckCode") };
+  if (!session) {
+    if (ip) hitWindow(codeMisses, ip, Date.now(), CODE_MISS_WINDOW_MS, CODE_MISS_MAX);
+    return { error: t("sessionNotFoundCheckCode") };
+  }
   if (session.status === "completed") redirect(`/feedback/${session.id}`);
-  if (session.status === "draft") return { error: t("notStarted") };
+  // Rascunho também: quem escaneia o QR antes do início espera na tela "Você está dentro!".
 
   if (await getParticipantIdFromCookie(session.id)) redirect(`/session/${session.id}/participate`);
 
@@ -110,7 +126,8 @@ export async function joinSessionAction(code: string, _prev: JoinFormState, form
       email: parsed.data.email ?? null,
       phone: parsed.data.phone ?? null,
       consent_given_at: new Date().toISOString(),
-      consent_purpose: "Receber materiais e comunicações sobre esta sessão",
+      // Registro do consentimento no idioma em que a pessoa leu o pedido (o da sessão).
+      consent_purpose: t("consentPurpose"),
     });
   }
 
@@ -311,9 +328,23 @@ export async function submitSurveyAction(
   });
   if (!parsed.ok) return { error: tr.message(parsed.error) };
 
+  // Sem ter entrado na sessão, vale um limite por IP (contra envio em massa por robô).
+  const ipHash = participantId ? null : await requesterIpHash("survey");
+  if (ipHash) {
+    const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { count } = await admin
+      .from("survey_responses")
+      .select("id", { count: "exact", head: true })
+      .eq("session_id", sessionId)
+      .is("participant_id", null)
+      .eq("ip_hash", ipHash)
+      .gte("created_at", since);
+    if ((count ?? 0) >= ANONYMOUS_SURVEY_LIMIT_PER_IP) return { error: t("surveyTooMany") };
+  }
+
   const created = await admin
     .from("survey_responses")
-    .insert({ session_id: sessionId, participant_id: participantId })
+    .insert({ session_id: sessionId, participant_id: participantId, ip_hash: ipHash })
     .select("id")
     .single();
   if (created.error) {
@@ -450,7 +481,9 @@ export async function sendReactionAction(sessionId: string, kind: unknown): Prom
   const allowed = allowReaction(reactionTimes.get(participantId) ?? [], Date.now());
   // Idioma da requisição de propósito: o limite existe para poupar o banco, e o celular não mostra esta mensagem.
   if (!allowed) return fail((await texts()).t("tooManyReactions"), "rate_limited");
+  reactionTimes.delete(participantId);
   reactionTimes.set(participantId, allowed);
+  pruneOldest(reactionTimes);
 
   const { data: session } = await admin
     .from("sessions")

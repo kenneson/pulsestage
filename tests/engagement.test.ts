@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { bordaPoints, isValidRanking, rankingResults } from "../src/lib/domain/ranking.ts";
 import { containsProfanity } from "../src/lib/domain/profanity.ts";
 import { askQuestionSchema, questionsOnScreen, sortQuestions, topQuestions } from "../src/lib/domain/questions.ts";
+import { hitWindow, pruneOldest } from "../src/lib/domain/rate-limit.ts";
 import { allowReaction, reactionPeaks, reactionsPerMinute, tallyReactions } from "../src/lib/domain/reactions.ts";
 
 test("bordaPoints dá n pontos à primeira e 1 à última", () => {
@@ -101,4 +102,15 @@ test("reações: contagem, limite por pessoa e picos", () => {
     { minute: 3, count: 3 },
   ]);
   assert.deepEqual(reactionPeaks(moments, 1), [{ minute: 3, count: 3 }]);
+});
+
+test("hitWindow conta na janela e pruneOldest limita o tamanho", () => {
+  const store = new Map<string, number[]>();
+  assert.equal(hitWindow(store, "a", 0, 1000, 2), false);
+  assert.equal(hitWindow(store, "a", 10, 1000, 2), false);
+  assert.equal(hitWindow(store, "a", 20, 1000, 2), true);
+  assert.equal(hitWindow(store, "a", 5000, 1000, 2), false);
+  const big = new Map<string, number>([["x", 1], ["y", 2], ["z", 3]]);
+  pruneOldest(big, 2);
+  assert.deepEqual([...big.keys()], ["y", "z"]);
 });

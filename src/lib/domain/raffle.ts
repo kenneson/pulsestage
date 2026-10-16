@@ -24,6 +24,16 @@ export const RAFFLE_ELIGIBILITY_META: Record<RaffleEligibility, { label: string;
   },
 };
 
+/** Depois do fim da sessão, o telão do sorteio (com nomes) fica disponível por este tempo. */
+export const RAFFLE_PUBLIC_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+/** O sorteio ainda pode aparecer no telão? Em andamento sempre; encerrada, só por RAFFLE_PUBLIC_WINDOW_MS. */
+export function raffleOnPublicScreen(endedAt: string | null, now: number): boolean {
+  if (!endedAt) return true;
+  const ended = Date.parse(endedAt);
+  return Number.isNaN(ended) || now - ended <= RAFFLE_PUBLIC_WINDOW_MS;
+}
+
 export function isRaffleEligibility(value: unknown): value is RaffleEligibility {
   return raffleEligibilitySchema.safeParse(value).success;
 }

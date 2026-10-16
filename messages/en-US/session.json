@@ -208,5 +208,15 @@
     "deleteFailed": "Couldn't delete the session.",
     "statusNotAllowed": "That status change isn't allowed.",
     "updateFailed": "Couldn't update the session."
+  },
+  "rehearsal": {
+    "title": "Rehearsal: {title}",
+    "errors": {
+      "notFound": "Session not found.",
+      "alreadyRehearsal": "This is already a rehearsal.",
+      "ended": "The session has already ended.",
+      "startFailed": "Couldn't start the rehearsal.",
+      "endFailed": "Couldn't end the rehearsal."
+    }
   }
 }

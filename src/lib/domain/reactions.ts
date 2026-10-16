@@ -31,6 +31,10 @@ export function emptyTally(): ReactionTally {
   return { clap: 0, heart: 0, laugh: 0, wow: 0, think: 0 };
 }
 
+export function isReactionKind(value: unknown): value is ReactionKind {
+  return reactionKindSchema.safeParse(value).success;
+}
+
 export function tallyReactions(rows: readonly { kind: string }[]): ReactionTally {
   const tally = emptyTally();
   for (const r of rows) {

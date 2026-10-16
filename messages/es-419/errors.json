@@ -77,7 +77,10 @@
     "optionsUpdateFailed": "No se pudieron actualizar las alternativas.",
     "sessionCreateFailed": "No se pudo crear la sesión.",
     "joinCodeTaken": "Ese código ya lo usa otra sesión activa.",
-    "joinCodeExhausted": "No se pudo generar un código único. Intenta de nuevo."
+    "joinCodeExhausted": "No se pudo generar un código único. Intenta de nuevo.",
+    "sessionEnded": "La sesión ya finalizó y no se puede editar.",
+    "interactionActive": "La interacción está abierta para el público ahora: ciérrala antes de eliminarla.",
+    "interactionDeleteFailed": "No se pudo eliminar la interacción."
   },
   "verify": {
     "needResponders": "Se necesitan {min} personas respondiendo (hubo {had}).",

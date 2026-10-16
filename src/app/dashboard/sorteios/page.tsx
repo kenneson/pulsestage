@@ -28,6 +28,7 @@ export default async function RafflesPage() {
     .from("sessions")
     .select("id, title, status, scheduled_at, raffle_eligibility")
     .not("raffle_eligibility", "is", null)
+    .eq("is_test", false)
     .order("scheduled_at", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false })
     .limit(MAX_SESSIONS);

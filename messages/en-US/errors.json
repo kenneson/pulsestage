@@ -77,7 +77,10 @@
     "optionsUpdateFailed": "Couldn't update the options.",
     "sessionCreateFailed": "Couldn't create the session.",
     "joinCodeTaken": "That code is already in use by another active session.",
-    "joinCodeExhausted": "Couldn't generate a unique code. Please try again."
+    "joinCodeExhausted": "Couldn't generate a unique code. Please try again.",
+    "sessionEnded": "The session has already ended and can't be edited.",
+    "interactionActive": "The interaction is open to the audience right now: close it before deleting.",
+    "interactionDeleteFailed": "Couldn't delete the interaction."
   },
   "verify": {
     "needResponders": "Needs {min} people responding (had {had}).",

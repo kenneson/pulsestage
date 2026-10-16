@@ -11,7 +11,8 @@ export async function getOwnedSession(supabase: ServerSupabase, sessionId: strin
 }
 
 export async function listOwnedSessions(supabase: ServerSupabase, limit?: number): Promise<SessionRow[]> {
-  let query = supabase.from("sessions").select("*").order("created_at", { ascending: false });
+  // Ensaios (is_test) ficam fora das listas.
+  let query = supabase.from("sessions").select("*").eq("is_test", false).order("created_at", { ascending: false });
   if (limit) query = query.limit(limit);
   const { data, error } = await query;
   if (error) throw new Error(error.message);
