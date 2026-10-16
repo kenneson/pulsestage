@@ -29,9 +29,11 @@ export async function generateMetadata({ params }: { params: Promise<{ code: str
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-8 px-5 py-8">
-      <Logo />
-      <div className="flex flex-1 flex-col justify-center gap-6">{children}</div>
+    // Espaços menores no celular: o botão "Participar" precisa caber sem rolar (375×667).
+    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-5 px-5 py-5 sm:gap-8 sm:py-8">
+      {/* Sem link: quem chegou pelo QR não deve sair da sessão por um toque na marca. */}
+      <Logo href={null} />
+      <div className="flex flex-1 flex-col justify-center gap-5 sm:gap-6">{children}</div>
     </main>
   );
 }
@@ -74,9 +76,10 @@ export default async function JoinCodePage({ params }: { params: Promise<{ code:
         <div>
           <p className="text-sm font-medium text-primary">{t("code", { code: session.joinCode })}</p>
           <h1 className="mt-1 text-2xl font-semibold">{session.title}</h1>
-          {session.status === "draft" ? <p className="mt-2 text-muted-foreground">{t("notStarted")}</p> : null}
+          {/* Rascunho: já dá para entrar; a tela do celular espera o início sozinha. */}
+          {session.status === "draft" ? <p className="mt-2 text-sm text-muted-foreground">{t("notStarted")}</p> : null}
         </div>
-        {session.status !== "draft" ? <JoinForm code={session.joinCode} /> : null}
+        <JoinForm code={session.joinCode} />
       </Shell>
     </SessionIntl>
   );

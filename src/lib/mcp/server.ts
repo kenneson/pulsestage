@@ -7,8 +7,8 @@ import { APP_TIME_ZONE, formatDateTime, isValidTimeZone, zonedToUtcIso } from "@
 import { getOwnedSession, getSessionInteractions } from "@/lib/data/sessions";
 import { listSurveyTemplates } from "@/lib/data/surveys";
 import { loadSessionAnalytics } from "@/lib/data/analytics";
-import { isInteractionType } from "@/lib/domain/interactions";
-import { STATUS_LABEL, isSessionStatus } from "@/lib/domain/session";
+import { isInteractionType, normalizeSettings } from "@/lib/domain/interactions";
+import { SESSION_STATUSES, STATUS_LABEL, isEditable, isSessionStatus } from "@/lib/domain/session";
 import {
   afterSlideSchema,
   convertBatch,
@@ -98,7 +98,7 @@ async function speakerPrefs(ctx: McpContext) {
 async function editableSession(ctx: McpContext, sessionId: string): Promise<SessionRow | string> {
   const session = await getOwnedSession(ctx.supabase, sessionId);
   if (!session) return "Sessão não encontrada (confira o id com list_sessions).";
-  if (session.status === "completed") return "A sessão já foi encerrada e não pode ser editada.";
+  if (!isEditable(session.status)) return "A sessão já foi encerrada e não pode ser editada.";
   return session;
 }
 
@@ -139,7 +139,7 @@ export function buildMcpServer(ctx: McpContext): McpServer {
       title: "Listar sessões",
       description: "Lista as sessões do palestrante (mais recentes primeiro), com status, data, código e número de perguntas.",
       inputSchema: {
-        status: z.enum(["draft", "live", "paused", "completed"]).optional().describe("Filtrar por status."),
+        status: z.enum(SESSION_STATUSES).optional().describe("Filtrar por status."),
         limit: z.number().int().min(1).max(50).optional().describe("Quantas sessões (padrão 20)."),
       },
       annotations: { readOnlyHint: true, openWorldHint: false },
@@ -389,7 +389,7 @@ export function buildMcpServer(ctx: McpContext): McpServer {
     {
       title: "Editar interação",
       description:
-        "Substitui o conteúdo de uma interação (mesmos campos de add_interactions). Se já houver respostas, o tipo, as alternativas e a resposta certa não podem mudar; só os textos. after_slide, se informado, também a move.",
+        "Substitui o conteúdo de uma interação (mesmos campos de add_interactions; configurações omitidas, como tempo e formas, continuam como estão). Se já houver respostas, o tipo, as alternativas e a resposta certa não podem mudar; só os textos. after_slide, se informado, também a move.",
       inputSchema: { session_id: sessionIdSchema, interaction_id: interactionIdSchema, ...mcpInteractionShape },
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
@@ -397,12 +397,17 @@ export function buildMcpServer(ctx: McpContext): McpServer {
       const session = await editableSession(ctx, session_id);
       if (typeof session === "string") return error(session);
       const prefs = await speakerPrefs(ctx);
-      const converted = toInteractionInput(item, prefs.translate);
+      const current = (await getSessionInteractions(ctx.supabase, session.id)).find((i) => i.id === interaction_id);
+      if (!current) return error("Interação não encontrada (confira com get_session).");
+      // Campos omitidos mantêm o que a pergunta já tem (tempo, formas, escala…), se o tipo não mudar.
+      const converted = toInteractionInput(
+        item,
+        prefs.translate,
+        current.type === item.type ? normalizeSettings(current.type, current.settings) : undefined,
+      );
       if (!converted.ok) return error(converted.error);
 
       // Mantém as alternativas existentes (mesmo id) pela posição, preservando imagens e respostas.
-      const current = (await getSessionInteractions(ctx.supabase, session.id)).find((i) => i.id === interaction_id);
-      if (!current) return error("Interação não encontrada (confira com get_session).");
       const input = converted.input;
       if ("options" in input) {
         const previous = [...current.options].sort((a, b) => a.position - b.position);

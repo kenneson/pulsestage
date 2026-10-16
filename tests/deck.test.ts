@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   anchorOf,
   buildDeck,
+  deckIndexOf,
   dropInteraction,
   gapLabel,
   initialCursor,
@@ -156,4 +157,14 @@ test("arrastar: soltar sobre ela mesma ou pergunta inexistente não muda nada", 
   assert.equal(dropInteraction(interactions, "a", ask("a"), 2), null);
   assert.equal(dropInteraction(interactions, "x", null, 2), null);
   assert.equal(dropInteraction(interactions, "a", slide(9), 2), null);
+});
+
+test("deckIndexOf acha slides e interações pelo conteúdo, não pela referência", () => {
+  const deck = buildDeck(2, [{ id: "q1", afterSlide: 1 }]);
+  assert.equal(deckIndexOf(deck, { kind: "slide", index: 0 }), 0);
+  assert.equal(deckIndexOf(deck, { kind: "interaction", id: "q1" }), 1);
+  assert.equal(deckIndexOf(deck, { kind: "slide", index: 1 }), 2);
+  assert.equal(deckIndexOf(deck, { kind: "interaction", id: "sumiu" }), -1);
+  assert.equal(deckIndexOf(deck, { kind: "slide", index: 9 }), -1);
+  assert.equal(deckIndexOf(deck, null), -1);
 });

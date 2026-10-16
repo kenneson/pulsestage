@@ -12,13 +12,14 @@
   },
   "participants": {
     "title": "O que coletamos de quem participa",
-    "name": "<b>Nome (opcional).</b> Aparece só no ranking do quiz, que o palestrante pode mostrar no telão da sala. Sem nome, você participa de forma anônima e aparece como “Participante” seguido de um código.",
-    "avatar": "<b>Avatar (opcional).</b> Um desenho escolhido de uma lista fixa (nada de foto), mostrado ao lado do nome no ranking do quiz.",
-    "raffle": "<b>Número do sorteio.</b> Se a sessão tiver sorteio, quem concorre recebe um número aleatório. Quem for sorteado tem nome (ou “Participante” e um código), número e avatar mostrados no telão; a mensagem do prêmio aparece só no celular de quem ganhou. Números e ganhadores são apagados junto com a sessão.",
-    "answers": "<b>Respostas e avaliação.</b> O que você responde nas interações e no feedback pós-evento.",
+    "name": "<b>Nome (opcional).</b> O palestrante vê o nome que você escolher: no ranking do quiz (na sala ao vivo e na análise da sessão), na exportação das respostas e da pesquisa em planilha (CSV) e no sorteio. A sala inteira o vê quando o palestrante mostra o ranking do quiz ou o ganhador do sorteio no telão, e nas suas perguntas ao palestrante só se você marcar para mostrar. Sem nome, você participa de forma anônima e aparece como “Participante” seguido de um código.",
+    "avatar": "<b>Avatar (opcional).</b> Um desenho escolhido de uma lista fixa (nada de foto), mostrado ao lado do nome no seu celular, no ranking do quiz, no sorteio e na análise da sessão.",
+    "raffle": "<b>Número do sorteio.</b> Se a sessão tiver sorteio, quem concorre recebe um número aleatório. Quem for sorteado tem nome (ou “Participante” e um código), número e avatar mostrados no telão; a mensagem do prêmio aparece só no celular de quem ganhou. O telão mostra o resultado do sorteio por até 24 horas depois do fim da sessão; depois disso, não mostra mais os nomes. Números e ganhadores são apagados junto com a sessão.",
+    "answers": "<b>Respostas e avaliação.</b> O que você responde nas interações e na pesquisa pós-evento, ligado ao seu registro na sessão (com o nome que você escolheu, se houver). O ranking do quiz só vai ao telão enquanto a sessão está acontecendo. Se você responder a pesquisa sem ter entrado na sessão, a resposta fica sem nome.",
     "questions": "<b>Perguntas ao palestrante (opcional).</b> O texto da pergunta e, só se você marcar, o seu nome. As perguntas aparecem para a plateia e podem ir ao telão; as curtidas são contadas sem mostrar quem curtiu.",
-    "reactions": "<b>Reações.</b> O emoji que você toca e o horário, para o telão e para o palestrante saber os momentos com mais reações. Ninguém vê quem reagiu.",
+    "reactions": "<b>Reações.</b> O emoji que você toca e o horário, ligados ao seu registro na sessão, como as respostas. O telão mostra só os emojis, e o palestrante vê os totais e os momentos com mais reações, sem quem reagiu.",
     "contact": "<b>E-mail e telefone (opcionais).</b> Só são gravados se você marcar a autorização, para que o palestrante envie materiais e comunicações sobre aquela sessão. Ficam guardados separados das suas respostas.",
+    "joinEarly": "Você pode entrar numa sessão antes de ela começar: o registro é criado na entrada e o celular espera até o palestrante iniciar.",
     "noTracking": "Não pedimos cadastro, não usamos anúncios e não rastreamos você entre sites."
   },
   "speakers": {
@@ -36,12 +37,21 @@
     "title": "Filtro e moderação",
     "text": "Se o palestrante deixar o filtro de palavrões ligado, respostas e perguntas com palavrões são guardadas, mas não aparecem no telão nem para a plateia; o palestrante pode vê-las e liberar. O palestrante também pode ocultar ou aprovar respostas e perguntas antes de elas aparecerem."
   },
+  "abuse": {
+    "title": "Proteção contra abuso (hash do IP)",
+    "text": "Para limitar envios em massa e tentativas de adivinhar códigos, usamos um código derivado do endereço IP: um hash calculado com um segredo do servidor, do qual não dá para recuperar o IP. O IP em si nunca é guardado. Usamos esse código em três situações: na pesquisa pós-evento respondida por quem não entrou na sessão, ele fica gravado junto da resposta para limitar quantas respostas saem da mesma rede (essas respostas aparecem para o palestrante, mas não contam na nota pública nem no selo de sessão verificada, que usam só respostas de quem entrou na sessão); nas tentativas de entrar com um código errado, ele fica só na memória do servidor (conta por 10 minutos) e nunca vai para o banco de dados; e nos convites pelo perfil público (veja abaixo)."
+  },
+  "rehearsal": {
+    "title": "Modo ensaio",
+    "text": "Quando o palestrante usa “Testar sessão”, criamos uma cópia oculta da sessão, já ao vivo, para ele abrir como participante e experimentar. O ensaio não aparece em listas, estatísticas nem no perfil público. Ao encerrar o ensaio, a cópia é apagada com tudo o que foi respondido nela."
+  },
   "cookies": {
     "title": "Cookies e armazenamento no navegador",
     "participation": "<b>Participação</b> (<code>ps_p_…</code>, 30 dias): identifica você dentro de uma sessão para evitar respostas duplicadas. É assinado e não contém dados pessoais.",
     "feedback": "<b>Avaliação enviada</b> (<code>ps_fb_…</code>, 30 dias): evita que a mesma avaliação seja enviada duas vezes.",
     "login": "<b>Login</b>: mantém o palestrante conectado.",
     "language": "<b>Idioma</b> (<code>NEXT_LOCALE</code>, 1 ano): lembra o idioma em que você usa o site.",
+    "signupTimeZone": "<b>Fuso do cadastro</b> (<code>ps_signup_tz</code>, 10 minutos): só no cadastro com o Google, guarda o fuso horário do navegador até a volta do login, para a conta já nascer no seu fuso. É apagado em seguida.",
     "theme": "<b>Tema</b> (armazenamento local): lembra se você escolheu o modo claro ou escuro.",
     "necessary": "Todos são necessários para o funcionamento; não usamos cookies de análise ou publicidade."
   },
@@ -56,7 +66,7 @@
   },
   "retention": {
     "title": "Por quanto tempo guardamos",
-    "text": "Os dados de uma sessão ficam guardados enquanto ela existir. Quando o palestrante exclui a sessão, todas as respostas, participantes, contatos, avaliações, insights e slides dela são apagados definitivamente."
+    "text": "Os dados de uma sessão ficam guardados enquanto ela existir. Quando o palestrante exclui a sessão, todas as respostas, participantes, contatos, avaliações, insights e slides dela são apagados definitivamente. Ensaios são apagados ao encerrar o ensaio; o hash do IP das tentativas de código errado nunca é gravado no banco."
   },
   "rights": {
     "title": "Seus direitos",

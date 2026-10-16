@@ -16,14 +16,13 @@
     "endedText": "Esta sessão já terminou. Que tal deixar sua avaliação?",
     "rateSession": "Avaliar a sessão",
     "code": "Código {code}",
-    "notStarted": "A sessão ainda não começou. Você poderá entrar assim que ela iniciar."
+    "notStarted": "A sessão ainda não começou: entre agora e acompanhe por aqui."
   },
   "joinForm": {
     "nameLabel": "Seu nome (opcional)",
     "namePlaceholder": "Pode participar sem nome",
     "nameHint": "Aparece só no ranking do quiz, que pode ser mostrado no telão. Em branco, você fica anônimo.",
     "avatarLegend": "Escolha um avatar (opcional)",
-    "avatarHint": "Aparece ao lado do seu nome no ranking do quiz.",
     "materialSummary": "Quero receber o material (opcional)",
     "email": "E-mail",
     "phone": "Telefone",
@@ -45,6 +44,7 @@
     "inNamed": "Você está dentro, {name}!",
     "in": "Você está dentro!",
     "waiting": "Aguardando a próxima interação…",
+    "startingSoon": "A sessão começa em instantes.",
     "answeredTitle": "Resposta registrada",
     "answeredText": "Acompanhe o resultado na tela do palestrante.",
     "askSpeaker": "Perguntar ao palestrante"

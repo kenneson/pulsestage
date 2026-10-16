@@ -6,6 +6,7 @@ import { z } from "zod";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getOwnedSession } from "@/lib/data/sessions";
+import { isEditable } from "@/lib/domain/session";
 import { fail, isUuid, ok, type ActionResult } from "@/lib/action-result";
 import { getMessageTranslator } from "@/i18n/server";
 import { messageKey } from "@/lib/domain/message-key";
@@ -30,7 +31,7 @@ export async function copyToSessionAction(raw: unknown): Promise<ActionResult<{ 
   const supabase = await createClient();
   const target = await getOwnedSession(supabase, targetSessionId);
   if (!target) return fail(t("sessionNotFound"));
-  if (target.status === "completed") return fail(t("sessionEnded"));
+  if (!isEditable(target.status)) return fail(t("sessionEnded"));
 
   try {
     const copied = await copyInteractions(supabase, [...new Set(interactionIds)], targetSessionId);

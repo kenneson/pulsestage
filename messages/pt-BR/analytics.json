@@ -7,6 +7,7 @@
     "description": "Como suas avaliações mudam de uma sessão para a outra.",
     "emptyTitle": "Nenhuma sessão encerrada",
     "emptyDescription": "Encerre uma sessão para começar a acompanhar sua evolução.",
+    "seeSessions": "Ver sessões",
     "chartTitle": "Dimensões das pesquisas (1–5)",
     "chartDescription": "As dimensões que mais aparecem nas suas pesquisas. Sessões com poucas respostas oscilam mais: veja o número de pesquisas na tabela.",
     "notEnough": "São necessárias pelo menos 2 sessões com pesquisas respondidas para mostrar a tendência.",

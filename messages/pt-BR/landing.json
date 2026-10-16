@@ -9,7 +9,8 @@
     "withAi": "Com IA",
     "speakers": "Palestrantes",
     "signIn": "Entrar",
-    "signUp": "Criar conta grátis"
+    "signUp": "Criar conta grátis",
+    "signUpShort": "Criar conta"
   },
   "hero": {
     "title": "Aulas, palestras e treinamentos com <mark>todo mundo participando</mark>.",
@@ -143,7 +144,7 @@
       },
       "leaderboard": {
         "title": "Ranking animado",
-        "text": "O telão mostra quem subiu e quem caiu depois de cada pergunta."
+        "text": "Quando você mostra o ranking no telão, ele anima quem subiu e quem caiu desde o último quiz."
       },
       "raffle": {
         "title": "Sorteio de prêmios",
@@ -169,7 +170,7 @@
       },
       "approval": {
         "title": "Você aprova antes",
-        "text": "O assistente mostra a proposta e só grava quando você confirmar. Depois, ajuste no PulseStage como sempre."
+        "text": "O assistente é orientado a mostrar a proposta e só gravar depois que você confirmar. Depois, ajuste no PulseStage como sempre."
       },
       "analysis": {
         "title": "Análise depois da palestra",
@@ -196,27 +197,32 @@
   },
   "report": {
     "title": "Depois: o relatório da sessão",
-    "lead": "Ao encerrar, a plateia responde uma pesquisa pelo celular. Você vê seus pontos fortes e fracos, onde o público mais participou, quanto tempo ficou em cada slide e sugestões da IA para a próxima vez. Tudo exportável em PDF e planilha.",
-    "note": "Os números medem participação, não atenção. E cada sugestão da IA mostra em quantas respostas se baseia: quanto menos respostas, mais fraco o sublinhado.",
+    "lead": "Ao encerrar, a plateia responde uma pesquisa pelo celular. Você vê seus pontos fortes e fracos, onde o público mais participou, quanto tempo ficou em cada slide e recomendações da IA para a próxima vez. Tudo exportável em PDF e planilha.",
+    "note": "Os números medem participação, não atenção. A análise da IA traz um nível de confiança geral, que cai quando há poucas respostas, e uma prioridade para cada recomendação.",
+    "evolution": "Em Evolução, compare suas sessões ao longo do tempo: participação e notas da pesquisa, sessão por sessão.",
     "heading": "Relatório: “{title}”",
     "sampleTitle": "IA no trabalho",
     "simulated": "exemplo com dados simulados",
     "chartTitle": "Participação em cada pergunta",
     "chartAria": "Participação por pergunta: {values}",
     "minute": "{minute} min",
-    "suggestions": "Sugestões da IA",
+    "suggestions": "Recomendações da IA",
     "notes": {
       "cloud": "A nuvem de palavras teve a maior participação da sessão. Repita o formato no meio da próxima.",
       "quiz": "A participação caiu no quiz dos 25 minutos. Os 20 segundos de tempo podem ter sido curtos.",
       "comments": "Alguns comentários pedem mais exemplos práticos. Vale confirmar na próxima sessão."
     },
-    "confidence": {
-      "high": "confiança alta",
-      "medium": "confiança média",
-      "low": "confiança baixa"
+    "overall": {
+      "high": "Confiança geral: alta",
+      "medium": "Confiança geral: média",
+      "low": "Confiança geral: baixa"
     },
-    "responses": "{count, plural, one {# resposta} other {# respostas}}",
-    "comments": "{count, plural, one {# comentário} other {# comentários}}",
+    "dataNote": "Poucas respostas na pesquisa: confirme as conclusões na próxima sessão.",
+    "priority": {
+      "high": "prioridade alta",
+      "medium": "prioridade média",
+      "low": "prioridade baixa"
+    },
     "rating": "Avaliação do público"
   },
   "audiences": {
@@ -271,6 +277,10 @@
         "q": "Funciona com o Claude ou o ChatGPT?",
         "a": "Sim. O PulseStage tem um servidor MCP: você conecta sua conta ao Claude, ao ChatGPT ou a outro assistente compatível, anexa os slides no chat e pede as perguntas. O assistente cria a sessão e coloca cada pergunta depois do slide certo. Ele não inicia a sessão ao vivo; isso continua com você."
       },
+      "languages": {
+        "q": "Funciona em outros idiomas?",
+        "a": "Sim: português, espanhol e inglês. O painel segue o idioma que você escolher, e a plateia vê o celular e o telão no idioma definido para a sessão, inclusive o filtro de palavrões e a nuvem de palavras."
+      },
       "capacity": {
         "q": "Quantas pessoas podem participar?",
         "a": "Até {max} participantes por sessão. Cada pessoa responde uma vez por pergunta."
@@ -281,7 +291,7 @@
       },
       "data": {
         "q": "E os dados de quem participa?",
-        "a": "A participação pode ser anônima. Contato só é guardado com autorização e fica separado das respostas. A análise com IA usa apenas dados agregados, nunca nomes ou contatos."
+        "a": "A participação pode ser anônima. Contato só é guardado com autorização e fica separado das respostas. Para a análise com IA vão os resultados agregados e trechos de respostas abertas e de comentários da pesquisa, nunca nomes ou contatos."
       }
     }
   },

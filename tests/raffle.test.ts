@@ -8,6 +8,7 @@ import {
   prizeProgress,
   RAFFLE_REVEAL_MS,
   RAFFLE_SUSPENSE_MS,
+  toPrizeKind,
   reelSequence,
   winnerRevealed,
   winnerVisibleToDisplay,
@@ -79,4 +80,10 @@ test("raffleOnPublicScreen: em andamento sempre; encerrada, só por um dia", () 
   assert.equal(raffleOnPublicScreen(null, now), true);
   assert.equal(raffleOnPublicScreen("2026-10-16T08:00:00Z", now), true);
   assert.equal(raffleOnPublicScreen("2026-10-14T08:00:00Z", now), false);
+});
+
+test("toPrizeKind: só digital é digital; o resto vira físico", () => {
+  assert.equal(toPrizeKind("digital"), "digital");
+  assert.equal(toPrizeKind("physical"), "physical");
+  assert.equal(toPrizeKind("outro"), "physical");
 });

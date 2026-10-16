@@ -5,6 +5,10 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { saveInteractionAction } from "@/features/interactions/actions";
 import {
+  buildInteractionInput,
+  DEFAULT_OPTION_COUNT,
+  defaultOption,
+  defaultSettings,
   hasOptions,
   hasOptionStyle,
   interactionInputSchema,
@@ -24,7 +28,7 @@ import { translateAnyMessage, translateMessage } from "@/i18n/errors";
 
 export type EditableOption = { id?: string; label: string; isCorrect: boolean; points: number; imagePath: string | null };
 
-const newOption = (isCorrect = false): EditableOption => ({ label: "", isCorrect, points: 100, imagePath: null });
+const newOption = (isCorrect = false): EditableOption => defaultOption(isCorrect);
 
 export type InteractionDraft = {
   id: string | null;
@@ -35,61 +39,32 @@ export type InteractionDraft = {
   options: EditableOption[];
 };
 
+/** Pergunta nova no formulário: mesmos padrões da IA e do MCP (`defaultSettings` no domínio). */
 export function emptyDraft(type: InteractionType): InteractionDraft {
   return {
     id: null,
     type,
     title: "",
     description: "",
-    settings: {
-      min: 1,
-      max: 5,
-      minLabel: null,
-      maxLabel: null,
-      maxLength: type === "word_cloud" ? 30 : 280,
-      showOnDisplay: true,
-      timerSeconds: type === "quiz" ? 30 : null,
-      // Quiz novo já nasce no estilo Kahoot; enquete continua em texto.
-      optionStyle: type === "quiz" ? "shapes" : "text",
-      speedBonus: type === "quiz",
-    },
-    options: hasOptions(type) ? [newOption(type === "quiz"), newOption()] : [],
+    settings: defaultSettings(type),
+    options: hasOptions(type) ? Array.from({ length: DEFAULT_OPTION_COUNT }, (_, i) => newOption(type === "quiz" && i === 0)) : [],
   };
 }
 
 function toInput(draft: InteractionDraft): InteractionInput {
-  const base = { title: draft.title, description: draft.description || undefined };
-  const options = draft.options.map((o) => ({
-    id: o.id,
-    label: o.label,
-    isCorrect: o.isCorrect,
-    points: o.points,
-    imagePath: o.imagePath,
-  }));
-  const s = draft.settings;
-  switch (draft.type) {
-    case "multiple_choice":
-      return { type: "multiple_choice", ...base, settings: { optionStyle: s.optionStyle }, options };
-    case "quiz":
-      return {
-        type: "quiz",
-        ...base,
-        settings: { timerSeconds: s.timerSeconds, optionStyle: s.optionStyle, speedBonus: s.speedBonus },
-        options,
-      };
-    case "rating":
-      return {
-        type: "rating",
-        ...base,
-        settings: { min: s.min, max: s.max, minLabel: s.minLabel ?? undefined, maxLabel: s.maxLabel ?? undefined },
-      };
-    case "word_cloud":
-      return { type: "word_cloud", ...base, settings: { maxLength: s.maxLength } };
-    case "open_text":
-      return { type: "open_text", ...base, settings: { maxLength: s.maxLength, showOnDisplay: s.showOnDisplay } };
-    case "ranking":
-      return { type: "ranking", ...base, settings: {}, options };
-  }
+  return buildInteractionInput({
+    type: draft.type,
+    title: draft.title,
+    description: draft.description || undefined,
+    settings: draft.settings,
+    options: draft.options.map((o) => ({
+      id: o.id,
+      label: o.label,
+      isCorrect: o.isCorrect,
+      points: o.points,
+      imagePath: o.imagePath,
+    })),
+  });
 }
 
 /** Imagem opcional da alternativa: miniatura com "remover" ou botão para escolher o arquivo. */

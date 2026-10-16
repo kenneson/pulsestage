@@ -17,7 +17,7 @@
     "unreadInvites": "{count, plural, one {# invitación nueva} other {# invitaciones nuevas}}",
     "settings": "Configuración",
     "profileAndAccount": "Perfil y cuenta",
-    "signOut": "Cerrar sesión"
+    "signOut": "Salir"
   },
   "home": {
     "metaTitle": "Resumen",
@@ -40,18 +40,20 @@
     },
     "recent": "Sesiones recientes",
     "seeAll": "Ver todas",
-    "emptyTitle": "Aún no tienes sesiones",
-    "emptyDescription": "Crea tu primera sesión, agrega interacciones y comparte el código con el público.",
     "createSession": "Crear sesión",
     "seeGuide": "Ver la guía",
     "steps": {
       "title": "Primeros pasos",
       "createSession": "Crear la primera sesión",
       "addQuestions": "Agregar preguntas",
-      "presentLive": "Presentar en vivo",
+      "presentLive": "Probar o presentar en vivo",
       "completeProfile": "Completar el perfil",
       "createTemplate": "Crear una plantilla de encuesta",
-      "done": "(hecho)"
+      "done": "(hecho)",
+      "createSessionHint": "Solo el título es obligatorio; lo demás puedes ajustarlo después.",
+      "addQuestionsHint": "Empieza con la votación de ejemplo y cambia el texto.",
+      "presentLiveHint": "Usa “Probar sesión” para ensayar con tu celular. El ensayo no cuenta en las estadísticas.",
+      "extrasTitle": "Próximos pasos"
     }
   },
   "sessionList": {
@@ -62,7 +64,7 @@
     "title": "Sesiones",
     "newSession": "Nueva sesión",
     "emptyTitle": "No hay sesiones",
-    "emptyDescription": "Tus charlas, clases y talleres aparecen aquí."
+    "emptyDescription": "Tus charlas, clases y talleres aparecen aquí. Crea la primera: solo el título es obligatorio."
   },
   "library": {
     "metaTitle": "Biblioteca de preguntas",

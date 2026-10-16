@@ -51,7 +51,11 @@
     "manageTemplates": "View or create templates",
     "saveInfo": "Save details",
     "create": "Create session",
-    "saved": "Details saved."
+    "saved": "Details saved.",
+    "required": "required",
+    "requiredHint": "Only the title is required. You can adjust the rest later.",
+    "moreOptions": "More options",
+    "moreOptionsHint": "Description, duration, language, join code and survey"
   },
   "controls": {
     "startConfirmTitle": "Start without interactions?",
@@ -70,7 +74,10 @@
     "dateOptional": "Date (optional)",
     "time": "Time",
     "duplicating": "Duplicating…",
-    "duplicateAndEdit": "Duplicate and edit"
+    "duplicateAndEdit": "Duplicate and edit",
+    "rehearsal": "Test session",
+    "rehearsalStarting": "Opening rehearsal…",
+    "rehearsalHint": "Opens a live rehearsal to test with a phone; nothing from it counts in your stats."
   },
   "qr": {
     "download": "Download QR code"
@@ -166,8 +173,7 @@
       "forfeitFailed": "Couldn't remove the winner.",
       "unavailable": "Start the session and set up the giveaway first.",
       "showFailed": "Couldn't update the giveaway on the big screen.",
-      "deliveryFailed": "Couldn't mark it as delivered.",
-      "loadFailed": "Couldn't load the giveaway."
+      "deliveryFailed": "Couldn't mark it as delivered."
     }
   },
   "engagement": {

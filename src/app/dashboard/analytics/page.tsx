@@ -7,6 +7,7 @@ import { formatShortDate } from "@/lib/datetime";
 import { getSpeakerProfile } from "@/lib/data/profile";
 import { formatInt, formatPercent, formatScore } from "@/lib/format";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/misc";
 import { EvolutionChart, type EvolutionPoint, type EvolutionSeries } from "@/components/analytics/evolution-chart";
 import type { HistoryRow } from "@/lib/domain/metrics";
@@ -64,7 +65,15 @@ export default async function EvolutionPage() {
       </div>
 
       {history.length === 0 ? (
-        <EmptyState title={t("emptyTitle")} description={t("emptyDescription")} />
+        <EmptyState
+          title={t("emptyTitle")}
+          description={t("emptyDescription")}
+          action={
+            <Link href="/dashboard/sessions" className={buttonVariants({ variant: "outline" })}>
+              {t("seeSessions")}
+            </Link>
+          }
+        />
       ) : (
         <>
           <Card>

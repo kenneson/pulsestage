@@ -13,4 +13,4 @@ correspondente e use o assunto indicado.
 | `recovery.html` | Reset password | Redefinir senha · Restablecer contraseña · Reset your password — PulseStage |
 | `email_change.html` | Change email address | Confirme o novo e-mail · Confirma el nuevo correo · Confirm your new email — PulseStage |
 
-Localmente (`supabase/config.toml`), aponte `[auth.email.template.confirmation]` para `./supabase/templates/confirmation.html`.
+Localmente (no `supabase/config.toml` criado por `supabase init`), aponte `[auth.email.template.confirmation]` para `./supabase/templates/confirmation.html`.

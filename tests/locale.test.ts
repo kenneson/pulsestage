@@ -1,7 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
+  isLocale,
   isLocalizablePath,
+  localeOrDefault,
   localizedPath,
   matchAcceptLanguage,
   splitLocalePrefix,
@@ -54,4 +56,23 @@ test("messageKey leva parâmetros e parseMessageKey devolve", () => {
   assert.deepEqual(parseMessageKey("validation.questionRequired"), { key: "validation.questionRequired", params: {} });
   assert.equal(parseMessageKey("Texto qualquer."), null);
   assert.equal(parseMessageKey("Invalid input"), null);
+});
+
+test("isLocale aceita só os códigos exatos", () => {
+  assert.ok(isLocale("pt-BR"));
+  assert.ok(isLocale("es-419"));
+  assert.ok(isLocale("en-US"));
+  assert.ok(!isLocale("pt"));
+  assert.ok(!isLocale("en-us"));
+  assert.ok(!isLocale(null));
+  assert.ok(!isLocale(42));
+});
+
+test("localeOrDefault normaliza e cai no português", () => {
+  assert.equal(localeOrDefault("es-CO"), "es-419");
+  assert.equal(localeOrDefault("en"), "en-US");
+  assert.equal(localeOrDefault("fr-FR"), "pt-BR");
+  assert.equal(localeOrDefault(""), "pt-BR");
+  assert.equal(localeOrDefault(null), "pt-BR");
+  assert.equal(localeOrDefault(undefined), "pt-BR");
 });

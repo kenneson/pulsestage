@@ -1,25 +1,43 @@
 "use client";
 
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { moderateResponseAction, moderationQueueAction, setTermVisibilityAction } from "@/features/engagement/actions";
+import { z } from "zod";
+import { moderateResponseAction, setTermVisibilityAction } from "@/features/engagement/actions";
 import type { ModerationQueue } from "@/lib/data/engagement";
+import { fetchJson, usePolling } from "@/lib/realtime/use-polling";
 import { wordList, type ResultsSnapshot } from "@/lib/domain/results";
 import { Button } from "@/components/ui/button";
 import { XIcon } from "@/components/icons";
 
 const POLL_MS = 4000;
 
+const queueSchema = z.object({
+  responses: z.array(
+    z.object({
+      id: z.string(),
+      text: z.string(),
+      moderation: z.enum(["pending", "hidden"]),
+      filtered: z.boolean(),
+      createdAt: z.string(),
+    }),
+  ),
+  hiddenTerms: z.array(z.object({ term: z.string(), count: z.number(), filtered: z.boolean() })),
+}) satisfies z.ZodType<ModerationQueue>;
+
 /**
  * Moderação da pergunta de texto no ar (nuvem ou aberta): ocultar o que não deve ir ao telão,
  * aprovar o que espera e liberar o que o filtro barrou. O telão só mostra o que está visível.
+ * Use `key={interactionId}` para começar vazio quando a pergunta no ar muda.
  */
 export function ModerationPanel({
+  sessionId,
   interactionId,
   type,
   snapshot,
 }: {
+  sessionId: string;
   interactionId: string;
   type: "word_cloud" | "open_text";
   snapshot: ResultsSnapshot;
@@ -30,19 +48,13 @@ export function ModerationPanel({
   const [pending, startTransition] = useTransition();
 
   const reload = useCallback(async () => {
-    const result = await moderationQueueAction(interactionId);
-    if (result.ok) setQueue(result.data);
-  }, [interactionId]);
-
-  useEffect(() => {
-    // Primeira leitura logo em seguida; depois, de tempos em tempos.
-    const first = window.setTimeout(() => void reload(), 0);
-    const id = window.setInterval(() => void reload(), POLL_MS);
-    return () => {
-      window.clearTimeout(first);
-      window.clearInterval(id);
-    };
-  }, [reload]);
+    const next = await fetchJson(
+      `/api/live/${sessionId}/moderation?interaction=${encodeURIComponent(interactionId)}`,
+      queueSchema.parse,
+    );
+    if (next) setQueue(next);
+  }, [sessionId, interactionId]);
+  usePolling(reload, POLL_MS);
 
   const run = (task: () => Promise<{ ok: boolean; error?: string }>) =>
     startTransition(async () => {

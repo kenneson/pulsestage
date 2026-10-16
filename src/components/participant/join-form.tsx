@@ -32,22 +32,22 @@ export function JoinForm({ code }: { code: string }) {
         <p className="text-xs text-muted-foreground">{t("nameHint")}</p>
       </Field>
 
-      <fieldset className="flex flex-col gap-2">
-        <legend className="mb-2 text-sm font-medium">{t("avatarLegend")}</legend>
-        <div className="grid grid-cols-6 gap-2">
+      {/* Faixa de uma linha com rolagem lateral: a grade de 3 linhas empurrava "Participar" para baixo da dobra. */}
+      <fieldset className="flex min-w-0 flex-col gap-1">
+        <legend className="mb-1 text-sm font-medium">{t("avatarLegend")}</legend>
+        <div className="-mx-5 flex snap-x gap-2 overflow-x-auto px-5 py-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {AVATARS.map((avatar) => (
-            <label key={avatar.key} title={tDomain(`avatars.${avatar.key}`)} className="cursor-pointer">
+            <label key={avatar.key} title={tDomain(`avatars.${avatar.key}`)} className="shrink-0 cursor-pointer snap-start">
               <input type="radio" name="avatar" value={avatar.key} className="peer sr-only" aria-label={tDomain(`avatars.${avatar.key}`)} />
               <span
                 aria-hidden
-                className="grid aspect-square place-items-center rounded-xl border-2 border-border text-3xl leading-none transition-[transform,border-color] peer-checked:scale-110 peer-checked:border-primary peer-checked:bg-primary/10 peer-focus-visible:ring-2 peer-focus-visible:ring-ring hover:border-primary/40"
+                className="grid size-12 place-items-center rounded-xl border-2 border-border text-2xl leading-none transition-[transform,border-color] peer-checked:scale-110 peer-checked:border-primary peer-checked:bg-primary/10 peer-focus-visible:ring-2 peer-focus-visible:ring-ring hover:border-primary/40"
               >
                 {avatar.emoji}
               </span>
             </label>
           ))}
         </div>
-        <p className="text-xs text-muted-foreground">{t("avatarHint")}</p>
       </fieldset>
 
       <details className="rounded-lg border px-3 py-2 text-sm">

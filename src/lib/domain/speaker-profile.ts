@@ -210,26 +210,12 @@ export const topicKey = toKey;
 
 export const FORMATS = ["presencial", "online"] as const;
 export type Format = (typeof FORMATS)[number];
-export const FORMAT_LABEL: Record<Format, string> = { presencial: "Presencial", online: "Online" };
 
 export const AUDIENCES = ["universidades", "escolas", "empresas", "eventos"] as const;
 export type Audience = (typeof AUDIENCES)[number];
-export const AUDIENCE_LABEL: Record<Audience, string> = {
-  universidades: "Universidades e faculdades",
-  escolas: "Escolas",
-  empresas: "Empresas",
-  eventos: "Eventos e congressos",
-};
 
 export const ORG_KINDS = ["universidade", "escola", "empresa", "evento", "outro"] as const;
 export type OrgKind = (typeof ORG_KINDS)[number];
-export const ORG_KIND_LABEL: Record<OrgKind, string> = {
-  universidade: "Universidade ou faculdade",
-  escola: "Escola",
-  empresa: "Empresa",
-  evento: "Evento",
-  outro: "Outro",
-};
 
 export const BR_STATES = [
   "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA",

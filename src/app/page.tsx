@@ -7,11 +7,13 @@ import { buttonVariants } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { StageDemo } from "@/components/landing/stage-demo";
+import { ReportPreview } from "@/components/landing/report-preview";
+import { AiChatPreview } from "@/components/landing/ai-chat-preview";
 import { JoinCodeForm } from "@/components/join-code-form";
 import { ShapeGlyph, shapeBg } from "@/components/option-shape";
 import { CheckIcon } from "@/components/icons";
 import { MAX_PARTICIPANTS_PER_SESSION } from "@/lib/domain/session";
-import { formatInt, formatScore } from "@/lib/format";
+import { formatInt } from "@/lib/format";
 import { IntlProvider } from "@/i18n/provider";
 import { getPublicHref, localeAlternates, ogLocale } from "@/i18n/seo";
 
@@ -63,42 +65,11 @@ const RANKING = [
   { avatar: "🐼", name: "Bruno", points: 1610, move: "↓1" },
 ];
 
-// Exemplo ilustrativo (dados simulados) do relatório depois da sessão.
-const PULSE = [
-  { minute: 0, rate: 0.82 },
-  { minute: 12, rate: 0.91 },
-  { minute: 25, rate: 0.58 },
-  { minute: 40, rate: 0.66 },
-  { minute: 52, rate: 0.74 },
-];
-
-const NOTES: { id: "cloud" | "quiz" | "comments"; confidence: "high" | "medium" | "low"; sample: { kind: "responses" | "comments"; count: number } }[] = [
-  { id: "cloud", confidence: "high", sample: { kind: "responses", count: 64 } },
-  { id: "quiz", confidence: "medium", sample: { kind: "responses", count: 22 } },
-  { id: "comments", confidence: "low", sample: { kind: "comments", count: 3 } },
-];
-
-const SCORECARD = [
-  { dimension: "utilidade", value: 8.6, scale: "/10" },
-  { dimension: "clareza", value: 4.4, scale: "/5" },
-  { dimension: "engajamento", value: 4.1, scale: "/5" },
-  { dimension: "conteudo", value: 4.5, scale: "/5" },
-  { dimension: "aplicabilidade", value: 3.9, scale: "/5" },
-] as const;
-
 const AUDIENCES = ["universities", "schools", "companies", "events"] as const;
-
-// Conversa de exemplo da seção de IA (dados simulados, rotulados).
-const AI_PLAN = [
-  { slide: 2, paper: "bg-rev-yellow", type: "word_cloud", text: "cloud" },
-  { slide: 7, paper: "bg-rev-gold", type: "quiz", text: "quiz" },
-  { slide: 12, paper: "bg-rev-pink", type: "rating", text: "scale" },
-  { slide: null, paper: "bg-rev-green", type: "open_text", text: "open" },
-] as const;
 
 const AI_POINTS = ["slides", "placement", "approval", "analysis"] as const;
 
-const FAQ = ["app", "price", "slides", "raffle", "questions", "schools", "assistants", "capacity", "export", "data"] as const;
+const FAQ = ["app", "price", "slides", "raffle", "questions", "schools", "assistants", "languages", "capacity", "export", "data"] as const;
 
 function SectionHeading({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -153,8 +124,6 @@ export default async function Home() {
     { value: formatInt(6, locale), text: t("facts.types") },
     { value: formatInt(1, locale), text: t("facts.screen") },
   ];
-  const chartValues = new Intl.ListFormat(locale, { type: "conjunction" }).format(PULSE.map((p) => `${Math.round(p.rate * 100)}%`));
-  const chartMax = 60;
   return (
     <div className="flex min-h-dvh flex-col">
       <div className="site-header sticky top-0 z-30">
@@ -175,11 +144,13 @@ export default async function Home() {
             </Link>
             <LocaleSwitcher compact />
             <ThemeToggle />
-            <Link href={href("/login")} className={buttonVariants({ variant: "ghost" })}>
+            {/* No celular, "Entrar" fica no hero ("já tenho conta") para caber "Criar conta". */}
+            <Link href={href("/login")} className={cn(buttonVariants({ variant: "ghost" }), "hidden sm:inline-flex")}>
               {t("nav.signIn")}
             </Link>
-            <Link href={href("/signup")} className={cn(buttonVariants(), "hidden sm:inline-flex")}>
-              {t("nav.signUp")}
+            <Link href={href("/signup")} className={buttonVariants()}>
+              <span className="sm:hidden">{t("nav.signUpShort")}</span>
+              <span className="hidden sm:inline">{t("nav.signUp")}</span>
             </Link>
           </nav>
         </header>
@@ -463,45 +434,7 @@ export default async function Home() {
               <p className="reveal text-sm text-muted-foreground">{t("ai.compat")}</p>
             </div>
 
-            <figure className={cn("reveal flex flex-col gap-4 rounded-sm bg-card p-5 dark:border sm:p-6", paperShadow)}>
-              <div className="ml-auto flex max-w-[85%] flex-col items-end gap-2">
-                <span className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm">
-                  <span className="grid size-8 place-items-center rounded-md bg-destructive/15 text-[10px] font-bold text-destructive">
-                    PDF
-                  </span>
-                  <span className="flex flex-col leading-tight">
-                    <span className="font-medium">{t("ai.fileName")}</span>
-                    <span className="text-xs text-muted-foreground">{t("ai.pages", { count: 18 })}</span>
-                  </span>
-                </span>
-                <p className="rounded-2xl rounded-tr-sm bg-primary px-4 py-2.5 text-sm text-primary-foreground">{t("ai.request")}</p>
-              </div>
-
-              <div className="flex max-w-[92%] flex-col gap-3 rounded-2xl rounded-tl-sm bg-muted px-4 py-3 text-sm">
-                <p>{t("ai.proposal")}</p>
-                <ol className="flex flex-col gap-2">
-                  {AI_PLAN.map((item) => (
-                    <li key={item.text} className={cn("flex flex-col gap-0.5 rounded-md px-3 py-2 text-rev-foreground", item.paper)}>
-                      <span className="text-[11px] font-semibold uppercase tracking-wide opacity-80">
-                        {item.slide === null ? t("ai.atEnd") : t("ai.afterSlide", { n: item.slide })} ·{" "}
-                        {tDomain(`interactionTypes.${item.type}.label`)}
-                      </span>
-                      <span className="font-medium leading-snug">{t(`ai.plan.${item.text}`)}</span>
-                    </li>
-                  ))}
-                </ol>
-                <p>{t("ai.confirmQuestion")}</p>
-              </div>
-
-              <p className="ml-auto rounded-2xl rounded-tr-sm bg-primary px-4 py-2.5 text-sm text-primary-foreground">
-                {t("ai.confirmAnswer")}
-              </p>
-
-              <p className="inline-flex w-fit items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium">
-                <CheckIcon className="text-primary" /> {t("ai.saved", { count: AI_PLAN.length })}
-              </p>
-              <figcaption className="text-xs text-muted-foreground">{t("ai.caption")}</figcaption>
-            </figure>
+            <AiChatPreview className={paperShadow} />
           </div>
         </section>
 
@@ -511,96 +444,10 @@ export default async function Home() {
             <div className="flex flex-col gap-6">
               <SectionHeading title={t("report.title")}>{t("report.lead")}</SectionHeading>
               <p className="reveal text-sm leading-relaxed text-muted-foreground">{t("report.note")}</p>
+              <p className="reveal text-sm leading-relaxed text-muted-foreground">{t("report.evolution")}</p>
             </div>
 
-            <article className={cn("reveal flex flex-col gap-8 rounded-sm bg-card p-6 dark:border sm:p-8", paperShadow)}>
-              <header className="flex flex-wrap items-baseline justify-between gap-2 border-b pb-4">
-                <h3 className="font-display text-lg font-bold uppercase">
-                  {t("report.heading", { title: t("report.sampleTitle") })}
-                </h3>
-                <span className="text-xs text-muted-foreground">{t("report.simulated")}</span>
-              </header>
-
-              <figure className="flex flex-col gap-3">
-                <figcaption className="text-sm font-semibold">{t("report.chartTitle")}</figcaption>
-                <svg
-                  viewBox="0 0 300 120"
-                  role="img"
-                  aria-label={t("report.chartAria", { values: chartValues })}
-                  className="h-auto w-full font-display"
-                >
-                  {[0.25, 0.5, 0.75, 1].map((g) => (
-                    <line key={g} x1="0" x2="300" y1={100 - g * 90} y2={100 - g * 90} stroke="var(--border)" strokeWidth="1" />
-                  ))}
-                  <line x1="0" x2="300" y1="100" y2="100" stroke="var(--foreground)" strokeOpacity="0.35" strokeWidth="1" />
-                  {PULSE.map((p) => {
-                    const x = 14 + (p.minute / chartMax) * 270;
-                    const h = p.rate * 90;
-                    const low = p.rate < 0.6;
-                    return (
-                      <g key={p.minute}>
-                        <rect
-                          className="reveal-bar"
-                          x={x - 9}
-                          y={100 - h}
-                          width="18"
-                          height={h}
-                          rx="2"
-                          fill={low ? "var(--standby)" : "var(--primary)"}
-                        />
-                        <text x={x} y={94 - h} textAnchor="middle" fontSize="9" fontWeight="700" fill="var(--foreground)">
-                          {Math.round(p.rate * 100)}%
-                        </text>
-                        <text x={x} y="113" textAnchor="middle" fontSize="8" fill="var(--muted-foreground)">
-                          {t("report.minute", { minute: p.minute })}
-                        </text>
-                      </g>
-                    );
-                  })}
-                </svg>
-              </figure>
-
-              <div className="flex flex-col gap-3">
-                <p className="text-sm font-semibold">{t("report.suggestions")}</p>
-                <ol className="flex flex-col gap-4">
-                  {NOTES.map((note, index) => (
-                    <li key={note.id} className="grid grid-cols-[1.5rem_1fr] gap-x-2">
-                      <span className="font-display font-bold tabular-nums">{index + 1}.</span>
-                      <div className="flex flex-col gap-1">
-                        <p
-                          className={cn(
-                            "leading-relaxed underline decoration-2 underline-offset-[6px]",
-                            note.confidence === "high" && "decoration-foreground",
-                            note.confidence === "medium" && "decoration-foreground/50",
-                            note.confidence === "low" && "decoration-foreground/40 decoration-dashed decoration-1",
-                          )}
-                        >
-                          {t(`report.notes.${note.id}`)}
-                        </p>
-                        <span className="text-xs text-muted-foreground">
-                          {t(`report.confidence.${note.confidence}`)} · {t(`report.${note.sample.kind}`, { count: note.sample.count })}
-                        </span>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-
-              <div className="flex flex-col gap-3 border-t pt-5">
-                <p className="text-sm font-semibold">{t("report.rating")}</p>
-                <dl className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3 xl:grid-cols-5">
-                  {SCORECARD.map((s) => (
-                    <div key={s.dimension} className="flex flex-col">
-                      <dt className="text-xs text-muted-foreground">{tDomain(`dimensions.${s.dimension}`)}</dt>
-                      <dd className="font-display text-xl font-bold tabular-nums">
-                        {formatScore(s.value, locale)}
-                        <span className="text-sm font-normal text-muted-foreground">{s.scale}</span>
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            </article>
+            <ReportPreview className={paperShadow} />
           </div>
         </section>
 

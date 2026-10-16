@@ -32,8 +32,3 @@ export function formatInt(value: number, locale: Locale = DEFAULT_LOCALE): strin
 export function formatSeconds(ms: number | null | undefined, locale: Locale = DEFAULT_LOCALE): string {
   return typeof ms === "number" && Number.isFinite(ms) ? `${decimal(locale).format(ms / 1000)} s` : "—";
 }
-
-/** @deprecated Texto fixo em português. Use plural do ICU nas mensagens: "{count, plural, one {# resposta} other {# respostas}}". */
-export function plural(count: number, singular: string, pluralForm: string): string {
-  return `${formatInt(count)} ${count === 1 ? singular : pluralForm}`;
-}

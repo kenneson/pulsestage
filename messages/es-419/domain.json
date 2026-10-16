@@ -2,7 +2,7 @@
   "interactionTypes": {
     "multiple_choice": {
       "label": "Votación",
-      "description": "Una opción entre varias alternativas."
+      "description": "Se elige una entre varias opciones."
     },
     "rating": {
       "label": "Escala",
@@ -22,7 +22,7 @@
     },
     "ranking": {
       "label": "Ranking",
-      "description": "El público ordena las alternativas por preferencia."
+      "description": "El público ordena las opciones por preferencia."
     }
   },
   "sessionStatus": {
@@ -42,7 +42,7 @@
     },
     "choice": {
       "label": "Opción múltiple",
-      "description": "Alternativas definidas por ti (incluye sí/no)."
+      "description": "Opciones definidas por ti (incluye sí/no)."
     },
     "text": {
       "label": "Texto libre",

@@ -205,6 +205,95 @@ export const interactionInputSchema = z.discriminatedUnion("type", [
 
 export type InteractionInput = z.input<typeof interactionInputSchema>;
 export type ParsedInteractionInput = z.output<typeof interactionInputSchema>;
+export type OptionInput = z.input<typeof optionInputSchema>;
+
+// ---------------------------------------------------------------------------
+// Padrões de uma pergunta nova (painel, sugestões da IA e MCP usam os mesmos)
+// ---------------------------------------------------------------------------
+
+/** Tempo do quiz novo, em segundos. */
+export const DEFAULT_QUIZ_TIMER_SECONDS = 30;
+/** Pontos de quem acerta, por alternativa. */
+export const DEFAULT_OPTION_POINTS = 100;
+/** Alternativas de uma pergunta nova com alternativas. */
+export const DEFAULT_OPTION_COUNT = 2;
+
+/**
+ * Ajustes de uma pergunta nova. Diferente de `DEFAULT_SETTINGS` (leitura de linhas antigas, sem o campo):
+ * o quiz novo já nasce no estilo jogo (formas, tempo e bônus de velocidade); a enquete continua em texto.
+ */
+export function defaultSettings(type: InteractionType): NormalizedSettings {
+  return {
+    ...DEFAULT_SETTINGS,
+    maxLength: type === "word_cloud" ? 30 : 280,
+    timerSeconds: type === "quiz" ? DEFAULT_QUIZ_TIMER_SECONDS : null,
+    optionStyle: type === "quiz" ? "shapes" : "text",
+    speedBonus: type === "quiz",
+  };
+}
+
+/** Alternativa nova; no quiz, a primeira já vem marcada como correta. */
+export function defaultOption(isCorrect = false): { label: string; isCorrect: boolean; points: number; imagePath: null } {
+  return { label: "", isCorrect, points: DEFAULT_OPTION_POINTS, imagePath: null };
+}
+
+/** Alternativas a partir dos textos; `correctIndex` (base 0) só vale no quiz. */
+export function optionsFromLabels(type: InteractionType, labels: readonly string[], correctIndex?: number | null): OptionInput[] {
+  return labels.map((label, index) => ({
+    label,
+    isCorrect: type === "quiz" && index === correctIndex,
+    points: DEFAULT_OPTION_POINTS,
+  }));
+}
+
+export type InteractionParts = {
+  type: InteractionType;
+  title: string;
+  description?: string;
+  settings: NormalizedSettings;
+  options: OptionInput[];
+};
+
+/** Monta a entrada do builder: só os ajustes que valem para o tipo (o resto dos settings achatados fica de fora). */
+export function buildInteractionInput({ type, title, description, settings: s, options }: InteractionParts): InteractionInput {
+  const base = { title, description };
+  switch (type) {
+    case "multiple_choice":
+      return { type, ...base, settings: { optionStyle: s.optionStyle }, options };
+    case "quiz":
+      return {
+        type,
+        ...base,
+        // Bônus de velocidade só existe com tempo para responder.
+        settings: { timerSeconds: s.timerSeconds, optionStyle: s.optionStyle, speedBonus: s.speedBonus && s.timerSeconds !== null },
+        options,
+      };
+    case "rating":
+      return {
+        type,
+        ...base,
+        settings: { min: s.min, max: s.max, minLabel: s.minLabel ?? undefined, maxLabel: s.maxLabel ?? undefined },
+      };
+    case "word_cloud":
+      return { type, ...base, settings: { maxLength: s.maxLength } };
+    case "open_text":
+      return { type, ...base, settings: { maxLength: s.maxLength, showOnDisplay: s.showOnDisplay } };
+    case "ranking":
+      return { type, ...base, settings: {}, options };
+  }
+}
+
+/** Pergunta nova do tipo, sem texto: ponto de partida do formulário, da IA e do MCP. */
+export function defaultInteractionInput(type: InteractionType): InteractionInput {
+  return buildInteractionInput({
+    type,
+    title: "",
+    settings: defaultSettings(type),
+    options: hasOptions(type)
+      ? Array.from({ length: DEFAULT_OPTION_COUNT }, (_, index) => defaultOption(type === "quiz" && index === 0))
+      : [],
+  });
+}
 
 // ---------------------------------------------------------------------------
 // Visão pública (participante e projetor) — nunca inclui is_correct/points

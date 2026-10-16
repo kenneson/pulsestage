@@ -6,15 +6,11 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { arrangeInteractionsAction, deleteInteractionAction } from "@/features/interactions/actions";
 import { moveInteraction } from "@/lib/domain/deck";
-import {
-  INTERACTION_TYPES,
-  type InteractionType,
-  type PublicInteraction,
-} from "@/lib/domain/interactions";
+import { defaultOption, type PublicInteraction } from "@/lib/domain/interactions";
 import { cn } from "@/lib/utils";
 import { gapText } from "@/i18n/text";
 import { Badge } from "@/components/ui/badge";
-import { TYPE_PAPER, TypeTag } from "@/components/interaction-type-tag";
+import { TypeTag } from "@/components/interaction-type-tag";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/components/ui/confirm-dialog";
 import { EmptyState } from "@/components/ui/misc";
@@ -23,6 +19,7 @@ import { AnswerForm } from "@/components/participant/answer-form";
 import { LibraryPicker } from "@/components/library/library-picker";
 import type { LibraryItem } from "@/lib/domain/library";
 import { emptyDraft, InteractionForm, type InteractionDraft } from "./interaction-form";
+import { InteractionTypePicker } from "./interaction-type-picker";
 import { AISuggestionsPanel, useAISuggestions } from "./ai-suggestions";
 
 export type EditorItem = {
@@ -53,11 +50,26 @@ export function InteractionsEditor({
   const tDomain = useTranslations("domain");
   const router = useRouter();
   const [editing, setEditing] = useState<string | null>(null);
-  const [creating, setCreating] = useState<InteractionType | null>(null);
+  // Pergunta nova em edição; `example` = enquete de exemplo do estado vazio.
+  const [creating, setCreating] = useState<{ draft: InteractionDraft; example: boolean } | null>(null);
   const [previewing, setPreviewing] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [confirm, confirmDialog] = useConfirm();
   const ai = useAISuggestions(sessionId);
+
+  // Primeira pergunta: enquete já preenchida (no idioma do painel), para editar e salvar.
+  function startExample() {
+    const draft = emptyDraft("multiple_choice");
+    const labels = [t("example.option1"), t("example.option2"), t("example.option3"), t("example.option4")];
+    setCreating({
+      example: true,
+      draft: {
+        ...draft,
+        title: t("example.question"),
+        options: labels.map((label) => ({ ...defaultOption(), label })),
+      },
+    });
+  }
 
   const refresh = () => {
     setEditing(null);
@@ -101,6 +113,16 @@ export function InteractionsEditor({
           <EmptyState
             title={t("emptyTitle")}
             description={t("emptyDescription")}
+            action={
+              !readOnly ? (
+                <div className="flex flex-col items-center gap-2">
+                  <Button onClick={startExample}>
+                    <PlusIcon /> {t("createFirstPoll")}
+                  </Button>
+                  <p className="max-w-sm text-xs text-muted-foreground">{t("createFirstPollHint")}</p>
+                </div>
+              ) : undefined
+            }
           />
         ) : null}
 
@@ -193,27 +215,23 @@ export function InteractionsEditor({
         </ol>
 
         {creating ? (
-          <InteractionForm
-            key={creating}
-            sessionId={sessionId}
-            initial={emptyDraft(creating)}
-            onDone={refresh}
-            onCancel={() => setCreating(null)}
-          />
+          <div className="flex flex-col gap-2">
+            {creating.example ? <p className="text-sm text-muted-foreground">{t("exampleHint")}</p> : null}
+            <InteractionForm
+              key={`${creating.draft.type}-${creating.example ? "example" : "new"}`}
+              sessionId={sessionId}
+              initial={creating.draft}
+              onDone={refresh}
+              onCancel={() => setCreating(null)}
+            />
+          </div>
         ) : !readOnly ? (
           <div className="flex flex-col gap-2 rounded-xl border border-dashed p-4">
             <p className="flex items-center gap-2 text-sm font-medium">
               <PlusIcon /> {t("addInteraction")}
             </p>
-            <div className="flex flex-wrap gap-2">
-              {INTERACTION_TYPES.map((type) => (
-                <Button key={type} variant="outline" size="sm" onClick={() => setCreating(type)} title={tDomain(`interactionTypes.${type}.description`)}>
-                  <span aria-hidden className={cn("size-2.5 rounded-sm", TYPE_PAPER[type])} />
-                  {tDomain(`interactionTypes.${type}.label`)}
-                </Button>
-              ))}
-            </div>
-            <div className="flex flex-wrap gap-2 border-t pt-3">
+            <InteractionTypePicker onPick={(type) => setCreating({ draft: emptyDraft(type), example: false })} />
+            <div className="flex flex-wrap items-center gap-2 border-t pt-3">
               <LibraryPicker sessionId={sessionId} items={library} />
               {aiEnabled ? (
                 <Button

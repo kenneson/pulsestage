@@ -55,8 +55,8 @@
     "deleteTitle": "Excluir \"{title}\"?",
     "deleteResponses": "{count, plural, one {A # resposta também será apagada.} other {As # respostas também serão apagadas.}}",
     "deleted": "Interação excluída.",
-    "emptyTitle": "Nenhuma interação",
-    "emptyDescription": "Adicione enquetes, quizzes, escalas, nuvens de palavras ou perguntas abertas.",
+    "emptyTitle": "Nenhuma pergunta ainda",
+    "emptyDescription": "Adicione enquetes, quizzes, escalas, rankings, nuvens de palavras ou perguntas abertas. A plateia responde pelo celular.",
     "cue": "Deixa {number}",
     "active": "Ativa",
     "responses": "{count, plural, one {# resposta} other {# respostas}}",
@@ -64,7 +64,17 @@
     "moveUp": "Subir",
     "moveDown": "Descer",
     "addInteraction": "Adicionar interação",
-    "generateWithAI": "Gerar com IA"
+    "generateWithAI": "Gerar com IA",
+    "createFirstPoll": "Criar primeira enquete",
+    "createFirstPollHint": "Abre uma enquete de exemplo já preenchida. Troque o texto e salve.",
+    "exampleHint": "Enquete de exemplo: edite a pergunta e as alternativas como quiser antes de salvar.",
+    "example": {
+      "question": "Quanto você já conhece sobre o tema de hoje?",
+      "option1": "Nada, é novidade para mim",
+      "option2": "Já ouvi falar",
+      "option3": "Uso no dia a dia",
+      "option4": "Poderia dar esta palestra"
+    }
   },
   "ai": {
     "title": "Sugestões da IA",
@@ -110,7 +120,8 @@
       "copyQuestionsFailed": "Não foi possível copiar as perguntas da sessão.",
       "copyPrizesFailed": "Não foi possível copiar os prêmios do sorteio.",
       "copySlidesFailed": "Não foi possível copiar os slides da sessão."
-    }
+    },
+    "noneSaved": "Ainda não há perguntas salvas de outras sessões."
   },
   "addLive": {
     "open": "Nova pergunta",

@@ -12,6 +12,7 @@ import {
 import type { LiveState } from "@/lib/realtime/schemas";
 import { useLiveState } from "@/lib/realtime/use-live-state";
 import { usePresence } from "@/lib/realtime/use-presence";
+import { usePolling } from "@/lib/realtime/use-polling";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Alert } from "@/components/ui/misc";
 import { CheckIcon, MessageQuestionIcon } from "@/components/icons";
@@ -20,6 +21,12 @@ import { AnswerForm } from "./answer-form";
 import { RaffleTicketCard } from "./raffle-ticket";
 import { ReactionBar } from "./reaction-bar";
 import { QuestionsPanel } from "./questions-panel";
+
+/** Sem realtime: consulta a cada 5 s. Em rascunho, com realtime, uma conferência lenta caso o início se perca. */
+const OFFLINE_POLL_MS = 5000;
+const DRAFT_POLL_MS = 15000;
+/** Leitura recente (realtime, início da página) dispensa a consulta periódica. */
+const RECENT_FETCH_MS = 4000;
 
 async function fetchCurrent(sessionId: string): Promise<CurrentInteractionResponse | null> {
   const res = await fetch(`/api/participant/${sessionId}/current`, { cache: "no-store" });
@@ -63,9 +70,11 @@ export function ParticipateView({
   const [error, setError] = useState<string | null>(null);
   const [questionsOpen, setQuestionsOpen] = useState(false);
   const requestId = useRef(0);
+  const lastFetchAt = useRef(0);
 
   const refresh = useCallback(() => {
     const id = ++requestId.current;
+    lastFetchAt.current = Date.now();
     fetchCurrent(sessionId)
       .then((data) => {
         if (data && id === requestId.current) {
@@ -78,7 +87,7 @@ export function ParticipateView({
       });
   }, [sessionId, t]);
 
-  const { state: live, connected } = useLiveState(sessionId, initialLive, refresh);
+  const { state: live, connected, refresh: refreshLive } = useLiveState(sessionId, initialLive, refresh);
   usePresence(sessionId, "participant");
 
   const liveKey = `${live?.status ?? ""}:${live?.active_interaction_id ?? ""}`;
@@ -89,12 +98,29 @@ export function ParticipateView({
     if (liveKey !== currentKey) refresh();
   }, [liveKey, currentKey, refresh]);
 
-  // Rede de segurança caso o realtime caia: consulta periódica leve.
+  // O conteúdo inicial veio do servidor junto com a página: conta como leitura recente.
   useEffect(() => {
-    if (connected) return;
-    const timer = window.setInterval(refresh, 5000);
-    return () => window.clearInterval(timer);
-  }, [connected, refresh]);
+    lastFetchAt.current = Date.now();
+  }, []);
+
+  const status = live?.status ?? current.status;
+  const isDraft = status === "draft";
+
+  // Rede de segurança: sem realtime, consulta periódica leve; em rascunho, uma conferência lenta
+  // (a plateia pode entrar muito antes do início e não pode ficar presa se o evento se perder).
+  usePolling(
+    () => {
+      if (Date.now() - lastFetchAt.current >= RECENT_FETCH_MS) refresh();
+    },
+    connected ? DRAFT_POLL_MS : OFFLINE_POLL_MS,
+    !connected || isDraft,
+  );
+
+  // Em rascunho a plateia não lê session_live_state (RLS). Se a consulta mostrar que a sessão
+  // começou antes de o realtime avisar, relê o estado ao vivo (agora visível).
+  useEffect(() => {
+    if (live?.status === "draft" && current.status !== "draft") void refreshLive();
+  }, [live?.status, current.status, refreshLive]);
 
   async function submit(payload: AnswerPayload) {
     if (!current.interaction) return;
@@ -118,7 +144,6 @@ export function ParticipateView({
     setError(result.error);
   }
 
-  const status = live?.status ?? current.status;
   // O número do sorteio aparece fora das perguntas (respondendo, a atenção fica na pergunta).
   let showTicket = true;
   let body: React.ReactNode;
@@ -135,7 +160,7 @@ export function ParticipateView({
     body = <Screen title={t("pausedTitle")} text={t("pausedText")} />;
   } else if (!current.interaction || current.status !== "live") {
     body = (
-      <Screen title={me.name ? t("inNamed", { name: me.name }) : t("in")} text={t("waiting")}>
+      <Screen title={me.name ? t("inNamed", { name: me.name }) : t("in")} text={isDraft ? t("startingSoon") : t("waiting")}>
         {me.avatar ? (
           <span aria-hidden className="order-first grid size-24 place-items-center rounded-full bg-muted text-6xl leading-none">
             {me.avatar}
@@ -173,7 +198,8 @@ export function ParticipateView({
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 py-5">
       <header className="flex items-center justify-between gap-3">
-        <Logo className="text-sm" />
+        {/* Sem link: um toque na marca não pode tirar a pessoa da sessão. */}
+        <Logo href={null} className="text-sm" />
         <span className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
           <span className="truncate">{title}</span>
           {me.avatar ? (

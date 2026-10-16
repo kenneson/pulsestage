@@ -2,6 +2,9 @@
   "page": {
     "metaTitle": "Sala ao vivo"
   },
+  "focusHeader": {
+    "backToSession": "Voltar à sessão"
+  },
   "controlRoom": {
     "reconnecting": "Reconectando…",
     "participants": "{count, plural, one {# participante} other {# participantes}}",
@@ -19,16 +22,10 @@
     },
     "viewAnalytics": "Ver analytics",
     "onScreen": "No telão",
-    "raffle": "Sorteio",
-    "leaderboard": "Ranking do quiz",
     "highlightedQuestion": "Pergunta da plateia em destaque",
     "audienceQuestions": "Perguntas da plateia",
     "responsesOf": "{count, plural, one {# resposta} other {# respostas}} de {participants, number}",
     "slideOf": "Slide {slide} <muted>de {total}</muted>",
-    "qrOnScreen": "QR Code no telão",
-    "noActive": "Nenhuma interação ativa",
-    "showLeaderboard": "Mostrar ranking",
-    "hideLeaderboard": "Ocultar ranking",
     "showAnswer": "Mostrar resposta",
     "hideAnswer": "Ocultar resposta",
     "closeQuestion": "Encerrar",
@@ -50,10 +47,42 @@
     "interactionFallback": "Interação",
     "joinCode": "Código de entrada",
     "showOnScreen": "Mostrar no telão",
+    "openAsParticipant": "Abrir como participante",
     "lineup": "Roteiro",
     "active": "Ativa",
     "noInteractions": "Nenhuma interação.",
     "participation": "Participação"
+  },
+  "screen": {
+    "now": "No telão agora",
+    "groupLabel": "Escolher o que aparece no telão",
+    "draftHint": "Inicie a sessão para controlar o telão.",
+    "pausedQuestion": "Pergunta aberta: <strong>{title}</strong>",
+    "modes": {
+      "lineup": "Roteiro",
+      "join": "QR Code",
+      "leaderboard": "Ranking do quiz",
+      "questions": "Perguntas da plateia",
+      "raffle": "Sorteio",
+      "paused": "Pausa",
+      "ended": "Tela final"
+    },
+    "labels": {
+      "join": "QR Code e código de entrada",
+      "leaderboard": "Ranking do quiz",
+      "raffle": "Sorteio",
+      "paused": "Tela de pausa",
+      "ended": "Agradecimento e QR Code da pesquisa"
+    }
+  },
+  "rehearsal": {
+    "banner": "<strong>Modo ensaio:</strong> nada daqui conta nas estatísticas nem no perfil.",
+    "end": "Encerrar ensaio",
+    "endConfirm": {
+      "title": "Encerrar o ensaio?",
+      "description": "O ensaio e as respostas de teste são apagados. A sessão original não muda.",
+      "confirm": "Encerrar ensaio"
+    }
   },
   "moderation": {
     "moderateWords": "Moderar palavras",
@@ -71,9 +100,7 @@
   },
   "questionsCard": {
     "title": "Perguntas da plateia",
-    "showOnScreen": "Mostrar no telão",
-    "hideFromScreen": "Ocultar do telão",
-    "disabled": "Desligadas nesta sessão. Ligue em “Participação”, abaixo, para a plateia poder perguntar.",
+    "disabled": "Perguntas da plateia desligadas. <link>Ligar em Participação</link>",
     "tabsLabel": "Perguntas",
     "tabs": {
       "open": "Abertas",
@@ -86,6 +113,7 @@
     "anonymous": "Anônima",
     "filtered": "barrada pelo filtro",
     "onScreen": "No telão",
+    "highlightOnScreen": "Uma em destaque no telão",
     "approve": "Aprovar",
     "highlight": "Destacar",
     "removeFromScreen": "Tirar do telão",
@@ -96,6 +124,7 @@
     "title": "Sorteio",
     "show": "Mostrar sorteio",
     "hide": "Ocultar sorteio",
+    "onScreen": "No telão",
     "entrantsSurveyDone": "<num>{count, number}</num> {count, plural, one {pessoa concorrendo} other {pessoas concorrendo}} (quem respondeu a pesquisa).",
     "entrantsSurveyPending": "<num>{count, number}</num> {count, plural, one {pessoa concorrendo} other {pessoas concorrendo}}. Só quem responder a pesquisa concorre: ela abre quando você encerra a sessão.",
     "entrantsEveryone": "<num>{count, number}</num> {count, plural, one {pessoa concorrendo} other {pessoas concorrendo}}.",
@@ -122,14 +151,11 @@
   "errors": {
     "leaderboardNotLive": "Inicie ou retome a sessão para mostrar o ranking.",
     "leaderboardFailed": "Não foi possível mudar o ranking no telão.",
-    "questionsLoadFailed": "Não foi possível carregar as perguntas.",
     "questionUpdateFailed": "Não foi possível atualizar a pergunta.",
     "screenNotLive": "Inicie ou retome a sessão para usar o telão.",
     "questionNotOpen": "Essa pergunta não está aberta.",
     "screenFailed": "Não foi possível mudar o telão.",
-    "moderationLoadFailed": "Não foi possível carregar a moderação.",
     "responseUpdateFailed": "Não foi possível atualizar a resposta.",
-    "wordUpdateFailed": "Não foi possível atualizar a palavra.",
-    "reactionsLoadFailed": "Não foi possível carregar as reações."
+    "wordUpdateFailed": "Não foi possível atualizar a palavra."
   }
 }

@@ -5,13 +5,12 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { addLiveInteractionAction } from "@/features/interactions/actions";
-import { INTERACTION_TYPES, type InteractionType } from "@/lib/domain/interactions";
+import type { InteractionType } from "@/lib/domain/interactions";
 import type { DeckItem } from "@/lib/domain/deck";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { TYPE_PAPER } from "@/components/interaction-type-tag";
 import { PlusIcon, XIcon } from "@/components/icons";
 import { emptyDraft, InteractionForm, type InteractionFormAction } from "@/components/builder/interaction-form";
+import { InteractionTypePicker } from "@/components/builder/interaction-type-picker";
 import { ok, type ActionResult } from "@/lib/action-result";
 import type { InteractionInput } from "@/lib/domain/interactions";
 
@@ -35,7 +34,6 @@ export function AddInteractionDialog({
 }) {
   const t = useTranslations("builder.addLive");
   const tCommon = useTranslations("common.actions");
-  const tDomain = useTranslations("domain");
   const router = useRouter();
   const ref = useRef<HTMLDialogElement>(null);
   const [type, setType] = useState<InteractionType | null>(null);
@@ -114,14 +112,7 @@ export function AddInteractionDialog({
               onCancel={() => setType(null)}
             />
           ) : (
-            <div className="flex flex-wrap gap-2">
-              {INTERACTION_TYPES.map((kind) => (
-                <Button key={kind} variant="outline" onClick={() => setType(kind)} title={tDomain(`interactionTypes.${kind}.description`)}>
-                  <span aria-hidden className={cn("size-2.5 rounded-sm", TYPE_PAPER[kind])} />
-                  {tDomain(`interactionTypes.${kind}.label`)}
-                </Button>
-              ))}
-            </div>
+            <InteractionTypePicker onPick={setType} className="lg:grid-cols-2" />
           )}
           {!canLaunch ? (
             <p className="text-xs text-muted-foreground">{t("pausedHint")}</p>

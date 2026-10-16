@@ -18,7 +18,6 @@ import {
   answerPayloadSchema,
   isInteractionType,
   normalizeSettings,
-  QUIZ_GRACE_MS,
   type AnswerPayload,
 } from "@/lib/domain/interactions";
 import { MAX_PARTICIPANTS_PER_SESSION, normalizeJoinCode } from "@/lib/domain/session";
@@ -26,9 +25,15 @@ import { normalizeTerm } from "@/lib/domain/words";
 import { ANONYMOUS_SURVEY_LIMIT_PER_IP, parseSurveyAnswers } from "@/lib/domain/survey";
 import { requesterIpHash } from "@/lib/request-ip";
 import { hitWindow, pruneOldest } from "@/lib/domain/rate-limit";
-import { avatarKeySchema, quizPoints } from "@/lib/domain/gamification";
+import { avatarKeySchema } from "@/lib/domain/gamification";
 import { bordaPoints, isValidRanking } from "@/lib/domain/ranking";
-import { containsProfanity } from "@/lib/domain/profanity";
+import {
+  isFilteredText,
+  isRatingInRange,
+  moderationFor,
+  quizAnswerOutcome,
+  type Moderation,
+} from "@/lib/domain/scoring";
 import { localeOrDefault, type Locale } from "@/lib/domain/locale";
 import { askQuestionSchema, QUESTION_LIMIT, QUESTION_WINDOW_MS } from "@/lib/domain/questions";
 import { allowReaction, reactionKindSchema } from "@/lib/domain/reactions";
@@ -141,8 +146,6 @@ export async function joinSessionAction(code: string, _prev: JoinFormState, form
 
 export type AnswerResult = ActionResult<{ status: "recorded" }>;
 
-type Moderation = "visible" | "pending" | "hidden";
-
 type BuiltResponse =
   | { ok: true; value: Json; aggregateKey: string | null; moderation: Moderation; filtered?: boolean }
   | { ok: false; /** chave de mensagem (traduzida no idioma da sessão) */ error: string; code?: string };
@@ -180,27 +183,28 @@ async function buildResponse(
     case "quiz": {
       const option = await loadOption(admin, interaction.id, payload.optionId);
       if (!option) return { ok: false, error: "participant.errors.invalidOption" };
-      const activatedAt = interaction.activated_at ? Date.parse(interaction.activated_at) : Date.now();
-      const responseTimeMs = Math.max(0, Date.now() - activatedAt);
-      if (settings.timerSeconds && responseTimeMs > settings.timerSeconds * 1000 + QUIZ_GRACE_MS) {
-        return { ok: false, error: "participant.errors.timeUp", code: "timeout" };
-      }
+      const outcome = quizAnswerOutcome({
+        option: { isCorrect: option.is_correct, points: option.points },
+        activatedAt: interaction.activated_at,
+        now: Date.now(),
+        timerSeconds: settings.timerSeconds,
+        speedBonus: settings.speedBonus,
+      });
+      if (!outcome.ok) return { ok: false, error: outcome.error, code: outcome.code };
       return {
         ok: true,
         value: {
           optionId: option.id,
-          isCorrect: option.is_correct,
-          points: option.is_correct
-            ? quizPoints(option.points, responseTimeMs, settings.timerSeconds, settings.speedBonus)
-            : 0,
-          responseTimeMs,
+          isCorrect: outcome.isCorrect,
+          points: outcome.points,
+          responseTimeMs: outcome.responseTimeMs,
         },
         aggregateKey: option.id,
         moderation: "visible",
       };
     }
     case "rating": {
-      if (payload.value < settings.min || payload.value > settings.max) {
+      if (!isRatingInRange(payload.value, settings)) {
         return { ok: false, error: "participant.errors.ratingOutOfRange" };
       }
       return { ok: true, value: { value: payload.value }, aggregateKey: String(payload.value), moderation: "visible" };
@@ -211,7 +215,7 @@ async function buildResponse(
       if (!normalized) return { ok: false, error: "participant.errors.moreSpecificWord" };
       const value = { text: payload.text, normalized };
       // Palavrão: entra oculto (o palestrante vê e pode liberar). Sem aviso, para não ensinar a burlar.
-      if (rules.profanityFilter && containsProfanity(payload.text, rules.locale)) {
+      if (isFilteredText(payload.text, rules)) {
         return { ok: true, value, aggregateKey: normalized, moderation: "hidden", filtered: true };
       }
       // Palavra que o palestrante ocultou da nuvem continua oculta.
@@ -226,10 +230,11 @@ async function buildResponse(
     case "open_text": {
       if (payload.text.length > settings.maxLength) return { ok: false, error: "validation.answerTooLong" };
       const value = { text: payload.text };
-      if (rules.profanityFilter && containsProfanity(payload.text, rules.locale)) {
-        return { ok: true, value, aggregateKey: null, moderation: "hidden", filtered: true };
-      }
-      return { ok: true, value, aggregateKey: null, moderation: rules.moderateOpenText ? "pending" : "visible" };
+      const filtered = isFilteredText(payload.text, rules);
+      const moderation = moderationFor({ filtered, moderated: rules.moderateOpenText });
+      return filtered
+        ? { ok: true, value, aggregateKey: null, moderation, filtered: true }
+        : { ok: true, value, aggregateKey: null, moderation };
     }
     case "ranking": {
       const { data: options } = await admin.from("interaction_options").select("id").eq("interaction_id", interaction.id);
@@ -420,8 +425,11 @@ export async function askQuestionAction(sessionId: string, raw: unknown): Promis
   }
 
   // Palavrão: fica oculta (o palestrante vê e pode liberar). Para quem perguntou, parece aguardar aprovação.
-  const filtered = session.profanity_filter && containsProfanity(parsed.data.body, localeOrDefault(session.locale));
-  const status = filtered ? "hidden" : session.qa_moderated ? "pending" : "visible";
+  const filtered = isFilteredText(parsed.data.body, {
+    profanityFilter: session.profanity_filter,
+    locale: localeOrDefault(session.locale),
+  });
+  const status = moderationFor({ filtered, moderated: session.qa_moderated });
   const { error } = await admin.from("audience_questions").insert({
     session_id: sessionId,
     participant_id: participantId,

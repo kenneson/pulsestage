@@ -2,6 +2,9 @@
   "page": {
     "metaTitle": "Sala en vivo"
   },
+  "focusHeader": {
+    "backToSession": "Volver a la sesión"
+  },
   "controlRoom": {
     "reconnecting": "Reconectando…",
     "participants": "{count, plural, one {# participante} other {# participantes}}",
@@ -19,16 +22,10 @@
     },
     "viewAnalytics": "Ver análisis",
     "onScreen": "En pantalla",
-    "raffle": "Sorteo",
-    "leaderboard": "Tabla de posiciones del quiz",
     "highlightedQuestion": "Pregunta del público destacada",
     "audienceQuestions": "Preguntas del público",
     "responsesOf": "{count, plural, one {# respuesta} other {# respuestas}} de {participants, number}",
     "slideOf": "Diapositiva {slide} <muted>de {total}</muted>",
-    "qrOnScreen": "Código QR en pantalla",
-    "noActive": "Ninguna interacción activa",
-    "showLeaderboard": "Mostrar tabla de posiciones",
-    "hideLeaderboard": "Ocultar tabla de posiciones",
     "showAnswer": "Mostrar respuesta",
     "hideAnswer": "Ocultar respuesta",
     "closeQuestion": "Cerrar",
@@ -50,10 +47,42 @@
     "interactionFallback": "Interacción",
     "joinCode": "Código de acceso",
     "showOnScreen": "Mostrar en pantalla",
+    "openAsParticipant": "Abrir como participante",
     "lineup": "Guion",
     "active": "Activa",
     "noInteractions": "Ninguna interacción.",
     "participation": "Participación"
+  },
+  "screen": {
+    "now": "En pantalla ahora",
+    "groupLabel": "Elegir qué aparece en la pantalla",
+    "draftHint": "Inicia la sesión para controlar la pantalla.",
+    "pausedQuestion": "Pregunta abierta: <strong>{title}</strong>",
+    "modes": {
+      "lineup": "Guion",
+      "join": "Código QR",
+      "leaderboard": "Tabla de posiciones",
+      "questions": "Preguntas del público",
+      "raffle": "Sorteo",
+      "paused": "Pausa",
+      "ended": "Pantalla final"
+    },
+    "labels": {
+      "join": "Código QR y código de acceso",
+      "leaderboard": "Tabla de posiciones del quiz",
+      "raffle": "Sorteo",
+      "paused": "Pantalla de pausa",
+      "ended": "Agradecimiento y código QR de la encuesta"
+    }
+  },
+  "rehearsal": {
+    "banner": "<strong>Modo ensayo:</strong> nada de esto cuenta en las estadísticas ni en el perfil.",
+    "end": "Finalizar ensayo",
+    "endConfirm": {
+      "title": "¿Finalizar el ensayo?",
+      "description": "Se borran el ensayo y las respuestas de prueba. La sesión original no cambia.",
+      "confirm": "Finalizar ensayo"
+    }
   },
   "moderation": {
     "moderateWords": "Moderar palabras",
@@ -71,9 +100,7 @@
   },
   "questionsCard": {
     "title": "Preguntas del público",
-    "showOnScreen": "Mostrar en pantalla",
-    "hideFromScreen": "Ocultar de la pantalla",
-    "disabled": "Desactivadas en esta sesión. Actívalas en “Participación”, más abajo, para que el público pueda preguntar.",
+    "disabled": "Preguntas del público desactivadas. <link>Actívalas en Participación</link>",
     "tabsLabel": "Preguntas",
     "tabs": {
       "open": "Abiertas",
@@ -86,6 +113,7 @@
     "anonymous": "Anónima",
     "filtered": "bloqueada por el filtro",
     "onScreen": "En pantalla",
+    "highlightOnScreen": "Una destacada en pantalla",
     "approve": "Aprobar",
     "highlight": "Destacar",
     "removeFromScreen": "Quitar de la pantalla",
@@ -96,6 +124,7 @@
     "title": "Sorteo",
     "show": "Mostrar sorteo",
     "hide": "Ocultar sorteo",
+    "onScreen": "En pantalla",
     "entrantsSurveyDone": "<num>{count, number}</num> {count, plural, one {persona participa} other {personas participan}} (quienes respondieron la encuesta).",
     "entrantsSurveyPending": "<num>{count, number}</num> {count, plural, one {persona participa} other {personas participan}}. Solo participa quien responda la encuesta: se abre cuando finalizas la sesión.",
     "entrantsEveryone": "<num>{count, number}</num> {count, plural, one {persona participa} other {personas participan}}.",
@@ -122,14 +151,11 @@
   "errors": {
     "leaderboardNotLive": "Inicia o reanuda la sesión para mostrar la tabla de posiciones.",
     "leaderboardFailed": "No se pudo cambiar la tabla de posiciones en la pantalla.",
-    "questionsLoadFailed": "No se pudieron cargar las preguntas.",
     "questionUpdateFailed": "No se pudo actualizar la pregunta.",
     "screenNotLive": "Inicia o reanuda la sesión para usar la pantalla.",
     "questionNotOpen": "Esa pregunta no está abierta.",
     "screenFailed": "No se pudo cambiar la pantalla.",
-    "moderationLoadFailed": "No se pudo cargar la moderación.",
     "responseUpdateFailed": "No se pudo actualizar la respuesta.",
-    "wordUpdateFailed": "No se pudo actualizar la palabra.",
-    "reactionsLoadFailed": "No se pudieron cargar las reacciones."
+    "wordUpdateFailed": "No se pudo actualizar la palabra."
   }
 }

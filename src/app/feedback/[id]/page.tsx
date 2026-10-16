@@ -62,7 +62,8 @@ export default async function FeedbackPage({ params }: { params: Promise<{ id: s
   return (
     <SessionIntl locale={session.locale}>
       <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-6 px-5 py-8">
-        <Logo />
+        {/* Sem link: a pesquisa é o fim do fluxo da plateia, a marca não leva para a landing. */}
+        <Logo href={null} />
         <div>
           <p className="text-sm text-muted-foreground">{t("eyebrow")}</p>
           <h1 className="mt-1 text-2xl font-semibold">{session.title}</h1>

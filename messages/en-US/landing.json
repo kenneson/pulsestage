@@ -9,7 +9,8 @@
     "withAi": "With AI",
     "speakers": "Speakers",
     "signIn": "Log in",
-    "signUp": "Sign up free"
+    "signUp": "Sign up free",
+    "signUpShort": "Sign up"
   },
   "hero": {
     "title": "Lectures, talks, and training sessions where <mark>everyone takes part</mark>.",
@@ -143,7 +144,7 @@
       },
       "leaderboard": {
         "title": "Animated leaderboard",
-        "text": "The big screen shows who moved up and who dropped after each question."
+        "text": "When you put the leaderboard on the big screen, it animates who moved up and who dropped since the last quiz."
       },
       "raffle": {
         "title": "Prize giveaways",
@@ -169,7 +170,7 @@
       },
       "approval": {
         "title": "You approve first",
-        "text": "The assistant shows you its proposal and only saves it once you confirm. Then fine-tune it in PulseStage as usual."
+        "text": "The assistant is instructed to show you the plan and save only after you confirm. Then fine-tune it in PulseStage as usual."
       },
       "analysis": {
         "title": "Analysis after your talk",
@@ -196,27 +197,32 @@
   },
   "report": {
     "title": "Afterward: the session report",
-    "lead": "When you end the session, the audience answers a survey on their phones. You see your strengths and weaknesses, where the audience engaged most, how long you spent on each slide, and AI suggestions for next time. Everything exports to PDF and spreadsheet.",
-    "note": "The numbers measure participation, not attention. And every AI suggestion shows how many responses it's based on: the fewer the responses, the fainter the underline.",
+    "lead": "When you end the session, the audience answers a survey on their phones. You see your strengths and weaknesses, where the audience engaged most, how long you spent on each slide, and AI recommendations for next time. Everything exports to PDF and spreadsheet.",
+    "note": "The numbers measure participation, not attention. The AI analysis comes with an overall confidence level, which drops when there are few responses, and a priority for each recommendation.",
+    "evolution": "In Progress, compare your sessions over time: participation and survey scores, session by session.",
     "heading": "Report: “{title}”",
     "sampleTitle": "AI at work",
     "simulated": "example with simulated data",
     "chartTitle": "Participation in each question",
     "chartAria": "Participation by question: {values}",
     "minute": "{minute} min",
-    "suggestions": "AI suggestions",
+    "suggestions": "AI recommendations",
     "notes": {
       "cloud": "The word cloud got the highest participation of the session. Repeat the format midway through the next one.",
       "quiz": "Participation dropped on the quiz at minute 25. The 20-second timer may have been too short.",
       "comments": "A few comments ask for more hands-on examples. Worth checking at your next session."
     },
-    "confidence": {
-      "high": "high confidence",
-      "medium": "medium confidence",
-      "low": "low confidence"
+    "overall": {
+      "high": "Overall confidence: high",
+      "medium": "Overall confidence: medium",
+      "low": "Overall confidence: low"
     },
-    "responses": "{count, plural, one {# response} other {# responses}}",
-    "comments": "{count, plural, one {# comment} other {# comments}}",
+    "dataNote": "Few survey responses: double-check these conclusions in your next session.",
+    "priority": {
+      "high": "high priority",
+      "medium": "medium priority",
+      "low": "low priority"
+    },
     "rating": "Audience rating"
   },
   "audiences": {
@@ -271,6 +277,10 @@
         "q": "Does it work with Claude or ChatGPT?",
         "a": "Yes. PulseStage has an MCP server: you connect your account to Claude, ChatGPT, or another compatible assistant, attach your slides in the chat, and ask for questions. The assistant creates the session and places each question after the right slide. It doesn't start the live session; that's still up to you."
       },
+      "languages": {
+        "q": "Does it work in other languages?",
+        "a": "Yes: Portuguese, Spanish, and English. Your dashboard follows the language you choose, and the audience sees their phones and the big screen in the language set for the session, including the profanity filter and the word cloud."
+      },
       "capacity": {
         "q": "How many people can take part?",
         "a": "Up to {max} participants per session. Each person answers each question once."
@@ -281,7 +291,7 @@
       },
       "data": {
         "q": "What about participants' data?",
-        "a": "Participation can be anonymous. Contact info is only stored with permission and is kept separate from responses. The AI analysis uses only aggregated data, never names or contact info."
+        "a": "Participation can be anonymous. Contact info is saved only with consent and kept separate from answers. The AI analysis gets aggregated results and excerpts of open-ended answers and survey comments, never names or contact info."
       }
     }
   },

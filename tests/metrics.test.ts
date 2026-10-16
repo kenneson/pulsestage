@@ -12,6 +12,8 @@ import {
   computeOverview,
   computePulse,
   confidenceFromSample,
+  parseQuizValue,
+  participantLabel,
   quizRanking,
   quizStats,
   EMPTY_SURVEY,
@@ -141,4 +143,20 @@ test("histórico em ordem cronológica, com participação e notas por sessão",
       ["Nova", 2, 0.5, 8, 4],
     ],
   );
+});
+
+test("parseQuizValue lê o valor gravado pelo servidor e recusa o resto", () => {
+  const value = { optionId: "o1", isCorrect: true, points: 80, responseTimeMs: 1200 };
+  assert.deepEqual(parseQuizValue(value), value);
+  assert.equal(parseQuizValue({ optionId: "o1" }), null);
+  assert.equal(parseQuizValue({ ...value, points: "80" }), null);
+  assert.equal(parseQuizValue(null), null);
+});
+
+test("participantLabel usa o nome ou o começo do id", () => {
+  const id = "ab12cd34-0000-4000-8000-000000000000";
+  assert.equal(participantLabel({ id, display_name: "Ana" }, id), "Ana");
+  assert.equal(participantLabel({ id, display_name: null }, id), "Participante AB12");
+  assert.equal(participantLabel({ id, display_name: "" }, id, "Participant"), "Participant AB12");
+  assert.equal(participantLabel(undefined, id, "Participante"), "Participante AB12");
 });

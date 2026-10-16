@@ -10,7 +10,6 @@ import { toSessionStatus } from "@/lib/domain/session";
 import { formatInt, formatPercent, formatScore } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { EmptyState } from "@/components/ui/misc";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { SessionList } from "@/components/sessions/session-list";
 import { DuplicateSessionButton, StartSessionButton } from "@/components/sessions/session-controls";
@@ -64,15 +63,79 @@ export default async function DashboardPage() {
   const nextStatus = next ? toSessionStatus(next.status) : null;
   const nextQuestions = next ? (questionsBySession.get(next.id) ?? 0) : 0;
 
-  const steps = [
-    { done: sessions.length > 0, label: t("steps.createSession"), href: "/dashboard/sessions/new" },
-    { done: questionsBySession.size > 0, label: t("steps.addQuestions"), href: next ? `/dashboard/sessions/${next.id}` : "/dashboard/sessions" },
-    { done: sessions.some((s) => s.started_at !== null), label: t("steps.presentLive"), href: "/dashboard/guia#ao-vivo" },
-    { done: Boolean(profile.bio || profile.avatarUrl), label: t("steps.completeProfile"), href: "/dashboard/conta#perfil" },
-    { done: (customTemplates.count ?? 0) > 0, label: t("steps.createTemplate"), href: "/dashboard/pesquisas/nova" },
+  // Primeiros passos: 3 essenciais (até a primeira apresentação) e, depois deles, os extras.
+  const editorHref = next ? `/dashboard/sessions/${next.id}` : "/dashboard/sessions/new";
+  const essentials = [
+    { done: sessions.length > 0, label: t("steps.createSession"), hint: t("steps.createSessionHint"), href: "/dashboard/sessions/new" },
+    { done: questionsBySession.size > 0, label: t("steps.addQuestions"), hint: t("steps.addQuestionsHint"), href: editorHref },
+    { done: sessions.some((s) => s.started_at !== null), label: t("steps.presentLive"), hint: t("steps.presentLiveHint"), href: editorHref },
   ];
+  const extras = [
+    { done: Boolean(profile.bio || profile.avatarUrl), label: t("steps.completeProfile"), hint: null, href: "/dashboard/conta#perfil" },
+    { done: (customTemplates.count ?? 0) > 0, label: t("steps.createTemplate"), hint: null, href: "/dashboard/pesquisas/nova" },
+  ];
+  const essentialsDone = essentials.every((s) => s.done);
+  const steps = essentialsDone ? extras : essentials;
   const doneCount = steps.filter((s) => s.done).length;
+  const showSteps = doneCount < steps.length;
+  // Sem sessão: nada de cartões zerados; o checklist vem primeiro, em largura total.
+  const isNew = sessions.length === 0;
   const firstName = profile.name?.split(/\s+/)[0];
+
+  const checklist = (
+    <section
+      aria-labelledby="steps"
+      className={cn(
+        "flex min-w-0 flex-col gap-3.5 rounded-md bg-card p-5 shadow-[0_10px_28px_-18px_color-mix(in_oklch,var(--foreground)_32%,transparent)] dark:border",
+        isNew ? "w-full md:p-6" : "flex-[1_1_280px]",
+      )}
+    >
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 id="steps" className={cn("font-semibold", isNew && "text-lg")}>
+          {essentialsDone ? t("steps.extrasTitle") : t("steps.title")}
+        </h2>
+        <span className="font-display text-sm font-bold tabular-nums">
+          {doneCount}/{steps.length}
+        </span>
+      </div>
+      <div className="h-2 overflow-hidden rounded-full bg-muted">
+        <div className="h-full origin-left rounded-full bg-primary" style={{ transform: `scaleX(${doneCount / steps.length})` }} />
+      </div>
+      <ol className="flex flex-col gap-3 text-sm">
+        {steps.map((step) => (
+          <li key={step.label} className="flex items-start gap-2.5">
+            {step.done ? (
+              <>
+                <CircleCheckIcon className="mt-0.5 shrink-0 text-primary" aria-hidden />
+                <span className="text-muted-foreground line-through">{step.label}</span>
+                <span className="sr-only">{t("steps.done")}</span>
+              </>
+            ) : (
+              <>
+                <CircleIcon className="mt-0.5 shrink-0 text-muted-foreground" aria-hidden />
+                <span className="flex min-w-0 flex-col gap-0.5">
+                  <Link href={step.href} className="font-medium text-primary hover:underline">
+                    {step.label}
+                  </Link>
+                  {step.hint ? <span className="text-muted-foreground">{step.hint}</span> : null}
+                </span>
+              </>
+            )}
+          </li>
+        ))}
+      </ol>
+      {isNew ? (
+        <div className="flex flex-wrap gap-2 border-t pt-4">
+          <Link href="/dashboard/sessions/new" className={buttonVariants()}>
+            <PlusIcon /> {t("createSession")}
+          </Link>
+          <Link href="/dashboard/guia" className={buttonVariants({ variant: "outline" })}>
+            {t("seeGuide")}
+          </Link>
+        </div>
+      ) : null}
+    </section>
+  );
 
   return (
     <div className="flex flex-col gap-7">
@@ -134,108 +197,59 @@ export default async function DashboardPage() {
         </section>
       ) : null}
 
-      <section aria-label={t("summary")} className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard
-          label={t("stats.sessions")}
-          value={formatInt(sessions.length, locale)}
-          hint={t("stats.sessionsHint", { count: history.length })}
-          icon={<PresentationIcon />}
-          paper="bg-rev-blue"
-        />
-        <StatCard
-          label={t("stats.overall")}
-          value={formatScore(overall, locale)}
-          suffix="/10"
-          hint={t("stats.overallHint")}
-          icon={<StarIcon />}
-          paper="bg-rev-green"
-        />
-        <StatCard
-          label={t("stats.dimensions")}
-          value={formatScore(dimensions, locale)}
-          suffix="/5"
-          hint={t("stats.dimensionsHint")}
-          icon={<BarChartIcon />}
-          paper="bg-rev-gold"
-        />
-        <StatCard
-          label={t("stats.participation")}
-          value={formatPercent(participation)}
-          hint={t("stats.participationHint")}
-          icon={<UsersIcon />}
-          paper="bg-rev-pink"
-        />
-      </section>
+      {isNew && showSteps ? checklist : null}
 
-      <div className="flex flex-wrap items-start gap-6">
-        <section aria-labelledby="recent" className="flex min-w-0 flex-[2_1_480px] flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <h2 id="recent" className="font-semibold">
-              {t("recent")}
-            </h2>
-            <Link href="/dashboard/sessions" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
-              {t("seeAll")} <ChevronRightIcon />
-            </Link>
-          </div>
-          {sessions.length === 0 ? (
-            <EmptyState
-              title={t("emptyTitle")}
-              description={t("emptyDescription")}
-              action={
-                <div className="flex flex-wrap justify-center gap-2">
-                  <Link href="/dashboard/sessions/new" className={buttonVariants()}>
-                    {t("createSession")}
-                  </Link>
-                  <Link href="/dashboard/guia" className={buttonVariants({ variant: "outline" })}>
-                    {t("seeGuide")}
-                  </Link>
-                </div>
-              }
-            />
-          ) : (
-            <SessionList sessions={sessions.slice(0, 5)} timeZone={profile.timeZone} />
-          )}
+      {!isNew ? (
+        <section aria-label={t("summary")} className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <StatCard
+            label={t("stats.sessions")}
+            value={formatInt(sessions.length, locale)}
+            hint={t("stats.sessionsHint", { count: history.length })}
+            icon={<PresentationIcon />}
+            paper="bg-rev-blue"
+          />
+          <StatCard
+            label={t("stats.overall")}
+            value={formatScore(overall, locale)}
+            suffix="/10"
+            hint={t("stats.overallHint")}
+            icon={<StarIcon />}
+            paper="bg-rev-green"
+          />
+          <StatCard
+            label={t("stats.dimensions")}
+            value={formatScore(dimensions, locale)}
+            suffix="/5"
+            hint={t("stats.dimensionsHint")}
+            icon={<BarChartIcon />}
+            paper="bg-rev-gold"
+          />
+          <StatCard
+            label={t("stats.participation")}
+            value={formatPercent(participation)}
+            hint={t("stats.participationHint")}
+            icon={<UsersIcon />}
+            paper="bg-rev-pink"
+          />
         </section>
+      ) : null}
 
-        {doneCount < steps.length ? (
-          <section
-            aria-labelledby="steps"
-            className="flex min-w-0 flex-[1_1_280px] flex-col gap-3.5 rounded-md bg-card p-5 shadow-[0_10px_28px_-18px_color-mix(in_oklch,var(--foreground)_32%,transparent)] dark:border"
-          >
-            <div className="flex items-baseline justify-between">
-              <h2 id="steps" className="font-semibold">
-                {t("steps.title")}
+      {!isNew ? (
+        <div className="flex flex-wrap items-start gap-6">
+          <section aria-labelledby="recent" className="flex min-w-0 flex-[2_1_480px] flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <h2 id="recent" className="font-semibold">
+                {t("recent")}
               </h2>
-              <span className="font-display text-sm font-bold tabular-nums">
-                {doneCount}/{steps.length}
-              </span>
+              <Link href="/dashboard/sessions" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
+                {t("seeAll")} <ChevronRightIcon />
+              </Link>
             </div>
-            <div className="h-2 overflow-hidden rounded-full bg-muted">
-              <div className="h-full origin-left rounded-full bg-primary" style={{ transform: `scaleX(${doneCount / steps.length})` }} />
-            </div>
-            <ul className="flex flex-col gap-2.5 text-sm">
-              {steps.map((step) => (
-                <li key={step.label} className="flex items-center gap-2.5">
-                  {step.done ? (
-                    <>
-                      <CircleCheckIcon className="text-primary" aria-hidden />
-                      <span className="text-muted-foreground line-through">{step.label}</span>
-                      <span className="sr-only">{t("steps.done")}</span>
-                    </>
-                  ) : (
-                    <>
-                      <CircleIcon className="text-muted-foreground" aria-hidden />
-                      <Link href={step.href} className="text-primary hover:underline">
-                        {step.label}
-                      </Link>
-                    </>
-                  )}
-                </li>
-              ))}
-            </ul>
+            <SessionList sessions={sessions.slice(0, 5)} timeZone={profile.timeZone} />
           </section>
-        ) : null}
-      </div>
+          {showSteps ? checklist : null}
+        </div>
+      ) : null}
     </div>
   );
 }

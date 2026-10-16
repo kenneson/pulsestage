@@ -2,24 +2,25 @@
 
 > Seu público fala. Você entende. Sua próxima palestra fica melhor.
 
-Interação em tempo real para palestrantes (enquete, escala, nuvem de palavras, pergunta aberta e quiz),
-com tela de projetor, feedback pós-evento, analytics, evolução entre sessões e insights com IA.
+Interação em tempo real para aulas, palestras e treinamentos. Seis tipos de pergunta (enquete, escala, nuvem de
+palavras, pergunta aberta, quiz e ranking), perguntas da plateia e reações, slides em PDF na mesma sequência, telão,
+sorteio, pesquisa pós-evento por modelo, analytics, evolução entre sessões e insights com IA. Em português, espanhol
+latino e inglês.
 
-**Stack:** Next.js (App Router) · TypeScript estrito · Tailwind v4 · componentes estilo shadcn/ui ·
-Supabase (Auth, Postgres, RLS, Realtime) · Zod · Recharts · Vercel.
-
-> ⚠️ Dependências instaladas e `tsc`/`lint`/`build` passando, mas o fluxo ainda não foi testado contra um
-> Supabase real (veja "Teste manual" e `CLAUDE.md`).
+**Stack:** Next.js 16 (App Router) · TypeScript estrito · Tailwind v4 · componentes estilo shadcn/ui ·
+Supabase (Auth, Postgres, RLS, Realtime, Storage) · Zod · next-intl · Recharts/d3 · Vercel.
 
 ## Rodando localmente
 
 1. **Dependências:** `npm install`
-2. **Supabase:** crie um projeto em supabase.com (ou use `npx supabase start` com Docker).
+2. **Supabase:** crie um projeto em supabase.com, ou rode localmente com Docker: `npx supabase init` cria um
+   `supabase/config.toml` local (o repositório não traz um) e `npx supabase start` sobe o banco.
 3. **Banco:** aplique as migrations de `supabase/migrations/` em ordem
-   (`npx supabase db push` com o projeto linkado, ou cole no SQL Editor).
+   (`npx supabase db push` com o projeto linkado, ou cole no SQL Editor). A mais recente é
+   `20261017000000_audit_fixes.sql`.
    Opcional: rode `supabase/seed.sql` para dados de demonstração
    (login `demo@pulsestage.app` / `demo123456`, duas sessões encerradas e um rascunho).
-4. **Variáveis:** copie `.env.example` para `.env.local` e preencha.
+4. **Variáveis:** copie `.env.example` para `.env.local` e preencha (tabela abaixo).
    Gere o segredo do participante com `openssl rand -base64 48`.
 5. **Realtime:** confirme em *Realtime → Settings* que o acesso público a canais está permitido
    (Presence dos participantes usa a publishable key).
@@ -31,30 +32,53 @@ Supabase (Auth, Postgres, RLS, Realtime) · Zod · Recharts · Vercel.
 7. **Assistentes de IA (MCP, opcional):** para conectar o Claude, o ChatGPT e outros clientes MCP, ligue o servidor
    OAuth do Supabase em *Authentication → OAuth Server*: ative o OAuth 2.1, use `/oauth/consent` como
    *Authorization Path* e ligue o *Dynamic client registration*. O *Site URL* (em *URL Configuration*) precisa ser o
-   domínio público do app, porque o consentimento abre em Site URL + `/oauth/consent`. Local: em `supabase/config.toml`,
-   `[auth.oauth_server] enabled = true` e `allow_dynamic_registration = true`. O servidor MCP fica em `/api/mcp`.
-8. `npm run dev` → http://localhost:3000
+   domínio público do app, porque o consentimento abre em Site URL + `/oauth/consent`. Local: no `config.toml` criado
+   pelo `supabase init`, `[auth.oauth_server] enabled = true` e `allow_dynamic_registration = true`. O servidor MCP
+   fica em `/api/mcp`.
+8. **E-mails do login em três idiomas:** em *Authentication → Emails*, cole o HTML de `supabase/templates/`
+   (`confirmation.html`, `recovery.html`, `email_change.html`) no template correspondente, com o assunto indicado em
+   `supabase/templates/README.md`.
+9. `npm run dev` → http://localhost:3000
 
-Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arquivo escrito à mão.
+Tipos do banco: `src/lib/supabase/database.types.ts` é gerado do banco. Depois de mudar o schema (migration nova),
+rode `npm run db:types` com o projeto linkado; não edite o arquivo à mão.
+
+### Variáveis de ambiente
+
+| Variável | Obrigatória | Para quê |
+|---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | sim | URL do projeto Supabase |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | sim | chave pública (ou `NEXT_PUBLIC_SUPABASE_ANON_KEY`, criada pela integração da Vercel) |
+| `SUPABASE_SECRET_KEY` | sim | só no servidor (ou `SUPABASE_SERVICE_ROLE_KEY`); fluxo do participante, telão, exclusão de conta |
+| `PARTICIPANT_TOKEN_SECRET` | sim | 32+ caracteres; assina o cookie do participante e calcula o hash do IP dos limites de abuso |
+| `NEXT_PUBLIC_APP_URL` | local | endereço público do QR Code e dos links; na Vercel pode ficar vazio (usa o domínio de produção) |
+| `NEXT_PUBLIC_APP_TIME_ZONE` | não | fuso padrão (`America/Sao_Paulo`); cada palestrante tem o próprio fuso na conta |
+| `AI_PROVIDER`, `AI_API_KEY`, `AI_MODEL` | não | IA (`groq`, `openai` ou `anthropic`); sem elas, "Gerar com IA" e os insights somem. `AI_MODEL` vazio usa o padrão do provedor |
+| `RESEND_API_KEY`, `CONTACT_EMAIL_FROM` | não | aviso por e-mail dos convites do perfil público |
 
 ## Teste manual (ponta a ponta)
 
-1. Crie uma conta, crie uma sessão e adicione uma interação de cada tipo (use o ícone de olho para pré-visualizar).
-2. Clique em **Iniciar sessão** → sala ao vivo. Abra **Tela do projetor** em outra aba.
-3. Num celular (ou janela anônima), acesse o QR/código, entre e responda. Os resultados devem aparecer
+1. Crie uma conta, crie uma sessão e adicione uma interação de cada um dos 6 tipos (use o ícone de olho para
+   pré-visualizar).
+2. Ainda em rascunho, entre pelo celular com o código: a tela fica esperando o início. Use **Testar sessão** para
+   abrir um ensaio (cópia oculta, já ao vivo, com link para abrir como participante); **Encerrar ensaio** apaga a cópia.
+3. Clique em **Iniciar sessão** → sala ao vivo (tela própria, sem barra lateral). Abra **Tela do projetor** em outra
+   aba. Avance com **Próxima** e escolha o que está no telão pelo controle único.
+4. Num celular (ou janela anônima), acesse o QR/código, entre e responda. Os resultados devem aparecer
    no projetor e na sala sem recarregar.
-4. Teste: responder duas vezes, quiz com tempo esgotado, pausar/retomar (o cronômetro para e volta), encerrar a interação.
-5. Slides: noutra sessão, envie um PDF na aba **Slides**, posicione as perguntas entre os slides e, ao vivo,
+5. Teste: responder duas vezes, quiz com tempo esgotado, pausar/retomar (o cronômetro para e volta), encerrar a interação.
+6. Slides: noutra sessão, envie um PDF na aba **Slides**, posicione as perguntas entre os slides e, ao vivo,
    avance com → / PageDown (e volte com ← / PageUp) na sala ao vivo e na tela do projetor aberta logado.
    Ao vivo, use **Nova pergunta** para criar uma pergunta e lançá-la na hora ou deixá-la como a próxima.
-6. **Encerrar sessão** → o celular e o projetor mostram o link de avaliação. Envie alguns feedbacks.
-7. Abra o analytics da sessão e, com `AI_PROVIDER`/`AI_API_KEY` configurados, gere os insights.
-8. Participação: com a sessão ao vivo, num celular toque nas reações e em **Perguntar ao palestrante**; noutro, curta a
+7. **Encerrar sessão** → o celular e o projetor mostram o link da pesquisa. Responda pelo celular que entrou e por
+   uma janela anônima que não entrou: as duas aparecem para você, mas só a primeira conta na nota pública.
+8. Abra o analytics da sessão e, com `AI_PROVIDER`/`AI_API_KEY` configurados, gere os insights.
+9. Participação: com a sessão ao vivo, num celular toque nas reações e em **Perguntar ao palestrante**; noutro, curta a
    pergunta. Na sala ao vivo, **Destacar** e **Mostrar no telão**; numa nuvem, mande um palavrão e confira que ele
    fica em **Moderar palavras** e fora do telão. Crie um **Ranking** e ordene pelo celular.
-9. MCP: em **Integrações**, copie o endereço e conecte um assistente (ou `claude mcp add --transport http pulsestage
+10. MCP: em **Integrações**, copie o endereço e conecte um assistente (ou `claude mcp add --transport http pulsestage
    <endereço>`). Anexe um PDF, peça as perguntas, confira a sessão criada e envie o mesmo PDF na aba **Slides**.
-10. Idiomas: abra `/es` e `/en` (landing, login, diretório) e troque pelo seletor de idioma. Crie uma sessão com
+11. Idiomas: abra `/es` e `/en` (landing, login, diretório) e troque pelo seletor de idioma. Crie uma sessão com
    **Idioma da sessão** = Español: o celular e o telão aparecem em espanhol mesmo com o navegador em português, a
    pesquisa padrão é a "Evaluación general" e "weón" fica fora da nuvem. Veja `docs/I18N.md`.
 
@@ -66,7 +90,7 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
 | `npm run build` | build de produção |
 | `npm run lint` | ESLint (flat config do Next) |
 | `npm run typecheck` | `tsc --noEmit` |
-| `npm test` | testes unitários dos módulos puros (`node --test`) |
+| `npm test` | testes unitários (`node --test`, sem compilar): regras de `lib/domain/`, cookie do participante, MCP e traduções |
 | `npm run db:types` | gera `database.types.ts` a partir do Supabase linkado |
 
 ## Arquitetura em uma página
@@ -78,7 +102,9 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
   "Conectados agora" vem do Presence e é apenas informativo.
 - **RLS** garante que o speaker só vê as próprias sessões.
 - **LGPD:** contato do participante fica em `participant_contacts`, separado e com consentimento.
-  A IA recebe só dados agregados, sem nomes ou contatos.
+  A IA recebe dados agregados e trechos de respostas abertas e comentários, nunca nomes ou contatos.
+  Limites de abuso (pesquisa sem ter entrado, código errado, convites) usam um hash do IP com segredo do servidor;
+  o IP não é guardado. Detalhes em `/privacidade`.
 - **MCP (assistentes de IA):** `/api/mcp` (Streamable HTTP, sem estado) aceita o access token do servidor OAuth
   do Supabase (consentimento em `/oauth/consent`) e roda as ferramentas como o próprio palestrante, com RLS.
   O assistente lê o PDF no chat; o PulseStage recebe só as perguntas com `after_slide`.
@@ -90,12 +116,12 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
 | Fase | Situação |
 |---|---|
 | Especificação e schema | ✅ |
-| Código do MVP (auth, sessões, builder, ao vivo, projetor, participante, feedback, analytics, evolução, IA) | ✅ compila (tsc, lint, build), ⏳ falta teste ponta a ponta |
+| Código do MVP (auth, sessões, builder, ao vivo, projetor, participante, feedback, analytics, evolução, IA) | ✅ |
 | Tema escuro (toggle claro/escuro, segue o sistema por padrão) | ✅ |
 | Polimento: loading/skeletons, diálogos de confirmação, página `/privacidade` | ✅ |
 | Login e cadastro com Google | ✅ |
 | "Como funciona" na home e guia de uso em `/dashboard/guia` | ✅ |
-| Repaginada visual "Roteiro com deixas" (landing nova, tokens, cores por tipo, luzes de deixa) | ✅ landing · app em detalhes |
+| Identidade visual "Campus" (azul acadêmico, Plus Jakarta Sans, escuro em azul-marinho; substitui "Roteiro com deixas") | ✅ |
 | Pesquisas pós-evento por modelo (5 prontos + modelos próprios, pontos fortes/fracos por dimensão) | ✅ |
 | Navegação lateral com ícones, conta e configurações (perfil, preferências, segurança, LGPD) | ✅ |
 | Duplicar sessão e biblioteca de perguntas | ✅ |
@@ -114,7 +140,8 @@ Tipos do banco: depois de linkar o projeto, `npm run db:types` substitui o arqui
 | Servidor MCP (Claude, ChatGPT e outros): criar sessões e perguntas a partir dos slides, OAuth, página Integrações | ✅ |
 | Idiomas: português, espanhol latino e inglês americano (next-intl, `/es` e `/en`, idioma por sessão, palavrões e IA por idioma) | ✅ |
 | Realtime resistente a eventos perdidos (releitura ao conectar, após ações e no projetor) | ✅ |
-| Testes unitários do domínio (sessão, palavras, datas, resultados, métricas) | ✅ |
+| Auditoria de produto: pesquisa anônima com limite por IP (fora da nota pública), entrada antes do início, modo ensaio, sala ao vivo em tela própria, leituras por GET, limite de código errado | ✅ |
+| Testes unitários (domínio, cookie do participante, MCP, traduções nos três idiomas) | ✅ |
 | Testes de integração e E2E | ⏳ |
 | Deploy na Vercel | ✅ |
 

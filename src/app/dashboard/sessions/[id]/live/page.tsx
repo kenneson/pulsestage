@@ -9,6 +9,7 @@ import { toResultsMap } from "@/lib/domain/results";
 import { joinUrl } from "@/lib/env";
 import { isUuid } from "@/lib/action-result";
 import { ControlRoom, type ControlRoomInteraction } from "@/components/live/control-room";
+import { RehearsalBanner } from "@/components/live/rehearsal-banner";
 import { getSlideUrls } from "@/lib/data/slides";
 import { buildDeck } from "@/lib/domain/deck";
 import { sessionClock } from "@/lib/domain/timing";
@@ -45,24 +46,28 @@ export default async function LivePage({ params }: { params: Promise<{ id: strin
   const live = liveStateSchema.safeParse(liveResult.data);
 
   return (
-    <ControlRoom
-      session={{ id, title: session.title, status: session.status, joinCode: session.join_code }}
-      interactions={controlInteractions}
-      deck={buildDeck(slideUrls.length, controlInteractions)}
-      slideUrls={slideUrls}
-      initialLive={live.success ? live.data : null}
-      initialResults={toResultsMap(resultsResult.data ?? [])}
-      joinUrl={joinUrl(session.join_code)}
-      clock={sessionClock(session)}
-      plannedMinutes={session.estimated_duration_minutes}
-      raffle={raffle}
-      engagement={{
-        qa_enabled: session.qa_enabled,
-        qa_moderated: session.qa_moderated,
-        reactions_enabled: session.reactions_enabled,
-        profanity_filter: session.profanity_filter,
-        moderate_open_text: session.moderate_open_text,
-      }}
-    />
+    <div className="flex flex-col gap-4">
+      {/* Ensaio: nada conta nas estatísticas nem no perfil público. */}
+      {session.is_test ? <RehearsalBanner sessionId={id} /> : null}
+      <ControlRoom
+        session={{ id, title: session.title, status: session.status, joinCode: session.join_code }}
+        interactions={controlInteractions}
+        deck={buildDeck(slideUrls.length, controlInteractions)}
+        slideUrls={slideUrls}
+        initialLive={live.success ? live.data : null}
+        initialResults={toResultsMap(resultsResult.data ?? [])}
+        joinUrl={joinUrl(session.join_code)}
+        clock={sessionClock(session)}
+        plannedMinutes={session.estimated_duration_minutes}
+        raffle={raffle}
+        engagement={{
+          qa_enabled: session.qa_enabled,
+          qa_moderated: session.qa_moderated,
+          reactions_enabled: session.reactions_enabled,
+          profanity_filter: session.profanity_filter,
+          moderate_open_text: session.moderate_open_text,
+        }}
+      />
+    </div>
   );
 }

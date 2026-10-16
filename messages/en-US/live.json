@@ -2,6 +2,9 @@
   "page": {
     "metaTitle": "Live room"
   },
+  "focusHeader": {
+    "backToSession": "Back to session"
+  },
   "controlRoom": {
     "reconnecting": "Reconnecting…",
     "participants": "{count, plural, one {# participant} other {# participants}}",
@@ -19,16 +22,10 @@
     },
     "viewAnalytics": "View analytics",
     "onScreen": "On the big screen",
-    "raffle": "Giveaway",
-    "leaderboard": "Quiz leaderboard",
     "highlightedQuestion": "Featured audience question",
     "audienceQuestions": "Audience Q&A",
     "responsesOf": "{count, plural, one {# response} other {# responses}} of {participants, number}",
     "slideOf": "Slide {slide} <muted>of {total}</muted>",
-    "qrOnScreen": "QR code on the big screen",
-    "noActive": "No active interaction",
-    "showLeaderboard": "Show leaderboard",
-    "hideLeaderboard": "Hide leaderboard",
     "showAnswer": "Show answer",
     "hideAnswer": "Hide answer",
     "closeQuestion": "Close",
@@ -50,10 +47,42 @@
     "interactionFallback": "Interaction",
     "joinCode": "Join code",
     "showOnScreen": "Show on the big screen",
+    "openAsParticipant": "Open as participant",
     "lineup": "Lineup",
     "active": "Active",
     "noInteractions": "No interactions.",
     "participation": "Engagement"
+  },
+  "screen": {
+    "now": "On the big screen now",
+    "groupLabel": "Choose what's on the big screen",
+    "draftHint": "Start the session to control the big screen.",
+    "pausedQuestion": "Open question: <strong>{title}</strong>",
+    "modes": {
+      "lineup": "Lineup",
+      "join": "QR code",
+      "leaderboard": "Leaderboard",
+      "questions": "Audience Q&A",
+      "raffle": "Giveaway",
+      "paused": "Pause screen",
+      "ended": "Closing screen"
+    },
+    "labels": {
+      "join": "QR code and join code",
+      "leaderboard": "Quiz leaderboard",
+      "raffle": "Giveaway",
+      "paused": "Pause screen",
+      "ended": "Thank-you and survey QR code"
+    }
+  },
+  "rehearsal": {
+    "banner": "<strong>Rehearsal mode:</strong> nothing here counts toward your stats or profile.",
+    "end": "End rehearsal",
+    "endConfirm": {
+      "title": "End the rehearsal?",
+      "description": "The rehearsal and its test responses are deleted. The original session stays as it is.",
+      "confirm": "End rehearsal"
+    }
   },
   "moderation": {
     "moderateWords": "Moderate words",
@@ -71,9 +100,7 @@
   },
   "questionsCard": {
     "title": "Audience Q&A",
-    "showOnScreen": "Show on the big screen",
-    "hideFromScreen": "Hide from the big screen",
-    "disabled": "Turned off for this session. Turn it on under “Engagement” below so the audience can ask questions.",
+    "disabled": "Audience Q&A is off. <link>Turn it on under Engagement</link>",
     "tabsLabel": "Questions",
     "tabs": {
       "open": "Open",
@@ -86,6 +113,7 @@
     "anonymous": "Anonymous",
     "filtered": "blocked by the filter",
     "onScreen": "On screen",
+    "highlightOnScreen": "One featured on the big screen",
     "approve": "Approve",
     "highlight": "Feature",
     "removeFromScreen": "Take off screen",
@@ -96,6 +124,7 @@
     "title": "Giveaway",
     "show": "Show giveaway",
     "hide": "Hide giveaway",
+    "onScreen": "On the big screen",
     "entrantsSurveyDone": "<num>{count, number}</num> {count, plural, one {person entered} other {people entered}} (those who answered the survey).",
     "entrantsSurveyPending": "<num>{count, number}</num> {count, plural, one {person entered} other {people entered}}. Only people who answer the survey are entered: it opens when you end the session.",
     "entrantsEveryone": "<num>{count, number}</num> {count, plural, one {person entered} other {people entered}}.",
@@ -122,14 +151,11 @@
   "errors": {
     "leaderboardNotLive": "Start or resume the session to show the leaderboard.",
     "leaderboardFailed": "Couldn't change the leaderboard on the big screen.",
-    "questionsLoadFailed": "Couldn't load the questions.",
     "questionUpdateFailed": "Couldn't update the question.",
     "screenNotLive": "Start or resume the session to use the big screen.",
     "questionNotOpen": "That question isn't open.",
     "screenFailed": "Couldn't change the big screen.",
-    "moderationLoadFailed": "Couldn't load moderation.",
     "responseUpdateFailed": "Couldn't update the response.",
-    "wordUpdateFailed": "Couldn't update the word.",
-    "reactionsLoadFailed": "Couldn't load the reactions."
+    "wordUpdateFailed": "Couldn't update the word."
   }
 }

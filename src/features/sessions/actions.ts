@@ -17,6 +17,7 @@ import { LOCALES, type Locale } from "@/lib/domain/locale";
 import { getMessageTranslator } from "@/i18n/server";
 import {
   canTransition,
+  isEditable,
   isSessionStatus,
   JOIN_CODE_REGEX,
   normalizeJoinCode,
@@ -138,7 +139,7 @@ export async function updateSessionAction(
 
   if (!(await isVisibleTemplate(supabase, values.surveyTemplateId))) return { error: t("invalidSurveyTemplate") };
   // Depois de encerrada, a sessão já tem a cópia das perguntas: trocar o modelo não teria efeito.
-  const surveyEditable = session.status !== "completed";
+  const surveyEditable = isEditable(session.status);
 
   const codeChanged = values.joinCode !== null && values.joinCode !== session.join_code;
   if (codeChanged && session.status !== "draft") {
@@ -229,7 +230,7 @@ export async function startRehearsalAction(sessionId: string): Promise<ActionRes
   const source = await getOwnedSession(supabase, sessionId);
   if (!source) return fail(t("errors.notFound"));
   if (source.is_test) return fail(t("errors.alreadyRehearsal"));
-  if (source.status === "completed") return fail(t("errors.ended"));
+  if (!isEditable(source.status)) return fail(t("errors.ended"));
 
   const { data: previous } = await supabase.from("sessions").select("id, speaker_id").eq("rehearsal_of", source.id);
   for (const old of previous ?? []) await removeSessionWithFiles(supabase, old);

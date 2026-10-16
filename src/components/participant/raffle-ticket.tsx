@@ -5,18 +5,10 @@ import { useLocale, useTranslations } from "next-intl";
 import { formatInt } from "@/lib/format";
 import { formatTicket, raffleTicketSchema, type RaffleTicket } from "@/lib/domain/raffle";
 import { useLiveState } from "@/lib/realtime/use-live-state";
+import { fetchJson } from "@/lib/realtime/use-polling";
 import { cn } from "@/lib/utils";
 
-async function fetchTicket(sessionId: string): Promise<RaffleTicket | null> {
-  try {
-    const res = await fetch(`/api/participant/${sessionId}/raffle`, { cache: "no-store" });
-    if (!res.ok) return null;
-    const parsed = raffleTicketSchema.safeParse(await res.json());
-    return parsed.success ? parsed.data : null;
-  } catch {
-    return null;
-  }
-}
+const fetchTicket = (sessionId: string) => fetchJson(`/api/participant/${sessionId}/raffle`, raffleTicketSchema.parse);
 
 /**
  * Número da sorte no celular. Busca de novo a cada sorteio (realtime) e, se houver um sorteio em

@@ -40,18 +40,20 @@
     },
     "recent": "Recent sessions",
     "seeAll": "See all",
-    "emptyTitle": "No sessions yet",
-    "emptyDescription": "Create your first session, add interactions and share the code with your audience.",
     "createSession": "Create session",
     "seeGuide": "See the guide",
     "steps": {
       "title": "Getting started",
       "createSession": "Create your first session",
       "addQuestions": "Add questions",
-      "presentLive": "Present live",
+      "presentLive": "Test or present live",
       "completeProfile": "Complete your profile",
       "createTemplate": "Create a survey template",
-      "done": "(done)"
+      "done": "(done)",
+      "createSessionHint": "Only the title is required; you can adjust the rest later.",
+      "addQuestionsHint": "Start with the sample poll and change the text.",
+      "presentLiveHint": "Use “Test session” to rehearse with your phone. Rehearsals don't count in your stats.",
+      "extrasTitle": "Next steps"
     }
   },
   "sessionList": {
@@ -62,7 +64,7 @@
     "title": "Sessions",
     "newSession": "New session",
     "emptyTitle": "No sessions",
-    "emptyDescription": "Your talks, classes and workshops show up here."
+    "emptyDescription": "Your talks, classes and workshops show up here. Create your first one: only the title is required."
   },
   "library": {
     "metaTitle": "Question library",

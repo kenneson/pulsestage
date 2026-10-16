@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { z } from "zod";
 import { formatInt } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { fetchJson, usePolling } from "@/lib/realtime/use-polling";
 
 // Perguntas da plateia no telão: uma em destaque ou as mais curtidas. Busca no servidor
 // (só responde enquanto o palestrante mostra as perguntas) e atualiza a cada poucos segundos.
@@ -30,25 +31,19 @@ export function AudienceQuestionsStage({ sessionId, version, joinHost }: { sessi
   const locale = useLocale();
   const [data, setData] = useState<Data | null>(null);
 
+  const load = useCallback(async () => {
+    const next = await fetchJson(`/api/session/${sessionId}/questions`, responseSchema.parse);
+    if (next) setData(next);
+  }, [sessionId]);
+  usePolling(load, POLL_MS);
+
+  // Destaque trocado (realtime): busca na hora, sem esperar a próxima volta.
+  const seenVersion = useRef(version);
   useEffect(() => {
-    let cancelled = false;
-    const load = async () => {
-      try {
-        const res = await fetch(`/api/session/${sessionId}/questions`, { cache: "no-store" });
-        if (!res.ok) return;
-        const parsed = responseSchema.safeParse(await res.json());
-        if (parsed.success && !cancelled) setData(parsed.data);
-      } catch {
-        // tenta de novo no próximo ciclo
-      }
-    };
+    if (seenVersion.current === version) return;
+    seenVersion.current = version;
     void load();
-    const id = window.setInterval(() => void load(), POLL_MS);
-    return () => {
-      cancelled = true;
-      window.clearInterval(id);
-    };
-  }, [sessionId, version]);
+  }, [version, load]);
 
   if (data?.highlight) {
     const q = data.highlight;

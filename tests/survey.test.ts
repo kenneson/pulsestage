@@ -5,12 +5,14 @@ import {
   dimensionScores,
   draftToRows,
   headlineScore,
+  isDimension,
   npsScore,
   parseSurveyAnswers,
   questionResults,
   strengthsAndWeaknesses,
   templateDraftSchema,
   toSurveyQuestion,
+  toSurveyQuestions,
   type SurveyQuestion,
 } from "../src/lib/domain/survey.ts";
 
@@ -129,4 +131,34 @@ test("rascunho do editor: valida e vira linhas na ordem", () => {
       .success,
     false,
   );
+});
+
+test("isDimension aceita só as dimensões conhecidas", () => {
+  assert.ok(isDimension("utilidade"));
+  assert.ok(isDimension("didatica"));
+  assert.ok(!isDimension("Utilidade"));
+  assert.ok(!isDimension(""));
+  assert.ok(!isDimension(null));
+});
+
+test("toSurveyQuestions descarta linhas corrompidas e ordena por posição", () => {
+  const row = (id: string, position: number, kind: string, settings: unknown = {}) => ({
+    id,
+    position,
+    kind,
+    label: id,
+    dimension: "utilidade",
+    required: true,
+    settings,
+  });
+  const questions = toSurveyQuestions([
+    row("c", 2, "text"),
+    row("a", 0, "scale"),
+    row("ruim", 1, "slider"),
+    row("escolha-sem-opcoes", 3, "choice", { options: ["só uma"] }),
+    row("b", 1, "nps"),
+  ]);
+  assert.deepEqual(questions.map((q) => q.id), ["a", "b", "c"]);
+  // Dimensão só vale para escala e NPS.
+  assert.equal(questions[2]?.dimension, null);
 });

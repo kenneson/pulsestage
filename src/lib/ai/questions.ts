@@ -1,7 +1,11 @@
 import { z } from "zod";
 import {
+  buildInteractionInput,
+  defaultSettings,
+  hasOptions,
   interactionInputSchema,
   interactionTypeSchema,
+  optionsFromLabels,
   type InteractionInput,
   type ParsedInteractionInput,
 } from "../domain/interactions.ts";
@@ -48,32 +52,15 @@ const suggestionSchema = z.object({
 });
 type Suggestion = z.infer<typeof suggestionSchema>;
 
-// Mesmos defaults do formulário (emptyDraft): a sugestão vira uma pergunta como outra qualquer.
+// Mesmos padrões do formulário e do MCP (defaultSettings): a sugestão vira uma pergunta como outra qualquer.
 function toInput(s: Suggestion): InteractionInput {
-  const base = { title: s.title };
-  switch (s.type) {
-    case "multiple_choice":
-      return { type: "multiple_choice", ...base, settings: {}, options: s.options.map((label) => ({ label })) };
-    case "quiz":
-      return {
-        type: "quiz",
-        ...base,
-        settings: { timerSeconds: 30 },
-        options: s.options.map((label, index) => ({ label, isCorrect: index === s.correct_option, points: 100 })),
-      };
-    case "rating":
-      return {
-        type: "rating",
-        ...base,
-        settings: { min: 1, max: 5, minLabel: s.min_label ?? undefined, maxLabel: s.max_label ?? undefined },
-      };
-    case "word_cloud":
-      return { type: "word_cloud", ...base, settings: { maxLength: 30 } };
-    case "open_text":
-      return { type: "open_text", ...base, settings: { maxLength: 280, showOnDisplay: true } };
-    case "ranking":
-      return { type: "ranking", ...base, settings: {}, options: s.options.map((label) => ({ label })) };
-  }
+  const settings = defaultSettings(s.type);
+  return buildInteractionInput({
+    type: s.type,
+    title: s.title,
+    settings: s.type === "rating" ? { ...settings, minLabel: s.min_label || null, maxLabel: s.max_label || null } : settings,
+    options: hasOptions(s.type) ? optionsFromLabels(s.type, s.options, s.correct_option) : [],
+  });
 }
 
 const normalize = (text: string) =>

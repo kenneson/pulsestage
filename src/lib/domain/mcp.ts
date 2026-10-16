@@ -6,10 +6,17 @@
 
 import { z } from "zod";
 import {
+  buildInteractionInput,
+  DEFAULT_OPTION_POINTS,
+  DEFAULT_QUIZ_TIMER_SECONDS,
+  defaultSettings,
+  hasOptions,
   INTERACTION_TYPE_META,
   INTERACTION_TYPES,
   interactionInputSchema,
+  optionsFromLabels,
   type InteractionType,
+  type NormalizedSettings,
   type ParsedInteractionInput,
 } from "./interactions.ts";
 import { MAX_SLIDES, type Arrangement, type DeckInteraction } from "./deck.ts";
@@ -49,16 +56,29 @@ export const mcpInteractionShape = {
     .max(8)
     .optional()
     .describe("Só quiz: número da alternativa correta, começando em 1."),
-  points: z.number().int().min(0).max(10000).optional().describe("Só quiz: pontos de quem acerta (padrão 100)."),
-  timer_seconds: z.number().int().min(5).max(300).optional().describe("Só quiz: tempo para responder, em segundos."),
+  points: z
+    .number()
+    .int()
+    .min(0)
+    .max(10000)
+    .optional()
+    .describe(`Só quiz: pontos de quem acerta (padrão ${DEFAULT_OPTION_POINTS}).`),
+  timer_seconds: z
+    .number()
+    .int()
+    .min(5)
+    .max(300)
+    .nullable()
+    .optional()
+    .describe(`Só quiz: tempo para responder, em segundos (padrão ${DEFAULT_QUIZ_TIMER_SECONDS}; null = sem limite).`),
   speed_bonus: z
     .boolean()
     .optional()
-    .describe("Só quiz com timer_seconds: quem responde mais rápido ganha mais pontos (de 100% a 50%)."),
+    .describe("Só quiz com tempo: quem responde mais rápido ganha mais pontos, de 100% a 50% (padrão sim)."),
   shapes: z
     .boolean()
     .optional()
-    .describe("Enquete e quiz: alternativas com forma e cor (estilo jogo), boas para telão."),
+    .describe("Enquete e quiz: alternativas com forma e cor (estilo jogo), boas para telão. Padrão: sim no quiz, não na enquete."),
   scale_min: z.number().int().min(0).max(1).optional().describe("Só rating: início da escala, 0 ou 1 (padrão 1)."),
   scale_max: z.number().int().min(2).max(10).optional().describe("Só rating: fim da escala, de 2 a 10 (padrão 5)."),
   min_label: z.string().trim().max(40).optional().describe("Só rating: legenda do menor valor."),
@@ -81,58 +101,49 @@ type Converted = { ok: true; input: ParsedInteractionInput; afterSlide: number |
  * Converte para a entrada do builder e valida com as mesmas regras do painel. `translate` transforma a chave
  * de validação ("validation.questionRequired") em texto no idioma do palestrante.
  */
-export function toInteractionInput(item: McpInteraction, translate: (message: string) => string = (m) => m): Converted {
-  const base = { title: item.question, description: item.description };
-  const optionStyle = item.shapes ? "shapes" : "text";
-  let raw: unknown;
-  switch (item.type) {
-    case "multiple_choice":
-      raw = { ...base, type: item.type, settings: { optionStyle }, options: (item.options ?? []).map((label) => ({ label })) };
-      break;
-    case "quiz": {
-      if (item.correct_option === undefined) return { ok: false, error: "Informe correct_option (a alternativa certa)." };
-      const options = item.options ?? [];
-      if (item.correct_option > options.length) {
-        return { ok: false, error: `correct_option ${item.correct_option} não existe (há ${options.length} alternativas).` };
-      }
-      raw = {
-        ...base,
-        type: item.type,
-        settings: {
-          timerSeconds: item.timer_seconds ?? null,
-          optionStyle,
-          speedBonus: Boolean(item.speed_bonus && item.timer_seconds),
-        },
-        options: options.map((label, i) => ({ label, isCorrect: i === item.correct_option! - 1, points: item.points ?? 100 })),
-      };
-      break;
+export function toInteractionInput(
+  item: McpInteraction,
+  translate: (message: string) => string = (m) => m,
+  /** Na edição, as configurações atuais da pergunta: o que o assistente omitir continua como está. */
+  current?: NormalizedSettings,
+): Converted {
+  // Parte dos mesmos padrões do painel (ou do que a pergunta já tem); o que o assistente informar substitui.
+  const defaults = current ?? defaultSettings(item.type);
+  const optionStyle = item.shapes === undefined ? defaults.optionStyle : item.shapes ? "shapes" : "text";
+  const labels = item.options ?? [];
+  let correctIndex: number | null = null;
+  if (item.type === "quiz") {
+    if (item.correct_option === undefined) return { ok: false, error: "Informe correct_option (a alternativa certa)." };
+    if (item.correct_option > labels.length) {
+      return { ok: false, error: `correct_option ${item.correct_option} não existe (há ${labels.length} alternativas).` };
     }
-    case "rating":
-      raw = {
-        ...base,
-        type: item.type,
-        settings: {
-          min: item.scale_min ?? 1,
-          max: item.scale_max ?? 5,
-          minLabel: item.min_label,
-          maxLabel: item.max_label,
-        },
-      };
-      break;
-    case "word_cloud":
-      raw = { ...base, type: item.type, settings: { maxLength: item.max_length ?? 30 } };
-      break;
-    case "open_text":
-      raw = {
-        ...base,
-        type: item.type,
-        settings: { maxLength: item.max_length ?? 280, showOnDisplay: item.show_on_display ?? true },
-      };
-      break;
-    case "ranking":
-      raw = { ...base, type: item.type, settings: {}, options: (item.options ?? []).map((label) => ({ label })) };
-      break;
+    correctIndex = item.correct_option - 1;
   }
+  const timerSeconds = item.timer_seconds === undefined ? defaults.timerSeconds : item.timer_seconds;
+  const settings: NormalizedSettings = {
+    ...defaults,
+    optionStyle,
+    timerSeconds,
+    speedBonus: timerSeconds !== null && (item.speed_bonus ?? defaults.speedBonus),
+    min: item.scale_min ?? defaults.min,
+    max: item.scale_max ?? defaults.max,
+    minLabel: item.min_label === undefined ? defaults.minLabel : item.min_label || null,
+    maxLabel: item.max_label === undefined ? defaults.maxLabel : item.max_label || null,
+    maxLength: item.max_length ?? defaults.maxLength,
+    showOnDisplay: item.show_on_display ?? defaults.showOnDisplay,
+  };
+  const options = hasOptions(item.type)
+    ? optionsFromLabels(item.type, labels, correctIndex).map((o) =>
+        item.type === "quiz" && item.points !== undefined ? { ...o, points: item.points } : o,
+      )
+    : [];
+  const raw = buildInteractionInput({
+    type: item.type,
+    title: item.question,
+    description: item.description,
+    settings,
+    options,
+  });
   const parsed = interactionInputSchema.safeParse(raw);
   if (!parsed.success) {
     const issue = parsed.error.issues[0];
@@ -280,23 +291,3 @@ export function planPromptText(args: { audience?: string; duration?: string; goa
 3. Espere eu aprovar ou ajustar.
 4. Depois de aprovado: crie a sessão (create_session) ou pergunte se devo usar uma existente (list_sessions), grave com add_interactions e me passe o link da aba Slides para eu enviar o PDF.`;
 }
-
-/** Pedidos de exemplo (página Integrações, guia e landing). */
-export const MCP_EXAMPLE_PROMPTS = [
-  {
-    title: "A partir dos slides",
-    text: "Anexei minha apresentação. Use o PulseStage para planejar 5 interações para esta palestra de 50 minutos para professores do ensino médio. Me mostre a proposta antes de criar.",
-  },
-  {
-    title: "Uma aula do zero",
-    text: "Crie no PulseStage a sessão “Frações – 6º ano” para amanhã às 10h, com uma nuvem de palavras para abrir e um quiz de 4 perguntas com tempo de 20 segundos.",
-  },
-  {
-    title: "Ajustar o roteiro",
-    text: "Na minha sessão “Liderança em equipes remotas”, troque a pergunta depois do slide 8 por um quiz mais difícil e mova a escala para o fim.",
-  },
-  {
-    title: "Depois da palestra",
-    text: "Analise os resultados da minha última sessão no PulseStage: o que funcionou, onde a plateia errou mais e o que mudar na próxima vez.",
-  },
-] as const;

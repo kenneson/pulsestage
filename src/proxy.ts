@@ -1,7 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
 import { isLocalizablePath, LOCALE_COOKIE, LOCALE_HEADER, splitLocalePrefix } from "@/lib/domain/locale";
-import { PATHNAME_HEADER } from "@/lib/pathname-header";
 
 // Next.js 16: "proxy" substitui "middleware". Em Next 15, renomeie para middleware.ts
 // e a função para `middleware`.
@@ -12,12 +11,7 @@ const ONE_YEAR = 60 * 60 * 24 * 365;
 
 export async function proxy(request: NextRequest) {
   const { locale, path } = splitLocalePrefix(request.nextUrl.pathname);
-  if (!locale) {
-    // O layout do painel usa o caminho para dar à sala ao vivo uma tela própria (sem a barra lateral).
-    const headers = new Headers(request.headers);
-    headers.set(PATHNAME_HEADER, path);
-    return updateSession(request, { headers });
-  }
+  if (!locale) return updateSession(request);
 
   // /es/... e /en/...: a mesma página, no idioma do prefixo. A escolha fica no cookie para os links
   // sem prefixo (painel, sessão) seguirem no mesmo idioma.
@@ -29,7 +23,6 @@ export async function proxy(request: NextRequest) {
   } else {
     const headers = new Headers(request.headers);
     headers.set(LOCALE_HEADER, locale);
-    headers.set(PATHNAME_HEADER, path);
     response = needsAuth(path)
       ? await updateSession(request, { rewrite: target, headers })
       : NextResponse.rewrite(target, { request: { headers } });

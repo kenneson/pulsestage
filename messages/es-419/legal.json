@@ -12,13 +12,14 @@
   },
   "participants": {
     "title": "Qué recopilamos de quienes participan",
-    "name": "<b>Nombre (opcional).</b> Aparece solo en la tabla de posiciones del quiz, que el presentador puede mostrar en la pantalla de la sala. Sin nombre, participas de forma anónima y apareces como “Participante” seguido de un código.",
-    "avatar": "<b>Avatar (opcional).</b> Un dibujo elegido de una lista fija (nada de fotos), que se muestra junto al nombre en la tabla de posiciones del quiz.",
-    "raffle": "<b>Número del sorteo.</b> Si la sesión tiene sorteo, quien participa recibe un número aleatorio. De quien resulta ganador se muestran en la pantalla el nombre (o “Participante” y un código), el número y el avatar; el mensaje del premio aparece solo en el celular de quien ganó. Los números y los ganadores se eliminan junto con la sesión.",
-    "answers": "<b>Respuestas y evaluación.</b> Lo que respondes en las interacciones y en la encuesta posterior al evento.",
+    "name": "<b>Nombre (opcional).</b> El presentador ve el nombre que elijas: en la tabla de posiciones del quiz (en la sala en vivo y en el análisis de la sesión), en la exportación de respuestas y de la encuesta en hoja de cálculo (CSV) y en el sorteo. Toda la sala lo ve cuando el presentador muestra la tabla de posiciones o el ganador del sorteo en la pantalla, y en tus preguntas al presentador solo si marcas que se muestre. Sin nombre, participas de forma anónima y apareces como “Participante” seguido de un código.",
+    "avatar": "<b>Avatar (opcional).</b> Un dibujo elegido de una lista fija (nada de fotos), que se muestra junto al nombre en tu celular, en la tabla de posiciones del quiz, en el sorteo y en el análisis de la sesión.",
+    "raffle": "<b>Número del sorteo.</b> Si la sesión tiene sorteo, quien participa recibe un número aleatorio. De quien resulta ganador se muestran en la pantalla el nombre (o “Participante” y un código), el número y el avatar; el mensaje del premio aparece solo en el celular de quien ganó. La pantalla muestra el resultado del sorteo hasta 24 horas después del fin de la sesión; después, ya no muestra los nombres. Los números y los ganadores se eliminan junto con la sesión.",
+    "answers": "<b>Respuestas y evaluación.</b> Lo que respondes en las interacciones y en la encuesta posterior al evento, vinculado a tu registro en la sesión (con el nombre que elegiste, si lo hay). La tabla de posiciones del quiz solo va a la pantalla mientras la sesión está en curso. Si respondes la encuesta sin haber entrado en la sesión, la respuesta queda sin nombre.",
     "questions": "<b>Preguntas al presentador (opcional).</b> El texto de la pregunta y, solo si lo marcas, tu nombre. Las preguntas se muestran al público y pueden aparecer en la pantalla; los apoyos se cuentan sin mostrar quién los dio.",
-    "reactions": "<b>Reacciones.</b> El emoji que tocas y la hora, para la pantalla y para que el presentador conozca los momentos con más reacciones. Nadie ve quién reaccionó.",
+    "reactions": "<b>Reacciones.</b> El emoji que tocas y la hora, vinculados a tu registro en la sesión, como las respuestas. La pantalla muestra solo los emojis, y el presentador ve los totales y los momentos con más reacciones, sin saber quién reaccionó.",
     "contact": "<b>Correo electrónico y teléfono (opcionales).</b> Solo se guardan si marcas la autorización, para que el presentador te envíe materiales y comunicaciones sobre esa sesión. Se almacenan separados de tus respuestas.",
+    "joinEarly": "Puedes entrar en una sesión antes de que empiece: el registro se crea al entrar y el celular espera hasta que el presentador la inicie.",
     "noTracking": "No pedimos registro, no usamos anuncios y no te rastreamos entre sitios."
   },
   "speakers": {
@@ -36,12 +37,21 @@
     "title": "Filtro y moderación",
     "text": "Si el presentador deja activado el filtro de groserías, las respuestas y preguntas con groserías se guardan, pero no aparecen en la pantalla ni para el público; el presentador puede verlas y liberarlas. El presentador también puede ocultar o aprobar respuestas y preguntas antes de que aparezcan."
   },
+  "abuse": {
+    "title": "Protección contra abusos (hash de la IP)",
+    "text": "Para limitar envíos masivos e intentos de adivinar códigos, usamos un código derivado de la dirección IP: un hash calculado con un secreto del servidor, a partir del cual no se puede recuperar la IP. La IP en sí nunca se guarda. Usamos ese código en tres situaciones: en la encuesta posterior al evento respondida por quien no entró en la sesión, se guarda junto con la respuesta para limitar cuántas respuestas salen de la misma red (esas respuestas aparecen para el presentador, pero no cuentan en la calificación pública ni en el sello de sesión verificada, que usan solo las respuestas de quienes entraron en la sesión); en los intentos de entrar con un código incorrecto, queda solo en la memoria del servidor (cuenta durante 10 minutos) y nunca va a la base de datos; y en las invitaciones desde el perfil público (ver más abajo)."
+  },
+  "rehearsal": {
+    "title": "Modo ensayo",
+    "text": "Cuando el presentador usa “Probar sesión”, creamos una copia oculta de la sesión, ya en vivo, para que la abra como participante y la pruebe. El ensayo no aparece en listas, estadísticas ni en el perfil público. Al terminar el ensayo, la copia se elimina con todo lo que se respondió en ella."
+  },
   "cookies": {
     "title": "Cookies y almacenamiento en el navegador",
     "participation": "<b>Participación</b> (<code>ps_p_…</code>, 30 días): te identifica dentro de una sesión para evitar respuestas duplicadas. Está firmada y no contiene datos personales.",
     "feedback": "<b>Evaluación enviada</b> (<code>ps_fb_…</code>, 30 días): evita que la misma evaluación se envíe dos veces.",
     "login": "<b>Inicio de sesión</b>: mantiene conectado al presentador.",
     "language": "<b>Idioma</b> (<code>NEXT_LOCALE</code>, 1 año): recuerda el idioma en el que usas el sitio.",
+    "signupTimeZone": "<b>Zona horaria del registro</b> (<code>ps_signup_tz</code>, 10 minutos): solo en el registro con Google, guarda la zona horaria del navegador hasta volver del inicio de sesión, para que la cuenta se cree con tu zona horaria. Se elimina enseguida.",
     "theme": "<b>Tema</b> (almacenamiento local): recuerda si elegiste el modo claro u oscuro.",
     "necessary": "Todas son necesarias para el funcionamiento; no usamos cookies de análisis ni de publicidad."
   },
@@ -56,7 +66,7 @@
   },
   "retention": {
     "title": "Por cuánto tiempo guardamos los datos",
-    "text": "Los datos de una sesión se guardan mientras esta exista. Cuando el presentador elimina la sesión, todas sus respuestas, participantes, contactos, evaluaciones, insights y diapositivas se eliminan de forma definitiva."
+    "text": "Los datos de una sesión se guardan mientras esta exista. Cuando el presentador elimina la sesión, todas sus respuestas, participantes, contactos, evaluaciones, insights y diapositivas se eliminan de forma definitiva. Los ensayos se eliminan al terminar el ensayo; el hash de la IP de los intentos con código incorrecto nunca se guarda en la base de datos."
   },
   "rights": {
     "title": "Tus derechos",

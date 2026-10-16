@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, useTransition } from "react";
+import { fetchJson, usePolling } from "@/lib/realtime/use-polling";
 import { useTranslations } from "next-intl";
 import { askQuestionAction, voteQuestionAction } from "@/features/participant/actions";
 import { participantQuestionsSchema, QUESTION_MAX, type ParticipantQuestions, type PublicQuestion } from "@/lib/domain/questions";
@@ -12,16 +13,8 @@ import { cn } from "@/lib/utils";
 
 const POLL_MS = 6000;
 
-async function fetchQuestions(sessionId: string): Promise<ParticipantQuestions | null> {
-  try {
-    const res = await fetch(`/api/participant/${sessionId}/questions`, { cache: "no-store" });
-    if (!res.ok) return null;
-    const parsed = participantQuestionsSchema.safeParse(await res.json());
-    return parsed.success ? parsed.data : null;
-  } catch {
-    return null;
-  }
-}
+const fetchQuestions = (sessionId: string) =>
+  fetchJson(`/api/participant/${sessionId}/questions`, participantQuestionsSchema.parse);
 
 function QuestionItem({
   question,
@@ -80,15 +73,8 @@ export function QuestionsPanel({ sessionId, myName, onClose }: { sessionId: stri
     if (next) setData(next);
   }, [sessionId]);
 
-  useEffect(() => {
-    // Primeira leitura logo em seguida; depois, de tempos em tempos.
-    const first = window.setTimeout(() => void reload(), 0);
-    const id = window.setInterval(() => void reload(), POLL_MS);
-    return () => {
-      window.clearTimeout(first);
-      window.clearInterval(id);
-    };
-  }, [reload]);
+  // Primeira leitura ao abrir o painel; depois, de tempos em tempos (pausa com a aba escondida).
+  usePolling(reload, POLL_MS);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();

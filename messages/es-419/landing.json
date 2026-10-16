@@ -9,7 +9,8 @@
     "withAi": "Con IA",
     "speakers": "Presentadores",
     "signIn": "Iniciar sesión",
-    "signUp": "Crear cuenta gratis"
+    "signUp": "Crear cuenta gratis",
+    "signUpShort": "Crear cuenta"
   },
   "hero": {
     "title": "Clases, charlas y capacitaciones donde <mark>todos participan</mark>.",
@@ -143,7 +144,7 @@
       },
       "leaderboard": {
         "title": "Tabla de posiciones animada",
-        "text": "La pantalla muestra quién subió y quién bajó después de cada pregunta."
+        "text": "Cuando muestras la tabla de posiciones en la pantalla, se anima quién subió y quién bajó desde el último quiz."
       },
       "raffle": {
         "title": "Sorteo de premios",
@@ -169,7 +170,7 @@
       },
       "approval": {
         "title": "Tú apruebas primero",
-        "text": "El asistente te muestra la propuesta y solo la guarda cuando confirmas. Después, ajústala en PulseStage como siempre."
+        "text": "El asistente está orientado a mostrarte la propuesta y guardarla solo después de que confirmes. Después, ajusta en PulseStage como siempre."
       },
       "analysis": {
         "title": "Análisis después de la charla",
@@ -196,27 +197,32 @@
   },
   "report": {
     "title": "Después: el informe de la sesión",
-    "lead": "Al finalizar, el público responde una encuesta desde el celular. Ves tus puntos fuertes y débiles, dónde participó más el público, cuánto tiempo estuvo cada diapositiva en pantalla y sugerencias de la IA para la próxima vez. Todo se puede exportar en PDF y hoja de cálculo.",
-    "note": "Las cifras miden participación, no atención. Y cada sugerencia de la IA indica en cuántas respuestas se basa: cuantas menos respuestas, más tenue el subrayado.",
+    "lead": "Al finalizar, el público responde una encuesta desde el celular. Ves tus puntos fuertes y débiles, dónde participó más el público, cuánto tiempo estuvo cada diapositiva en pantalla y recomendaciones de la IA para la próxima vez. Todo se puede exportar en PDF y hoja de cálculo.",
+    "note": "Las cifras miden participación, no atención. El análisis de la IA trae un nivel de confianza general, que baja cuando hay pocas respuestas, y una prioridad para cada recomendación.",
+    "evolution": "En Evolución, compara tus sesiones a lo largo del tiempo: participación y calificaciones de la encuesta, sesión por sesión.",
     "heading": "Informe: “{title}”",
     "sampleTitle": "IA en el trabajo",
     "simulated": "ejemplo con datos simulados",
     "chartTitle": "Participación en cada pregunta",
     "chartAria": "Participación por pregunta: {values}",
     "minute": "{minute} min",
-    "suggestions": "Sugerencias de la IA",
+    "suggestions": "Recomendaciones de la IA",
     "notes": {
       "cloud": "La nube de palabras tuvo la mayor participación de la sesión. Repite el formato a mitad de la próxima.",
       "quiz": "La participación bajó en el quiz del minuto 25. Los 20 segundos de tiempo quizás fueron pocos.",
       "comments": "Algunos comentarios piden más ejemplos prácticos. Vale la pena confirmarlo en la próxima sesión."
     },
-    "confidence": {
-      "high": "confianza alta",
-      "medium": "confianza media",
-      "low": "confianza baja"
+    "overall": {
+      "high": "Confianza general: alta",
+      "medium": "Confianza general: media",
+      "low": "Confianza general: baja"
     },
-    "responses": "{count, plural, one {# respuesta} other {# respuestas}}",
-    "comments": "{count, plural, one {# comentario} other {# comentarios}}",
+    "dataNote": "Pocas respuestas en la encuesta: confirma las conclusiones en la próxima sesión.",
+    "priority": {
+      "high": "prioridad alta",
+      "medium": "prioridad media",
+      "low": "prioridad baja"
+    },
     "rating": "Evaluación del público"
   },
   "audiences": {
@@ -271,6 +277,10 @@
         "q": "¿Funciona con Claude o ChatGPT?",
         "a": "Sí. PulseStage tiene un servidor MCP: conectas tu cuenta a Claude, a ChatGPT o a otro asistente compatible, adjuntas las diapositivas en el chat y pides las preguntas. El asistente crea la sesión y ubica cada pregunta después de la diapositiva correcta. No inicia la sesión en vivo: eso sigue en tus manos."
       },
+      "languages": {
+        "q": "¿Funciona en otros idiomas?",
+        "a": "Sí: portugués, español e inglés. El panel sigue el idioma que elijas, y el público ve el celular y la pantalla en el idioma definido para la sesión, incluidos el filtro de groserías y la nube de palabras."
+      },
       "capacity": {
         "q": "¿Cuántas personas pueden participar?",
         "a": "Hasta {max} participantes por sesión. Cada persona responde una vez por pregunta."
@@ -281,7 +291,7 @@
       },
       "data": {
         "q": "¿Y los datos de quienes participan?",
-        "a": "La participación puede ser anónima. Los datos de contacto solo se guardan con autorización y se almacenan separados de las respuestas. El análisis con IA usa solo datos agregados, nunca nombres ni datos de contacto."
+        "a": "La participación puede ser anónima. Los datos de contacto solo se guardan con autorización y quedan separados de las respuestas. Al análisis con IA van los resultados agregados y fragmentos de respuestas abiertas y de comentarios de la encuesta, nunca nombres ni contactos."
       }
     }
   },

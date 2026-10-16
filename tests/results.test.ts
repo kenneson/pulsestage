@@ -6,6 +6,7 @@ import {
   ratingStats,
   snapshotFromResponses,
   snapshotFromRow,
+  toResultsMap,
   wordList,
   type ResultsSnapshot,
 } from "../src/lib/domain/results.ts";
@@ -79,4 +80,16 @@ test("wordList ordena por contagem, desempata alfabeticamente e respeita o limit
     words.map((w) => w.word),
     ["ia", "abacaxi", "zebra"],
   );
+});
+
+test("toResultsMap indexa por interação e sanitiza o JSONB", () => {
+  const map = toResultsMap([
+    { interaction_id: "a", total: 3, counts: { x: 2, y: 1 }, recent: [] },
+    { interaction_id: "b", total: 1, counts: "corrompido", recent: [{ id: "r", text: "oi", at: "2026-10-16" }] },
+  ]);
+  assert.deepEqual(Object.keys(map).sort(), ["a", "b"]);
+  assert.deepEqual(map.a, { total: 3, counts: { x: 2, y: 1 }, recent: [] });
+  assert.deepEqual(map.b?.counts, {});
+  assert.equal(map.b?.recent.length, 1);
+  assert.deepEqual(toResultsMap([]), {});
 });

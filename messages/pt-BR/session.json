@@ -51,7 +51,11 @@
     "manageTemplates": "Ver ou criar modelos",
     "saveInfo": "Salvar informações",
     "create": "Criar sessão",
-    "saved": "Informações salvas."
+    "saved": "Informações salvas.",
+    "required": "obrigatório",
+    "requiredHint": "Só o título é obrigatório. O resto dá para ajustar depois.",
+    "moreOptions": "Mais opções",
+    "moreOptionsHint": "Descrição, duração, idioma, código de entrada e pesquisa"
   },
   "controls": {
     "startConfirmTitle": "Iniciar sem interações?",
@@ -70,7 +74,10 @@
     "dateOptional": "Data (opcional)",
     "time": "Horário",
     "duplicating": "Duplicando…",
-    "duplicateAndEdit": "Duplicar e editar"
+    "duplicateAndEdit": "Duplicar e editar",
+    "rehearsal": "Testar sessão",
+    "rehearsalStarting": "Abrindo ensaio…",
+    "rehearsalHint": "Abre um ensaio ao vivo para testar com um celular; nada do ensaio conta nas estatísticas."
   },
   "qr": {
     "download": "Baixar QR Code"
@@ -166,8 +173,7 @@
       "forfeitFailed": "Não foi possível tirar o ganhador.",
       "unavailable": "Inicie a sessão e configure o sorteio antes.",
       "showFailed": "Não foi possível mudar o sorteio no telão.",
-      "deliveryFailed": "Não foi possível marcar a entrega.",
-      "loadFailed": "Não foi possível carregar o sorteio."
+      "deliveryFailed": "Não foi possível marcar a entrega."
     }
   },
   "engagement": {

@@ -7,6 +7,7 @@
     "description": "How your ratings change from one session to the next.",
     "emptyTitle": "No ended sessions",
     "emptyDescription": "End a session to start tracking your progress.",
+    "seeSessions": "See sessions",
     "chartTitle": "Survey dimensions (1–5)",
     "chartDescription": "The dimensions that show up most in your surveys. Sessions with few responses swing more: check the number of surveys in the table.",
     "notEnough": "You need at least 2 sessions with completed surveys to show a trend.",

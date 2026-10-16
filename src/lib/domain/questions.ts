@@ -1,6 +1,7 @@
 // Perguntas da plateia. Regras puras (sem I/O).
 
 import { z } from "zod";
+import { messageKey } from "./message-key.ts";
 
 export const QUESTION_MIN = 2;
 export const QUESTION_MAX = 280;
@@ -15,7 +16,7 @@ export const askQuestionSchema = z.object({
     .string({ error: "validation.audienceQuestionRequired" })
     .trim()
     .min(QUESTION_MIN, "validation.audienceQuestionRequired")
-    .max(QUESTION_MAX, `A pergunta pode ter até ${QUESTION_MAX} caracteres.`),
+    .max(QUESTION_MAX, messageKey("validation.audienceQuestionTooLong", { max: QUESTION_MAX })),
   /** mostrar o nome escolhido na entrada (sem nome, vai anônima) */
   withName: z.boolean(),
 });
@@ -26,13 +27,6 @@ export type QuestionStatus = (typeof QUESTION_STATUSES)[number];
 export function isQuestionStatus(value: string): value is QuestionStatus {
   return (QUESTION_STATUSES as readonly string[]).includes(value);
 }
-
-export const QUESTION_STATUS_LABEL: Record<QuestionStatus, string> = {
-  pending: "Aguardando aprovação",
-  visible: "Aberta",
-  answered: "Respondida",
-  hidden: "Oculta",
-};
 
 /** Como a pergunta chega ao celular de quem participa (sem ids de participante). */
 export const publicQuestionSchema = z.object({

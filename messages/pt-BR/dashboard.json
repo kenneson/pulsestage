@@ -40,18 +40,20 @@
     },
     "recent": "Sessões recentes",
     "seeAll": "Ver todas",
-    "emptyTitle": "Nenhuma sessão ainda",
-    "emptyDescription": "Crie sua primeira sessão, adicione interações e compartilhe o código com a audiência.",
     "createSession": "Criar sessão",
     "seeGuide": "Ver o guia",
     "steps": {
       "title": "Primeiros passos",
       "createSession": "Criar a primeira sessão",
       "addQuestions": "Adicionar perguntas",
-      "presentLive": "Apresentar ao vivo",
+      "presentLive": "Testar ou apresentar ao vivo",
       "completeProfile": "Completar o perfil",
       "createTemplate": "Criar um modelo de pesquisa",
-      "done": "(feito)"
+      "done": "(feito)",
+      "createSessionHint": "Só o título é obrigatório; o resto dá para ajustar depois.",
+      "addQuestionsHint": "Comece com a enquete de exemplo e troque o texto.",
+      "presentLiveHint": "Use “Testar sessão” para ensaiar com o seu celular. O ensaio não conta nas estatísticas.",
+      "extrasTitle": "Próximos passos"
     }
   },
   "sessionList": {
@@ -62,7 +64,7 @@
     "title": "Sessões",
     "newSession": "Nova sessão",
     "emptyTitle": "Nenhuma sessão",
-    "emptyDescription": "Suas palestras, aulas e workshops aparecem aqui."
+    "emptyDescription": "Suas palestras, aulas e workshops aparecem aqui. Crie a primeira: só o título é obrigatório."
   },
   "library": {
     "metaTitle": "Biblioteca de perguntas",

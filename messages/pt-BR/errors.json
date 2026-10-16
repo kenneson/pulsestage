@@ -20,6 +20,7 @@
     "invalidAvatar": "Avatar inválido.",
     "invalidImage": "Imagem inválida.",
     "audienceQuestionRequired": "Escreva sua pergunta.",
+    "audienceQuestionTooLong": "A pergunta pode ter até {max} caracteres.",
     "prizeNameRequired": "Dê um nome ao prêmio.",
     "nameTooLong": "Nome muito longo.",
     "descriptionTooLong": "Descrição muito longa.",

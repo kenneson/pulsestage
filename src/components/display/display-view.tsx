@@ -18,7 +18,7 @@ import { QuizLeaderboard } from "./quiz-leaderboard";
 import { RaffleStage } from "./raffle-stage";
 import { AudienceQuestionsStage } from "./audience-questions-stage";
 import { ReactionStream } from "./reaction-stream";
-import { questionsOnScreen } from "@/lib/domain/questions";
+import { screenContent } from "@/lib/domain/screen";
 import { useAudioUnlock } from "@/lib/raffle/use-audio-unlock";
 import { lastActivatedOf, useDeckControls } from "@/components/live/use-deck-controls";
 
@@ -71,15 +71,17 @@ export function DisplayView({
   const online = usePresence(session.id, "observer");
   const soundOn = useAudioUnlock();
   const status = toSessionStatus(state?.status ?? "draft");
-  const active = interactions.find((i) => i.id === state?.active_interaction_id) ?? null;
+  const byId = new Map(interactions.map((i) => [i.id, i]));
+  const screen = screenContent(state, status, { slideCount: slideUrls.length, knowsInteraction: (id) => byId.has(id) });
+  const active = screen.kind === "interaction" ? (byId.get(screen.id) ?? null) : null;
   const snapshot = active ? (results[active.id] ?? EMPTY_SNAPSHOT) : EMPTY_SNAPSHOT;
   const router = useRouter();
-  const missingId = state?.active_interaction_id && !active ? state.active_interaction_id : null;
+  const missingId = state?.active_interaction_id && !byId.has(state.active_interaction_id) ? state.active_interaction_id : null;
 
   const [lastActivated] = useState(() => lastActivatedOf(interactions));
   useDeckControls({ sessionId: session.id, deck, live: state, lastActivated, enabled: canControl && status === "live" });
 
-  const slideIndex = status === "live" && !active ? (state?.current_slide ?? null) : null;
+  const slideIndex = screen.kind === "slide" ? screen.index : null;
   const slideUrl = slideIndex !== null ? slideUrls[slideIndex] : undefined;
 
   // Pré-carrega os próximos slides para a troca ser instantânea no telão.
@@ -96,9 +98,8 @@ export function DisplayView({
     if (missingId) router.refresh();
   }, [missingId, router]);
 
-  const raffleOn = Boolean(state?.show_raffle) && status !== "draft";
   let body: React.ReactNode;
-  if (raffleOn) {
+  if (screen.kind === "raffle") {
     // O sorteio vale também depois de encerrar (modo "quem responder a pesquisa").
     body = (
       <RaffleStage
@@ -109,7 +110,7 @@ export function DisplayView({
         soundOn={soundOn}
       />
     );
-  } else if (status === "completed") {
+  } else if (screen.kind === "ended") {
     body = (
       <div className="flex flex-col items-center gap-8 text-center">
         <h1 className="text-6xl font-semibold">{t("completed.title")}</h1>
@@ -119,16 +120,16 @@ export function DisplayView({
         </div>
       </div>
     );
-  } else if (status === "paused") {
+  } else if (screen.kind === "paused") {
     body = (
       <div className="flex flex-col items-center gap-6 text-center">
         <h1 className="text-6xl font-semibold">{t("paused.title")}</h1>
         <p className="text-3xl text-muted-foreground">{t("paused.subtitle")}</p>
       </div>
     );
-  } else if (state?.show_leaderboard) {
-    body = <QuizLeaderboard sessionId={session.id} version={state.leaderboard_at} />;
-  } else if (questionsOnScreen(state)) {
+  } else if (screen.kind === "leaderboard") {
+    body = <QuizLeaderboard sessionId={session.id} version={state?.leaderboard_at ?? null} />;
+  } else if (screen.kind === "questions") {
     body = <AudienceQuestionsStage sessionId={session.id} version={state?.questions_at ?? null} joinHost={joinHost(joinUrl)} />;
   } else if (active) {
     body = (

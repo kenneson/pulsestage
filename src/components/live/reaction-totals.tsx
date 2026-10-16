@@ -1,12 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { reactionTotalsAction } from "@/features/engagement/actions";
-import { REACTIONS, type ReactionTally } from "@/lib/domain/reactions";
+import { z } from "zod";
+import { REACTION_KINDS, REACTIONS, type ReactionTally } from "@/lib/domain/reactions";
 import { formatInt } from "@/lib/format";
+import { fetchJson, usePolling } from "@/lib/realtime/use-polling";
 
 const POLL_MS = 8000;
+/** Fora do ar o total quase não muda: relê de vez em quando. */
+const IDLE_MS = 60_000;
+
+const tallySchema = z.record(z.enum(REACTION_KINDS), z.number()) satisfies z.ZodType<ReactionTally>;
 
 /** Total de reações da sessão, por emoji (atualiza enquanto a sessão está no ar). */
 export function ReactionTotals({ sessionId, running }: { sessionId: string; running: boolean }) {
@@ -15,20 +20,10 @@ export function ReactionTotals({ sessionId, running }: { sessionId: string; runn
   const locale = useLocale();
   const [tally, setTally] = useState<ReactionTally | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    const load = async () => {
-      const result = await reactionTotalsAction(sessionId);
-      if (result.ok && !cancelled) setTally(result.data);
-    };
-    void load();
-    if (!running) return;
-    const id = window.setInterval(() => void load(), POLL_MS);
-    return () => {
-      cancelled = true;
-      window.clearInterval(id);
-    };
-  }, [sessionId, running]);
+  usePolling(async () => {
+    const next = await fetchJson(`/api/live/${sessionId}/reactions`, tallySchema.parse);
+    if (next) setTally(next);
+  }, running ? POLL_MS : IDLE_MS);
 
   const total = tally ? Object.values(tally).reduce((a, b) => a + b, 0) : 0;
   if (!tally || total === 0) return null;

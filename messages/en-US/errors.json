@@ -20,6 +20,7 @@
     "invalidAvatar": "Invalid avatar.",
     "invalidImage": "Invalid image.",
     "audienceQuestionRequired": "Write your question.",
+    "audienceQuestionTooLong": "Your question can be up to {max} characters.",
     "prizeNameRequired": "Give the prize a name.",
     "nameTooLong": "The name is too long.",
     "descriptionTooLong": "The description is too long.",

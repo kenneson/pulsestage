@@ -8,6 +8,7 @@ import { getOwnedSession } from "@/lib/data/sessions";
 import { hasDbErrorCode } from "@/lib/supabase/errors";
 import { interactionInputSchema, type ParsedInteractionInput } from "@/lib/domain/interactions";
 import { insertAfterItem, MAX_SLIDES } from "@/lib/domain/deck";
+import { isEditable } from "@/lib/domain/session";
 import { createInteraction, deleteInteraction, foreignImage, updateInteraction } from "./core";
 import { getAIProvider, suggestInteractions } from "@/lib/ai";
 import { localeOrDefault } from "@/lib/domain/locale";
@@ -34,7 +35,7 @@ export async function saveInteractionAction(
   const supabase = await createClient();
   const session = await getOwnedSession(supabase, sessionId);
   if (!session) return fail(t("sessionNotFound"));
-  if (session.status === "completed") return fail(t("sessionEnded"));
+  if (!isEditable(session.status)) return fail(t("sessionEnded"));
   if (foreignImage(input, session.speaker_id)) return fail(tr.message("validation.invalidImage"));
 
   const saved =
@@ -66,7 +67,7 @@ export async function suggestInteractionsAction(
   const supabase = await createClient();
   const session = await getOwnedSession(supabase, sessionId);
   if (!session) return fail(t("sessionNotFound"));
-  if (session.status === "completed") return fail(t("sessionEnded"));
+  if (!isEditable(session.status)) return fail(t("sessionEnded"));
 
   const last = lastSuggestion.get(session.speaker_id) ?? 0;
   if (Date.now() - last < SUGGEST_INTERVAL_MS) return fail(t("tooSoon"));
@@ -187,7 +188,7 @@ export async function addLiveInteractionAction(
   const supabase = await createClient();
   const session = await getOwnedSession(supabase, sessionId);
   if (!session) return fail(t("sessionNotFound"));
-  if (session.status === "completed") return fail(t("sessionEnded"));
+  if (!isEditable(session.status)) return fail(t("sessionEnded"));
   if (placement.data.launch && session.status !== "live") return fail(t("resumeToLaunch"));
   if (foreignImage(parsed.data, session.speaker_id)) return fail(tr.message("validation.invalidImage"));
 

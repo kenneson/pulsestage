@@ -22,12 +22,14 @@ colors:
   rev-yellow: "oklch(0.95 0.08 100)"
   rev-green: "oklch(0.92 0.055 152)"
   rev-gold: "oklch(0.88 0.09 78)"
+  rev-violet: "oklch(0.9 0.05 300)"
   rev-foreground: "oklch(0.22 0.012 260)"
   rev-blue-ink: "oklch(0.46 0.13 245)"
   rev-pink-ink: "oklch(0.48 0.17 8)"
   rev-yellow-ink: "oklch(0.46 0.1 95)"
   rev-green-ink: "oklch(0.46 0.12 152)"
   rev-gold-ink: "oklch(0.48 0.11 65)"
+  rev-violet-ink: "oklch(0.47 0.15 300)"
   chart-1: "oklch(0.5 0.13 245)"
   chart-2: "oklch(0.55 0.17 8)"
   chart-3: "oklch(0.52 0.13 152)"
@@ -172,6 +174,12 @@ components:
     typography: "{typography.label}"
     rounded: "{rounded.sm}"
     padding: "2px 8px"
+  type-tag-ranking:
+    backgroundColor: "{colors.rev-violet}"
+    textColor: "{colors.rev-foreground}"
+    typography: "{typography.label}"
+    rounded: "{rounded.sm}"
+    padding: "2px 8px"
   script-page:
     backgroundColor: "{colors.card}"
     textColor: "{colors.foreground}"
@@ -223,9 +231,11 @@ Substitui a identidade anterior "Roteiro com deixas" (Courier Prime, verde VAI, 
 - **Marca-texto** (`highlight`): uma expressão da manchete (`<mark>`) e a seleção de texto.
 
 ### Tertiary
-- **Papéis por tipo** (`rev-blue`, `rev-pink`, `rev-yellow`, `rev-green`, `rev-gold`, texto `rev-foreground`): Enquete =
-  azul, Escala = rosa, Nuvem de palavras = amarelo, Pergunta aberta = verde, Quiz = dourado. Tintas `rev-*-ink` para
-  texto e traço da mesma família.
+- **Papéis por tipo** (`rev-blue`, `rev-pink`, `rev-yellow`, `rev-green`, `rev-gold`, `rev-violet`, texto
+  `rev-foreground`): Enquete = azul, Escala = rosa, Nuvem de palavras = amarelo, Pergunta aberta = verde, Quiz =
+  dourado, Ranking = violeta. Tintas `rev-*-ink` para texto e traço da mesma família. No escuro, os papéis ficam
+  escuros (`oklch(0.32–0.36 …)`) e as tintas, claras; valores em `globals.css`. Mapa em
+  `components/interaction-type-tag.tsx` (`TYPE_PAPER`).
 - **Formas e cores do quiz** (`shape-1..8`): só nas alternativas no estilo "Formas e cores"; texto branco com contraste
   ≥ 5:1; a forma sempre acompanha a cor.
 - **Séries de gráfico** (`chart-1..4`) e **linha do tempo** (`timeline-slide/question`, par validado para daltonismo).

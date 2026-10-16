@@ -5,7 +5,6 @@ import { z } from "zod";
 import { getTranslations } from "next-intl/server";
 import { createClient, type ServerSupabase } from "@/lib/supabase/server";
 import { getOwnedSession } from "@/lib/data/sessions";
-import { getRaffleState, type RaffleState } from "@/lib/data/raffle";
 import { hasDbErrorCode } from "@/lib/supabase/errors";
 import { MAX_PRIZES, prizeInputSchema, raffleSettingsSchema } from "@/lib/domain/raffle";
 import { getMessageTranslator } from "@/i18n/server";
@@ -215,19 +214,4 @@ export async function setPrizeDeliveredAction(winnerId: string, delivered: boole
   if (error || !data) return fail(t("deliveryFailed"));
   revalidateRaffle(data.session_id);
   return ok(null);
-}
-
-/** Estado do sorteio para a sala ao vivo (relido periodicamente enquanto a pesquisa recebe respostas). */
-export async function raffleStateAction(sessionId: string): Promise<ActionResult<RaffleState>> {
-  const { t, tSession } = await translators();
-  if (!isUuid(sessionId)) return fail(tSession("invalidSession"));
-  const supabase = await createClient();
-  const session = await getOwnedSession(supabase, sessionId);
-  if (!session) return fail(tSession("sessionNotFound"));
-  try {
-    const anonymous = (await getTranslations("domain"))("anonymousParticipant");
-    return ok(await getRaffleState(supabase, sessionId, session.raffle_eligibility, anonymous));
-  } catch {
-    return fail(t("loadFailed"));
-  }
 }

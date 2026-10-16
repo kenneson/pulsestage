@@ -4,13 +4,13 @@ import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { deleteSessionAction, setSessionStatusAction } from "@/features/sessions/actions";
+import { deleteSessionAction, setSessionStatusAction, startRehearsalAction } from "@/features/sessions/actions";
 import { duplicateSessionAction } from "@/features/library/actions";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/components/ui/confirm-dialog";
 import { Field, Input, Label } from "@/components/ui/input";
 import { Alert } from "@/components/ui/misc";
-import { CopyIcon, PlayIcon, TrashIcon } from "@/components/icons";
+import { CopyIcon, MonitorIcon, PlayIcon, TrashIcon } from "@/components/icons";
 
 export function StartSessionButton({ sessionId, hasInteractions }: { sessionId: string; hasInteractions: boolean }) {
   const t = useTranslations("session.controls");
@@ -45,6 +45,42 @@ export function StartSessionButton({ sessionId, hasInteractions }: { sessionId: 
       >
         <PlayIcon /> {pending ? t("starting") : t("start")}
       </Button>
+    </>
+  );
+}
+
+/**
+ * "Testar sessão": abre um ensaio ao vivo (cópia oculta da sessão) para conferir telão e celular.
+ * Nada do ensaio conta nas estatísticas; a sessão original continua como está.
+ */
+export function RehearsalButton({ sessionId }: { sessionId: string }) {
+  const t = useTranslations("session.controls");
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+  return (
+    <>
+      <Button
+        variant="outline"
+        disabled={pending}
+        title={t("rehearsalHint")}
+        aria-describedby={`rehearsal-hint-${sessionId}`}
+        onClick={() =>
+          startTransition(async () => {
+            const result = await startRehearsalAction(sessionId);
+            if (!result.ok) {
+              toast.error(result.error);
+              return;
+            }
+            router.push(`/dashboard/sessions/${result.data.id}/live`);
+          })
+        }
+      >
+        <MonitorIcon /> {pending ? t("rehearsalStarting") : t("rehearsal")}
+      </Button>
+      {/* Fora do botão: descreve sem entrar no nome acessível. */}
+      <span id={`rehearsal-hint-${sessionId}`} className="sr-only">
+        {t("rehearsalHint")}
+      </span>
     </>
   );
 }

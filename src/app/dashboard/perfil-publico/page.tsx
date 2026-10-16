@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSpeakerProfile } from "@/lib/data/profile";
@@ -46,7 +47,8 @@ export default async function PublicProfileSettingsPage() {
     getOwnPublicProfile(supabase, profile.id),
     getOwnSessionFacts(supabase, profile.id),
   ]);
-  if (!settings) throw new Error("Perfil não encontrado.");
+  // Sem a linha do perfil (conta sendo excluída, por exemplo): 404 traduzido em vez de erro.
+  if (!settings) notFound();
 
   const stats = profileStats(facts, true);
   const url = settings.slug ? `${publicEnv.appUrl}/p/${settings.slug}` : null;

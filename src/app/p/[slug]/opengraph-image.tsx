@@ -7,8 +7,9 @@ import { formatScore } from "@/lib/format";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-// Texto alternativo fixo em português: o Next exige `alt` estático (generateImageMetadata mudaria a URL da imagem).
-export const alt = "Perfil de palestrante no PulseStage";
+// O Next exige `alt` estático (generateImageMetadata mudaria a URL da imagem): só o nome da marca, que vale
+// nos três idiomas. O nome do palestrante já está no título da página.
+export const alt = "PulseStage";
 
 // Cores fixas da identidade (azul-marinho, azul acadêmico e amarelo marca-texto).
 const NAVY = "#0d1324";
@@ -53,9 +54,9 @@ export default async function OpenGraphImage({ params }: { params: Promise<{ slu
           {profile?.headline ? <div style={{ fontSize: 34, color: "#c9d3ea", lineHeight: 1.3 }}>{profile.headline}</div> : null}
           {profile && profile.topics.length > 0 ? (
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-              {profile.topics.slice(0, 4).map((t) => (
-                <div key={t} style={{ background: YELLOW, color: NAVY, borderRadius: 999, padding: "6px 20px", fontSize: 26, fontWeight: 600 }}>
-                  {t}
+              {profile.topics.slice(0, 4).map((topic) => (
+                <div key={topic} style={{ background: YELLOW, color: NAVY, borderRadius: 999, padding: "6px 20px", fontSize: 26, fontWeight: 600 }}>
+                  {topic}
                 </div>
               ))}
             </div>

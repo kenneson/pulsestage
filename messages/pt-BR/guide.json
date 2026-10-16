@@ -9,7 +9,7 @@
     "title": "Criar a sessão",
     "steps": {
       "newSession": "Clique em <b>“Nova sessão”</b>.",
-      "fields": "Preencha título, descrição, data, horário e duração estimada. Só o título é obrigatório.",
+      "fields": "Preencha o título e, se quiser, a data e o horário. Só o título é obrigatório. Descrição, duração estimada, idioma, código de entrada e pesquisa ficam em <b>“Mais opções”</b>.",
       "joinCode": "<b>Código de entrada (opcional):</b> escolha um código fácil de ditar, como <code>IA2026</code>. Em branco, o sistema gera um automaticamente. Depois que a sessão começa, o código não muda."
     }
   },
@@ -24,7 +24,7 @@
   },
   "lineup": {
     "title": "Montar o roteiro",
-    "intro": "Na página da sessão, adicione as interações na ordem em que vai usá-las na apresentação.",
+    "intro": "Na página da sessão, adicione as interações na ordem em que vai usá-las na apresentação. Roteiro vazio? <b>“Criar primeira enquete”</b> abre uma enquete de exemplo, pronta para editar.",
     "types": {
       "poll": "<b>Enquete:</b> uma escolha entre alternativas. Boa para abrir a palestra e conhecer o público.",
       "scale": "<b>Escala:</b> nota entre um mínimo e um máximo (ex.: 1 a 5), com rótulos opcionais nas pontas.",
@@ -47,12 +47,12 @@
       "start": "Clique em <b>“Iniciar sessão”</b>. Você vai para a <b>sala ao vivo</b>, seu painel de controle durante a palestra.",
       "projector": "Clique em <b>“Tela do projetor”</b>. Ela abre em outra aba: arraste-a para o projetor ou para a tela compartilhada e deixe em tela cheia (<kbd>F11</kbd>). Sem interação ativa, ela mostra o QR Code e o código de entrada.",
       "launch": "Para lançar uma pergunta, clique nela na lista ou em <b>“Próxima”</b>. Também funcionam a seta <kbd>→</kbd> e o <kbd>PageDown</kbd> (as teclas do passador de slides) com a sala ao vivo em foco.",
-      "deck": "Com slides enviados, <b>“Próxima”</b> percorre slides e perguntas na ordem do roteiro e <b>“Anterior”</b> (<kbd>←</kbd> ou <kbd>PageUp</kbd>) volta ao slide anterior. Ao encerrar uma pergunta, o telão volta para o slide que estava por trás. <b>“Mostrar no telão”</b>, ao lado do QR Code, exibe o código de entrada de novo.",
+      "deck": "Com slides enviados, <b>“Próxima”</b> percorre slides e perguntas na ordem do roteiro e <b>“Anterior”</b> (<kbd>←</kbd> ou <kbd>PageUp</kbd>) volta ao slide anterior. Ao encerrar uma pergunta, o telão volta para o slide que estava por trás.",
       "mirror": "Vai usar uma tela só, espelhada no projetor? Abra a tela do projetor logado na sua conta: nela, o passador e as setas também avançam a apresentação, e quem tiver o link sem estar logado só assiste.",
       "results": "Os resultados aparecem em tempo real no projetor e na sala. Clique em <b>“Encerrar”</b> para parar de receber respostas daquela interação.",
       "addQuestion": "Surgiu uma pergunta que não estava no roteiro? Clique em <b>“Nova pergunta”</b>, ao lado de Roteiro, escolha o tipo e escreva. <b>“Lançar agora”</b> abre para a plateia na hora; <b>“Deixar como próxima”</b> coloca a pergunta logo depois do que está no telão, para o próximo <kbd>→</kbd>. Com slides, ela entra nesse mesmo ponto da apresentação.",
       "answer": "No quiz, <b>“Mostrar resposta”</b> destaca a alternativa correta na sua sala ao vivo, para você comentar o resultado com a plateia.",
-      "leaderboard": "Com pelo menos um quiz no roteiro, <b>“Mostrar ranking”</b> leva o top 10 ao telão (e fecha a pergunta aberta). Cada um aparece na posição de antes do último quiz e desliza até a nova, com os pontos subindo. <b>“Ocultar ranking”</b> ou o próximo <kbd>→</kbd> tiram o ranking do telão. Quem entrou sem nome aparece como “Participante” e um código."
+      "leaderboard": "No topo da sala ao vivo, <b>“No telão agora”</b> mostra o que a plateia está vendo e troca com um clique: <b>“Roteiro”</b>, <b>“QR Code”</b>, <b>“Ranking do quiz”</b> (com quiz no roteiro), <b>“Perguntas da plateia”</b> (se estiverem ligadas) e <b>“Sorteio”</b> (se houver). <b>“Roteiro”</b> volta ao slide ou à pergunta em que você estava. O ranking mostra o top 10: cada um aparece na posição de antes do último quiz e desliza até a nova, com os pontos subindo. Quem entrou sem nome aparece como “Participante” e um código."
     },
     "pause": "<b>“Pausar”</b> congela a sessão (ninguém responde) e <b>“Retomar”</b> volta ao normal. O número de “conectados agora” é aproximado; os participantes que entraram de fato aparecem no total ao lado.",
     "timer": "Ao lado do status fica o <b>cronômetro da palestra</b>: o tempo desde “Iniciar sessão”, sem contar as pausas, comparado com a duração que você previu nas informações da sessão. Ele fica âmbar quando passa do previsto. A duração real fica registrada no analytics e no relatório."
@@ -60,7 +60,7 @@
   "audience": {
     "title": "O que a audiência vê",
     "items": {
-      "join": "Quem participa entra pelo QR Code ou pelo código, sem criar conta. Nome e avatar (um bichinho ou desenho) são opcionais; o avatar aparece ao lado do nome no ranking do quiz.",
+      "join": "Quem participa entra pelo QR Code ou pelo código, sem criar conta, inclusive antes de a sessão começar: o celular espera e abre sozinho quando você inicia. Nome e avatar (um bichinho ou desenho) são opcionais; o avatar aparece ao lado do nome no ranking do quiz.",
       "active": "A pergunta ativa aparece sozinha no celular e muda quando você avança. Não é preciso recarregar.",
       "once": "Cada pessoa responde uma vez por interação.",
       "contact": "O participante pode deixar e-mail ou telefone para receber materiais, só com autorização explícita. Esse contato fica separado das respostas."
@@ -70,7 +70,7 @@
     "title": "Perguntas da plateia, reações e moderação",
     "intro": "Na aba <b>“Participação”</b> da sessão (e no card <b>“Participação”</b> da sala ao vivo) você liga ou desliga cada recurso. Tudo começa ligado, menos as aprovações.",
     "items": {
-      "qa": "<b>Perguntas da plateia:</b> no celular aparece <b>“Perguntar ao palestrante”</b>. A pessoa escreve, escolhe se mostra o nome e curte as perguntas dos outros. Na sala ao vivo, o card <b>“Perguntas da plateia”</b> lista as mais curtidas: <b>“Destacar”</b> põe uma no telão, <b>“Mostrar no telão”</b> mostra as mais curtidas, <b>“Respondida”</b> tira da fila e <b>“Ocultar”</b> esconde. Com <b>“Aprovar perguntas antes de aparecerem”</b>, as novas esperam em <b>“Aguardando”</b> até você aprovar.",
+      "qa": "<b>Perguntas da plateia:</b> no celular aparece <b>“Perguntar ao palestrante”</b>. A pessoa escreve, escolhe se mostra o nome e curte as perguntas dos outros. Na sala ao vivo, o card <b>“Perguntas da plateia”</b> lista as mais curtidas: <b>“Destacar”</b> põe uma no telão, <b>“Respondida”</b> tira da fila e <b>“Ocultar”</b> esconde. Para mostrar as mais curtidas no telão, escolha <b>“Perguntas da plateia”</b> em <b>“No telão agora”</b>. Com <b>“Aprovar perguntas antes de aparecerem”</b>, as novas esperam em <b>“Aguardando”</b> até você aprovar.",
       "reactions": "<b>Reações ao vivo:</b> 👏 ❤️ 😂 😮 🤔 ficam no rodapé do celular durante a sessão. Os emojis sobem no telão e o total aparece na sala ao vivo. No analytics, você vê os minutos com mais reações.",
       "profanity": "<b>Filtro de palavrões:</b> nuvem de palavras, respostas abertas e perguntas com palavrões não vão ao telão. Quem enviou não é avisado (para não tentar burlar). Você vê o que foi barrado e pode liberar.",
       "moderation": "<b>Moderação ao vivo:</b> numa nuvem de palavras, abra <b>“Moderar palavras”</b> e clique no × para tirar uma palavra do telão (os próximos envios dela também ficam de fora). Numa pergunta aberta, <b>“Moderar respostas”</b> oculta respostas; com <b>“Aprovar respostas abertas antes do telão”</b>, cada uma espera o seu <b>“Aprovar”</b>."
@@ -133,7 +133,7 @@
   "tips": {
     "title": "Dicas",
     "items": {
-      "rehearse": "Faça um ensaio: inicie a sessão e responda por uma janela anônima ou pelo celular. Depois crie uma sessão nova para valer.",
+      "rehearse": "Ensaie antes: <b>“Testar sessão”</b>, no topo da sessão, abre uma cópia já ao vivo. Use <b>“Abrir como participante”</b>, no card do QR Code, ou o celular para responder. Nada do ensaio conta nas estatísticas nem no perfil, e <b>“Encerrar ensaio”</b> apaga a cópia sem mexer na sessão original.",
       "icebreaker": "Comece com uma pergunta fácil (enquete ou nuvem de palavras) para quebrar o gelo.",
       "pace": "Uma interação a cada 10 ou 15 minutos mantém o público envolvido sem quebrar o ritmo.",
       "qr": "Deixe o QR Code visível nos primeiros minutos: quem chega atrasado também entra.",

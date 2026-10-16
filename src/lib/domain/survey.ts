@@ -6,13 +6,6 @@ import { messageKey } from "./message-key.ts";
 export const QUESTION_KINDS = ["scale", "nps", "choice", "text"] as const;
 export type QuestionKind = (typeof QUESTION_KINDS)[number];
 
-export const QUESTION_KIND_META: Record<QuestionKind, { label: string; description: string }> = {
-  scale: { label: "Escala 1 a 5", description: "Botões de 1 a 5 com rótulos nas pontas." },
-  nps: { label: "Nota 0 a 10", description: "Estilo NPS: o relatório calcula promotores e detratores." },
-  choice: { label: "Múltipla escolha", description: "Alternativas definidas por você (inclui sim/não)." },
-  text: { label: "Texto livre", description: "Resposta aberta, considerada na análise da IA." },
-};
-
 /** Faixa de valores de cada tipo numérico. */
 export const RANGE = { scale: { min: 1, max: 5 }, nps: { min: 0, max: 10 } } as const;
 

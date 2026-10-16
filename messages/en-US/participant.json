@@ -16,14 +16,13 @@
     "endedText": "This session has ended. Want to share your feedback?",
     "rateSession": "Rate the session",
     "code": "Code {code}",
-    "notStarted": "The session hasn't started yet. You'll be able to join as soon as it begins."
+    "notStarted": "The session hasn't started yet: join now and follow along here."
   },
   "joinForm": {
     "nameLabel": "Your name (optional)",
     "namePlaceholder": "You can join without a name",
     "nameHint": "Only shown on the quiz leaderboard, which may appear on the big screen. Leave it blank to stay anonymous.",
     "avatarLegend": "Pick an avatar (optional)",
-    "avatarHint": "Shown next to your name on the quiz leaderboard.",
     "materialSummary": "Send me the materials (optional)",
     "email": "Email",
     "phone": "Phone",
@@ -45,6 +44,7 @@
     "inNamed": "You're in, {name}!",
     "in": "You're in!",
     "waiting": "Waiting for the next interaction…",
+    "startingSoon": "The session starts in a moment.",
     "answeredTitle": "Answer received",
     "answeredText": "Watch the results on the speaker's screen.",
     "askSpeaker": "Ask the speaker"

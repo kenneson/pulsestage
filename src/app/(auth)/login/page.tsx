@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { LoginForm } from "@/components/auth/auth-forms";
 import { safeNextPath } from "@/lib/action-result";
-import { getPublicHref } from "@/i18n/seo";
+import { getPublicHref, localeAlternates } from "@/i18n/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("auth.login");
-  return { title: t("metaTitle") };
+  return { title: t("metaTitle"), alternates: await localeAlternates("/login") };
 }
 
 const NOTICES = { confirmacao: "confirmation", google: "google" } as const;

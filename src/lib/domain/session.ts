@@ -16,6 +16,16 @@ const TRANSITIONS: Record<SessionStatus, readonly SessionStatus[]> = {
   completed: [],
 };
 
+/** Em andamento: ao vivo ou pausada (a plateia ainda está na sala). */
+export function isInProgress(status: string): boolean {
+  return status === "live" || status === "paused";
+}
+
+/** O roteiro ainda pode ser editado: qualquer status antes de encerrar. */
+export function isEditable(status: string): boolean {
+  return status !== "completed";
+}
+
 export function canTransition(from: SessionStatus, to: SessionStatus): boolean {
   return TRANSITIONS[from].includes(to);
 }

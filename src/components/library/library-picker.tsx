@@ -124,9 +124,21 @@ export function LibraryPicker({ sessionId, items }: { sessionId: string; items: 
 
   return (
     <>
-      <Button variant="outline" size="sm" onClick={() => ref.current?.showModal()} disabled={items.length === 0}>
-        <LibraryIcon /> {t("open")}
-      </Button>
+      {items.length === 0 ? (
+        // Desativado com o motivo à vista (title não aparece no toque).
+        <span className="inline-flex flex-wrap items-center gap-2">
+          <Button variant="outline" size="sm" disabled aria-describedby={`library-empty-${sessionId}`}>
+            <LibraryIcon /> {t("open")}
+          </Button>
+          <span id={`library-empty-${sessionId}`} className="text-xs text-muted-foreground">
+            {t("noneSaved")}
+          </span>
+        </span>
+      ) : (
+        <Button variant="outline" size="sm" onClick={() => ref.current?.showModal()}>
+          <LibraryIcon /> {t("open")}
+        </Button>
+      )}
       <dialog
         ref={ref}
         aria-labelledby="library-picker-title"

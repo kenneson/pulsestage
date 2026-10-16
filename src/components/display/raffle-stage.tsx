@@ -15,6 +15,7 @@ import {
 } from "@/lib/domain/raffle";
 import { playFanfare, playThump, playTick } from "@/lib/raffle/sound";
 import { cn } from "@/lib/utils";
+import { fetchJson, usePolling } from "@/lib/realtime/use-polling";
 import { VolumeIcon } from "@/components/icons";
 
 // Sorteio no telão. O ganhador já foi escolhido no servidor; o servidor só o entrega depois do
@@ -138,24 +139,21 @@ export function RaffleStage({
 
   // Busca ao abrir, a cada sorteio e periodicamente (contagem de quem concorre; ganhador após o suspense).
   const waitingWinner = Boolean(data?.latest && !data.latest.winner);
+  const load = useCallback(async () => {
+    const next = await fetchJson(`/api/session/${sessionId}/raffle`, raffleDisplaySchema.parse);
+    setFailed(next === null);
+    if (next) setData(next);
+  }, [sessionId]);
+  usePolling(load, waitingWinner ? 700 : 4000);
+
+  // "Mostrar no telão" de novo ou sorteio novo (realtime): busca na hora.
+  const seen = useRef(`${version}|${drawnAt}`);
   useEffect(() => {
-    let cancelled = false;
-    const load = () =>
-      fetch(`/api/session/${sessionId}/raffle`, { cache: "no-store" })
-        .then(async (res) => (res.ok ? raffleDisplaySchema.parse(await res.json()) : null))
-        .catch(() => null)
-        .then((next) => {
-          if (cancelled) return;
-          setFailed(next === null);
-          if (next) setData(next);
-        });
+    const key = `${version}|${drawnAt}`;
+    if (seen.current === key) return;
+    seen.current = key;
     void load();
-    const id = window.setInterval(load, waitingWinner ? 700 : 4000);
-    return () => {
-      cancelled = true;
-      window.clearInterval(id);
-    };
-  }, [sessionId, version, drawnAt, waitingWinner]);
+  }, [version, drawnAt, load]);
 
   // Máquina de fases a partir do sorteio mais recente.
   const latest = data?.latest ?? null;

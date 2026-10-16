@@ -55,8 +55,8 @@
     "deleteTitle": "Delete \"{title}\"?",
     "deleteResponses": "{count, plural, one {Its # response will also be deleted.} other {Its # responses will also be deleted.}}",
     "deleted": "Interaction deleted.",
-    "emptyTitle": "No interactions yet",
-    "emptyDescription": "Add polls, quizzes, scales, word clouds or open-ended questions.",
+    "emptyTitle": "No questions yet",
+    "emptyDescription": "Add polls, quizzes, scales, rankings, word clouds or open-ended questions. The audience answers on their phones.",
     "cue": "Question {number}",
     "active": "Active",
     "responses": "{count, plural, one {# response} other {# responses}}",
@@ -64,7 +64,17 @@
     "moveUp": "Move up",
     "moveDown": "Move down",
     "addInteraction": "Add interaction",
-    "generateWithAI": "Generate with AI"
+    "generateWithAI": "Generate with AI",
+    "createFirstPoll": "Create your first poll",
+    "createFirstPollHint": "Opens a sample poll that's already filled in. Change the text and save.",
+    "exampleHint": "Sample poll: edit the question and options however you like before saving.",
+    "example": {
+      "question": "How much do you already know about today's topic?",
+      "option1": "Nothing, it's new to me",
+      "option2": "I've heard of it",
+      "option3": "I use it every day",
+      "option4": "I could give this talk"
+    }
   },
   "ai": {
     "title": "AI suggestions",
@@ -110,7 +120,8 @@
       "copyQuestionsFailed": "Couldn't copy the session's questions.",
       "copyPrizesFailed": "Couldn't copy the giveaway prizes.",
       "copySlidesFailed": "Couldn't copy the session's slides."
-    }
+    },
+    "noneSaved": "No saved questions from other sessions yet."
   },
   "addLive": {
     "open": "New question",

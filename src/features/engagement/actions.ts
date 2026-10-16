@@ -6,27 +6,15 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { hasDbErrorCode } from "@/lib/supabase/errors";
 import { fail, isUuid, ok, type ActionResult } from "@/lib/action-result";
-import { getModerationQueue, listSessionQuestions, type ModerationQueue, type SpeakerQuestion } from "@/lib/data/engagement";
-import { tallyReactions, type ReactionTally } from "@/lib/domain/reactions";
 import type { Messages } from "../../../messages/pt-BR";
 
 // Perguntas da plateia, moderação e reações: ações do palestrante (cliente dele, RLS e funções do banco
-// que conferem o dono da sessão).
+// que conferem o dono da sessão). As leituras periódicas ficam nas rotas GET /api/live/[sessionId]/*.
 
 /** Mensagem de erro no idioma do painel: chave de "live.errors" ou, sem chave, "Dados inválidos.". */
 async function failWith(key?: keyof Messages["live"]["errors"]) {
   if (!key) return fail((await getTranslations("errors"))("invalidData"));
   return fail((await getTranslations("live.errors"))(key));
-}
-
-export async function listQuestionsAction(sessionId: string): Promise<ActionResult<SpeakerQuestion[]>> {
-  if (!isUuid(sessionId)) return failWith();
-  const supabase = await createClient();
-  try {
-    return ok(await listSessionQuestions(supabase, sessionId));
-  } catch {
-    return failWith("questionsLoadFailed");
-  }
 }
 
 const moderationStatusSchema = z.enum(["visible", "answered", "hidden"]);
@@ -59,16 +47,6 @@ export async function showQuestionsAction(sessionId: string, show: boolean, ques
   return ok(null);
 }
 
-export async function moderationQueueAction(interactionId: string): Promise<ActionResult<ModerationQueue>> {
-  if (!isUuid(interactionId)) return failWith();
-  const supabase = await createClient();
-  try {
-    return ok(await getModerationQueue(supabase, interactionId));
-  } catch {
-    return failWith("moderationLoadFailed");
-  }
-}
-
 export async function moderateResponseAction(responseId: string, visible: boolean): Promise<ActionResult> {
   if (!isUuid(responseId) || typeof visible !== "boolean") return failWith();
   const supabase = await createClient();
@@ -90,14 +68,6 @@ export async function setTermVisibilityAction(interactionId: string, term: strin
   });
   if (error) return failWith("wordUpdateFailed");
   return ok(null);
-}
-
-export async function reactionTotalsAction(sessionId: string): Promise<ActionResult<ReactionTally>> {
-  if (!isUuid(sessionId)) return failWith();
-  const supabase = await createClient();
-  const { data, error } = await supabase.from("reactions").select("kind").eq("session_id", sessionId).limit(50_000);
-  if (error) return failWith("reactionsLoadFailed");
-  return ok(tallyReactions(data));
 }
 
 const engagementSchema = z

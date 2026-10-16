@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/logo";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 import { localeAlternates, ogLocale } from "@/i18n/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -15,12 +16,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // Mantenha este texto alinhado ao código: cookies em lib/participant/token.ts (e NEXT_LOCALE em i18n/cookie.ts),
-// contatos em participant_contacts (seção 0.4 da spec), entrada da IA em lib/ai/build-input.ts e perfil
-// público/convites em lib/data/speaker-profile.ts e features/speaker-profile/actions.ts; assistentes (MCP) em lib/mcp/.
+// ps_signup_tz em features/auth/actions.ts, contatos em participant_contacts (seção 0.4 da spec), hash do IP em
+// lib/request-ip.ts (pesquisa anônima, código errado, convites), ensaio em features/sessions/actions.ts, entrada da
+// IA em lib/ai/build-input.ts e perfil público/convites em lib/data/speaker-profile.ts e
+// features/speaker-profile/actions.ts; assistentes (MCP) em lib/mcp/.
 // Textos nos três idiomas em messages/<idioma>/legal.json.
 
 // Data da última mudança do texto (formatada no idioma de quem lê).
-const UPDATED_AT = new Date("2026-10-15T12:00:00Z");
+const UPDATED_AT = new Date("2026-10-16T12:00:00Z");
 
 const b = (chunks: React.ReactNode) => <strong className="text-foreground">{chunks}</strong>;
 const code = (chunks: React.ReactNode) => <code>{chunks}</code>;
@@ -35,13 +38,16 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 const PARTICIPANT_ITEMS = ["name", "avatar", "raffle", "answers", "questions", "reactions", "contact"] as const;
-const COOKIE_ITEMS = ["participation", "feedback", "login", "language", "theme"] as const;
+const COOKIE_ITEMS = ["participation", "feedback", "login", "signupTimeZone", "language", "theme"] as const;
 
 export default async function PrivacyPage() {
   const t = await getTranslations("legal");
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col gap-8 px-5 py-8">
-      <Logo />
+      <div className="flex items-center justify-between gap-4">
+        <Logo />
+        <LocaleSwitcher compact />
+      </div>
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">{t("title")}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{t("updated", { date: UPDATED_AT })}</p>
@@ -60,6 +66,7 @@ export default async function PrivacyPage() {
               <li key={item}>{t.rich(`participants.${item}`, { b })}</li>
             ))}
           </ul>
+          <p>{t("participants.joinEarly")}</p>
           <p>{t("participants.noTracking")}</p>
         </Section>
 
@@ -78,6 +85,16 @@ export default async function PrivacyPage() {
 
         <Section title={t("moderation.title")}>
           <p>{t("moderation.text")}</p>
+        </Section>
+
+        <Section title={t("abuse.title")}>
+          <p id="ip" className="scroll-mt-6">
+            {t("abuse.text")}
+          </p>
+        </Section>
+
+        <Section title={t("rehearsal.title")}>
+          <p>{t("rehearsal.text")}</p>
         </Section>
 
         <Section title={t("cookies.title")}>

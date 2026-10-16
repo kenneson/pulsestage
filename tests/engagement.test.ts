@@ -4,7 +4,15 @@ import { bordaPoints, isValidRanking, rankingResults } from "../src/lib/domain/r
 import { containsProfanity } from "../src/lib/domain/profanity.ts";
 import { askQuestionSchema, questionsOnScreen, sortQuestions, topQuestions } from "../src/lib/domain/questions.ts";
 import { hitWindow, pruneOldest } from "../src/lib/domain/rate-limit.ts";
-import { allowReaction, reactionPeaks, reactionsPerMinute, tallyReactions } from "../src/lib/domain/reactions.ts";
+import {
+  allowReaction,
+  emptyTally,
+  isReactionKind,
+  REACTION_KINDS,
+  reactionPeaks,
+  reactionsPerMinute,
+  tallyReactions,
+} from "../src/lib/domain/reactions.ts";
 
 test("bordaPoints dá n pontos à primeira e 1 à última", () => {
   assert.deepEqual(bordaPoints(["a", "b", "c"]), { a: 3, b: 2, c: 1 });
@@ -113,4 +121,19 @@ test("hitWindow conta na janela e pruneOldest limita o tamanho", () => {
   const big = new Map<string, number>([["x", 1], ["y", 2], ["z", 3]]);
   pruneOldest(big, 2);
   assert.deepEqual([...big.keys()], ["y", "z"]);
+});
+
+test("emptyTally zera todos os tipos de reação e devolve um objeto novo", () => {
+  const tally = emptyTally();
+  assert.deepEqual(Object.keys(tally).sort(), [...REACTION_KINDS].sort());
+  assert.ok(Object.values(tally).every((n) => n === 0));
+  tally.clap = 3;
+  assert.equal(emptyTally().clap, 0);
+});
+
+test("isReactionKind aceita só as chaves conhecidas", () => {
+  for (const kind of REACTION_KINDS) assert.ok(isReactionKind(kind));
+  assert.ok(!isReactionKind("👏"));
+  assert.ok(!isReactionKind("boo"));
+  assert.ok(!isReactionKind(undefined));
 });

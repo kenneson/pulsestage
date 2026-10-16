@@ -16,6 +16,7 @@ test("quiz: alternativa correta pelo número, pontos e bônus só com tempo", ()
     options: ["Rio", "Brasília", "São Paulo"],
     correct_option: 2,
     points: 200,
+    timer_seconds: null,
     speed_bonus: true,
     after_slide: 4,
   });
@@ -30,10 +31,25 @@ test("quiz: alternativa correta pelo número, pontos e bônus só com tempo", ()
     ],
   );
   assert.equal(r.input.settings.speedBonus, false);
+  assert.equal(r.input.settings.timerSeconds, null);
   assert.equal(r.afterSlide, 4);
 
   const timed = toInteractionInput({ type: "quiz", question: "Q", options: ["a", "b"], correct_option: 1, timer_seconds: 20, speed_bonus: true });
   assert.ok(timed.ok && timed.input.type === "quiz" && timed.input.settings.speedBonus && timed.input.settings.timerSeconds === 20);
+});
+
+test("quiz sem ajustes usa os padrões do painel (tempo, formas e bônus)", () => {
+  const r = toInteractionInput({ type: "quiz", question: "Q", options: ["a", "b"], correct_option: 1 });
+  assert.ok(r.ok && r.input.type === "quiz");
+  assert.deepEqual(r.input.settings, { timerSeconds: 30, optionStyle: "shapes", speedBonus: true });
+  assert.deepEqual(
+    r.input.options.map((o) => o.points),
+    [100, 100],
+  );
+
+  const plain = toInteractionInput({ type: "quiz", question: "Q", options: ["a", "b"], correct_option: 1, shapes: false, speed_bonus: false });
+  assert.ok(plain.ok && plain.input.type === "quiz");
+  assert.deepEqual(plain.input.settings, { timerSeconds: 30, optionStyle: "text", speedBonus: false });
 });
 
 test("quiz sem resposta certa ou com número inexistente falha com mensagem clara", () => {
@@ -132,4 +148,14 @@ test("ranking pelo MCP vira alternativas sem resposta certa", () => {
   const r = toInteractionInput({ type: "ranking", question: "Ordene as prioridades", options: ["A", "B", "C"], after_slide: 3 });
   assert.ok(r.ok && r.input.type === "ranking" && r.input.options.length === 3 && r.afterSlide === 3);
   assert.equal(toInteractionInput({ type: "ranking", question: "Só uma", options: ["A"] }).ok, false);
+});
+
+test("na edição, o que o assistente omite continua como está", async () => {
+  const { normalizeSettings } = await import("../src/lib/domain/interactions.ts");
+  const current = normalizeSettings("quiz", { timerSeconds: null, optionStyle: "text" });
+  const r = toInteractionInput({ type: "quiz", question: "Nova", options: ["a", "b"], correct_option: 2 }, undefined, current);
+  assert.ok(r.ok);
+  if (!r.ok) return;
+  assert.equal(r.input.settings.timerSeconds ?? null, null);
+  assert.equal(r.input.settings.optionStyle ?? "text", "text");
 });

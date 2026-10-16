@@ -31,7 +31,15 @@ export default async function SessionsPage() {
         </Link>
       </div>
       {sessions.length === 0 ? (
-        <EmptyState title={t("emptyTitle")} description={t("emptyDescription")} />
+        <EmptyState
+          title={t("emptyTitle")}
+          description={t("emptyDescription")}
+          action={
+            <Link href="/dashboard/sessions/new" className={buttonVariants()}>
+              <PlusIcon /> {t("newSession")}
+            </Link>
+          }
+        />
       ) : (
         <SessionList sessions={sessions} timeZone={timeZone} duplicable />
       )}

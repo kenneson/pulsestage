@@ -9,7 +9,7 @@
     "title": "Crear la sesión",
     "steps": {
       "newSession": "Haz clic en <b>“Nueva sesión”</b>.",
-      "fields": "Completa el título, la descripción, la fecha, la hora y la duración estimada. Solo el título es obligatorio.",
+      "fields": "Completa el título y, si quieres, la fecha y la hora. Solo el título es obligatorio. La descripción, la duración estimada, el idioma, el código de acceso y la encuesta están en <b>“Más opciones”</b>.",
       "joinCode": "<b>Código de acceso (opcional):</b> elige un código fácil de dictar, como <code>IA2026</code>. Si lo dejas en blanco, el sistema genera uno automáticamente. Una vez que la sesión empieza, el código no cambia."
     }
   },
@@ -24,7 +24,7 @@
   },
   "lineup": {
     "title": "Armar el guion",
-    "intro": "En la página de la sesión, agrega las interacciones en el orden en que las vas a usar en la presentación.",
+    "intro": "En la página de la sesión, agrega las interacciones en el orden en que las vas a usar en la presentación. ¿Guion vacío? <b>“Crear primera votación”</b> abre una votación de ejemplo, lista para editar.",
     "types": {
       "poll": "<b>Votación:</b> una elección entre varias opciones. Ideal para abrir la charla y conocer al público.",
       "scale": "<b>Escala:</b> una calificación entre un mínimo y un máximo (p. ej.: del 1 al 5), con etiquetas opcionales en los extremos.",
@@ -47,12 +47,12 @@
       "start": "Haz clic en <b>“Iniciar sesión”</b>. Pasas a la <b>sala en vivo</b>, tu panel de control durante la presentación.",
       "projector": "Haz clic en <b>“Pantalla del proyector”</b>. Se abre en otra pestaña: arrástrala al proyector o a la pantalla compartida y ponla en pantalla completa (<kbd>F11</kbd>). Sin una interacción activa, muestra el código QR y el código de acceso.",
       "launch": "Para lanzar una pregunta, haz clic en ella en la lista o en <b>“Siguiente”</b>. También funcionan la flecha <kbd>→</kbd> y <kbd>PageDown</kbd> (las teclas del control de diapositivas) con la sala en vivo en primer plano.",
-      "deck": "Con diapositivas subidas, <b>“Siguiente”</b> recorre diapositivas y preguntas en el orden del guion y <b>“Anterior”</b> (<kbd>←</kbd> o <kbd>PageUp</kbd>) vuelve a la diapositiva anterior. Al cerrar una pregunta, la pantalla vuelve a la diapositiva que estaba detrás. <b>“Mostrar en pantalla”</b>, junto al código QR, vuelve a mostrar el código de acceso.",
+      "deck": "Con diapositivas subidas, <b>“Siguiente”</b> recorre diapositivas y preguntas en el orden del guion y <b>“Anterior”</b> (<kbd>←</kbd> o <kbd>PageUp</kbd>) vuelve a la diapositiva anterior. Al cerrar una pregunta, la pantalla vuelve a la diapositiva que estaba detrás.",
       "mirror": "¿Vas a usar una sola pantalla, duplicada en el proyector? Abre la pantalla del proyector con tu cuenta iniciada: ahí, el control de diapositivas y las flechas también avanzan la presentación, y quien tenga el enlace sin haber iniciado sesión solo puede mirar.",
       "results": "Los resultados aparecen en tiempo real en el proyector y en la sala. Haz clic en <b>“Cerrar”</b> para dejar de recibir respuestas de esa interacción.",
       "addQuestion": "¿Surgió una pregunta que no estaba en el guion? Haz clic en <b>“Nueva pregunta”</b>, junto a Guion, elige el tipo y escríbela. <b>“Lanzar ahora”</b> la abre al público de inmediato; <b>“Dejar como siguiente”</b> pone la pregunta justo después de lo que está en la pantalla, para la próxima <kbd>→</kbd>. Con diapositivas, entra en ese mismo punto de la presentación.",
       "answer": "En el quiz, <b>“Mostrar respuesta”</b> resalta la opción correcta en tu sala en vivo, para que comentes el resultado con el público.",
-      "leaderboard": "Con al menos un quiz en el guion, <b>“Mostrar tabla de posiciones”</b> lleva el top 10 a la pantalla (y cierra la pregunta abierta). Cada persona aparece en la posición que tenía antes del último quiz y se desliza hasta la nueva, con los puntos subiendo. <b>“Ocultar tabla de posiciones”</b> o la próxima <kbd>→</kbd> quitan la tabla de la pantalla. Quien entró sin nombre aparece como “Participante” y un código."
+      "leaderboard": "Arriba en la sala en vivo, <b>“En pantalla ahora”</b> muestra lo que ve el público y lo cambia con un clic: <b>“Guion”</b>, <b>“Código QR”</b>, <b>“Tabla de posiciones”</b> (con un quiz en el guion), <b>“Preguntas del público”</b> (si están activadas) y <b>“Sorteo”</b> (si lo hay). <b>“Guion”</b> vuelve a la diapositiva o a la pregunta en la que estabas. La tabla muestra el top 10: cada persona aparece en la posición que tenía antes del último quiz y se desliza hasta la nueva, con los puntos subiendo. Quien entró sin nombre aparece como “Participante” y un código."
     },
     "pause": "<b>“Pausar”</b> congela la sesión (nadie responde) y <b>“Reanudar”</b> la devuelve a la normalidad. El número de “conectados ahora” es aproximado; los participantes que realmente entraron aparecen en el total de al lado.",
     "timer": "Junto al estado está el <b>cronómetro de la presentación</b>: el tiempo desde “Iniciar sesión”, sin contar las pausas, comparado con la duración que previste en la información de la sesión. Se pone ámbar cuando pasa de lo previsto. La duración real queda registrada en el análisis y en el informe."
@@ -60,7 +60,7 @@
   "audience": {
     "title": "Lo que ve el público",
     "items": {
-      "join": "Quien participa entra con el código QR o con el código, sin crear una cuenta. El nombre y el avatar (un animalito o un dibujo) son opcionales; el avatar aparece junto al nombre en la tabla de posiciones del quiz.",
+      "join": "Quien participa entra con el código QR o con el código, sin crear una cuenta, incluso antes de que empiece la sesión: el celular espera y se abre solo cuando la inicias. El nombre y el avatar (un animalito o un dibujo) son opcionales; el avatar aparece junto al nombre en la tabla de posiciones del quiz.",
       "active": "La pregunta activa aparece sola en el celular y cambia cuando avanzas. No hace falta recargar.",
       "once": "Cada persona responde una vez por interacción.",
       "contact": "El participante puede dejar su correo electrónico o teléfono para recibir materiales, solo con autorización explícita. Ese contacto se guarda aparte de las respuestas."
@@ -70,7 +70,7 @@
     "title": "Preguntas del público, reacciones y moderación",
     "intro": "En la pestaña <b>“Participación”</b> de la sesión (y en la tarjeta <b>“Participación”</b> de la sala en vivo) activas o desactivas cada función. Todo empieza activado, menos las aprobaciones.",
     "items": {
-      "qa": "<b>Preguntas del público:</b> en el celular aparece <b>“Preguntar al presentador”</b>. La persona escribe, elige si muestra su nombre y da me gusta a las preguntas de los demás. En la sala en vivo, la tarjeta <b>“Preguntas del público”</b> muestra las que tienen más me gusta: <b>“Destacar”</b> pone una en la pantalla, <b>“Mostrar en pantalla”</b> muestra las que tienen más me gusta, <b>“Respondida”</b> la saca de la fila y <b>“Ocultar”</b> la esconde. Con <b>“Aprobar las preguntas antes de que aparezcan”</b>, las nuevas esperan en <b>“Pendientes”</b> hasta que las apruebes.",
+      "qa": "<b>Preguntas del público:</b> en el celular aparece <b>“Preguntar al presentador”</b>. La persona escribe, elige si muestra su nombre y da me gusta a las preguntas de los demás. En la sala en vivo, la tarjeta <b>“Preguntas del público”</b> muestra las que tienen más me gusta: <b>“Destacar”</b> pone una en la pantalla, <b>“Respondida”</b> la saca de la fila y <b>“Ocultar”</b> la esconde. Para mostrar las que tienen más me gusta en la pantalla, elige <b>“Preguntas del público”</b> en <b>“En pantalla ahora”</b>. Con <b>“Aprobar las preguntas antes de que aparezcan”</b>, las nuevas esperan en <b>“Pendientes”</b> hasta que las apruebes.",
       "reactions": "<b>Reacciones en vivo:</b> 👏 ❤️ 😂 😮 🤔 quedan al pie de la pantalla del celular durante la sesión. Los emojis suben en la pantalla y el total aparece en la sala en vivo. En el análisis, ves los minutos con más reacciones.",
       "profanity": "<b>Filtro de groserías:</b> las palabras de la nube, las respuestas abiertas y las preguntas con groserías no van a la pantalla. A quien las envió no se le avisa (para que no intente burlar el filtro). Tú ves lo que se bloqueó y puedes liberarlo.",
       "moderation": "<b>Moderación en vivo:</b> en una nube de palabras, abre <b>“Moderar palabras”</b> y haz clic en la × para quitar una palabra de la pantalla (los próximos envíos de esa palabra también quedan fuera). En una pregunta abierta, <b>“Moderar respuestas”</b> oculta respuestas; con <b>“Aprobar respuestas abiertas antes de la pantalla”</b>, cada una espera tu <b>“Aprobar”</b>."
@@ -133,7 +133,7 @@
   "tips": {
     "title": "Consejos",
     "items": {
-      "rehearse": "Haz un ensayo: inicia la sesión y responde desde una ventana de incógnito o desde el celular. Después crea una sesión nueva para la presentación real.",
+      "rehearse": "Ensaya antes: <b>“Probar sesión”</b>, arriba en la sesión, abre una copia ya en vivo. Usa <b>“Abrir como participante”</b>, en la tarjeta del código QR, o tu celular para responder. Nada del ensayo cuenta en las estadísticas ni en el perfil, y <b>“Finalizar ensayo”</b> borra la copia sin tocar la sesión original.",
       "icebreaker": "Empieza con una pregunta fácil (votación o nube de palabras) para romper el hielo.",
       "pace": "Una interacción cada 10 o 15 minutos mantiene al público involucrado sin cortar el ritmo.",
       "qr": "Deja el código QR visible durante los primeros minutos: así también entra quien llega tarde.",

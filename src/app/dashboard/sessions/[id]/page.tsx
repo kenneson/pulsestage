@@ -17,7 +17,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs } from "@/components/ui/tabs";
 import { StatusBadge } from "@/components/sessions/status-badge";
 import { SessionForm } from "@/components/sessions/session-form";
-import { DeleteSessionButton, DuplicateSessionButton, StartSessionButton } from "@/components/sessions/session-controls";
+import {
+  DeleteSessionButton,
+  DuplicateSessionButton,
+  RehearsalButton,
+  StartSessionButton,
+} from "@/components/sessions/session-controls";
 import { loadLibrary } from "@/lib/data/library";
 import { isAIConfigured } from "@/lib/ai";
 import { QrDownloadButton } from "@/components/sessions/qr-download-button";
@@ -108,10 +113,11 @@ export default async function SessionBuilderPage({
     afterSlide: interaction.afterSlide,
   }));
 
-  const [{ timeZone }, locale, t, tTabs, tCards] = await Promise.all([
+  const [{ timeZone }, locale, t, tStates, tTabs, tCards] = await Promise.all([
     getSpeakerProfile(),
     getLocale(),
     getTranslations("session.page"),
+    getTranslations("common.states"),
     getTranslations("session.tabs"),
     getTranslations("session.cards"),
   ]);
@@ -129,21 +135,16 @@ export default async function SessionBuilderPage({
             </span>
           </div>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight">{session.title}</h1>
-          <p className="text-sm text-muted-foreground">{formatDateTime(session.scheduled_at, timeZone, locale)}</p>
+          <p className="text-sm text-muted-foreground">
+            {session.scheduled_at ? formatDateTime(session.scheduled_at, timeZone, locale) : tStates("noDate")}
+          </p>
         </div>
+        {/* Ação principal primeiro (no celular é a que aparece no topo); excluir sempre por último. */}
         <div className="flex flex-wrap items-center gap-2">
-          <DeleteSessionButton sessionId={id} title={session.title} />
-          <DuplicateSessionButton sessionId={id} title={session.title} />
-          {status !== "completed" ? <QrDownloadButton joinUrl={joinUrl(session.join_code)} code={session.join_code} /> : null}
           {status === "draft" ? <StartSessionButton sessionId={id} hasInteractions={items.length > 0} /> : null}
           {status === "live" || status === "paused" ? (
             <Link href={`/dashboard/sessions/${id}/live`} className={buttonVariants()}>
               {t("openLive")}
-            </Link>
-          ) : null}
-          {status === "completed" && session.raffle_eligibility ? (
-            <Link href={`/dashboard/sessions/${id}/live`} className={buttonVariants({ variant: "outline" })}>
-              {t("raffleRoom")}
             </Link>
           ) : null}
           {status === "completed" ? (
@@ -151,6 +152,15 @@ export default async function SessionBuilderPage({
               {t("viewAnalytics")}
             </Link>
           ) : null}
+          {status === "completed" && session.raffle_eligibility ? (
+            <Link href={`/dashboard/sessions/${id}/live`} className={buttonVariants({ variant: "outline" })}>
+              {t("raffleRoom")}
+            </Link>
+          ) : null}
+          {status !== "completed" && !session.is_test ? <RehearsalButton sessionId={id} /> : null}
+          {status !== "completed" ? <QrDownloadButton joinUrl={joinUrl(session.join_code)} code={session.join_code} /> : null}
+          <DuplicateSessionButton sessionId={id} title={session.title} />
+          <DeleteSessionButton sessionId={id} title={session.title} />
         </div>
       </div>
 

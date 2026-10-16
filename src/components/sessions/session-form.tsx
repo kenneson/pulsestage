@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Field, Input, Label, Select, Textarea } from "@/components/ui/input";
 import { Alert } from "@/components/ui/misc";
+import { ChevronRightIcon } from "@/components/icons";
 import { LOCALE_NAME, LOCALES, isLocale, type Locale } from "@/lib/domain/locale";
 
 type Defaults = {
@@ -71,19 +72,10 @@ export function SessionForm({
     }
   }
 
-  return (
-    <form action={formAction} className="grid gap-5">
-      <Field>
-        <Label htmlFor="title">{t("title")}</Label>
-        <Input
-          id="title"
-          name="title"
-          defaultValue={defaults.title}
-          placeholder={t("titlePlaceholder")}
-          maxLength={200}
-          required
-        />
-      </Field>
+  // Só o título é obrigatório: na criação, o resto fica em "Mais opções" (recolhido). Campos dentro de
+  // um <details> fechado continuam no formulário e são enviados com os valores padrão.
+  const advanced = (
+    <div className="grid gap-5">
       <Field>
         <Label htmlFor="description">{t("description")}</Label>
         <Textarea
@@ -94,36 +86,28 @@ export function SessionForm({
           maxLength={2000}
         />
       </Field>
-      <div className="grid gap-5 sm:grid-cols-3">
-        <Field>
-          <Label htmlFor="date">{t("date")}</Label>
-          <Input id="date" name="date" type="date" defaultValue={defaults.date} />
-        </Field>
-        <Field>
-          <Label htmlFor="time">{t("time")}</Label>
-          <Input id="time" name="time" type="time" defaultValue={defaults.time} />
-        </Field>
+      <div className="grid items-start gap-5 sm:grid-cols-2">
         <Field>
           <Label htmlFor="duration">{t("duration")}</Label>
           <Input id="duration" name="duration" type="number" min={1} max={1440} defaultValue={defaults.duration} />
         </Field>
+        <Field>
+          <Label htmlFor="locale">{t("locale")}</Label>
+          <Select
+            id="locale"
+            name="locale"
+            value={locale}
+            onChange={(e) => isLocale(e.target.value) && changeLocale(e.target.value)}
+          >
+            {LOCALES.map((l) => (
+              <option key={l} value={l}>
+                {LOCALE_NAME[l]}
+              </option>
+            ))}
+          </Select>
+          <p className="text-xs text-muted-foreground">{t("localeHelp")}</p>
+        </Field>
       </div>
-      <Field>
-        <Label htmlFor="locale">{t("locale")}</Label>
-        <Select
-          id="locale"
-          name="locale"
-          value={locale}
-          onChange={(e) => isLocale(e.target.value) && changeLocale(e.target.value)}
-        >
-          {LOCALES.map((l) => (
-            <option key={l} value={l}>
-              {LOCALE_NAME[l]}
-            </option>
-          ))}
-        </Select>
-        <p className="text-xs text-muted-foreground">{t("localeHelp")}</p>
-      </Field>
       <Field>
         <Label htmlFor="joinCode">{t("joinCode")}</Label>
         <Input
@@ -183,6 +167,54 @@ export function SessionForm({
           </>
         )}
       </Field>
+    </div>
+  );
+
+  return (
+    <form action={formAction} className="grid gap-5">
+      <Field>
+        <Label htmlFor="title">
+          {t("title")} <span className="font-normal text-muted-foreground">({t("required")})</span>
+        </Label>
+        <Input
+          id="title"
+          name="title"
+          defaultValue={defaults.title}
+          placeholder={t("titlePlaceholder")}
+          maxLength={200}
+          required
+          aria-describedby={sessionId ? undefined : "title-hint"}
+        />
+        {!sessionId ? (
+          <p id="title-hint" className="text-xs text-muted-foreground">
+            {t("requiredHint")}
+          </p>
+        ) : null}
+      </Field>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field>
+          <Label htmlFor="date">{t("date")}</Label>
+          <Input id="date" name="date" type="date" defaultValue={defaults.date} />
+        </Field>
+        <Field>
+          <Label htmlFor="time">{t("time")}</Label>
+          <Input id="time" name="time" type="time" defaultValue={defaults.time} />
+        </Field>
+      </div>
+      {sessionId ? (
+        advanced
+      ) : (
+        <details className="group rounded-lg border">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 px-4 py-2.5 [&::-webkit-details-marker]:hidden">
+            <ChevronRightIcon aria-hidden className="shrink-0 transition-transform group-open:rotate-90" />
+            <span className="flex min-w-0 flex-col">
+              <span className="text-sm font-medium">{t("moreOptions")}</span>
+              <span className="text-xs text-muted-foreground">{t("moreOptionsHint")}</span>
+            </span>
+          </summary>
+          <div className="border-t p-4">{advanced}</div>
+        </details>
+      )}
       {state.error ? <Alert>{state.error}</Alert> : null}
       {state.success ? <Alert tone="success">{state.success}</Alert> : null}
       <div>

@@ -94,7 +94,9 @@
   (`VERCEL_PROJECT_PRODUCTION_URL`); sem `https://`, completa.
 - **Landing** (`src/app/page.tsx`, contrato em `.impeccable/surfaces/`): manchete na largura toda e palco de demonstração
   (`components/landing/stage-demo.tsx`, 4 cenas simuladas: enquete, nuvem, quiz e ranking, sorteio; texto do telão em
-  `cqw` para escalar com a tela). Seções de slides e de gamificação/sorteio. Só fatos do produto, nunca números de uso.
+  `cqw` para escalar com a tela). Seções de slides e de gamificação/sorteio; exemplos do relatório e da conversa com
+  a IA em `components/landing/report-preview.tsx` e `ai-chat-preview.tsx` (o relatório espelha o analytics: confiança
+  geral e prioridade por recomendação). Só fatos do produto, nunca números de uso.
 - **Perfil público e diretório** (migration `20261014000000_speaker_profiles.sql`): colunas de perfil público em `profiles`
   (`public_enabled`, `public_slug`, título, temas, cidade/UF, formatos, públicos, experiência declarada, links e as opções
   `contact_enabled/show_ratings/promote_on_survey`), `sessions.public_listed` e `contact_requests` (gravada só pelo servidor).
@@ -143,9 +145,17 @@
   Supabase Auth com os três idiomas em `supabase/templates/` (colar no painel).
 - **Realtime resistente**: `useLiveState` relê `session_live_state` ao conectar (e 3 s depois), expõe `refresh()` (a sala
   ao vivo chama após cada ação) e aceita `pollMs` (só o projetor, 10 s). Nunca usar `pollMs` para participantes.
-- **Próxima tarefa:** aplicar migrations + seed num Supabase de teste e rodar o fluxo ponta a ponta
-  (seção "Teste manual" do README). `src/lib/supabase/database.types.ts` foi escrito à mão:
-  substitua por `npm run db:types` após ligar o projeto.
+- **Auditoria de produto** (migration `20261017000000_audit_fixes.sql`): pesquisa anônima (de quem não entrou) com
+  limite por IP via `survey_responses.ip_hash` (HMAC com segredo do servidor em `lib/request-ip.ts`, nunca o IP); essas
+  respostas aparecem ao speaker mas ficam fora da nota pública e do selo "verificado". Limite de código errado por hash
+  de IP, em memória. A plateia entra com a sessão em rascunho e espera no celular. **Ensaio** ("Testar sessão",
+  `startRehearsalAction`/`endRehearsalAction`): `sessions.is_test`/`rehearsal_of`, cópia oculta já ao vivo, fora de
+  listas, estatísticas e perfil público; encerrar apaga a cópia. Sala ao vivo em tela própria (sem barra lateral, por
+  `usePathname` em `components/live/live-room-frame.tsx`), "Próxima" em destaque e controle único "No telão agora"
+  (`screen-switcher.tsx`, regras em `lib/domain/screen.ts`); leituras periódicas por GET em `/api/live/[sessionId]/*`
+  (perguntas, moderação, reações, sorteio; só o dono) com `usePolling` (`lib/realtime/use-polling.ts`; nunca Server
+  Action para polling). Ranking do quiz no telão só durante a sessão; sorteio até 24 h após o fim
+  (`RAFFLE_PUBLIC_WINDOW_MS`). Anônimo não escreve em tabela nenhuma; `responses` saiu do Realtime.
 
 ## Mapa do código
 - `src/lib/domain/` regras puras (status, interações, palavras, resultados, métricas). Sem I/O.
@@ -153,6 +163,12 @@
   `public.ts` usa a secret key e devolve só dados sanitizados.
 - `src/features/*/actions.ts` Server Actions (toda escrita passa por aqui).
 - `src/lib/realtime/` hooks de realtime (trocar Postgres Changes por Broadcast só mexe aqui).
+- `src/features/*/core.ts` regras de escrita compartilhadas entre Server Actions e MCP (`sessions`, `interactions`,
+  `library`); as `actions.ts` só validam, traduzem e revalidam.
+- `src/lib/mcp/` servidor MCP (`server.ts`, `auth.ts`, `metadata.ts`, `results.ts`); conversão em `lib/domain/mcp.ts`.
+- `src/i18n/` next-intl: `request.ts`, `provider.tsx`, `session-intl.tsx`, `server.ts` (`getMessageTranslator`), `seo.ts`
+  (`localeAlternates`, `getPublicHref`), `cookie.ts`, `messages.ts`, `namespaces.ts`, `types.d.ts`. Guia em `docs/I18N.md`.
+- `messages/<locale>/<área>.json` textos nos três idiomas (`pt-BR`, `es-419`, `en-US`), mesmas chaves.
 - `src/lib/ai/` abstração `AIProvider` (Groq/OpenAI/Anthropic via fetch; `complete()` genérico, saída validada com Zod).
   Casos de uso em `ai/index.ts`: `generateInsights` e `suggestInteractions` (sugestões passam pelo mesmo
   `interactionInputSchema` do builder antes de chegar à UI).

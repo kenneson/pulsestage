@@ -9,7 +9,7 @@
     "title": "Create the session",
     "steps": {
       "newSession": "Click <b>“New session”</b>.",
-      "fields": "Fill in the title, description, date, time, and estimated duration. Only the title is required.",
+      "fields": "Fill in the title and, if you like, the date and time. Only the title is required. Description, estimated duration, language, join code, and survey are under <b>“More options”</b>.",
       "joinCode": "<b>Join code (optional):</b> pick a code that's easy to say out loud, like <code>AI2026</code>. If you leave it blank, one is generated automatically. Once the session starts, the code doesn't change."
     }
   },
@@ -24,7 +24,7 @@
   },
   "lineup": {
     "title": "Build the lineup",
-    "intro": "On the session page, add your interactions in the order you'll use them in the presentation.",
+    "intro": "On the session page, add your interactions in the order you'll use them in the presentation. Empty lineup? <b>“Create your first poll”</b> opens a sample poll, ready to edit.",
     "types": {
       "poll": "<b>Poll:</b> a single choice among options. Great for opening the talk and getting to know the audience.",
       "scale": "<b>Scale:</b> a rating between a minimum and a maximum (e.g., 1 to 5), with optional labels at each end.",
@@ -47,12 +47,12 @@
       "start": "Click <b>“Start session”</b>. You'll go to the <b>live room</b>, your control panel during the talk.",
       "projector": "Click <b>“Projector screen”</b>. It opens in another tab: drag it to the projector or shared screen and go full screen (<kbd>F11</kbd>). With no active interaction, it shows the QR code and the join code.",
       "launch": "To launch a question, click it in the list or click <b>“Next”</b>. The <kbd>→</kbd> arrow and <kbd>PageDown</kbd> (the keys a slide clicker sends) also work while the live room is in focus.",
-      "deck": "With slides uploaded, <b>“Next”</b> steps through slides and questions in lineup order and <b>“Previous”</b> (<kbd>←</kbd> or <kbd>PageUp</kbd>) goes back to the previous slide. When you close a question, the big screen goes back to the slide behind it. <b>“Show on the big screen”</b>, next to the QR code, shows the join code again.",
+      "deck": "With slides uploaded, <b>“Next”</b> steps through slides and questions in lineup order and <b>“Previous”</b> (<kbd>←</kbd> or <kbd>PageUp</kbd>) goes back to the previous slide. When you close a question, the big screen goes back to the slide behind it.",
       "mirror": "Using a single screen mirrored to the projector? Open the projector screen while signed in to your account: there, the clicker and the arrow keys also advance the presentation, and anyone with the link who isn't signed in can only watch.",
       "results": "Results show up in real time on the projector and in the live room. Click <b>“Close”</b> to stop accepting answers for that interaction.",
       "addQuestion": "A question came up that wasn't in the lineup? Click <b>“New question”</b>, next to Lineup, pick the type, and write it. <b>“Launch now”</b> opens it to the audience right away; <b>“Keep as next”</b> places it right after what's on the big screen, for the next <kbd>→</kbd>. With slides, it goes in at that same point of the presentation.",
       "answer": "In a quiz, <b>“Show answer”</b> highlights the correct option in your live room, so you can talk through the result with the audience.",
-      "leaderboard": "With at least one quiz in the lineup, <b>“Show leaderboard”</b> puts the top 10 on the big screen (and closes the open question). Each person appears where they stood before the last quiz and slides to their new spot as the points count up. <b>“Hide leaderboard”</b> or the next <kbd>→</kbd> takes the leaderboard off the big screen. People who joined without a name appear as “Participant” plus a code."
+      "leaderboard": "At the top of the live room, <b>“On the big screen now”</b> shows what the audience sees and switches it in one click: <b>“Lineup”</b>, <b>“QR code”</b>, <b>“Leaderboard”</b> (with a quiz in the lineup), <b>“Audience Q&A”</b> (when it's on), and <b>“Giveaway”</b> (if there is one). <b>“Lineup”</b> goes back to the slide or question you were on. The leaderboard shows the top 10: each person appears where they stood before the last quiz and slides to their new spot as the points count up. People who joined without a name appear as “Participant” plus a code."
     },
     "pause": "<b>“Pause”</b> freezes the session (no one can answer) and <b>“Resume”</b> brings it back. The “connected now” number is approximate; the participants who actually joined appear in the total next to it.",
     "timer": "Next to the status is the <b>talk timer</b>: the time since “Start session”, not counting pauses, compared with the duration you planned in the session details. It turns amber when you go over. The actual duration is recorded in analytics and in the report."
@@ -60,7 +60,7 @@
   "audience": {
     "title": "What the audience sees",
     "items": {
-      "join": "Participants join with the QR code or the join code, without creating an account. Name and avatar (a little animal or drawing) are optional; the avatar appears next to the name on the quiz leaderboard.",
+      "join": "Participants join with the QR code or the join code, without creating an account, even before the session starts: the phone waits and opens on its own when you start. Name and avatar (a little animal or drawing) are optional; the avatar appears next to the name on the quiz leaderboard.",
       "active": "The active question shows up on their phone on its own and changes when you move ahead. No need to reload.",
       "once": "Each person answers once per interaction.",
       "contact": "Participants can leave an email or phone number to get materials, only with explicit consent. That contact info is kept separate from their answers."
@@ -70,7 +70,7 @@
     "title": "Audience Q&A, reactions, and moderation",
     "intro": "In the session's <b>“Engagement”</b> tab (and the card of the same name in the live room) you turn each feature on or off. Everything starts on, except approvals.",
     "items": {
-      "qa": "<b>Audience Q&A:</b> phones show <b>“Ask the speaker”</b>. People write a question, choose whether to show their name, and upvote other people's questions. In the live room, the <b>“Audience Q&A”</b> card lists the most upvoted: <b>“Feature”</b> puts one on the big screen, <b>“Show on the big screen”</b> shows the most upvoted ones, <b>“Answered”</b> takes it out of the queue, and <b>“Hide”</b> hides it. With <b>“Approve questions before they appear”</b>, new ones wait in <b>“Waiting”</b> until you approve them.",
+      "qa": "<b>Audience Q&A:</b> phones show <b>“Ask the speaker”</b>. People write a question, choose whether to show their name, and upvote other people's questions. In the live room, the <b>“Audience Q&A”</b> card lists the most upvoted: <b>“Feature”</b> puts one on the big screen, <b>“Answered”</b> takes it out of the queue, and <b>“Hide”</b> hides it. To show the most upvoted ones on the big screen, pick <b>“Audience Q&A”</b> under <b>“On the big screen now”</b>. With <b>“Approve questions before they appear”</b>, new ones wait in <b>“Waiting”</b> until you approve them.",
       "reactions": "<b>Live reactions:</b> 👏 ❤️ 😂 😮 🤔 sit at the bottom of the phone screen during the session. The emojis float up on the big screen and the total shows in the live room. In analytics, you can see the minutes with the most reactions.",
       "profanity": "<b>Profanity filter:</b> word cloud entries, open-ended answers, and questions with profanity don't go to the big screen. The sender isn't told (so they don't try to get around it). You can see what was blocked and let it through.",
       "moderation": "<b>Live moderation:</b> in a word cloud, open <b>“Moderate words”</b> and click the × to take a word off the big screen (future submissions of it are left out too). In an open-ended question, <b>“Moderate responses”</b> hides answers; with <b>“Approve open-ended answers before the big screen”</b>, each one waits for your <b>“Approve”</b>."
@@ -133,7 +133,7 @@
   "tips": {
     "title": "Tips",
     "items": {
-      "rehearse": "Do a rehearsal: start the session and answer from a private window or your phone. Then create a new session for the real thing.",
+      "rehearse": "Rehearse first: <b>“Test session”</b>, at the top of the session, opens a copy that's already live. Use <b>“Open as participant”</b>, on the QR code card, or your phone to answer. Nothing from the rehearsal counts in your stats or profile, and <b>“End rehearsal”</b> deletes the copy without touching the original session.",
       "icebreaker": "Start with an easy question (a poll or word cloud) to break the ice.",
       "pace": "One interaction every 10 to 15 minutes keeps the audience engaged without breaking your rhythm.",
       "qr": "Keep the QR code visible for the first few minutes so latecomers can join too.",

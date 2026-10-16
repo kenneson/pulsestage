@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getOwnedSession } from "@/lib/data/sessions";
 import { removeSlideFiles, SLIDES_BUCKET } from "@/lib/data/slides";
 import { MAX_SLIDES, SLIDE_FORMATS, slidePath } from "@/lib/domain/deck";
+import { isEditable } from "@/lib/domain/session";
 import { hasDbErrorCode } from "@/lib/supabase/errors";
 import { messageKey } from "@/lib/domain/message-key";
 import { getMessageTranslator } from "@/i18n/server";
@@ -44,7 +45,7 @@ export async function saveSlidesAction(sessionId: string, raw: unknown): Promise
   const supabase = await createClient();
   const session = await getOwnedSession(supabase, sessionId);
   if (!session) return fail(tSession("sessionNotFound"));
-  if (session.status === "completed") return fail(tSession("sessionEnded"));
+  if (!isEditable(session.status)) return fail(tSession("sessionEnded"));
 
   const folder = `${session.speaker_id}/${sessionId}`;
   const { data: files, error: listError } = await supabase.storage
@@ -77,7 +78,7 @@ export async function removeSlidesAction(sessionId: string): Promise<ActionResul
   const supabase = await createClient();
   const session = await getOwnedSession(supabase, sessionId);
   if (!session) return fail(tSession("sessionNotFound"));
-  if (session.status === "completed") return fail(tSession("sessionEnded"));
+  if (!isEditable(session.status)) return fail(tSession("sessionEnded"));
 
   // As posições das perguntas (after_slide) ficam guardadas: valem de novo se outro PDF for enviado.
   const { error } = await supabase

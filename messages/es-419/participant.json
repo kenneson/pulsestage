@@ -16,14 +16,13 @@
     "endedText": "Esta sesión ya terminó. ¿Qué tal si nos dejas tu opinión?",
     "rateSession": "Evaluar la sesión",
     "code": "Código {code}",
-    "notStarted": "La sesión aún no comienza. Podrás entrar en cuanto se inicie."
+    "notStarted": "La sesión aún no comienza: entra ahora y síguela desde aquí."
   },
   "joinForm": {
     "nameLabel": "Tu nombre (opcional)",
     "namePlaceholder": "Puedes participar sin nombre",
     "nameHint": "Solo aparece en la tabla de posiciones del quiz, que puede mostrarse en la pantalla. Si lo dejas en blanco, participas de forma anónima.",
     "avatarLegend": "Elige un avatar (opcional)",
-    "avatarHint": "Aparece junto a tu nombre en la tabla de posiciones del quiz.",
     "materialSummary": "Quiero recibir el material (opcional)",
     "email": "Correo electrónico",
     "phone": "Teléfono",
@@ -45,6 +44,7 @@
     "inNamed": "¡Ya estás dentro, {name}!",
     "in": "¡Ya estás dentro!",
     "waiting": "Esperando la próxima interacción…",
+    "startingSoon": "La sesión comienza en unos instantes.",
     "answeredTitle": "Respuesta registrada",
     "answeredText": "Mira el resultado en la pantalla del presentador.",
     "askSpeaker": "Preguntar al presentador"
@@ -124,7 +124,7 @@
     "sessionFull": "Esta sesión alcanzó el límite de participantes.",
     "joinFailed": "No fue posible entrar ahora. Intenta de nuevo.",
     "invalidAnswerType": "Tipo de respuesta no válido.",
-    "invalidOption": "Alternativa no válida.",
+    "invalidOption": "Opción no válida.",
     "timeUp": "Se acabó el tiempo.",
     "ratingOutOfRange": "La nota está fuera de la escala.",
     "moreSpecificWord": "Prueba con una palabra más específica.",

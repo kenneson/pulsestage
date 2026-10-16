@@ -11,7 +11,11 @@ export function Tabs({ tabs, defaultTab }: { tabs: Tab[]; defaultTab?: string })
 
   return (
     <div className="flex flex-col gap-4">
-      <div role="tablist" className="inline-flex w-fit gap-1 rounded-lg bg-muted p-1">
+      {/* No celular as abas não cabem: a faixa rola na horizontal em vez de estourar a página. */}
+      <div
+        role="tablist"
+        className="flex w-fit max-w-full gap-1 overflow-x-auto overscroll-x-contain rounded-lg bg-muted p-1 [scrollbar-width:thin]"
+      >
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -20,7 +24,7 @@ export function Tabs({ tabs, defaultTab }: { tabs: Tab[]; defaultTab?: string })
             aria-selected={tab.id === current?.id}
             onClick={() => setActive(tab.id)}
             className={cn(
-              "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+              "shrink-0 whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
               tab.id === current?.id ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground",
             )}
           >

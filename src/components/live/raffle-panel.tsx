@@ -4,10 +4,20 @@ import { useCallback, useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { drawRaffleAction, raffleStateAction, redrawRaffleAction, showRaffleAction } from "@/features/raffle/actions";
+import { z } from "zod";
+import { drawRaffleAction, redrawRaffleAction, showRaffleAction } from "@/features/raffle/actions";
 import type { RaffleState } from "@/lib/data/raffle";
-import { prizeProgress, RAFFLE_REVEAL_MS, winnerRevealed } from "@/lib/domain/raffle";
+import {
+  prizeKindSchema,
+  prizeProgress,
+  RAFFLE_REVEAL_MS,
+  raffleEligibilitySchema,
+  raffleWinnerViewSchema,
+  winnerRevealed,
+} from "@/lib/domain/raffle";
 import type { LiveState } from "@/lib/realtime/schemas";
+import { fetchJson, usePolling } from "@/lib/realtime/use-polling";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useConfirm } from "@/components/ui/confirm-dialog";
@@ -15,6 +25,30 @@ import { GiftIcon } from "@/components/icons";
 import { WinnerList } from "@/components/raffle/winner-list";
 
 const POLL_MS = 5000;
+
+const raffleStateSchema = z.object({
+  eligibility: raffleEligibilitySchema.nullable(),
+  prizes: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      description: z.string().nullable(),
+      kind: prizeKindSchema,
+      quantity: z.number(),
+      winnerMessage: z.string().nullable(),
+      winners: z.array(
+        raffleWinnerViewSchema.extend({
+          prizeId: z.string(),
+          drawnAt: z.string(),
+          forfeitedAt: z.string().nullable(),
+          deliveredAt: z.string().nullable(),
+        }),
+      ),
+    }),
+  ),
+  entrants: z.number(),
+  participants: z.number(),
+}) satisfies z.ZodType<RaffleState>;
 
 /**
  * Card "Sorteio" da sala ao vivo (também depois de encerrar a sessão, quando a pesquisa abre).
@@ -40,15 +74,12 @@ export function RafflePanel({
   const [now, setNow] = useState(() => Date.now());
 
   const reload = useCallback(async () => {
-    const result = await raffleStateAction(sessionId);
-    if (result.ok) setState(result.data);
+    const next = await fetchJson(`/api/live/${sessionId}/raffle`, raffleStateSchema.parse);
+    if (next) setState(next);
   }, [sessionId]);
 
   // Quem concorre muda enquanto a pesquisa recebe respostas: relê de tempos em tempos.
-  useEffect(() => {
-    const id = window.setInterval(() => void reload(), POLL_MS);
-    return () => window.clearInterval(id);
-  }, [reload]);
+  usePolling(reload, POLL_MS);
 
   const drawnAt = live?.raffle_drawn_at ?? null;
   const suspense = drawnAt !== null && !winnerRevealed(drawnAt, now);
@@ -86,9 +117,10 @@ export function RafflePanel({
       <CardHeader className="flex-row items-center justify-between gap-2">
         <CardTitle className="flex items-center gap-2">
           <GiftIcon /> {t("title")}
+          {onScreen ? <Badge variant="live">{t("onScreen")}</Badge> : null}
         </CardTitle>
         <Button
-          variant={onScreen ? "default" : "outline"}
+          variant="outline"
           size="sm"
           disabled={pending || !started}
           onClick={() => run(() => showRaffleAction(sessionId, !onScreen))}

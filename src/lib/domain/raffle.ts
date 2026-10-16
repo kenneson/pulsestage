@@ -13,17 +13,6 @@ export const RAFFLE_ELIGIBILITIES = ["survey", "everyone"] as const;
 export type RaffleEligibility = (typeof RAFFLE_ELIGIBILITIES)[number];
 export const raffleEligibilitySchema = z.enum(RAFFLE_ELIGIBILITIES);
 
-export const RAFFLE_ELIGIBILITY_META: Record<RaffleEligibility, { label: string; description: string }> = {
-  survey: {
-    label: "Quem responder a pesquisa",
-    description: "Ao enviar a pesquisa pós-evento, a pessoa recebe um número. Quem não responde não concorre.",
-  },
-  everyone: {
-    label: "Todos que entrarem na sessão",
-    description: "Cada pessoa recebe um número ao entrar, mesmo sem responder a pesquisa.",
-  },
-};
-
 /** Depois do fim da sessão, o telão do sorteio (com nomes) fica disponível por este tempo. */
 export const RAFFLE_PUBLIC_WINDOW_MS = 24 * 60 * 60 * 1000;
 
@@ -41,7 +30,6 @@ export function isRaffleEligibility(value: unknown): value is RaffleEligibility 
 export const PRIZE_KINDS = ["physical", "digital"] as const;
 export type PrizeKind = (typeof PRIZE_KINDS)[number];
 export const prizeKindSchema = z.enum(PRIZE_KINDS);
-export const PRIZE_KIND_LABEL: Record<PrizeKind, string> = { physical: "Físico", digital: "Digital" };
 
 export function toPrizeKind(value: string): PrizeKind {
   return value === "digital" ? "digital" : "physical";
