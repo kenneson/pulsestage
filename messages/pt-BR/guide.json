@@ -60,8 +60,8 @@
   "audience": {
     "title": "O que a audiência vê",
     "items": {
-      "join": "Quem participa entra pelo QR Code ou pelo código, sem criar conta, inclusive antes de a sessão começar: o celular espera e abre sozinho quando você inicia. Nome e avatar (um bichinho ou desenho) são opcionais; o avatar aparece ao lado do nome no ranking do quiz.",
-      "active": "A pergunta ativa aparece sozinha no celular e muda quando você avança. Não é preciso recarregar.",
+      "join": "Quem participa entra pelo QR Code ou pelo código, sem criar conta, inclusive antes de a sessão começar: o celular espera e abre sozinho quando você inicia. Nome e avatar (um bichinho ou desenho) são opcionais; enquanto o QR Code está no telão, quem entra aparece na sala de espera com avatar e nome, e o avatar acompanha o nome no ranking do quiz.",
+      "active": "A pergunta ativa aparece sozinha no celular e muda quando você avança. Não é preciso recarregar. Quando um quiz fecha (o tempo acaba ou você encerra), cada celular mostra se a pessoa acertou, os pontos e a posição dela.",
       "once": "Cada pessoa responde uma vez por interação.",
       "contact": "O participante pode deixar e-mail ou telefone para receber materiais, só com autorização explícita. Esse contato fica separado das respostas."
     }

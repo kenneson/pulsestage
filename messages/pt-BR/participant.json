@@ -21,7 +21,7 @@
   "joinForm": {
     "nameLabel": "Seu nome (opcional)",
     "namePlaceholder": "Pode participar sem nome",
-    "nameHint": "Aparece só no ranking do quiz, que pode ser mostrado no telão. Em branco, você fica anônimo.",
+    "nameHint": "Aparece no telão quando você entra e no ranking do quiz. Em branco, você fica anônimo.",
     "avatarLegend": "Escolha um avatar (opcional)",
     "materialSummary": "Quero receber o material (opcional)",
     "email": "E-mail",
@@ -147,5 +147,14 @@
     "reactionFailed": "Não foi possível reagir.",
     "surveyTooMany": "Muitas respostas enviadas desta rede. Tente de novo mais tarde.",
     "consentPurpose": "Receber materiais e comunicações sobre esta sessão"
+  },
+  "quizResult": {
+    "correct": "Acertou!",
+    "wrong": "Não foi dessa vez",
+    "missed": "Tempo esgotado",
+    "points": "+{points, number} pontos",
+    "correctAnswer": "Resposta certa: <b>{label}</b>",
+    "standing": "Você está em {rank}º lugar de {of, number}",
+    "total": "{points, number} pontos no total"
   }
 }

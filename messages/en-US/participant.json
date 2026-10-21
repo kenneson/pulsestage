@@ -21,7 +21,7 @@
   "joinForm": {
     "nameLabel": "Your name (optional)",
     "namePlaceholder": "You can join without a name",
-    "nameHint": "Only shown on the quiz leaderboard, which may appear on the big screen. Leave it blank to stay anonymous.",
+    "nameHint": "Shown on the big screen when you join and on the quiz leaderboard. Leave it blank to stay anonymous.",
     "avatarLegend": "Pick an avatar (optional)",
     "materialSummary": "Send me the materials (optional)",
     "email": "Email",
@@ -147,5 +147,14 @@
     "reactionFailed": "Couldn't send your reaction.",
     "surveyTooMany": "Too many responses were sent from this network. Please try again later.",
     "consentPurpose": "Receive materials and communications about this session"
+  },
+  "quizResult": {
+    "correct": "Correct!",
+    "wrong": "Not this time",
+    "missed": "Time's up",
+    "points": "+{points, number} points",
+    "correctAnswer": "Correct answer: <b>{label}</b>",
+    "standing": "You're in {rank, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place out of {of, number}",
+    "total": "{points, number} points in total"
   }
 }

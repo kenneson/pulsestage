@@ -52,5 +52,10 @@
     "hintSurveyOpen": "Responda a pesquisa e receba seu número da sorte no celular.",
     "hintSurveyLater": "Ao final, responda a pesquisa para receber seu número da sorte.",
     "hintEveryone": "Seu número da sorte está no seu celular."
+  },
+  "lobby": {
+    "count": "{count, plural, one {# pessoa na sala} other {# pessoas na sala}}",
+    "more": "+{count, number}",
+    "anonymous": "Participante sem nome"
   }
 }

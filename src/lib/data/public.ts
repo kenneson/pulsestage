@@ -12,6 +12,9 @@ import type { DeckSession } from "@/lib/data/slides";
 import { fetchAllRows } from "@/lib/supabase/fetch-all";
 import { leaderboard, type LeaderboardEntry } from "@/lib/domain/leaderboard";
 import { avatarOf } from "@/lib/domain/gamification";
+import { LOBBY_LIMIT, publicName, toLobby, type Lobby } from "@/lib/domain/lobby";
+import { screenContent } from "@/lib/domain/screen";
+import { toSessionStatus } from "@/lib/domain/session";
 
 // Leituras públicas feitas no servidor com a secret key.
 // Tudo que sai daqui é sanitizado: sem is_correct, points ou dados pessoais.
@@ -174,7 +177,7 @@ export async function getPublicLeaderboard(
   sessionId: string,
   anonymous?: string,
 ): Promise<LeaderboardEntry[] | null> {
-  const state = await getLiveState(admin, sessionId);
+  const [state, rules] = await Promise.all([getLiveState(admin, sessionId), nameRules(admin, sessionId)]);
   // Só durante a sessão: depois de encerrada, o link do telão não expõe mais os nomes.
   if (!state || (state.status !== "live" && state.status !== "paused") || !state.show_leaderboard) return null;
 
@@ -204,9 +207,46 @@ export async function getPublicLeaderboard(
 
   return leaderboard(
     responses.map((r) => ({ participantId: r.participant_id, interactionId: r.interaction_id, value: r.value })),
-    participants,
+    // Nome barrado pelo filtro de palavrões vira "Participante XXXX" no telão.
+    participants.map((p) => ({ ...p, display_name: publicName(p.display_name, rules) })),
     latest?.id ?? null,
     undefined,
     anonymous,
   );
+}
+
+/** Filtro de palavrões e idioma da sessão: decidem se um nome pode aparecer para a sala. */
+async function nameRules(admin: AdminSupabase, sessionId: string): Promise<{ profanityFilter: boolean; locale: Locale }> {
+  const { data, error } = await admin.from("sessions").select("profanity_filter, locale").eq("id", sessionId).maybeSingle();
+  if (error) throw new Error(error.message);
+  return { profanityFilter: data?.profanity_filter ?? true, locale: localeOrDefault(data?.locale) };
+}
+
+/**
+ * Quem entrou, para a sala de espera do telão. Só enquanto o QR Code de entrada está no telão (rascunho
+ * ou ao vivo, sem pergunta, slide ou outra tela por cima): fora disso, o link do projetor não lista nomes.
+ * Sai só nome escolhido (filtrado) e avatar, das pessoas mais recentes.
+ */
+export async function getPublicLobby(admin: AdminSupabase, sessionId: string): Promise<Lobby | null> {
+  const [{ data: session, error }, state] = await Promise.all([
+    admin.from("sessions").select("status, slide_count, profanity_filter, locale").eq("id", sessionId).maybeSingle(),
+    getLiveState(admin, sessionId),
+  ]);
+  if (error) throw new Error(error.message);
+  if (!session) return null;
+  const status = toSessionStatus(session.status);
+  if (status !== "draft" && status !== "live") return null;
+  if (screenContent(state, status, { slideCount: session.slide_count ?? 0 }).kind !== "join") return null;
+
+  const { data, count, error: listError } = await admin
+    .from("participants")
+    .select("id, display_name, avatar", { count: "exact" })
+    .eq("session_id", sessionId)
+    .order("created_at", { ascending: false })
+    .limit(LOBBY_LIMIT);
+  if (listError) throw new Error(listError.message);
+  return toLobby(data, count ?? data.length, {
+    profanityFilter: session.profanity_filter,
+    locale: localeOrDefault(session.locale),
+  });
 }

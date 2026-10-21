@@ -60,8 +60,8 @@
   "audience": {
     "title": "Lo que ve el público",
     "items": {
-      "join": "Quien participa entra con el código QR o con el código, sin crear una cuenta, incluso antes de que empiece la sesión: el celular espera y se abre solo cuando la inicias. El nombre y el avatar (un animalito o un dibujo) son opcionales; el avatar aparece junto al nombre en la tabla de posiciones del quiz.",
-      "active": "La pregunta activa aparece sola en el celular y cambia cuando avanzas. No hace falta recargar.",
+      "join": "Quien participa entra con el código QR o con el código, sin crear una cuenta, incluso antes de que empiece la sesión: el celular espera y se abre solo cuando la inicias. El nombre y el avatar (un animalito o un dibujo) son opcionales; mientras el código QR está en la pantalla, quien entra aparece en la sala de espera con su avatar y nombre, y el avatar acompaña al nombre en la tabla de posiciones del quiz.",
+      "active": "La pregunta activa aparece sola en el celular y cambia cuando avanzas. No hace falta recargar. Cuando un quiz se cierra (se acaba el tiempo o lo cierras), cada celular muestra si la persona acertó, sus puntos y su posición.",
       "once": "Cada persona responde una vez por interacción.",
       "contact": "El participante puede dejar su correo electrónico o teléfono para recibir materiales, solo con autorización explícita. Ese contacto se guarda aparte de las respuestas."
     }

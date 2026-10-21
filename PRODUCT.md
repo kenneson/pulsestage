@@ -38,7 +38,7 @@ Não é mais um clone de Mentimeter, Slido ou AhaSlides. A interação ao vivo �
   Ranking (ordenar alternativas). Durante a sessão: perguntas da plateia (com curtidas e telão) e reações ao vivo.
 - Filtro de palavrões ligado por padrão e moderação antes do telão (respostas abertas, nuvem e perguntas): pensado para escolas.
 - Slides em PDF convertidos no navegador; perguntas posicionadas entre os slides; nova pergunta durante a sessão.
-- Gamificação: avatares, alternativas com formas/cores e imagens, bônus de velocidade, ranking do quiz no telão (só durante a sessão) e sorteio de prêmios (telão mostra o resultado até 24 h depois do fim).
+- Gamificação: avatares, alternativas com formas/cores e imagens, bônus de velocidade, ranking do quiz no telão (só durante a sessão) e sorteio de prêmios (telão mostra o resultado até 24 h depois do fim). Sala de espera no telão (quem entra aparece com avatar e nome enquanto o QR Code está na tela; nome com palavrão não aparece) e resultado do quiz no celular quando a pergunta fecha (acertou, pontos, resposta certa e a própria posição).
 - Perfil público verificado do speaker, diretório `/palestrantes` e convites para palestrar.
 - Biblioteca de perguntas, duplicar sessão, exportação (PDF e CSV), sugestões de perguntas com IA ("Gerar com IA").
 - Login do speaker por e-mail/senha ou Google. Participantes sem conta (cookie assinado), uma resposta por interação.

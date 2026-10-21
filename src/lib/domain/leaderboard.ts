@@ -75,3 +75,21 @@ export function leaderboard(
       };
     });
 }
+
+/** Pontos, acertos e ordem de todo mundo no quiz da sessão (base do ranking e da posição de cada um). */
+export type QuizRanking = { totals: Totals; order: string[] };
+
+export function rankQuiz(responses: readonly LeaderboardResponse[]): QuizRanking {
+  const totals = totalsOf(responses, null);
+  return { totals, order: ranked(totals) };
+}
+
+/** Posição de uma pessoa: só ela vê a própria (no celular). Null = ainda sem resposta de quiz. */
+export type Standing = { points: number; correct: number; rank: number; of: number };
+
+export function standingIn(ranking: QuizRanking, participantId: string): Standing | null {
+  const index = ranking.order.indexOf(participantId);
+  const total = ranking.totals.get(participantId);
+  if (index < 0 || !total) return null;
+  return { points: total.points, correct: total.correct, rank: index + 1, of: ranking.order.length };
+}

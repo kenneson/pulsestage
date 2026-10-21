@@ -20,6 +20,7 @@ import { QuizLeaderboard } from "./quiz-leaderboard";
 import { RaffleStage } from "./raffle-stage";
 import { AudienceQuestionsStage } from "./audience-questions-stage";
 import { ReactionStream } from "./reaction-stream";
+import { JoinLobby } from "./join-lobby";
 import { screenContent } from "@/lib/domain/screen";
 import { useAudioUnlock } from "@/lib/raffle/use-audio-unlock";
 import { lastActivatedOf, useDeckControls } from "@/components/live/use-deck-controls";
@@ -172,11 +173,14 @@ export function DisplayView({
       <img src={slideUrl} alt={t("slideAlt", { slide: (slideIndex ?? 0) + 1 })} className="max-h-full max-w-full object-contain" />
     );
   } else {
+    // QR Code de entrada com a sala de espera: quem entra aparece com avatar e nome.
     body = (
-      <div className="flex flex-col items-center gap-10 text-center">
-        <h1 className="max-w-5xl text-5xl font-semibold leading-tight">{session.title}</h1>
-        <JoinPanel code={session.joinCode} joinUrl={joinUrl} />
-      </div>
+      <JoinLobby
+        sessionId={session.id}
+        title={session.title}
+        participantCount={state?.participant_count ?? 0}
+        panel={<JoinPanel code={session.joinCode} joinUrl={joinUrl} />}
+      />
     );
   }
 
@@ -202,12 +206,20 @@ export function DisplayView({
         )}
       >
         <span>
-          {slideUrl
-            ? t("footer.joinAt", { host: joinHost(joinUrl) })
-            : active
-              ? t("footer.responses", { count: snapshot.total })
-              : t("footer.participants", { count: state?.participant_count ?? 0 })}
-          {online > 0 && !slideUrl ? ` · ${t("footer.connected", { count: online })}` : ""}
+          {/* Na tela de entrada a sala de espera já conta quem entrou (e, em rascunho, o contador do realtime
+              não chega ao telão): o rodapé fica só com quem está conectado. */}
+          {[
+            slideUrl
+              ? t("footer.joinAt", { host: joinHost(joinUrl) })
+              : active
+                ? t("footer.responses", { count: snapshot.total })
+                : screen.kind === "join"
+                  ? null
+                  : t("footer.participants", { count: state?.participant_count ?? 0 }),
+            online > 0 && !slideUrl ? t("footer.connected", { count: online }) : null,
+          ]
+            .filter(Boolean)
+            .join(" · ")}
         </span>
         <span>
           {t.rich("footer.code", {

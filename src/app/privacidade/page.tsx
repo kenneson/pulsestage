@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
 // Textos nos três idiomas em messages/<idioma>/legal.json.
 
 // Data da última mudança do texto (formatada no idioma de quem lê).
-const UPDATED_AT = new Date("2026-10-16T12:00:00Z");
+const UPDATED_AT = new Date("2026-10-21T12:00:00Z");
 
 const b = (chunks: React.ReactNode) => <strong className="text-foreground">{chunks}</strong>;
 const code = (chunks: React.ReactNode) => <code>{chunks}</code>;

@@ -141,6 +141,7 @@ rode `npm run db:types` com o projeto linkado; não edite o arquivo à mão.
 | Idiomas: português, espanhol latino e inglês americano (next-intl, `/es` e `/en`, idioma por sessão, palavrões e IA por idioma) | ✅ |
 | Realtime resistente a eventos perdidos (releitura ao conectar, após ações e no projetor) | ✅ |
 | Auditoria de produto: pesquisa anônima com limite por IP (fora da nota pública), entrada antes do início, modo ensaio, sala ao vivo em tela própria, leituras por GET, limite de código errado | ✅ |
+| Sala de espera no telão (quem entra aparece com avatar e nome) e resultado do quiz no celular (acertou, pontos, posição) | ✅ |
 | Animações com Motion (motion.dev): troca de tela no celular e no telão, alternativas e toques, barras e números que contam, ranking do quiz, listas que reordenam; respeita "reduzir movimento" | ✅ |
 | Testes unitários (domínio, cookie do participante, MCP, traduções nos três idiomas) | ✅ |
 | Testes de integração e E2E | ⏳ |

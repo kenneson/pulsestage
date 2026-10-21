@@ -25,6 +25,7 @@ import { AnswerForm } from "./answer-form";
 import { RaffleTicketCard } from "./raffle-ticket";
 import { ReactionBar } from "./reaction-bar";
 import { QuestionsPanel } from "./questions-panel";
+import { QuizResultScreen, useQuizResult } from "./quiz-result";
 
 /** Sem realtime: consulta a cada 5 s. Em rascunho, com realtime, uma conferência lenta caso o início se perca. */
 const OFFLINE_POLL_MS = 5000;
@@ -109,6 +110,8 @@ export function ParticipateView({
 
   const status = live?.status ?? current.status;
   const isDraft = status === "draft";
+  // Quiz fechado (tempo acabou ou saiu do ar): o celular mostra se acertou, até a próxima pergunta.
+  const quizResult = useQuizResult(sessionId, current);
 
   // Rede de segurança: sem realtime, consulta periódica leve; em rascunho, uma conferência lenta
   // (a plateia pode entrar muito antes do início e não pode ficar presa se o evento se perder).
@@ -166,6 +169,9 @@ export function ParticipateView({
   } else if (status === "paused") {
     screenKey = "paused";
     body = <Screen title={t("pausedTitle")} text={t("pausedText")} />;
+  } else if (quizResult) {
+    screenKey = "quiz-result";
+    body = <QuizResultScreen result={quizResult} />;
   } else if (!current.interaction || current.status !== "live") {
     screenKey = "waiting";
     body = (

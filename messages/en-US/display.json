@@ -52,5 +52,10 @@
     "hintSurveyOpen": "Answer the survey to get your lucky number on your phone.",
     "hintSurveyLater": "At the end, answer the survey to get your lucky number.",
     "hintEveryone": "Your lucky number is on your phone."
+  },
+  "lobby": {
+    "count": "{count, plural, one {# person in the room} other {# people in the room}}",
+    "more": "+{count, number}",
+    "anonymous": "Participant without a name"
   }
 }

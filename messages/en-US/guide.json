@@ -60,8 +60,8 @@
   "audience": {
     "title": "What the audience sees",
     "items": {
-      "join": "Participants join with the QR code or the join code, without creating an account, even before the session starts: the phone waits and opens on its own when you start. Name and avatar (a little animal or drawing) are optional; the avatar appears next to the name on the quiz leaderboard.",
-      "active": "The active question shows up on their phone on its own and changes when you move ahead. No need to reload.",
+      "join": "Participants join with the QR code or the join code, without creating an account, even before the session starts: the phone waits and opens on its own when you start. Name and avatar (a little animal or drawing) are optional; while the QR code is on the big screen, people who join show up in the waiting room with their avatar and name, and the avatar goes with the name on the quiz leaderboard.",
+      "active": "The active question shows up on their phone on its own and changes when you move ahead. No need to reload. When a quiz closes (time runs out or you close it), each phone shows whether that person got it right, their points, and their position.",
       "once": "Each person answers once per interaction.",
       "contact": "Participants can leave an email or phone number to get materials, only with explicit consent. That contact info is kept separate from their answers."
     }

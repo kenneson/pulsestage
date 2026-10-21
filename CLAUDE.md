@@ -165,6 +165,16 @@
   em sequência com toque, ranking que "voa" (`layoutId`). Telão: troca de tela (slide → slide é direta), código de
   entrada letra a letra, ranking do quiz com mola e pontos contando, perguntas da plateia que reordenam. Sala ao vivo:
   pílula do "No telão agora" desliza (`layoutId`). Regras visuais em `DESIGN.md`.
+- **Sala de espera e resultado do quiz** (sem migration): no QR Code de entrada, o telão (`components/display/join-lobby.tsx`)
+  busca `/api/session/[id]/lobby` (secret key; só quando `screenContent` dá `join`, em rascunho ou ao vivo; releitura de
+  3 s, pois em rascunho o telão não lê o estado ao vivo, e na hora quando `participant_count` muda) e mostra as 48 pessoas
+  mais recentes com avatar e nome, entrando com mola e flutuando. `publicName()` (`lib/domain/lobby.ts`) tira da sala o
+  nome com palavrão (filtro da sessão ligado); o ranking do quiz no telão usa o mesmo filtro. No celular,
+  `useQuizResult` (`components/participant/quiz-result.tsx`) acompanha o último quiz e, quando o tempo acaba (com a
+  folga) ou a pergunta sai do ar, busca `/api/participant/[id]/quiz-result?interaction=`. O servidor só revela depois
+  que ninguém mais pode responder (`quizReveal` em `lib/domain/quiz-result.ts`; quiz que nunca foi ao ar não revela) e
+  devolve acertou, pontos, resposta certa e a posição da própria pessoa (`rankQuiz`/`standingIn`, ranking em memória
+  por 5 s em `lib/data/quiz-result.ts`). A tela de resultado fica até a próxima pergunta.
 
 ## Mapa do código
 - `src/lib/domain/` regras puras (status, interações, palavras, resultados, métricas). Sem I/O.
