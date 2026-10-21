@@ -299,6 +299,11 @@ barra.
 - **Campos:** borda `input`, 40px, foco com anel `ring`.
 - **Barras de resultado:** trilho `muted`, barra líder em tinta, demais em tinta a 35%, correta em `primary` com "✓".
 - **Telão:** sempre escuro (`dark`), texto grande, alto contraste.
+- **Movimento (Motion, `components/motion/`):** o movimento explica uma mudança de estado. Molas de `presets.ts`:
+  `snappy` (toque, selo ✓, ↑/↓ do ranking), `soft` (troca de tela, entrada de lista, item que muda de lugar),
+  `bar` (barra de resultado). Troca de tela sobe 14px e aparece; alternativas entram uma depois da outra
+  (`STAGGER_S`) e afundam no toque (`TAP`); números contam (`AnimatedNumber`); barras crescem do zero
+  (`AnimatedBarFill`). Loop só na espera (avatar respirando). Análise e relatório ficam estáticos.
 
 ## Do's and Don'ts
 
@@ -306,7 +311,7 @@ barra.
 - **Do** usar `primary` só para ação principal, ao vivo, correto e foco.
 - **Do** falar com universidades, escolas e empresas nos textos de venda; linguagem clara, sem jargão.
 - **Do** escrever o estado ao lado de toda cor de estado.
-- **Do** respeitar `prefers-reduced-motion`.
+- **Do** respeitar `prefers-reduced-motion` (o `MotionProvider` usa `reducedMotion="user"`; CSS com `@media`).
 
 ### Don't:
 - **Don't** inventar depoimentos, logos ou números de uso.

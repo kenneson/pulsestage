@@ -221,7 +221,7 @@ export function ControlRoom({
               })}
             </p>
           ) : null}
-          <ResultsView interaction={active} snapshot={snapshot} correctOptionId={showAnswer ? active.correctOptionId : null} />
+          <ResultsView interaction={active} snapshot={snapshot} correctOptionId={showAnswer ? active.correctOptionId : null} animated />
           {active.type === "word_cloud" || active.type === "open_text" ? (
             <ModerationPanel key={active.id} sessionId={session.id} interactionId={active.id} type={active.type} snapshot={snapshot} />
           ) : null}

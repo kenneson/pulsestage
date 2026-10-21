@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
+import { AnimatePresence } from "motion/react";
+import * as m from "motion/react-m";
 import { useTranslations } from "next-intl";
 import type { PublicInteraction } from "@/lib/domain/interactions";
 import { EMPTY_SNAPSHOT, type ResultsMap } from "@/lib/domain/results";
@@ -21,6 +23,7 @@ import { ReactionStream } from "./reaction-stream";
 import { screenContent } from "@/lib/domain/screen";
 import { useAudioUnlock } from "@/lib/raffle/use-audio-unlock";
 import { lastActivatedOf, useDeckControls } from "@/components/live/use-deck-controls";
+import { SCREEN, SPRING, STAGGER_S } from "@/components/motion/presets";
 
 const joinHost = (url: string) => url.replace(/^https?:\/\//, "").replace(/\/join\/.*/, "");
 
@@ -28,16 +31,35 @@ function JoinPanel({ code, joinUrl, size = 260 }: { code: string; joinUrl: strin
   const t = useTranslations("display.join");
   return (
     <div className="flex flex-col items-center gap-6">
-      <div className="rounded-3xl bg-white p-5">
+      <m.div
+        className="rounded-3xl bg-white p-5"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={SPRING.soft}
+      >
         <QRCodeSVG value={joinUrl} size={size} marginSize={0} />
-      </div>
+      </m.div>
       <p className="text-2xl text-muted-foreground">
         {t.rich("prompt", {
           host: joinHost(joinUrl),
           b: (chunks) => <span className="font-semibold text-foreground">{chunks}</span>,
         })}
       </p>
-      <p className="font-display text-8xl font-bold tracking-[0.2em]">{code}</p>
+      {/* O código entra letra a letra, para chamar o olhar de quem vai digitar. */}
+      <p className="font-display text-8xl font-bold tracking-[0.2em]" aria-label={code}>
+        {Array.from(code).map((char, index) => (
+          <m.span
+            key={`${index}-${char}`}
+            aria-hidden
+            className="inline-block"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...SPRING.snappy, delay: 0.15 + index * STAGGER_S }}
+          >
+            {char}
+          </m.span>
+        ))}
+      </p>
     </div>
   );
 }
@@ -139,6 +161,7 @@ export function DisplayView({
           interaction={active}
           snapshot={snapshot}
           variant="display"
+          animated
           hideOpenText={active.type === "open_text" && !active.settings.showOnDisplay}
         />
       </div>
@@ -160,7 +183,16 @@ export function DisplayView({
   return (
     <div className={cn("dark flex flex-col bg-background text-foreground", slideUrl ? "h-dvh" : "min-h-dvh")}>
       <main className={cn("flex min-h-0 flex-1 items-center justify-center", slideUrl ? "p-4" : "px-10 py-12")}>
-        {body}
+        {/* Troca de tela (QR, pergunta, ranking, slides…) com transição; de um slide para outro, troca direta. */}
+        <AnimatePresence mode="wait" initial={false}>
+          <m.div
+            key={screen.kind === "interaction" ? `interaction:${screen.id}` : screen.kind}
+            {...SCREEN}
+            className={cn("flex w-full items-center justify-center", slideUrl && "h-full min-h-0")}
+          >
+            {body}
+          </m.div>
+        </AnimatePresence>
       </main>
       <ReactionStream sessionId={session.id} active={status === "live"} />
       <footer

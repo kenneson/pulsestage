@@ -1,9 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { AnimatePresence, useReducedMotion } from "motion/react";
+import * as m from "motion/react-m";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
+import { AnimatedNumber } from "@/components/motion/animated";
+import { SPRING } from "@/components/motion/presets";
 
 // Ranking do quiz animado. As linhas aparecem na posição de antes do último quiz e deslizam até a
 // posição atual enquanto os pontos sobem; quem entrou agora sobe do fim da lista.
@@ -24,57 +28,30 @@ type Entry = z.infer<typeof entrySchema>;
 type Variant = "display" | "compact";
 
 const ROW: Record<Variant, number> = { display: 76, compact: 44 };
+/** Quanto tempo o ranking fica na posição de antes do último quiz antes de deslizar. */
 const SETTLE_MS = 700;
-const COUNT_MS = 1200;
-
-function reducedMotion(): boolean {
-  return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
-/** Pontos contando do valor anterior até o atual. */
-function useCountUp(from: number, to: number, run: boolean): number {
-  const [value, setValue] = useState(from);
-  useEffect(() => {
-    if (!run) return;
-    if (reducedMotion()) {
-      const id = requestAnimationFrame(() => setValue(to));
-      return () => cancelAnimationFrame(id);
-    }
-    let frame = 0;
-    const start = performance.now();
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / COUNT_MS);
-      const eased = 1 - (1 - t) ** 3;
-      setValue(Math.round(from + (to - from) * eased));
-      if (t < 1) frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [from, to, run]);
-  return value;
-}
 
 function Row({ entry, settled, total, variant }: { entry: Entry; settled: boolean; total: number; variant: Variant }) {
   const t = useTranslations("display.leaderboard");
+  const locale = useLocale();
   const big = variant === "display";
   const startRank = entry.previousRank !== null && entry.previousRank <= total ? entry.previousRank : total + 1;
   const position = (settled ? entry.rank : startRank) - 1;
-  const points = useCountUp(entry.previousPoints, entry.points, settled);
   const moved = entry.previousRank === null ? null : entry.previousRank - entry.rank;
   const leader = entry.rank === 1;
 
   return (
-    <li
+    <m.li
       className={cn(
-        "absolute inset-x-0 flex items-center gap-4 rounded-lg px-4 transition-[transform,opacity] duration-700 ease-out",
+        "absolute inset-x-0 top-0 flex items-center gap-4 rounded-lg px-4 transition-colors duration-700",
         big ? "text-3xl" : "gap-3 px-3 text-sm",
-        leader ? "bg-primary/15" : "bg-muted/60",
+        leader && settled ? "bg-primary/15" : "bg-muted/60",
       )}
-      style={{
-        height: ROW[variant] - (big ? 10 : 6),
-        transform: `translateY(${position * ROW[variant]}px)`,
-        opacity: settled || entry.previousRank !== null ? 1 : 0,
-      }}
+      style={{ height: ROW[variant] - (big ? 10 : 6) }}
+      initial={false}
+      // Desliza com mola até a posição; quem entrou agora sobe do fim da lista aparecendo.
+      animate={{ y: position * ROW[variant], opacity: settled || entry.previousRank !== null ? 1 : 0 }}
+      transition={{ ...SPRING.soft, delay: settled ? Math.min(entry.rank, 10) * 0.04 : 0 }}
     >
       <span className={cn("w-12 shrink-0 font-display font-bold tabular-nums", !big && "w-6", leader && "text-primary")}>
         {t("rank", { rank: entry.rank })}
@@ -89,16 +66,44 @@ function Row({ entry, settled, total, variant }: { entry: Entry; settled: boolea
         {entry.avatar ?? <span className="font-display text-muted-foreground">{entry.name.charAt(0).toUpperCase()}</span>}
       </span>
       <span className={cn("min-w-0 flex-1 truncate font-semibold", leader && "text-primary")}>{entry.name}</span>
-      {settled && moved !== null && moved !== 0 ? (
-        <span className={cn("shrink-0 tabular-nums text-muted-foreground", big ? "text-xl" : "text-xs")}>
-          {moved > 0 ? `↑${moved}` : `↓${-moved}`}
-        </span>
-      ) : null}
-      {settled && entry.previousRank === null ? (
-        <span className={cn("shrink-0 text-muted-foreground", big ? "text-xl" : "text-xs")}>{t("new")}</span>
-      ) : null}
-      <span className="shrink-0 font-display font-bold tabular-nums">{t("points", { points })}</span>
-    </li>
+      <AnimatePresence>
+        {settled && moved !== null && moved !== 0 ? (
+          <m.span
+            key="moved"
+            className={cn(
+              "shrink-0 font-semibold tabular-nums",
+              moved > 0 ? "text-primary" : "text-muted-foreground",
+              big ? "text-xl" : "text-xs",
+            )}
+            initial={{ opacity: 0, scale: 0.4, y: moved > 0 ? 12 : -12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ ...SPRING.snappy, delay: 0.35 }}
+          >
+            {moved > 0 ? `↑${moved}` : `↓${-moved}`}
+          </m.span>
+        ) : null}
+        {settled && entry.previousRank === null ? (
+          <m.span
+            key="new"
+            className={cn("shrink-0 text-muted-foreground", big ? "text-xl" : "text-xs")}
+            initial={{ opacity: 0, scale: 0.4 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ ...SPRING.snappy, delay: 0.35 }}
+          >
+            {t("new")}
+          </m.span>
+        ) : null}
+      </AnimatePresence>
+      {/* Os pontos contam do valor de antes do último quiz até o atual. */}
+      <AnimatedNumber
+        value={settled ? entry.points : entry.previousPoints}
+        from={entry.previousPoints}
+        locale={locale}
+        duration={1.2}
+        render={(points) => t("points", { points })}
+        className="shrink-0 font-display font-bold"
+      />
+    </m.li>
   );
 }
 
@@ -119,6 +124,7 @@ export function QuizLeaderboard({
     failed: false,
   });
   const [settled, setSettled] = useState(false);
+  const reduce = useReducedMotion();
 
   useEffect(() => {
     let cancelled = false;
@@ -138,9 +144,9 @@ export function QuizLeaderboard({
   // Mostra a posição anterior por um instante e então anima até a atual.
   useEffect(() => {
     if (!state.entries) return;
-    const id = window.setTimeout(() => setSettled(true), reducedMotion() ? 0 : SETTLE_MS);
+    const id = window.setTimeout(() => setSettled(true), reduce ? 0 : SETTLE_MS);
     return () => window.clearTimeout(id);
-  }, [state]);
+  }, [state, reduce]);
 
   const big = variant === "display";
   const entries = state.entries;

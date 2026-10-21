@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { AnimatePresence } from "motion/react";
+import * as m from "motion/react-m";
 import { submitAnswerAction } from "@/features/participant/actions";
 import {
   currentInteractionResponseSchema,
@@ -15,7 +17,9 @@ import { usePresence } from "@/lib/realtime/use-presence";
 import { usePolling } from "@/lib/realtime/use-polling";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Alert } from "@/components/ui/misc";
-import { CheckIcon, MessageQuestionIcon } from "@/components/icons";
+import { MessageQuestionIcon } from "@/components/icons";
+import { AnimatedCheck } from "@/components/motion/animated";
+import { SCREEN } from "@/components/motion/presets";
 import { Logo } from "@/components/logo";
 import { AnswerForm } from "./answer-form";
 import { RaffleTicketCard } from "./raffle-ticket";
@@ -147,8 +151,11 @@ export function ParticipateView({
   // O número do sorteio aparece fora das perguntas (respondendo, a atenção fica na pergunta).
   let showTicket = true;
   let body: React.ReactNode;
+  // Cada tela (espera, pergunta, respondida, pausa, fim) entra e sai com transição.
+  let screenKey: string;
 
   if (status === "completed") {
+    screenKey = "ended";
     body = (
       <Screen title={t("endedTitle")} text={t("endedText")}>
         <Link href={`/feedback/${sessionId}`} className={buttonVariants({ size: "xl", className: "mt-4 w-full" })}>
@@ -157,29 +164,37 @@ export function ParticipateView({
       </Screen>
     );
   } else if (status === "paused") {
+    screenKey = "paused";
     body = <Screen title={t("pausedTitle")} text={t("pausedText")} />;
   } else if (!current.interaction || current.status !== "live") {
+    screenKey = "waiting";
     body = (
       <Screen title={me.name ? t("inNamed", { name: me.name }) : t("in")} text={isDraft ? t("startingSoon") : t("waiting")}>
         {me.avatar ? (
-          <span aria-hidden className="order-first grid size-24 place-items-center rounded-full bg-muted text-6xl leading-none">
+          // O avatar respira devagar: a tela está viva, esperando a próxima pergunta.
+          <m.span
+            aria-hidden
+            className="order-first grid size-24 place-items-center rounded-full bg-muted text-6xl leading-none"
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+          >
             {me.avatar}
-          </span>
+          </m.span>
         ) : null}
         <span className="mt-4 size-3 animate-ping rounded-full bg-primary" aria-hidden />
       </Screen>
     );
   } else if (current.answered) {
+    screenKey = `answered:${current.interaction.id}`;
     body = (
       <Screen title={t("answeredTitle")} text={t("answeredText")}>
-        <span className="mt-2 grid size-14 place-items-center rounded-full bg-primary/15 text-primary">
-          <CheckIcon width={28} height={28} />
-        </span>
+        <AnimatedCheck className="mt-2" />
       </Screen>
     );
   } else {
     showTicket = false;
     const interaction = current.interaction;
+    screenKey = `question:${interaction.id}`;
     body = (
       <div className="flex flex-col gap-5">
         <div>
@@ -211,7 +226,11 @@ export function ParticipateView({
       </header>
       <main className="flex flex-1 flex-col justify-center py-6" aria-live="polite">
         {error ? <Alert className="mb-4">{error}</Alert> : null}
-        {body}
+        <AnimatePresence mode="wait" initial={false}>
+          <m.div key={screenKey} {...SCREEN}>
+            {body}
+          </m.div>
+        </AnimatePresence>
         {showTicket ? <RaffleTicketCard sessionId={sessionId} drawnAt={live?.raffle_drawn_at ?? null} className="mt-6" /> : null}
       </main>
       {showQuestions || showReactions ? (

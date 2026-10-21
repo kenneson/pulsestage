@@ -1,6 +1,7 @@
 "use client";
 
-import { useTransition } from "react";
+import { useId, useTransition } from "react";
+import * as m from "motion/react-m";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { showLeaderboardAction } from "@/features/live/actions";
@@ -19,6 +20,7 @@ import {
 } from "@/lib/domain/screen";
 import { cn } from "@/lib/utils";
 import { GiftIcon, MessageQuestionIcon, PresentationIcon, QrCodeIcon, TrendingUpIcon } from "@/components/icons";
+import { SPRING } from "@/components/motion/presets";
 
 const ICONS: Partial<Record<ScreenMode, typeof QrCodeIcon>> = {
   lineup: PresentationIcon,
@@ -58,6 +60,7 @@ export function ScreenSwitcher({
   const t = useTranslations("live.screen");
   const [pending, startTransition] = useTransition();
   const current = screenModeOf(content);
+  const pillId = useId();
   const modes = screenModes(status, features, current);
 
   const run = (task: () => Promise<ActionResult>) =>
@@ -106,14 +109,25 @@ export function ScreenSwitcher({
               disabled={!on && (pending || busy || !canSelect(mode))}
               onClick={() => select(mode)}
               className={cn(
-                "inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-colors disabled:opacity-50 [&_svg]:size-3.5",
+                "relative inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-colors disabled:opacity-50 [&_svg]:size-3.5",
                 on
-                  ? "border-primary bg-primary text-primary-foreground"
+                  ? "border-primary text-primary-foreground"
                   : "border-input bg-background text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
-              {Icon ? <Icon aria-hidden /> : null}
-              {t(`modes.${mode}`)}
+              {/* O fundo azul desliza até a tela escolhida: mostra de onde o telão saiu e para onde foi. */}
+              {on ? (
+                <m.span
+                  layoutId={pillId}
+                  aria-hidden
+                  className="absolute -inset-px rounded-full bg-primary"
+                  transition={SPRING.snappy}
+                />
+              ) : null}
+              <span className="relative inline-flex items-center gap-1.5">
+                {Icon ? <Icon aria-hidden /> : null}
+                {t(`modes.${mode}`)}
+              </span>
             </button>
           );
         })}

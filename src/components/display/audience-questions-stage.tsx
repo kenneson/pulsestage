@@ -6,6 +6,9 @@ import { z } from "zod";
 import { formatInt } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { fetchJson, usePolling } from "@/lib/realtime/use-polling";
+import * as m from "motion/react-m";
+import { AnimatedItem, AnimatedList, AnimatedNumber } from "@/components/motion/animated";
+import { SPRING } from "@/components/motion/presets";
 
 // Perguntas da plateia no telão: uma em destaque ou as mais curtidas. Busca no servidor
 // (só responde enquanto o palestrante mostra as perguntas) e atualiza a cada poucos segundos.
@@ -50,7 +53,15 @@ export function AudienceQuestionsStage({ sessionId, version, joinHost }: { sessi
     return (
       <div className="flex w-full max-w-5xl flex-col items-center gap-10 text-center">
         <p className="font-display text-2xl font-bold uppercase tracking-widest text-primary">{t("eyebrow")}</p>
-        <blockquote className="text-balance text-6xl font-semibold leading-tight">“{q.body}”</blockquote>
+        <m.blockquote
+          key={q.id}
+          className="text-balance text-6xl font-semibold leading-tight"
+          initial={{ opacity: 0, scale: 0.94, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={SPRING.soft}
+        >
+          “{q.body}”
+        </m.blockquote>
         <p className="text-3xl text-muted-foreground">
           {q.author ?? t("anonymous")} · 👍 {formatInt(q.upvotes, locale)}
         </p>
@@ -72,23 +83,27 @@ export function AudienceQuestionsStage({ sessionId, version, joinHost }: { sessi
           {t.rich("empty", { host: joinHost, b: (chunks) => <span className="font-semibold text-foreground">{chunks}</span> })}
         </p>
       ) : (
-        <ol className="flex flex-col gap-4">
+        // A pergunta que ganha curtidas sobe deslizando; a nova entra e a respondida sai.
+        <AnimatedList as="ol" className="flex flex-col gap-4">
           {list.map((q, index) => (
-            <li
+            <AnimatedItem
               key={q.id}
-              className={cn("flex items-center gap-6 rounded-2xl border px-6 py-5", index === 0 ? "border-primary bg-primary/10" : "bg-muted/40")}
+              className={cn(
+                "flex items-center gap-6 rounded-2xl border px-6 py-5 transition-colors duration-500",
+                index === 0 ? "border-primary bg-primary/10" : "bg-muted/40",
+              )}
             >
               <span className="flex w-24 shrink-0 flex-col items-center font-display text-4xl font-bold tabular-nums">
                 👍
-                <span>{formatInt(q.upvotes, locale)}</span>
+                <AnimatedNumber value={q.upvotes} locale={locale} duration={0.5} />
               </span>
               <div className="min-w-0 flex-1">
                 <p className="text-3xl leading-snug">{q.body}</p>
                 <p className="mt-1 text-xl text-muted-foreground">{q.author ?? t("anonymous")}</p>
               </div>
-            </li>
+            </AnimatedItem>
           ))}
-        </ol>
+        </AnimatedList>
       )}
     </div>
   );

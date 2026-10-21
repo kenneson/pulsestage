@@ -156,6 +156,15 @@
   (perguntas, moderação, reações, sorteio; só o dono) com `usePolling` (`lib/realtime/use-polling.ts`; nunca Server
   Action para polling). Ranking do quiz no telão só durante a sessão; sorteio até 24 h após o fim
   (`RAFFLE_PUBLIC_WINDOW_MS`). Anônimo não escreve em tabela nenhuma; `responses` saiu do Realtime.
+- **Animações** (Motion, `motion` 14, motion.dev): `MotionProvider` (`components/motion/motion-provider.tsx`: `LazyMotion`
+  com `domMax` no bundle, `strict`, `reducedMotion="user"`) em `app/session/[id]/layout.tsx` (celular e telão) e no layout
+  do painel. Sempre `m.*` de `motion/react-m` e só em arquivo `"use client"` (fora do provider, `m.*` renderiza sem
+  animar). Presets em `components/motion/presets.ts`; peças em `components/motion/animated.tsx` (`AnimatedNumber`,
+  `AnimatedBarFill`, `AnimatedList`/`AnimatedItem`, `AnimatedCheck`). `ResultsView` anima só com `animated` (telão e
+  sala ao vivo); a análise e o relatório ficam estáticos. Celular: troca de tela por `AnimatePresence`, alternativas
+  em sequência com toque, ranking que "voa" (`layoutId`). Telão: troca de tela (slide → slide é direta), código de
+  entrada letra a letra, ranking do quiz com mola e pontos contando, perguntas da plateia que reordenam. Sala ao vivo:
+  pílula do "No telão agora" desliza (`layoutId`). Regras visuais em `DESIGN.md`.
 
 ## Mapa do código
 - `src/lib/domain/` regras puras (status, interações, palavras, resultados, métricas). Sem I/O.
