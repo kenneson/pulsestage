@@ -5,7 +5,7 @@ export const fieldClassName =
   "w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm";
 
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
-  return <input data-slot="input" type={type} className={cn(fieldClassName, "h-10", className)} {...props} />;
+  return <input data-slot="input" type={type} className={cn(fieldClassName, "h-10 max-md:h-11", className)} {...props} />;
 }
 
 function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
@@ -13,7 +13,7 @@ function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
 }
 
 function Select({ className, ...props }: React.ComponentProps<"select">) {
-  return <select data-slot="select" className={cn(fieldClassName, "h-10 bg-background", className)} {...props} />;
+  return <select data-slot="select" className={cn(fieldClassName, "h-10 bg-background max-md:h-11", className)} {...props} />;
 }
 
 function Label({ className, ...props }: React.ComponentProps<"label">) {

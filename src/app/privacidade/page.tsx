@@ -43,7 +43,7 @@ const COOKIE_ITEMS = ["participation", "feedback", "login", "signupTimeZone", "l
 export default async function PrivacyPage() {
   const t = await getTranslations("legal");
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col gap-8 px-5 py-8">
+    <main className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col gap-8 px-5 py-8 max-md:px-4 max-md:pb-[max(env(safe-area-inset-bottom),2rem)]">
       <div className="flex items-center justify-between gap-4">
         <Logo />
         <LocaleSwitcher compact />

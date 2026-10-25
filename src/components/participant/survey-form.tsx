@@ -22,7 +22,7 @@ function NumberScale({ question }: { question: SurveyQuestion }) {
     <div className="flex flex-col gap-1.5">
       <div className={question.kind === "nps" ? "grid grid-cols-6 gap-1.5" : "grid grid-cols-5 gap-2"}>
         {values.map((v) => (
-          <label key={v} className="cursor-pointer">
+          <label key={v} className="relative cursor-pointer">
             <input
               type="radio"
               name={answerFieldName(question.id)}
@@ -48,7 +48,7 @@ function Choice({ question }: { question: SurveyQuestion }) {
   return (
     <div className="flex flex-col gap-2">
       {(question.settings.options ?? []).map((option, index) => (
-        <label key={option} className="cursor-pointer">
+        <label key={option} className="relative cursor-pointer">
           <input
             type="radio"
             name={answerFieldName(question.id)}

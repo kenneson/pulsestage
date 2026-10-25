@@ -14,6 +14,8 @@
     "mainNav": "Navegação principal",
     "openMenu": "Abrir menu",
     "closeMenu": "Fechar menu",
+    "more": "Mais",
+    "moreMenu": "Mais opções",
     "unreadInvites": "{count, plural, one {# convite novo} other {# convites novos}}",
     "settings": "Configurações",
     "profileAndAccount": "Perfil e conta",

@@ -24,7 +24,8 @@ import { ArrowDownIcon, ArrowUpIcon, PlusIcon, TrashIcon } from "@/components/ic
 
 type EditorQuestion = QuestionDraft & { key: string };
 
-// Chaves só para a lista do React (não vão para o DOM nem para o servidor).
+// Chaves da lista do React; também viram ids dos campos (htmlFor/id). As iniciais são fixas pela posição
+// (iguais no servidor e no navegador, sem erro de hidratação); as novas, criadas só no navegador, usam o contador.
 let seq = 0;
 const nextKey = () => `q${++seq}`;
 
@@ -50,7 +51,7 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
   const [name, setName] = useState(initial.name);
   const [description, setDescription] = useState(initial.description ?? "");
   const [questions, setQuestions] = useState<EditorQuestion[]>(() =>
-    initial.questions.map((q) => ({ ...q, key: nextKey() })),
+    initial.questions.map((q, index) => ({ ...q, key: `q-initial-${index}` })),
   );
   const [error, setError] = useState<string | null>(null);
 
@@ -120,8 +121,8 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
         {questions.map((q, index) => (
           <li key={q.key}>
             <Card>
-              <CardContent className="grid gap-4">
-                <div className="flex flex-wrap items-center gap-3">
+              <CardContent className="grid gap-4 max-md:grid-cols-1">
+                <div className="flex flex-wrap items-center gap-3 max-md:flex-nowrap max-md:gap-2">
                   <span className="font-display text-xl font-bold tabular-nums">{index + 1}</span>
                   <Select
                     aria-label={t("kind")}
@@ -130,7 +131,7 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
                       const kind = e.target.value;
                       if (isQuestionKind(kind) && kind !== q.kind) update(q.key, blank(kind, q.label, q.required));
                     }}
-                    className="w-auto"
+                    className="w-auto max-md:min-w-0 max-md:flex-1"
                   >
                     {QUESTION_KINDS.map((kind) => (
                       <option key={kind} value={kind}>
@@ -138,7 +139,7 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
                       </option>
                     ))}
                   </Select>
-                  <div className="ml-auto flex gap-1">
+                  <div className="ml-auto flex gap-1 max-md:-mr-2 max-md:gap-0 max-md:[&>button]:size-11">
                     <Button variant="ghost" size="icon" aria-label={t("moveUp")} disabled={index === 0} onClick={() => move(index, -1)}>
                       <ArrowUpIcon />
                     </Button>
@@ -222,7 +223,7 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
                   <div className="flex flex-col gap-2">
                     <Label>{t("options")}</Label>
                     {q.options.map((option, i) => (
-                      <div key={i} className="flex gap-2">
+                      <div key={i} className="flex gap-2 max-md:[&>button]:size-11">
                         <Input
                           aria-label={t("option", { number: i + 1 })}
                           value={option}
@@ -247,7 +248,7 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
                       <Button
                         variant="outline"
                         size="sm"
-                        className="w-fit"
+                        className="w-fit max-md:h-11 max-md:text-sm"
                         onClick={() => update(q.key, { ...q, options: [...q.options, ""] })}
                       >
                         <PlusIcon /> {t("addOption")}
@@ -256,7 +257,7 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
                   </div>
                 ) : null}
 
-                <label className="flex items-center gap-2 text-sm">
+                <label className="flex items-center gap-2 text-sm max-md:-my-2 max-md:min-h-11">
                   <input
                     type="checkbox"
                     checked={q.required}
@@ -276,7 +277,7 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
           <p className="flex items-center gap-2 text-sm font-medium">
             <PlusIcon /> {t("addQuestion")}
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 max-md:grid max-md:grid-cols-2 max-md:[&>button]:h-11 max-md:[&>button]:text-sm">
             {QUESTION_KINDS.map((kind) => (
               <Button
                 key={kind}
@@ -293,7 +294,7 @@ export function TemplateEditor({ templateId, initial }: { templateId: string | n
       ) : null}
 
       {error ? <Alert>{error}</Alert> : null}
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-3 max-md:grid max-md:grid-cols-2">
         <Button size="lg" onClick={save} disabled={pending}>
           {pending ? tCommon("saving") : t("save")}
         </Button>

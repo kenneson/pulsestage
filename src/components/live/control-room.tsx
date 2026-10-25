@@ -52,6 +52,10 @@ import { screenContent } from "@/lib/domain/screen";
 /** Âncora do card Participação (o aviso de perguntas desligadas leva até ele). */
 const ENGAGEMENT_ANCHOR = "live-engagement";
 
+/** No celular, as ações do cabeçalho viram uma barra de botões iguais, com o ícone sobre o rótulo. */
+const HEADER_ACTION_MOBILE =
+  "max-md:h-auto max-md:min-h-14 max-md:flex-col max-md:gap-1 max-md:whitespace-normal max-md:px-2 max-md:py-2 max-md:text-center max-md:text-xs max-md:leading-tight";
+
 export type ControlRoomInteraction = PublicInteraction & { correctOptionId: string | null };
 
 type Props = {
@@ -162,6 +166,8 @@ export function ControlRoom({
   const next = controls.next;
   // Saindo do QR Code: volta ao slide em que estava; sem slide, segue o roteiro.
   const resumeItem = controls.cursorItem?.kind === "slide" ? controls.cursorItem : next;
+  // No celular, Anterior/Próxima ficam numa barra presa ao rodapé da tela (só enquanto a sessão está no ar).
+  const mobileDeckBar = status === "live" || status === "paused";
 
   function screenTitle(): React.ReactNode {
     switch (screen.kind) {
@@ -254,51 +260,56 @@ export function ControlRoom({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div
+      className={cn(
+        "flex flex-col gap-6 max-md:gap-4",
+        mobileDeckBar && "max-md:pb-[calc(5.5rem+env(safe-area-inset-bottom))]",
+      )}
+    >
       {confirmDialog}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-4 max-md:gap-3">
+        <div className="min-w-0 max-md:w-full">
+          <div className="flex items-center gap-2 max-md:flex-wrap">
             <StatusBadge status={status} />
             {status !== "draft" ? (
               <TalkTimer clock={clock} plannedMinutes={plannedMinutes} running={status === "live"} paused={status === "paused"} />
             ) : null}
             {!connected ? <Badge variant="warning">{t("reconnecting")}</Badge> : null}
           </div>
-          <h1 className="mt-2 truncate text-2xl font-semibold tracking-tight">{session.title}</h1>
+          <h1 className="mt-2 truncate text-2xl font-semibold tracking-tight max-md:whitespace-normal max-md:text-xl max-md:text-balance max-md:break-words">{session.title}</h1>
           <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <UsersIcon /> {t("participants", { count: participantCount })} · {t("connectedNow", { count: online })}
           </p>
           {engagement.reactions_enabled ? <ReactionTotals sessionId={session.id} running={status === "live"} /> : null}
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 max-md:grid max-md:w-full max-md:auto-cols-fr max-md:grid-flow-col">
           <a
             href={`/session/${session.id}/display`}
             target="_blank"
             rel="noreferrer"
-            className={buttonVariants({ variant: "outline" })}
+            className={cn(buttonVariants({ variant: "outline" }), HEADER_ACTION_MOBILE)}
           >
             <ExternalIcon /> {t("projectorScreen")}
           </a>
           {status === "draft" ? (
-            <Button onClick={() => changeStatus("live")} disabled={pending}>
+            <Button onClick={() => changeStatus("live")} disabled={pending} className={HEADER_ACTION_MOBILE}>
               <PlayIcon /> {t("startSession")}
             </Button>
           ) : null}
           {status === "live" ? (
-            <Button variant="outline" onClick={() => changeStatus("paused")} disabled={pending}>
+            <Button variant="outline" onClick={() => changeStatus("paused")} disabled={pending} className={HEADER_ACTION_MOBILE}>
               <PauseIcon /> {t("pause")}
             </Button>
           ) : null}
           {status === "paused" ? (
-            <Button onClick={() => changeStatus("live")} disabled={pending}>
+            <Button onClick={() => changeStatus("live")} disabled={pending} className={HEADER_ACTION_MOBILE}>
               <PlayIcon /> {t("resume")}
             </Button>
           ) : null}
           {status === "live" || status === "paused" ? (
             <Button
               variant="outline"
-              className="text-destructive hover:text-destructive"
+              className={cn("text-destructive hover:text-destructive", HEADER_ACTION_MOBILE)}
               disabled={pending}
               onClick={async () => {
                 const confirmed = await confirm({
@@ -314,14 +325,14 @@ export function ControlRoom({
             </Button>
           ) : null}
           {status === "completed" ? (
-            <Link href={`/dashboard/sessions/${session.id}/analytics`} className={buttonVariants()}>
+            <Link href={`/dashboard/sessions/${session.id}/analytics`} className={cn(buttonVariants(), HEADER_ACTION_MOBILE)}>
               {t("viewAnalytics")}
             </Link>
           ) : null}
         </div>
       </div>
 
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="grid items-start gap-6 max-md:grid-cols-1 max-md:gap-4 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px]">
         <Card>
           <CardHeader className="flex flex-col gap-4">
             <div className="flex w-full flex-wrap items-start justify-between gap-4">
@@ -329,7 +340,24 @@ export function ControlRoom({
                 <p className="font-display text-xs font-bold uppercase tracking-wider text-muted-foreground">{tScreen("now")}</p>
                 {screenTitle()}
               </div>
-              <div className="flex shrink-0 flex-wrap items-center gap-2">
+              <div
+                className={cn(
+                  "flex shrink-0 flex-wrap items-center gap-2",
+                  mobileDeckBar
+                    ? "max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:z-40 max-md:gap-x-3 max-md:border-t max-md:bg-background/95 max-md:px-4 max-md:pt-2 max-md:pb-[calc(0.75rem+env(safe-area-inset-bottom))] max-md:shadow-[0_-8px_24px_-16px_color-mix(in_oklch,var(--foreground)_30%,transparent)] max-md:backdrop-blur"
+                    : "max-md:hidden",
+                )}
+              >
+                {status === "live" ? (
+                  <p className="w-full truncate text-xs text-muted-foreground md:hidden">
+                    {next
+                      ? t.rich("upNext", {
+                          item: itemLabel(next),
+                          strong: (chunks) => <span className="font-medium text-foreground">{chunks}</span>,
+                        })
+                      : t("lineupEnd")}
+                  </p>
+                ) : null}
                 {hasSlides ? (
                   <Button
                     variant="outline"
@@ -337,19 +365,20 @@ export function ControlRoom({
                     aria-keyshortcuts="ArrowLeft PageUp"
                     disabled={pending || !controls.previous}
                     onClick={() => controls.previous && controls.goTo(controls.previous)}
+                    className="max-md:h-12 max-md:flex-1"
                   >
                     <ChevronLeftIcon /> {t("previous")}
                   </Button>
                 ) : null}
                 <Button
                   size="lg"
-                  className="min-w-40"
+                  className="min-w-40 max-md:h-12 max-md:min-w-0 max-md:flex-[2]"
                   aria-keyshortcuts="ArrowRight PageDown"
                   disabled={pending || !next}
                   onClick={() => next && controls.goTo(next)}
                 >
                   <NextIcon /> {t("next")}
-                  <kbd aria-hidden className="ml-1 rounded border border-primary-foreground/40 px-1.5 font-sans text-xs leading-5">
+                  <kbd aria-hidden className="ml-1 rounded border border-primary-foreground/40 px-1.5 font-sans text-xs leading-5 max-md:hidden">
                     →
                   </kbd>
                 </Button>
@@ -370,7 +399,7 @@ export function ControlRoom({
           <CardContent className="flex flex-col gap-4">
             {screenBody()}
             {status === "live" && screen.kind !== "join" ? (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground max-md:hidden">
                 {next
                   ? t.rich(hasSlides ? "upNextSlides" : "upNextKeys", {
                       item: itemLabel(next),
@@ -382,11 +411,11 @@ export function ControlRoom({
             {showsActive && active ? (
               <div className="flex flex-wrap gap-2">
                 {active.type === "quiz" ? (
-                  <Button variant="outline" size="sm" onClick={() => setShowAnswer((v) => !v)}>
+                  <Button variant="outline" size="sm" className="max-md:h-11 max-md:flex-1 max-md:text-sm" onClick={() => setShowAnswer((v) => !v)}>
                     {showAnswer ? t("hideAnswer") : t("showAnswer")}
                   </Button>
                 ) : null}
-                <Button variant="outline" size="sm" disabled={pending} onClick={controls.closeActive}>
+                <Button variant="outline" size="sm" className="max-md:h-11 max-md:flex-1 max-md:text-sm" disabled={pending} onClick={controls.closeActive}>
                   <StopIcon /> {t("closeQuestion")}
                 </Button>
               </div>
@@ -394,7 +423,7 @@ export function ControlRoom({
           </CardContent>
         </Card>
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 max-md:gap-4">
           <Card>
             <CardHeader className="flex-row items-center justify-between gap-2">
               <CardTitle>{t("lineup")}</CardTitle>
@@ -408,7 +437,7 @@ export function ControlRoom({
               ) : null}
             </CardHeader>
             <CardContent>
-              <ol className="flex max-h-[28rem] flex-col gap-1 overflow-y-auto pr-1">
+              <ol className="flex max-h-[28rem] flex-col gap-1 overflow-y-auto pr-1 max-md:-mx-2 max-md:max-h-[24rem] max-md:pr-0">
                 {deck.map((item, index) => {
                   const isCurrent = index === controls.cursor;
                   const onScreen =
@@ -423,7 +452,7 @@ export function ControlRoom({
                         disabled={pending || status !== "live" || onScreen}
                         onClick={() => controls.goTo(item)}
                         className={cn(
-                          "flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors",
+                          "flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors max-md:min-h-11",
                           isCurrent ? "bg-primary/10 font-medium" : "hover:bg-muted disabled:hover:bg-transparent",
                           item.kind === "slide" && "py-1",
                         )}
@@ -435,7 +464,7 @@ export function ControlRoom({
                               src={slideUrls[item.index]}
                               alt=""
                               loading="lazy"
-                              className="aspect-video w-14 shrink-0 rounded border bg-muted object-cover"
+                              className="aspect-video w-14 shrink-0 rounded border bg-muted object-cover max-md:w-16"
                             />
                             <span className="min-w-0 flex-1 truncate text-muted-foreground">
                               {t("slide", { slide: item.index + 1 })}
@@ -446,7 +475,7 @@ export function ControlRoom({
                             <span className="w-5 shrink-0 font-display font-bold text-muted-foreground tabular-nums">
                               {interactions.findIndex((i) => i.id === item.id) + 1}
                             </span>
-                            <span className="min-w-0 flex-1 truncate">{byId.get(item.id)?.title}</span>
+                            <span className="min-w-0 flex-1 truncate max-md:line-clamp-2 max-md:whitespace-normal">{byId.get(item.id)?.title}</span>
                           </>
                         )}
                         {onScreen ? (
@@ -486,7 +515,7 @@ export function ControlRoom({
               <p className="text-sm text-muted-foreground">{t("joinCode")}</p>
               <p className="font-display text-3xl font-bold tracking-widest">{session.joinCode}</p>
               <p className="break-all text-xs text-muted-foreground">{joinUrl}</p>
-              <div className="flex flex-wrap justify-center gap-2">
+              <div className="flex flex-wrap justify-center gap-2 max-md:[&_button]:h-11">
                 <QrDownloadButton joinUrl={joinUrl} code={session.joinCode} />
                 {status === "live" ? (
                   <Button variant="outline" size="sm" disabled={pending || screen.kind === "join"} onClick={controls.showJoinScreen}>
@@ -498,7 +527,7 @@ export function ControlRoom({
                 href={`/join/${session.joinCode}`}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 text-sm text-primary underline-offset-4 hover:underline"
+                className="inline-flex items-center gap-1.5 text-sm text-primary underline-offset-4 hover:underline max-md:min-h-11"
               >
                 <ExternalIcon /> {t("openAsParticipant")}
               </a>
@@ -509,7 +538,7 @@ export function ControlRoom({
             <CardHeader>
               <CardTitle>{t("participation")}</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="max-md:[&_input]:mt-0 max-md:[&_label]:min-h-11 max-md:[&_label]:items-center max-md:[&_ul]:gap-0">
               <EngagementSettings sessionId={session.id} initial={engagement} compact />
             </CardContent>
           </Card>

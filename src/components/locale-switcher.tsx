@@ -12,8 +12,16 @@ import { cn } from "@/lib/utils";
  * Seletor de idioma. Em página pública com prefixo (/es, /en), troca o prefixo; nas demais, grava o cookie
  * (e o perfil, com login) e recarrega no novo idioma.
  */
-/** `compact`: só a sigla (PT, ES, EN), para barras estreitas. */
-export function LocaleSwitcher({ className, compact = false }: { className?: string; compact?: boolean }) {
+/** `compact`: só a sigla (PT, ES, EN), para barras estreitas. `selectClassName`: ajustes do campo (ex.: altura de toque). */
+export function LocaleSwitcher({
+  className,
+  selectClassName,
+  compact = false,
+}: {
+  className?: string;
+  selectClassName?: string;
+  compact?: boolean;
+}) {
   const t = useTranslations("common.locale");
   const locale = useLocale();
   const router = useRouter();
@@ -41,7 +49,10 @@ export function LocaleSwitcher({ className, compact = false }: { className?: str
         disabled={pending}
         aria-label={t("change")}
         onChange={(e) => isLocale(e.target.value) && change(e.target.value)}
-        className="h-9 appearance-none rounded-md border border-input bg-background py-1 pl-8 pr-3 text-sm text-foreground shadow-xs hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
+        className={cn(
+          "h-9 appearance-none rounded-md border border-input bg-background py-1 pl-8 pr-3 text-sm text-foreground shadow-xs hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60 max-md:h-11",
+          selectClassName,
+        )}
       >
         {LOCALES.map((l) => (
           <option key={l} value={l} title={LOCALE_NAME[l]}>

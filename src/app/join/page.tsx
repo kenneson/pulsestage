@@ -20,7 +20,7 @@ export default async function JoinPage({ searchParams }: { searchParams: Promise
 
   const t = await getTranslations("participant.join");
   return (
-    <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-6 px-5">
+    <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-6 px-5 max-md:px-4 max-md:py-[max(env(safe-area-inset-bottom),1.5rem)]">
       <div className="flex items-center gap-3">
         <Logo />
         <LocaleSwitcher compact />

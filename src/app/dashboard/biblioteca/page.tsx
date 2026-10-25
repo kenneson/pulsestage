@@ -30,7 +30,7 @@ export default async function LibraryPage() {
           <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
           <p className="text-muted-foreground">{t("intro")}</p>
         </div>
-        <Link href="/dashboard/sessions/new" className={buttonVariants()}>
+        <Link href="/dashboard/sessions/new" className={buttonVariants({ className: "max-md:h-11" })}>
           <PlusIcon /> {t("newSession")}
         </Link>
       </div>

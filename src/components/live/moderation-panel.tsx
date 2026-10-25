@@ -67,7 +67,7 @@ export function ModerationPanel({
     const words = wordList(snapshot, 30);
     return (
       <details className="rounded-lg border px-3 py-2 text-sm">
-        <summary className="cursor-pointer font-medium">
+        <summary className="cursor-pointer font-medium max-md:py-2.5">
           {t("moderateWords")}
           {queue.hiddenTerms.length > 0 ? ` · ${t("hiddenCount", { count: queue.hiddenTerms.length })}` : ""}
         </summary>
@@ -75,14 +75,14 @@ export function ModerationPanel({
           {words.length > 0 ? (
             <div className="flex flex-col gap-1.5">
               <p className="text-xs text-muted-foreground">{t("wordsOnScreenHint")}</p>
-              <ul className="flex flex-wrap gap-1.5">
+              <ul className="flex flex-wrap gap-1.5 max-md:gap-2">
                 {words.map((w) => (
                   <li key={w.word}>
                     <button
                       type="button"
                       disabled={pending}
                       onClick={() => run(() => setTermVisibilityAction(interactionId, w.word, false))}
-                      className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs hover:border-destructive hover:text-destructive"
+                      className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs hover:border-destructive hover:text-destructive max-md:min-h-11 max-md:px-3.5 max-md:text-sm"
                       aria-label={t("hideWord", { word: w.word })}
                     >
                       {w.word} <span className="text-muted-foreground">{w.count}</span> <XIcon className="size-3" />
@@ -105,7 +105,7 @@ export function ModerationPanel({
                         {term.filtered ? ` · ${t("profanityFilter")}` : ""}
                       </span>
                     </span>
-                    <Button variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => setTermVisibilityAction(interactionId, term.term, true))}>
+                    <Button variant="outline" size="sm" className="h-7 px-2 text-xs max-md:h-11 max-md:shrink-0 max-md:px-3 max-md:text-sm" disabled={pending} onClick={() => run(() => setTermVisibilityAction(interactionId, term.term, true))}>
                       {tCommon("show")}
                     </Button>
                   </li>
@@ -123,7 +123,7 @@ export function ModerationPanel({
   const hidden = queue.responses.filter((r) => r.moderation === "hidden");
   return (
     <details className="rounded-lg border px-3 py-2 text-sm" open={waiting.length > 0}>
-      <summary className="cursor-pointer font-medium">
+      <summary className="cursor-pointer font-medium max-md:py-2.5">
         {t("moderateResponses")}
         {waiting.length > 0 ? ` · ${t("waitingCount", { count: waiting.length })}` : ""}
         {hidden.length > 0 ? ` · ${t("hiddenCount", { count: hidden.length })}` : ""}
@@ -132,12 +132,12 @@ export function ModerationPanel({
         {waiting.length > 0 ? (
           <ul className="flex max-h-72 flex-col gap-1.5 overflow-y-auto pr-1">
             {waiting.map((r) => (
-              <li key={r.id} className="flex items-start gap-2 rounded-md bg-standby/10 p-2">
+              <li key={r.id} className="flex items-start gap-2 rounded-md bg-standby/10 p-2 max-md:items-center">
                 <p className="min-w-0 flex-1 break-words">{r.text}</p>
-                <Button size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateResponseAction(r.id, true))}>
+                <Button size="sm" className="h-7 px-2 text-xs max-md:h-11 max-md:shrink-0 max-md:px-3 max-md:text-sm" disabled={pending} onClick={() => run(() => moderateResponseAction(r.id, true))}>
                   {t("approve")}
                 </Button>
-                <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateResponseAction(r.id, false))}>
+                <Button variant="ghost" size="sm" className="h-7 px-2 text-xs max-md:h-11 max-md:shrink-0 max-md:px-3 max-md:text-sm" disabled={pending} onClick={() => run(() => moderateResponseAction(r.id, false))}>
                   {tCommon("hide")}
                 </Button>
               </li>
@@ -151,7 +151,7 @@ export function ModerationPanel({
               {snapshot.recent.map((r) => (
                 <li key={r.id} className="flex items-start gap-2">
                   <p className="min-w-0 flex-1 break-words">{r.text}</p>
-                  <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateResponseAction(r.id, false))}>
+                  <Button variant="ghost" size="sm" className="h-7 px-2 text-xs max-md:h-11 max-md:shrink-0 max-md:px-3 max-md:text-sm" disabled={pending} onClick={() => run(() => moderateResponseAction(r.id, false))}>
                     {tCommon("hide")}
                   </Button>
                 </li>
@@ -169,7 +169,7 @@ export function ModerationPanel({
                     {r.text}
                     {r.filtered ? <span className="text-xs"> · {t("profanityFilter")}</span> : null}
                   </p>
-                  <Button variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateResponseAction(r.id, true))}>
+                  <Button variant="outline" size="sm" className="h-7 px-2 text-xs max-md:h-11 max-md:shrink-0 max-md:px-3 max-md:text-sm" disabled={pending} onClick={() => run(() => moderateResponseAction(r.id, true))}>
                     {tCommon("show")}
                   </Button>
                 </li>

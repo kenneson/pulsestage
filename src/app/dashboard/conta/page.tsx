@@ -37,7 +37,7 @@ function Section({
     <section
       id={id}
       aria-labelledby={`${id}-title`}
-      className={`flex scroll-mt-6 flex-col gap-5 rounded-md bg-card p-6 shadow-[0_10px_28px_-18px_color-mix(in_oklch,var(--foreground)_32%,transparent)] dark:border ${className}`}
+      className={`flex scroll-mt-6 flex-col gap-5 rounded-md bg-card p-6 shadow-[0_10px_28px_-18px_color-mix(in_oklch,var(--foreground)_32%,transparent)] dark:border max-md:gap-4 max-md:p-4 ${className}`}
     >
       <div>
         <h2 id={`${id}-title`} className="text-lg font-semibold">
@@ -77,12 +77,16 @@ export default async function AccountPage() {
         <p className="text-muted-foreground">{t("page.description")}</p>
       </div>
 
-      <nav aria-label={t("page.navLabel")} className="flex flex-wrap gap-1 border-b">
+      {/* Celular: uma linha só, que rola de lado se faltar espaço (em vez de quebrar em duas). */}
+      <nav
+        aria-label={t("page.navLabel")}
+        className="flex flex-wrap gap-1 border-b max-md:-mx-4 max-md:flex-nowrap max-md:gap-0 max-md:overflow-x-auto max-md:px-2 max-md:[scrollbar-width:none]"
+      >
         {SECTIONS.map((s) => (
           <a
             key={s.id}
             href={`#${s.id}`}
-            className="inline-flex min-h-11 items-center gap-2 px-3 text-sm font-medium text-muted-foreground hover:text-foreground"
+            className="inline-flex min-h-11 items-center gap-2 px-3 text-sm font-medium text-muted-foreground hover:text-foreground max-md:shrink-0 max-md:whitespace-nowrap"
           >
             <s.icon /> {tSections(s.label)}
           </a>
@@ -151,7 +155,7 @@ export default async function AccountPage() {
             <p className="font-medium">{t("privacy.exportTitle")}</p>
             <p className="text-sm text-muted-foreground">{t("privacy.exportDescription")}</p>
           </div>
-          <a href="/dashboard/conta/exportar" className={buttonVariants({ variant: "outline" })} download>
+          <a href="/dashboard/conta/exportar" className={buttonVariants({ variant: "outline", className: "max-md:h-11 max-md:w-full" })} download>
             <DownloadIcon /> {t("privacy.export")}
           </a>
         </div>

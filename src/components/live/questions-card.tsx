@@ -120,7 +120,7 @@ export function QuestionsCard({
               aria-selected={tab === item.key}
               onClick={() => setTab(item.key)}
               className={cn(
-                "rounded-md px-2.5 py-1 text-xs font-medium",
+                "rounded-md px-2.5 py-1 text-xs font-medium max-md:h-11 max-md:px-3",
                 tab === item.key ? "bg-primary/10 text-foreground" : "text-muted-foreground hover:bg-muted",
                 item.key === "pending" && counts.pending > 0 && "text-standby-foreground bg-standby/20",
               )}
@@ -135,7 +135,7 @@ export function QuestionsCard({
             {tab === "open" ? t("emptyOpen") : tCommon("states.empty")}
           </p>
         ) : (
-          <ul className="flex max-h-[26rem] flex-col gap-2 overflow-y-auto pr-1">
+          <ul className="flex max-h-[26rem] flex-col gap-2 overflow-y-auto pr-1 max-md:pr-0">
             {visible.map((q) => (
               <li key={q.id} className={cn("flex flex-col gap-2 rounded-lg border p-3", highlighted === q.id && "border-primary bg-primary/5")}>
                 <div className="flex items-start gap-3">
@@ -147,9 +147,9 @@ export function QuestionsCard({
                   {q.filtered ? ` · ${t("filtered")}` : ""}
                   {highlighted === q.id ? <Badge variant="live">{t("onScreen")}</Badge> : null}
                 </p>
-                <div className="flex flex-wrap items-center gap-1.5">
+                <div className="flex flex-wrap items-center gap-1.5 max-md:gap-2">
                   {q.status === "pending" || q.status === "hidden" ? (
-                    <Button size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateQuestionAction(q.id, "visible"))}>
+                    <Button size="sm" className="h-7 px-2 text-xs max-md:h-11 max-md:px-3 max-md:text-sm" disabled={pending} onClick={() => run(() => moderateQuestionAction(q.id, "visible"))}>
                       {q.status === "pending" ? t("approve") : tCommon("actions.show")}
                     </Button>
                   ) : null}
@@ -157,7 +157,7 @@ export function QuestionsCard({
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-7 px-2 text-xs"
+                      className="h-7 px-2 text-xs max-md:h-11 max-md:px-3 max-md:text-sm"
                       disabled={pending || !isLive}
                       onClick={() => run(() => showQuestionsAction(sessionId, highlighted !== q.id, highlighted === q.id ? null : q.id))}
                     >
@@ -165,17 +165,17 @@ export function QuestionsCard({
                     </Button>
                   ) : null}
                   {q.status === "visible" ? (
-                    <Button variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateQuestionAction(q.id, "answered"))}>
+                    <Button variant="outline" size="sm" className="h-7 px-2 text-xs max-md:h-11 max-md:px-3 max-md:text-sm" disabled={pending} onClick={() => run(() => moderateQuestionAction(q.id, "answered"))}>
                       {t("markAnswered")}
                     </Button>
                   ) : null}
                   {q.status === "answered" ? (
-                    <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateQuestionAction(q.id, "visible"))}>
+                    <Button variant="ghost" size="sm" className="h-7 px-2 text-xs max-md:h-11 max-md:px-3 max-md:text-sm" disabled={pending} onClick={() => run(() => moderateQuestionAction(q.id, "visible"))}>
                       {t("reopen")}
                     </Button>
                   ) : null}
                   {q.status !== "hidden" ? (
-                    <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" disabled={pending} onClick={() => run(() => moderateQuestionAction(q.id, "hidden"))}>
+                    <Button variant="ghost" size="sm" className="h-7 px-2 text-xs max-md:h-11 max-md:px-3 max-md:text-sm" disabled={pending} onClick={() => run(() => moderateQuestionAction(q.id, "hidden"))}>
                       {tCommon("actions.hide")}
                     </Button>
                   ) : null}

@@ -50,13 +50,20 @@ export function EngagementSettings({
         const disabled = key === "qa_moderated" && !flags.qa_enabled;
         return (
           <li key={key}>
-            <label className={cn("flex cursor-pointer items-start gap-3", disabled && "cursor-not-allowed opacity-50")}>
+            <label
+              className={cn(
+                "flex cursor-pointer items-start gap-3",
+                // compacto (sala ao vivo): no celular, cada linha tem 44px de toque
+                compact && "max-md:min-h-11 max-md:items-center",
+                disabled && "cursor-not-allowed opacity-50",
+              )}
+            >
               <input
                 type="checkbox"
                 checked={flags[key]}
                 disabled={disabled}
                 onChange={(e) => toggle(key, e.target.checked)}
-                className="mt-0.5 size-4 shrink-0 accent-primary"
+                className={cn("mt-0.5 size-4 shrink-0 accent-primary max-md:size-5", compact && "max-md:mt-0")}
               />
               <span className="flex flex-col gap-0.5">
                 <span className="text-sm font-medium">{t(`${key}.label`)}</span>

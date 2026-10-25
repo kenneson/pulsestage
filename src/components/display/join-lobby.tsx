@@ -38,13 +38,13 @@ function Person({ entry, fresh }: { entry: LobbyEntry; fresh: boolean }) {
     >
       <m.span
         className={cn(
-          "flex items-center gap-3 rounded-full border bg-muted/60 py-2 pl-2 text-2xl",
+          "flex items-center gap-3 rounded-full border bg-muted/60 py-2 pl-2 text-2xl max-md:gap-2 max-md:py-1 max-md:pl-1 max-md:text-base",
           entry.name ? "pr-5" : "pr-2",
         )}
         animate={{ y: [0, -rise, 0], x: [0, sway, 0] }}
         transition={{ duration, repeat: Infinity, ease: "easeInOut", delay: unit(entry.key, 4) * 2 }}
       >
-        <span aria-hidden className="grid size-12 shrink-0 place-items-center rounded-full bg-background text-3xl leading-none">
+        <span aria-hidden className="grid size-12 shrink-0 place-items-center rounded-full bg-background text-3xl leading-none max-md:size-9 max-md:text-xl">
           {entry.avatar ?? <UserIcon width={22} height={22} className="text-muted-foreground" />}
         </span>
         {entry.name ? (
@@ -106,9 +106,10 @@ export function JoinLobby({
   const people = entries.length > 0;
 
   return (
-    <div className="flex w-full max-w-7xl flex-col items-center gap-10">
-      <h1 className="max-w-5xl text-center text-5xl font-semibold leading-tight">{title}</h1>
-      <div className={cn("flex w-full items-center gap-14", people ? "justify-between" : "justify-center")}>
+    <div className="flex w-full max-w-7xl flex-col items-center gap-10 max-md:gap-6">
+      <h1 className="max-w-5xl text-center text-5xl font-semibold leading-tight max-md:text-3xl">{title}</h1>
+      {/* Celular (telão aberto por engano): QR em cima, sala embaixo. */}
+      <div className={cn("flex w-full items-center gap-14 max-md:flex-col max-md:gap-8", people ? "justify-between" : "justify-center")}>
         {/* O QR Code anda para a esquerda quando a primeira pessoa chega, abrindo espaço para a sala. */}
         <m.div layout transition={SPRING.soft} className="shrink-0">
           {panel}
@@ -124,7 +125,7 @@ export function JoinLobby({
               exit={{ opacity: 0 }}
               transition={SPRING.soft}
             >
-              <p className="font-display text-4xl font-bold">
+              <p className="font-display text-4xl font-bold max-md:text-2xl">
                 <AnimatedNumber value={total} locale={locale} duration={0.6} render={(count) => t("count", { count })} />
               </p>
               <ul className="flex flex-wrap content-start gap-x-4 gap-y-5">

@@ -45,13 +45,18 @@ export function LibraryFilters({
           className="min-w-0 flex-1 bg-transparent text-base text-foreground outline-none md:text-sm"
         />
       </label>
-      <div role="group" aria-label={t("filterByType")} className="flex flex-wrap gap-1.5">
+      {/* No celular, os tipos viram uma faixa que rola de lado (uma linha só, alvos de 44 px). */}
+      <div
+        role="group"
+        aria-label={t("filterByType")}
+        className="flex flex-wrap gap-1.5 max-md:w-full max-md:flex-nowrap max-md:overflow-x-auto max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden"
+      >
         <button
           type="button"
           aria-pressed={type === null}
           onClick={() => setType(null)}
           className={cn(
-            "min-h-9 rounded-full border px-3 text-sm font-medium",
+            "min-h-9 rounded-full border px-3 text-sm font-medium max-md:min-h-11 max-md:shrink-0",
             type === null ? "border-foreground bg-foreground text-background" : "hover:bg-muted",
           )}
         >
@@ -64,7 +69,7 @@ export function LibraryFilters({
             aria-pressed={type === kind}
             onClick={() => setType(type === kind ? null : kind)}
             className={cn(
-              "inline-flex min-h-9 items-center gap-1.5 rounded-full border px-3 text-sm font-medium",
+              "inline-flex min-h-9 items-center gap-1.5 rounded-full border px-3 text-sm font-medium max-md:min-h-11 max-md:shrink-0 max-md:whitespace-nowrap",
               type === kind ? "border-foreground bg-foreground text-background" : "hover:bg-muted",
             )}
           >
@@ -156,7 +161,7 @@ export function LibraryPicker({ sessionId, items }: { sessionId: string; items: 
               type="button"
               aria-label={tCommon("close")}
               onClick={() => ref.current?.close()}
-              className="grid size-9 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-muted"
+              className="grid size-9 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-muted max-md:size-11"
             >
               <XIcon />
             </button>

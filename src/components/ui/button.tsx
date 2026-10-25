@@ -15,13 +15,14 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-9 px-4 py-2",
+        default: "h-9 px-4 py-2 max-md:h-11",
         sm: "h-8 rounded-md px-3 text-xs",
         lg: "h-11 rounded-md px-6 text-base",
         xl: "h-14 rounded-xl px-6 text-lg",
-        icon: "size-9",
+        icon: "size-9 max-md:size-11",
       },
     },
+    // No celular (max-md), o tamanho padrão e o de ícone sobem para 44 px: alvo de toque confortável.
     defaultVariants: { variant: "default", size: "default" },
   },
 );

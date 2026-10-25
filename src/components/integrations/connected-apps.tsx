@@ -44,6 +44,7 @@ export function ConnectedApps({ apps }: { apps: ConnectedApp[] }) {
           <Button
             variant="outline"
             size="sm"
+            className="max-md:h-11 max-md:text-sm"
             onClick={async () => {
               const ok = await confirm({
                 title: t("revokeTitle", { name: app.name }),

@@ -76,7 +76,7 @@ export default async function SpeakerProfilePage({ params }: Props) {
   return (
     <PublicShell>
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-8 md:px-6 md:py-12">
-        <section className="flex flex-col gap-6 rounded-md bg-card p-6 shadow-[0_18px_40px_-26px_color-mix(in_oklch,var(--foreground)_35%,transparent)] dark:border sm:flex-row sm:items-start sm:p-8">
+        <section className="flex flex-col gap-6 rounded-md bg-card p-6 max-sm:gap-5 max-sm:p-5 shadow-[0_18px_40px_-26px_color-mix(in_oklch,var(--foreground)_35%,transparent)] dark:border sm:flex-row sm:items-start sm:p-8">
           <Avatar src={profile.avatarUrl} name={profile.name} email={profile.name} size={112} />
           <div className="flex min-w-0 flex-1 flex-col gap-3">
             <div>
@@ -98,7 +98,7 @@ export default async function SpeakerProfilePage({ params }: Props) {
                     {profile.listed ? (
                       <Link
                         href={href(`/palestrantes/tema/${topicKey(topic)}`)}
-                        className="inline-flex rounded-full bg-highlight px-3 py-1 text-sm font-medium text-highlight-foreground hover:brightness-95"
+                        className="inline-flex rounded-full bg-highlight px-3 py-1 text-sm font-medium text-highlight-foreground hover:brightness-95 max-md:py-1.5"
                       >
                         {topic}
                       </Link>
@@ -111,7 +111,7 @@ export default async function SpeakerProfilePage({ params }: Props) {
             ) : null}
             <div className="flex flex-wrap items-center gap-2 pt-1">
               {profile.contactEnabled ? (
-                <a href="#convite" className={buttonVariants()}>
+                <a href="#convite" className={buttonVariants({ className: "max-sm:w-full" })}>
                   <SendIcon /> {t("invite")}
                 </a>
               ) : null}
@@ -129,7 +129,7 @@ export default async function SpeakerProfilePage({ params }: Props) {
           </div>
         </section>
 
-        <section aria-labelledby="verificado" className="flex flex-col gap-4 rounded-md border-2 border-primary/25 bg-primary/5 p-6 sm:p-8">
+        <section aria-labelledby="verificado" className="flex flex-col gap-4 rounded-md border-2 border-primary/25 bg-primary/5 p-6 max-sm:p-5 sm:p-8">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 id="verificado" className="inline-flex items-center gap-2 font-semibold">
               <BadgeCheckIcon className="text-primary" width={20} height={20} /> {t("verifiedTitle")}
@@ -152,8 +152,8 @@ export default async function SpeakerProfilePage({ params }: Props) {
             </dl>
           )}
           <details className="text-sm text-muted-foreground">
-            <summary className="cursor-pointer font-medium text-foreground">{t("howTitle")}</summary>
-            <p className="mt-2 max-w-2xl">
+            <summary className="cursor-pointer font-medium text-foreground max-md:py-3">{t("howTitle")}</summary>
+            <p className="mt-2 max-w-2xl max-md:mt-0">
               {t("howBody", {
                 responders: VERIFY_MIN_RESPONDERS,
                 minutes: VERIFY_MIN_TALK_SECONDS / 60,
@@ -190,7 +190,7 @@ export default async function SpeakerProfilePage({ params }: Props) {
             <ul className="divide-y rounded-md border bg-card">
               {profile.sessions.map((s) => (
                 <li key={s.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3">
-                  <div className="flex min-w-0 flex-1 flex-col">
+                  <div className="flex min-w-0 flex-1 flex-col max-sm:basis-full">
                     <span className="font-medium">{s.title}</span>
                     <span className="text-sm text-muted-foreground">
                       {fullDate.format(new Date(s.date))} · {audienceRangeText(tDomain, s.participants)}
@@ -229,7 +229,7 @@ export default async function SpeakerProfilePage({ params }: Props) {
         ) : null}
 
         {profile.contactEnabled ? (
-          <section id="convite" aria-labelledby="convite-titulo" className="flex scroll-mt-6 flex-col gap-4 rounded-md bg-card p-6 shadow-[0_18px_40px_-26px_color-mix(in_oklch,var(--foreground)_35%,transparent)] dark:border sm:p-8">
+          <section id="convite" aria-labelledby="convite-titulo" className="flex scroll-mt-6 flex-col gap-4 rounded-md bg-card p-6 max-sm:p-5 shadow-[0_18px_40px_-26px_color-mix(in_oklch,var(--foreground)_35%,transparent)] dark:border sm:p-8">
             <div>
               <h2 id="convite-titulo" className="font-display text-xl font-bold">
                 {t("inviteTitle")}

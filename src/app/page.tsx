@@ -127,8 +127,8 @@ export default async function Home() {
   return (
     <div className="flex min-h-dvh flex-col">
       <div className="site-header sticky top-0 z-30">
-        <header className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4 md:px-6">
-          <Logo />
+        <header className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4 max-sm:gap-2 max-sm:py-3 md:px-6">
+          <Logo className="shrink-0" />
           <nav className="flex items-center gap-1 sm:gap-2">
             <a href="#como-funciona" className={cn(buttonVariants({ variant: "ghost" }), "hidden md:inline-flex")}>
               {t("nav.howItWorks")}
@@ -142,7 +142,8 @@ export default async function Home() {
             <Link href={href("/palestrantes")} className={cn(buttonVariants({ variant: "ghost" }), "hidden md:inline-flex")}>
               {t("nav.speakers")}
             </Link>
-            <LocaleSwitcher compact />
+            {/* No celular o idioma fica só no rodapé: marca, tema e "Criar conta" cabem em 360 px. */}
+            <LocaleSwitcher compact className="max-sm:hidden" />
             <ThemeToggle />
             {/* No celular, "Entrar" fica no hero ("já tenho conta") para caber "Criar conta". */}
             <Link href={href("/login")} className={cn(buttonVariants({ variant: "ghost" }), "hidden sm:inline-flex")}>
@@ -158,7 +159,7 @@ export default async function Home() {
 
       <main className="flex flex-1 flex-col">
         <section className="mx-auto w-full max-w-6xl px-4 pb-16 pt-6 md:px-6 md:pb-20">
-          <div className="flex flex-col gap-10 rounded-sm bg-card p-6 text-card-foreground shadow-[0_24px_48px_-28px_color-mix(in_oklch,var(--foreground)_35%,transparent)] dark:border sm:p-10 lg:gap-14 lg:p-14">
+          <div className="flex flex-col gap-10 rounded-sm bg-card p-6 text-card-foreground max-sm:gap-8 max-sm:p-5 shadow-[0_24px_48px_-28px_color-mix(in_oklch,var(--foreground)_35%,transparent)] dark:border sm:p-10 lg:gap-14 lg:p-14">
             <h1
               className="script-line max-w-5xl text-balance font-display text-[clamp(2.4rem,5.6vw,5rem)] font-extrabold leading-[1.02] tracking-[-0.025em]"
               style={line(0)}
@@ -176,13 +177,13 @@ export default async function Home() {
                   {t("hero.lead")}
                 </p>
                 <div className="script-line flex flex-wrap items-center gap-x-5 gap-y-3" style={line(2)}>
-                  <Link href={href("/signup")} className={buttonVariants({ size: "lg" })}>
+                  <Link href={href("/signup")} className={buttonVariants({ size: "lg", className: "max-sm:w-full" })}>
                     {t("hero.cta")}
                   </Link>
                   <span className="text-sm text-muted-foreground">
                     {t.rich("hero.beta", {
                       link: (chunks) => (
-                        <Link href={href("/login")} className="font-medium text-foreground underline-offset-4 hover:underline">
+                        <Link href={href("/login")} className="font-medium text-foreground underline-offset-4 hover:underline max-md:py-2.5">
                           {chunks}
                         </Link>
                       ),
@@ -332,7 +333,7 @@ export default async function Home() {
                 <span className="flex items-center gap-1.5">
                   {t.rich("slides.advance", { kbd: (chunks) => <Kbd>{chunks}</Kbd> })}
                 </span>
-                <span aria-hidden>·</span>
+                <span aria-hidden className="max-sm:hidden">·</span>
                 <span>{t("slides.reorder")}</span>
               </figcaption>
             </figure>
@@ -472,8 +473,8 @@ export default async function Home() {
             <SectionHeading title={t("faq.title")}>{t("faq.lead")}</SectionHeading>
             <div className="reveal flex flex-col divide-y rounded-sm bg-card dark:border">
               {FAQ.map((item) => (
-                <details key={item} className="group px-5 py-4 [&_summary::-webkit-details-marker]:hidden">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold">
+                <details key={item} className="group px-5 py-4 max-md:px-4 max-md:py-1 [&_summary::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold max-md:min-h-11 max-md:py-2.5">
                     {t(`faq.items.${item}.q`)}
                     <span
                       aria-hidden
@@ -482,7 +483,7 @@ export default async function Home() {
                       +
                     </span>
                   </summary>
-                  <p className="mt-3 max-w-[60ch] leading-relaxed text-muted-foreground">
+                  <p className="mt-3 max-w-[60ch] leading-relaxed text-muted-foreground max-md:mb-3 max-md:mt-1">
                     {item === "capacity" ? t("faq.items.capacity.a", { max: maxParticipants }) : t(`faq.items.${item}.a`)}
                   </p>
                 </details>
@@ -498,7 +499,7 @@ export default async function Home() {
               {t("cta.title")}
             </h2>
             <p className="reveal max-w-xl text-lg leading-relaxed text-muted-foreground">{t("cta.lead")}</p>
-            <div className="reveal flex flex-wrap items-center gap-4">
+            <div className="reveal flex flex-wrap items-center gap-4 max-sm:w-full max-sm:flex-col max-sm:items-stretch max-sm:gap-3">
               <Link href={href("/signup")} className={buttonVariants({ size: "lg" })}>
                 {t("cta.primary")}
               </Link>
@@ -511,13 +512,13 @@ export default async function Home() {
       </main>
 
       <footer className="border-t">
-        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-6 text-sm text-muted-foreground md:px-6">
+        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-6 text-sm text-muted-foreground max-sm:pb-[max(env(safe-area-inset-bottom),1.5rem)] md:px-6">
           <span>{t("footer.tagline")}</span>
-          <span className="flex flex-wrap items-center gap-4">
-            <Link href={href("/palestrantes")} className="underline-offset-4 hover:text-foreground hover:underline">
+          <span className="flex flex-wrap items-center gap-4 max-sm:gap-x-5 max-sm:gap-y-0">
+            <Link href={href("/palestrantes")} className="underline-offset-4 hover:text-foreground hover:underline max-sm:py-3">
               {t("footer.findSpeaker")}
             </Link>
-            <Link href={href("/privacidade")} className="underline-offset-4 hover:text-foreground hover:underline">
+            <Link href={href("/privacidade")} className="underline-offset-4 hover:text-foreground hover:underline max-sm:py-3">
               {t("footer.privacy")}
             </Link>
             <LocaleSwitcher />

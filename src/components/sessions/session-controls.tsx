@@ -8,11 +8,20 @@ import { deleteSessionAction, setSessionStatusAction, startRehearsalAction } fro
 import { duplicateSessionAction } from "@/features/library/actions";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/components/ui/confirm-dialog";
+import { cn } from "@/lib/utils";
 import { Field, Input, Label } from "@/components/ui/input";
 import { Alert } from "@/components/ui/misc";
 import { CopyIcon, MonitorIcon, PlayIcon, TrashIcon } from "@/components/icons";
 
-export function StartSessionButton({ sessionId, hasInteractions }: { sessionId: string; hasInteractions: boolean }) {
+export function StartSessionButton({
+  sessionId,
+  hasInteractions,
+  className,
+}: {
+  sessionId: string;
+  hasInteractions: boolean;
+  className?: string;
+}) {
   const t = useTranslations("session.controls");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -22,6 +31,7 @@ export function StartSessionButton({ sessionId, hasInteractions }: { sessionId: 
       {confirmDialog}
       <Button
         disabled={pending}
+        className={className}
         onClick={async () => {
           if (
             !hasInteractions &&
@@ -53,7 +63,7 @@ export function StartSessionButton({ sessionId, hasInteractions }: { sessionId: 
  * "Testar sessão": abre um ensaio ao vivo (cópia oculta da sessão) para conferir telão e celular.
  * Nada do ensaio conta nas estatísticas; a sessão original continua como está.
  */
-export function RehearsalButton({ sessionId }: { sessionId: string }) {
+export function RehearsalButton({ sessionId, className }: { sessionId: string; className?: string }) {
   const t = useTranslations("session.controls");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -62,6 +72,7 @@ export function RehearsalButton({ sessionId }: { sessionId: string }) {
       <Button
         variant="outline"
         disabled={pending}
+        className={className}
         title={t("rehearsalHint")}
         aria-describedby={`rehearsal-hint-${sessionId}`}
         onClick={() =>
@@ -85,7 +96,15 @@ export function RehearsalButton({ sessionId }: { sessionId: string }) {
   );
 }
 
-export function DeleteSessionButton({ sessionId, title }: { sessionId: string; title: string }) {
+export function DeleteSessionButton({
+  sessionId,
+  title,
+  className,
+}: {
+  sessionId: string;
+  title: string;
+  className?: string;
+}) {
   const t = useTranslations("session.controls");
   const tActions = useTranslations("common.actions");
   const router = useRouter();
@@ -97,7 +116,7 @@ export function DeleteSessionButton({ sessionId, title }: { sessionId: string; t
       <Button
         variant="ghost"
         disabled={pending}
-        className="text-destructive hover:text-destructive"
+        className={cn("text-destructive hover:text-destructive", className)}
         onClick={async () => {
           const confirmed = await confirm({
             title: t("deleteConfirmTitle", { title }),
@@ -132,12 +151,14 @@ export function DuplicateSessionButton({
   title,
   size = "default",
   iconOnly = false,
+  className,
 }: {
   sessionId: string;
   title: string;
   size?: "default" | "sm";
   /** só o ícone (linhas da lista de sessões) */
   iconOnly?: boolean;
+  className?: string;
 }) {
   const t = useTranslations("session.controls");
   const tActions = useTranslations("common.actions");
@@ -151,6 +172,7 @@ export function DuplicateSessionButton({
       <Button
         variant={iconOnly ? "ghost" : "outline"}
         size={iconOnly ? "icon" : size}
+        className={className}
         aria-label={iconOnly ? t("duplicateAria", { title }) : undefined}
         title={iconOnly ? tActions("duplicate") : undefined}
         onClick={() => {
@@ -164,7 +186,7 @@ export function DuplicateSessionButton({
       <dialog
         ref={ref}
         aria-labelledby={`duplicate-${sessionId}`}
-        className="fixed inset-0 m-auto w-[calc(100%-2rem)] max-w-md rounded-xl border bg-card p-6 text-left text-card-foreground shadow-lg backdrop:bg-black/50"
+        className="fixed inset-0 m-auto w-[calc(100%-2rem)] max-w-md rounded-xl border bg-card p-6 text-left max-md:p-5 text-card-foreground shadow-lg backdrop:bg-black/50"
       >
         <form
           className="flex flex-col gap-4"
@@ -196,7 +218,7 @@ export function DuplicateSessionButton({
             <Label htmlFor={`duplicate-title-${sessionId}`}>{t("newName")}</Label>
             <Input id={`duplicate-title-${sessionId}`} name="title" defaultValue={defaultTitle} maxLength={200} required />
           </Field>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 max-sm:grid-cols-1">
             <Field>
               <Label htmlFor={`duplicate-date-${sessionId}`}>{t("dateOptional")}</Label>
               <Input id={`duplicate-date-${sessionId}`} name="date" type="date" />
@@ -207,11 +229,11 @@ export function DuplicateSessionButton({
             </Field>
           </div>
           {error ? <Alert>{error}</Alert> : null}
-          <div className="flex justify-end gap-2">
-            <Button type="button" variant="ghost" disabled={pending} onClick={() => ref.current?.close()}>
+          <div className="flex justify-end gap-2 max-md:grid max-md:grid-cols-2">
+            <Button type="button" variant="ghost" disabled={pending} onClick={() => ref.current?.close()} className="max-md:h-11">
               {tActions("cancel")}
             </Button>
-            <Button type="submit" disabled={pending}>
+            <Button type="submit" disabled={pending} className="max-md:h-auto max-md:min-h-11 max-md:whitespace-normal">
               {pending ? t("duplicating") : t("duplicateAndEdit")}
             </Button>
           </div>

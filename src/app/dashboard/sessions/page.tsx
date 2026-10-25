@@ -26,7 +26,7 @@ export default async function SessionsPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
-        <Link href="/dashboard/sessions/new" className={buttonVariants()}>
+        <Link href="/dashboard/sessions/new" className={buttonVariants({ className: "max-md:h-11" })}>
           <PlusIcon /> {t("newSession")}
         </Link>
       </div>

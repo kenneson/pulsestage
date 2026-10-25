@@ -13,10 +13,10 @@ function DeliveredToggle({ winner }: { winner: RaffleWinnerAdmin }) {
   const [pending, startTransition] = useTransition();
   const [delivered, setDelivered] = useOptimistic(winner.deliveredAt !== null);
   return (
-    <label className="flex items-center gap-1.5 text-xs">
+    <label className="flex items-center gap-1.5 text-xs max-md:min-h-11 max-md:gap-2 max-md:text-sm">
       <input
         type="checkbox"
-        className="size-4"
+        className="size-4 max-md:size-5"
         checked={delivered}
         disabled={pending}
         onChange={(e) => {
@@ -50,8 +50,8 @@ export function WinnerList({
   return (
     <ul className="flex flex-col divide-y rounded-lg border">
       {winners.map((w) => (
-        <li key={w.id} className={cn("flex flex-wrap items-center gap-3 px-3 py-2 text-sm", w.forfeitedAt && "text-muted-foreground")}>
-          <span aria-hidden className="grid size-8 shrink-0 place-items-center rounded-full bg-muted text-lg leading-none">
+        <li key={w.id} className={cn("flex flex-wrap items-center gap-3 px-3 py-2 text-sm max-md:gap-x-2.5 max-md:py-0.5", w.forfeitedAt && "text-muted-foreground")}>
+          <span aria-hidden className="grid size-8 shrink-0 place-items-center rounded-full bg-muted text-lg leading-none max-md:my-1.5">
             {w.avatar ?? <span className="font-display text-sm">{w.name.charAt(0).toUpperCase()}</span>}
           </span>
           <span className={cn("min-w-0 flex-1 truncate font-medium", w.forfeitedAt && "line-through")}>{w.name}</span>

@@ -16,6 +16,7 @@ import {
   type InteractionType,
   type NormalizedSettings,
 } from "@/lib/domain/interactions";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Label, Select, Textarea } from "@/components/ui/input";
 import { Alert } from "@/components/ui/misc";
@@ -101,12 +102,12 @@ function OptionImagePicker({
     return (
       <span className="relative shrink-0">
         {/* eslint-disable-next-line @next/next/no-img-element -- imagem pública do Storage */}
-        <img src={optionImageSrc(path)} alt="" className="size-10 rounded-md border object-cover" />
+        <img src={optionImageSrc(path)} alt="" className="size-10 rounded-md border object-cover max-md:size-11" />
         <button
           type="button"
           aria-label={t("remove", { number: index + 1 })}
           onClick={() => onChange(null)}
-          className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full border bg-background text-muted-foreground hover:text-foreground"
+          className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full border bg-background text-muted-foreground hover:text-foreground max-md:-right-2 max-md:-top-2 max-md:size-7"
         >
           <XIcon width={12} height={12} />
         </button>
@@ -119,6 +120,7 @@ function OptionImagePicker({
       <Button
         variant="ghost"
         size="icon"
+        className="max-md:size-11"
         aria-label={t("add", { number: index + 1 })}
         title={t("addTitle")}
         disabled={uploading}
@@ -159,6 +161,7 @@ export function InteractionForm({
   onDone,
   onCancel,
   actions,
+  embedded = false,
 }: {
   sessionId: string;
   initial: InteractionDraft;
@@ -168,6 +171,8 @@ export function InteractionForm({
   onCancel: () => void;
   /** Sem `actions`, há um único "Salvar" que cria ou edita pelo roteiro. */
   actions?: InteractionFormAction[];
+  /** Dentro de um diálogo/folha que já tem fundo e borda: no celular, o formulário fica sem card próprio. */
+  embedded?: boolean;
 }) {
   const t = useTranslations("builder.form");
   const tCommon = useTranslations("common.actions");
@@ -222,7 +227,12 @@ export function InteractionForm({
   }
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border bg-background p-4">
+    <div
+      className={cn(
+        "flex flex-col gap-4 rounded-xl border bg-background p-4",
+        embedded && "max-md:rounded-none max-md:border-0 max-md:bg-transparent max-md:p-0",
+      )}
+    >
       <p className="text-sm font-medium text-primary">{tDomain(`interactionTypes.${draft.type}.label`)}</p>
 
       <Field>
@@ -268,18 +278,22 @@ export function InteractionForm({
             {draft.type === "quiz" ? t("optionsQuiz") : draft.type === "ranking" ? t("optionsRanking") : t("options")}
           </Label>
           {draft.options.map((option, index) => (
-            <div key={option.id ?? `new-${index}`} className="flex items-center gap-2">
+            // No celular, no quiz, imagem, pontos e excluir vão para a linha de baixo (o texto fica com a largura toda).
+            <div key={option.id ?? `new-${index}`} className="flex items-center gap-2 max-md:flex-wrap max-md:gap-y-1">
               {draft.settings.optionStyle === "shapes" ? <ShapeGlyph index={index} className={shapeText(index)} /> : null}
               {draft.type === "quiz" ? (
-                <input
-                  type="radio"
-                  name="correct-option"
-                  aria-label={t("isCorrect", { number: index + 1 })}
-                  checked={option.isCorrect}
-                  onChange={() => setOption(index, { isCorrect: true })}
-                  disabled={locked}
-                  className="size-4 accent-[var(--primary)]"
-                />
+                // O <label> só existe para dar 44px de toque no celular; no computador é `contents`.
+                <label className="md:contents max-md:-mx-1.5 max-md:grid max-md:size-11 max-md:shrink-0 max-md:cursor-pointer max-md:place-items-center">
+                  <input
+                    type="radio"
+                    name="correct-option"
+                    aria-label={t("isCorrect", { number: index + 1 })}
+                    checked={option.isCorrect}
+                    onChange={() => setOption(index, { isCorrect: true })}
+                    disabled={locked}
+                    className="size-4 accent-[var(--primary)] max-md:size-5"
+                  />
+                </label>
               ) : null}
               <Input
                 value={option.label}
@@ -287,41 +301,56 @@ export function InteractionForm({
                 placeholder={option.imagePath ? t("describeImage") : t("option", { number: index + 1 })}
                 aria-label={t("option", { number: index + 1 })}
                 maxLength={200}
+                className="max-md:h-11 max-md:flex-1 max-md:basis-0"
               />
-              <OptionImagePicker
-                path={option.imagePath}
-                index={index}
-                onChange={(imagePath) => setOption(index, { imagePath })}
-                onBusy={onBusy}
-              />
-              {draft.type === "quiz" ? (
-                <Input
-                  type="number"
-                  aria-label={t("points")}
-                  title={t("pointsHint")}
-                  value={option.points}
-                  min={0}
-                  max={10000}
-                  onChange={(e) => setOption(index, { points: Number(e.target.value) || 0 })}
-                  className="w-24"
-                  disabled={locked}
-                />
-              ) : null}
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t("removeOption")}
-                disabled={locked || draft.options.length <= 2}
-                onClick={() => setDraft({ ...draft, options: draft.options.filter((_, i) => i !== index) })}
+              <div
+                className={cn(
+                  "md:contents max-md:flex max-md:items-center max-md:gap-1",
+                  draft.type === "quiz" && "max-md:w-full max-md:justify-end",
+                )}
               >
-                <TrashIcon />
-              </Button>
+                <OptionImagePicker
+                  path={option.imagePath}
+                  index={index}
+                  onChange={(imagePath) => setOption(index, { imagePath })}
+                  onBusy={onBusy}
+                />
+                {draft.type === "quiz" ? (
+                  <span aria-hidden className="mr-1 text-xs text-muted-foreground md:hidden">
+                    {t("points")}
+                  </span>
+                ) : null}
+                {draft.type === "quiz" ? (
+                  <Input
+                    type="number"
+                    aria-label={t("points")}
+                    title={t("pointsHint")}
+                    value={option.points}
+                    min={0}
+                    max={10000}
+                    onChange={(e) => setOption(index, { points: Number(e.target.value) || 0 })}
+                    className="w-24 max-md:h-11"
+                    disabled={locked}
+                  />
+                ) : null}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="max-md:size-11"
+                  aria-label={t("removeOption")}
+                  disabled={locked || draft.options.length <= 2}
+                  onClick={() => setDraft({ ...draft, options: draft.options.filter((_, i) => i !== index) })}
+                >
+                  <TrashIcon />
+                </Button>
+              </div>
             </div>
           ))}
           <div>
             <Button
               variant="outline"
               size="sm"
+              className="max-md:h-11 max-md:w-full max-md:text-sm"
               disabled={locked || draft.options.length >= (draft.type === "quiz" ? 6 : 8)}
               onClick={() =>
                 setDraft({ ...draft, options: [...draft.options, newOption()] })
@@ -358,7 +387,7 @@ export function InteractionForm({
               ))}
             </Select>
           </Field>
-          <label className="flex items-center gap-2 pb-2 text-sm">
+          <label className="flex items-center gap-2 pb-2 text-sm max-md:min-h-11 max-md:pb-0">
             <input
               type="checkbox"
               checked={draft.settings.speedBonus && draft.settings.timerSeconds !== null}
@@ -377,7 +406,7 @@ export function InteractionForm({
       ) : null}
 
       {draft.type === "rating" ? (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 max-sm:grid-cols-2 max-sm:items-end max-sm:gap-3">
           <Field>
             <Label htmlFor="rating-min">{t("min")}</Label>
             <Select id="rating-min" value={draft.settings.min} onChange={(e) => setSettings({ min: Number(e.target.value) })}>
@@ -432,7 +461,7 @@ export function InteractionForm({
             />
           </Field>
           {draft.type === "open_text" ? (
-            <label className="flex items-center gap-2 pb-2 text-sm">
+            <label className="flex items-center gap-2 pb-2 text-sm max-md:min-h-11 max-md:pb-0">
               <input
                 type="checkbox"
                 checked={draft.settings.showOnDisplay}
@@ -447,10 +476,12 @@ export function InteractionForm({
 
       {error ? <Alert>{error}</Alert> : null}
 
-      <div className="flex flex-wrap gap-2">
+      {/* No celular: botões de 44px em duas colunas; com duas ações, "Cancelar" ocupa a linha de baixo. */}
+      <div className="flex flex-wrap gap-2 max-md:grid max-md:grid-cols-2">
         {formActions.map((action) => (
           <Button
             key={action.label}
+            className="max-md:h-auto max-md:min-h-11 max-md:whitespace-normal"
             variant={action.variant ?? "default"}
             onClick={() => save(action)}
             disabled={pending || action.disabled || uploads > 0}
@@ -458,7 +489,12 @@ export function InteractionForm({
             {pending && running === action.label ? action.pendingLabel : action.label}
           </Button>
         ))}
-        <Button variant="ghost" onClick={onCancel} disabled={pending}>
+        <Button
+          variant="ghost"
+          onClick={onCancel}
+          disabled={pending}
+          className={cn("max-md:h-11", formActions.length % 2 === 0 && "max-md:col-span-2")}
+        >
           {tCommon("cancel")}
         </Button>
       </div>

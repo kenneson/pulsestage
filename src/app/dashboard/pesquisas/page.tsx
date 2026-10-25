@@ -39,7 +39,7 @@ async function TemplateCard({ template }: { template: SurveyTemplate }) {
             : ""}
         </p>
         <details className="text-sm">
-          <summary className="cursor-pointer font-medium text-primary">{t("showQuestions")}</summary>
+          <summary className="cursor-pointer font-medium text-primary max-md:-my-3 max-md:py-3">{t("showQuestions")}</summary>
           <ol className="mt-3 flex flex-col gap-2">
             {template.questions.map((q, index) => (
               <li key={q.id} className="grid grid-cols-[1.5rem_1fr] gap-x-2">
@@ -57,7 +57,7 @@ async function TemplateCard({ template }: { template: SurveyTemplate }) {
             ))}
           </ol>
         </details>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 max-md:[&>a]:h-11 max-md:[&>a]:text-sm max-md:[&>button]:h-11 max-md:[&>button]:text-sm">
           {template.isPlatform ? (
             <DuplicateTemplateButton templateId={template.id} />
           ) : (
@@ -107,7 +107,7 @@ export default async function SurveysPage() {
           <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
           <p className="text-muted-foreground">{t("description")}</p>
         </div>
-        <Link href="/dashboard/pesquisas/nova" className={buttonVariants()}>
+        <Link href="/dashboard/pesquisas/nova" className={buttonVariants({ className: "max-md:h-11" })}>
           <PlusIcon /> {t("newTemplate")}
         </Link>
       </div>
@@ -141,7 +141,7 @@ export default async function SurveysPage() {
       {others.length > 0 ? (
         <section className="flex flex-col gap-4">
           <details>
-            <summary className="cursor-pointer font-semibold text-primary">{t("otherLocales")}</summary>
+            <summary className="cursor-pointer font-semibold text-primary max-md:-my-2.5 max-md:py-2.5">{t("otherLocales")}</summary>
             <div className="mt-4 flex flex-col gap-6">
               <p className="text-sm text-muted-foreground">{t("otherLocalesHint")}</p>
               {others.map((group) => (

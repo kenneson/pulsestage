@@ -90,7 +90,44 @@ export default async function EvolutionPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          {/* Celular: um cartão por sessão no lugar da tabela larga. */}
+          <ul className="flex flex-col divide-y rounded-md bg-card shadow-[0_10px_28px_-18px_color-mix(in_oklch,var(--foreground)_32%,transparent)] md:hidden dark:border">
+            {[...history].reverse().map((h) => (
+              <li key={h.sessionId} className="flex flex-col gap-3 px-4 py-4">
+                <div className="flex flex-col gap-0.5">
+                  <Link
+                    href={`/dashboard/sessions/${h.sessionId}/analytics`}
+                    className="font-medium break-words hover:underline"
+                  >
+                    {h.title}
+                  </Link>
+                  <span className="text-sm text-muted-foreground">{formatShortDate(h.date, timeZone, locale)}</span>
+                </div>
+                <dl className="grid grid-cols-3 gap-x-3 gap-y-2.5 text-sm">
+                  {(
+                    [
+                      [t("table.participants"), formatInt(h.participants, locale)],
+                      [t("table.participation"), formatPercent(h.participationRate)],
+                      [t("table.surveys"), formatInt(h.survey.count, locale)],
+                      [t("table.headline"), formatScore(h.survey.headline, locale)],
+                      [t("table.scaleAverage"), formatScore(h.survey.scaleAverage, locale)],
+                      [
+                        t("table.strongest"),
+                        h.survey.dimensions[0] ? tDomain(`dimensions.${h.survey.dimensions[0].dimension}`) : "—",
+                      ],
+                    ] as const
+                  ).map(([label, value]) => (
+                    <div key={label} className="flex min-w-0 flex-col">
+                      <dt className="text-xs text-muted-foreground">{label}</dt>
+                      <dd className="font-medium break-words tabular-nums">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </li>
+            ))}
+          </ul>
+
+          <Card className="max-md:hidden">
             <CardContent className="overflow-x-auto">
               <table className="w-full min-w-[640px] text-sm">
                 <thead>

@@ -103,9 +103,9 @@ export function ContactInbox({ items }: { items: InboxItem[] }) {
                     setOpenId(open ? null : item.id);
                     if (!item.read) run({ id: item.id, read: true }, () => updateContactAction({ id: item.id, read: true }));
                   }}
-                  className="flex w-full flex-wrap items-start gap-x-3 gap-y-1 px-4 py-3 text-left"
+                  className="flex w-full flex-wrap items-start gap-x-3 gap-y-1 px-4 py-3 text-left max-md:flex-col max-md:flex-nowrap max-md:gap-y-0.5"
                 >
-                  <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                  <span className="flex min-w-0 flex-1 flex-col gap-0.5 max-md:w-full">
                     <span className="flex items-center gap-2">
                       {!item.read ? <span className="size-2 shrink-0 rounded-full bg-primary" aria-label={t("unread")} /> : null}
                       <span className={cn("truncate", !item.read && "font-semibold")}>{item.name}</span>
@@ -113,7 +113,8 @@ export function ContactInbox({ items }: { items: InboxItem[] }) {
                     </span>
                     <span className={cn("text-sm text-muted-foreground", !open && "line-clamp-1")}>{item.message}</span>
                   </span>
-                  <span className="shrink-0 text-xs text-muted-foreground">{item.receivedAt}</span>
+                  {/* Celular: a data vira a primeira linha, pequena, e o nome usa a largura toda. */}
+                  <span className="shrink-0 text-xs text-muted-foreground max-md:order-first">{item.receivedAt}</span>
                 </button>
                 {open ? (
                   <div className="flex flex-col gap-3 border-t px-4 py-3">
@@ -126,13 +127,14 @@ export function ContactInbox({ items }: { items: InboxItem[] }) {
                     <div className="flex flex-wrap items-center gap-2">
                       <a
                         href={`mailto:${item.email}?subject=${encodeURIComponent(t("replySubject"))}`}
-                        className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                        className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 max-md:h-auto max-md:min-h-11 max-md:w-full max-md:justify-center max-md:py-2 max-md:text-center max-md:[overflow-wrap:anywhere]"
                       >
                         <MailIcon /> {t("reply", { email: item.email })}
                       </a>
                       <Button
                         variant="outline"
                         size="sm"
+                        className="max-md:h-11"
                         onClick={() =>
                           run({ id: item.id, archived: !item.archived }, () =>
                             updateContactAction({ id: item.id, archived: !item.archived }),
@@ -144,6 +146,7 @@ export function ContactInbox({ items }: { items: InboxItem[] }) {
                       <Button
                         variant="ghost"
                         size="sm"
+                        className="max-md:h-11"
                         onClick={() =>
                           run({ id: item.id, read: false }, () => updateContactAction({ id: item.id, read: false }))
                         }
@@ -153,7 +156,7 @@ export function ContactInbox({ items }: { items: InboxItem[] }) {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-destructive hover:text-destructive"
+                        className="text-destructive hover:text-destructive max-md:h-11"
                         onClick={async () => {
                           const ok = await confirm({
                             title: t("deleteTitle", { name: item.name }),

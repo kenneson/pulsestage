@@ -218,7 +218,7 @@ export function SessionForm({
       {state.error ? <Alert>{state.error}</Alert> : null}
       {state.success ? <Alert tone="success">{state.success}</Alert> : null}
       <div>
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={pending} className="max-md:h-11 max-md:w-full">
           {pending ? tActions("saving") : sessionId ? t("saveInfo") : t("create")}
         </Button>
       </div>

@@ -42,6 +42,7 @@
     "endedHint": "Sesión finalizada.",
     "upNextSlides": "A continuación: <strong>{item}</strong> · → o AvPág avanza, ← retrocede",
     "upNextKeys": "A continuación: <strong>{item}</strong> · → avanza",
+    "upNext": "A continuación: <strong>{item}</strong>",
     "lineupEnd": "Fin del guion.",
     "itemLabel": "{type}: {title}",
     "interactionFallback": "Interacción",

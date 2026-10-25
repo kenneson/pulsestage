@@ -25,9 +25,9 @@ const CANNOT = ["personal", "live", "account"] as const;
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center gap-6 px-5 py-10">
+    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center gap-6 px-5 py-10 max-md:px-4 max-md:pb-[max(env(safe-area-inset-bottom),2.5rem)] max-md:pt-[max(env(safe-area-inset-top),2.5rem)]">
       <Logo />
-      <div className="flex flex-col gap-5 rounded-md bg-card p-6 shadow-[0_18px_40px_-26px_color-mix(in_oklch,var(--foreground)_35%,transparent)] dark:border">
+      <div className="flex flex-col gap-5 rounded-md bg-card p-6 max-sm:p-5 shadow-[0_18px_40px_-26px_color-mix(in_oklch,var(--foreground)_35%,transparent)] dark:border">
         {children}
       </div>
     </main>
@@ -116,7 +116,8 @@ export default async function ConsentPage({ searchParams }: Props) {
         {t("warning")}
       </p>
 
-      <div className="flex flex-wrap gap-2">
+      {/* Celular: "Permitir" em cima, os dois na largura toda. */}
+      <div className="flex flex-wrap gap-2 max-sm:flex-col">
         <form action={approveAuthorizationAction} className="flex-1">
           <input type="hidden" name="authorization_id" value={data.authorization_id} />
           <Button type="submit" className="w-full">
@@ -135,7 +136,7 @@ export default async function ConsentPage({ searchParams }: Props) {
         <input type="hidden" name="authorization_id" value={data.authorization_id} />
         {t.rich("notYou", {
           switch: (chunks) => (
-            <button type="submit" className="underline hover:text-foreground">
+            <button type="submit" className="underline hover:text-foreground max-md:py-2.5">
               {chunks}
             </button>
           ),

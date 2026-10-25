@@ -91,7 +91,7 @@ export default async function RafflesPage() {
                       {t("entrants", { count: state.entrants })}
                     </CardDescription>
                   </div>
-                  <Link href={`/dashboard/sessions/${session.id}?aba=sorteio`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                  <Link href={`/dashboard/sessions/${session.id}?aba=sorteio`} className={buttonVariants({ variant: "outline", size: "sm", className: "max-md:h-11 max-md:text-sm" })}>
                     {t("editPrizes")}
                   </Link>
                 </CardHeader>

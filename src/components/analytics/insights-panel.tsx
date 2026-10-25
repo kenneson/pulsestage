@@ -67,7 +67,7 @@ export function InsightsPanel({
         <p className="text-sm text-muted-foreground">
           {generatedAt ? `${t("generatedAt", { date: generatedAt })}${meta ? ` · ${meta}` : ""}` : t("intro")}
         </p>
-        <Button onClick={generate} disabled={pending || !configured}>
+        <Button onClick={generate} disabled={pending || !configured} className="max-md:h-11 max-md:w-full">
           <SparklesIcon /> {pending ? t("analyzing") : insights.length > 0 ? t("regenerate") : t("generate")}
         </Button>
       </div>

@@ -44,6 +44,9 @@ type DropTarget = { index: number; side: "before" | "after" };
 
 const UPLOAD_CONCURRENCY = 4;
 
+/** Botões de 44px no celular (no computador, o tamanho continua o mesmo). */
+const BUTTON_MOBILE = "max-md:h-auto max-md:min-h-11 max-md:whitespace-normal max-md:px-3";
+
 type Progressing = { label: string; done: number; total: number };
 
 function useSlidesUpload(sessionId: string, speakerId: string) {
@@ -108,11 +111,13 @@ function PdfPicker({
   disabled,
   children,
   variant = "outline",
+  className,
 }: {
   onFile: (file: File) => void;
   disabled?: boolean;
   children: React.ReactNode;
   variant?: "outline" | "default";
+  className?: string;
 }) {
   const input = useRef<HTMLInputElement>(null);
   return (
@@ -130,7 +135,7 @@ function PdfPicker({
           if (file) onFile(file);
         }}
       />
-      <Button variant={variant} disabled={disabled} onClick={() => input.current?.click()}>
+      <Button variant={variant} disabled={disabled} className={className} onClick={() => input.current?.click()}>
         {children}
       </Button>
     </>
@@ -235,7 +240,7 @@ export function SlidesEditor({
     return (
       <div
         className={cn(
-          "flex flex-col items-center gap-4 rounded-xl border border-dashed px-6 py-10 text-center transition-colors",
+          "flex flex-col items-center gap-4 rounded-xl border border-dashed px-6 py-10 text-center transition-colors max-md:px-4 max-md:py-8",
           dragging && "border-primary bg-primary/5",
         )}
         onDragOver={(e) => {
@@ -262,7 +267,7 @@ export function SlidesEditor({
             <UploadProgress progress={progress} />
           </div>
         ) : (
-          <PdfPicker onFile={upload} disabled={busy} variant="default">
+          <PdfPicker onFile={upload} disabled={busy} variant="default" className="max-md:h-11 max-md:w-full">
             {t("choosePdf")}
           </PdfPicker>
         )}
@@ -317,11 +322,11 @@ export function SlidesEditor({
           {readOnly ? t("readOnlyHint") : t("editHint")}
         </p>
         {!readOnly ? (
-          <div className="flex gap-2">
-            <PdfPicker onFile={upload} disabled={busy}>
+          <div className="flex gap-2 max-md:grid max-md:w-full max-md:grid-cols-2">
+            <PdfPicker onFile={upload} disabled={busy} className={BUTTON_MOBILE}>
               <RefreshIcon /> {t("replacePdf")}
             </PdfPicker>
-            <Button variant="ghost" disabled={busy} onClick={remove}>
+            <Button variant="ghost" disabled={busy} onClick={remove} className={BUTTON_MOBILE}>
               <TrashIcon /> {t("removeSlides")}
             </Button>
           </div>
@@ -353,7 +358,7 @@ export function SlidesEditor({
             <li
               key={item.id}
               className={cn(
-                "relative flex flex-col gap-2 rounded-lg p-3 text-rev-foreground transition-opacity",
+                "relative flex flex-col gap-2 rounded-lg p-3 text-rev-foreground transition-opacity max-sm:col-span-2",
                 TYPE_PAPER[interaction.type],
                 canDrag && "cursor-grab active:cursor-grabbing",
                 dragId === item.id && "opacity-40",
@@ -369,7 +374,7 @@ export function SlidesEditor({
             >
               {marker(index)}
               <div className="flex items-start justify-between gap-2">
-                <TypeTag type={interaction.type} className="bg-background/60" />
+                <TypeTag type={interaction.type} className="bg-background/60 max-md:min-w-0 max-md:shrink" />
                 {canDrag ? <GripIcon aria-hidden className="shrink-0 opacity-60" /> : null}
               </div>
               <p className="line-clamp-3 text-sm font-medium">{interaction.title}</p>
@@ -378,7 +383,7 @@ export function SlidesEditor({
               ) : (
                 <Select
                   aria-label={t("placeAria", { title: interaction.title })}
-                  className="mt-auto h-8 text-xs text-foreground"
+                  className="mt-auto h-8 text-xs text-foreground max-md:h-11 max-md:text-sm"
                   value={anchorOf(interaction.afterSlide, slideCount)}
                   disabled={busy}
                   onChange={(e) => place(interaction.id, Number(e.target.value))}

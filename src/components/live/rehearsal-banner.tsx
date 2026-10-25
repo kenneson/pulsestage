@@ -44,7 +44,7 @@ export function RehearsalBanner({ sessionId }: { sessionId: string }) {
           strong: (chunks) => <span className="font-semibold">{chunks}</span>,
         })}
       </p>
-      <Button variant="outline" size="sm" disabled={pending} onClick={end}>
+      <Button variant="outline" size="sm" className="max-md:h-11 max-md:w-full" disabled={pending} onClick={end}>
         {t("end")}
       </Button>
     </div>

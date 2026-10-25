@@ -51,11 +51,17 @@ export function LibraryTable({ items, sessions }: { items: LibraryItem[]; sessio
       ) : (
         <ul className="divide-y rounded-md bg-card shadow-[0_10px_28px_-18px_color-mix(in_oklch,var(--foreground)_32%,transparent)] dark:border">
           {filter.filtered.map((item) => (
-            <li key={item.key} className="flex flex-wrap items-center gap-4 px-5 py-4">
+            <li key={item.key} className="flex flex-wrap items-center gap-4 px-5 py-4 max-md:gap-3 max-md:px-4">
               <div className="min-w-0 flex-[1_1_320px]">
                 <LibraryItemSummary item={item} />
               </div>
-              <Button variant="outline" size="sm" onClick={() => open(item)} disabled={sessions.length === 0}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="max-md:h-11 max-md:text-sm"
+                onClick={() => open(item)}
+                disabled={sessions.length === 0}
+              >
                 <PlusIcon /> {t("useInSession")}
               </Button>
             </li>
@@ -77,7 +83,7 @@ export function LibraryTable({ items, sessions }: { items: LibraryItem[]; sessio
               type="button"
               aria-label={tActions("close")}
               onClick={() => dialogRef.current?.close()}
-              className="grid size-9 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-muted"
+              className="grid size-9 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-muted max-md:-mt-1.5 max-md:-mr-2 max-md:size-11"
             >
               <XIcon />
             </button>
@@ -94,7 +100,7 @@ export function LibraryTable({ items, sessions }: { items: LibraryItem[]; sessio
             </Select>
             <span className="text-xs font-normal text-muted-foreground">{t("entersAtEnd")}</span>
           </label>
-          <div className="flex flex-wrap justify-end gap-2">
+          <div className="flex flex-wrap justify-end gap-2 max-md:grid max-md:grid-cols-2 max-md:[&>button]:h-11">
             <Button variant="outline" onClick={() => dialogRef.current?.close()}>
               {tActions("cancel")}
             </Button>

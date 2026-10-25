@@ -70,7 +70,7 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
-        <Link href={`/dashboard/sessions/${id}/analytics`} className={buttonVariants({ variant: "ghost" })}>
+        <Link href={`/dashboard/sessions/${id}/analytics`} className={buttonVariants({ variant: "ghost", className: "max-md:-ml-3 max-md:h-11" })}>
           <ChevronLeftIcon /> {t("back")}
         </Link>
         <div className="flex items-center gap-3">
@@ -79,7 +79,7 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
         </div>
       </div>
 
-      <article className="mx-auto flex w-full max-w-[210mm] flex-col gap-7 rounded-md bg-card p-8 text-sm text-card-foreground shadow-[0_10px_28px_-18px_color-mix(in_oklch,var(--foreground)_32%,transparent)] dark:border sm:p-12 print:max-w-none print:rounded-none print:border-0! print:p-0 print:shadow-none">
+      <article className="mx-auto flex w-full max-w-[210mm] flex-col gap-7 rounded-md bg-card p-8 text-sm text-card-foreground shadow-[0_10px_28px_-18px_color-mix(in_oklch,var(--foreground)_32%,transparent)] dark:border max-sm:gap-6 max-sm:p-5 sm:p-12 print:max-w-none print:rounded-none print:border-0! print:p-0 print:shadow-none">
         <header className="flex flex-col gap-2 border-b-2 border-foreground pb-4">
           <p className="flex items-center gap-2 font-semibold">
             <span aria-hidden className="grid size-6 place-items-center rounded bg-primary text-primary-foreground">
@@ -89,7 +89,7 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
             </span>
             PulseStage · {t("header")}
           </p>
-          <h1 className="font-display text-3xl font-bold leading-tight tracking-tight">{data.session.title}</h1>
+          <h1 className="font-display text-3xl font-bold leading-tight tracking-tight break-words max-sm:text-2xl">{data.session.title}</h1>
           <p className="text-muted-foreground">
             {profile.name ?? profile.email} · {formatDateTime(data.session.started_at ?? data.session.scheduled_at, profile.timeZone, locale)}
             {talkTime ? ` · ${talkTime}` : ""}
@@ -155,7 +155,7 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
                 <li key={p.interactionId} className="grid grid-cols-[1.5rem_minmax(0,1fr)_3rem] items-center gap-3">
                   <span className="font-display font-bold tabular-nums">{index + 1}</span>
                   <span className="flex min-w-0 flex-col gap-1">
-                    <span className="truncate">{p.title}</span>
+                    <span className="truncate max-sm:line-clamp-2 max-sm:whitespace-normal">{p.title}</span>
                     <span className="h-2 overflow-hidden rounded-full bg-muted print:bg-muted">
                       <span
                         className="block h-full origin-left rounded-full bg-primary"

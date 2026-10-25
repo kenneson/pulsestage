@@ -122,6 +122,7 @@ export function RafflePanel({
         <Button
           variant="outline"
           size="sm"
+          className="max-md:h-11 max-md:shrink-0"
           disabled={pending || !started}
           onClick={() => run(() => showRaffleAction(sessionId, !onScreen))}
         >
@@ -178,6 +179,7 @@ export function RafflePanel({
                     </div>
                     <Button
                       size="sm"
+                      className="max-md:h-11 max-md:shrink-0 max-md:px-4"
                       disabled={pending || suspense || !started || remaining === 0 || state.entrants === 0}
                       onClick={() => run(() => drawRaffleAction(sessionId, prize.id))}
                     >
@@ -191,7 +193,7 @@ export function RafflePanel({
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 px-2 text-xs"
+                        className="h-7 px-2 text-xs max-md:h-11 max-md:px-3"
                         disabled={pending || suspense}
                         onClick={async () => {
                           const ok = await confirm({

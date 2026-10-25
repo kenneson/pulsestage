@@ -35,9 +35,11 @@ export function JoinForm({ code }: { code: string }) {
       {/* Faixa de uma linha com rolagem lateral: a grade de 3 linhas empurrava "Participar" para baixo da dobra. */}
       <fieldset className="flex min-w-0 flex-col gap-1">
         <legend className="mb-1 text-sm font-medium">{t("avatarLegend")}</legend>
-        <div className="-mx-5 flex snap-x gap-2 overflow-x-auto px-5 py-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="-mx-5 flex snap-x gap-2 overflow-x-auto px-5 py-1.5 max-md:-mx-4 max-md:scroll-px-4 max-md:px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {AVATARS.map((avatar) => (
-            <label key={avatar.key} title={tDomain(`avatars.${avatar.key}`)} className="shrink-0 cursor-pointer snap-start">
+            // `relative`: o rádio `sr-only` é absoluto; sem um ancestral posicionado, ele escapava da faixa
+            // rolável e alargava a página (972 px no celular, 1468 px no computador).
+            <label key={avatar.key} title={tDomain(`avatars.${avatar.key}`)} className="relative shrink-0 cursor-pointer snap-start">
               <input type="radio" name="avatar" value={avatar.key} className="peer sr-only" aria-label={tDomain(`avatars.${avatar.key}`)} />
               <span
                 aria-hidden
@@ -50,9 +52,9 @@ export function JoinForm({ code }: { code: string }) {
         </div>
       </fieldset>
 
-      <details className="rounded-lg border px-3 py-2 text-sm">
-        <summary className="cursor-pointer font-medium">{t("materialSummary")}</summary>
-        <div className="mt-3 flex flex-col gap-3">
+      <details className="rounded-lg border px-3 py-2 text-sm max-md:py-0">
+        <summary className="cursor-pointer font-medium max-md:py-3">{t("materialSummary")}</summary>
+        <div className="mt-3 flex flex-col gap-3 max-md:mt-0 max-md:pb-3">
           <Field>
             <Label htmlFor="email">{t("email")}</Label>
             <Input id="email" name="email" type="email" autoComplete="email" maxLength={254} />
@@ -61,8 +63,8 @@ export function JoinForm({ code }: { code: string }) {
             <Label htmlFor="phone">{t("phone")}</Label>
             <Input id="phone" name="phone" type="tel" autoComplete="tel" maxLength={32} />
           </Field>
-          <label className="flex items-start gap-2 text-xs text-muted-foreground">
-            <input type="checkbox" name="consent" className="mt-0.5 size-4" />
+          <label className="flex items-start gap-2 text-xs text-muted-foreground max-md:gap-3 max-md:py-1">
+            <input type="checkbox" name="consent" className="mt-0.5 size-4 max-md:size-5 max-md:shrink-0" />
             <span>{t.rich("consent", { link: privacyLink })}</span>
           </label>
         </div>

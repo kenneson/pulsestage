@@ -154,8 +154,14 @@ function RankingResults({
           >
             {t("position", { position: index + 1 })}
           </span>
-          <div className={cn("flex items-baseline justify-between gap-4", big ? "text-3xl" : "text-sm")}>
-            <span className="min-w-0 font-medium">{row.label}</span>
+          {/* Celular: a posição média desce para baixo do nome (ao lado, apertava o nome e o fazia quebrar). */}
+          <div
+            className={cn(
+              "flex items-baseline justify-between gap-4 max-md:flex-col max-md:items-start max-md:gap-0.5",
+              big ? "text-3xl" : "text-sm",
+            )}
+          >
+            <span className="min-w-0 font-medium max-md:break-words">{row.label}</span>
             <span className={cn("shrink-0 tabular-nums text-muted-foreground", big ? "text-2xl" : "text-xs")}>
               {t("averagePosition", { value: formatScore(row.averagePosition, locale) })}
             </span>

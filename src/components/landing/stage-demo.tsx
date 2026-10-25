@@ -316,7 +316,7 @@ export function StageDemo() {
   const Stage = STAGES[scene];
   return (
     <figure className="flex flex-col gap-4" aria-label={t("ariaLabel")}>
-      <div role="tablist" aria-label={t("scenesLabel")} className="flex flex-wrap gap-1.5">
+      <div role="tablist" aria-label={t("scenesLabel")} className="flex flex-wrap gap-1.5 max-sm:grid max-sm:grid-cols-2">
         {SCENES.map((s, i) => (
           <button
             key={s}
@@ -328,7 +328,7 @@ export function StageDemo() {
               setIndex(i);
             }}
             className={cn(
-              "relative h-8 overflow-hidden rounded-md border px-3 text-xs font-medium transition-colors",
+              "relative h-8 overflow-hidden rounded-md border px-3 text-xs font-medium transition-colors max-sm:h-11 max-sm:px-2",
               i === index ? "border-foreground bg-foreground text-background" : "hover:bg-muted",
             )}
           >
@@ -344,7 +344,8 @@ export function StageDemo() {
           </button>
         ))}
       </div>
-      <div role="tabpanel" aria-label={t(`scenes.${scene}`)} className="pb-8">
+      {/* No celular o aparelho ao lado do telão fica escondido: sem a folga embaixo. */}
+      <div role="tabpanel" aria-label={t(`scenes.${scene}`)} className="pb-8 max-sm:pb-0">
         <Stage key={scene} />
       </div>
       <figcaption className="text-xs text-muted-foreground">

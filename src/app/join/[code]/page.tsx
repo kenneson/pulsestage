@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<{ code: str
 function Shell({ children }: { children: React.ReactNode }) {
   return (
     // Espaços menores no celular: o botão "Participar" precisa caber sem rolar (375×667).
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-5 px-5 py-5 sm:gap-8 sm:py-8">
+    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-5 px-5 py-5 max-md:px-4 max-md:pb-[max(env(safe-area-inset-bottom),1.25rem)] max-md:pt-[max(env(safe-area-inset-top),1.25rem)] sm:gap-8 sm:py-8">
       {/* Sem link: quem chegou pelo QR não deve sair da sessão por um toque na marca. */}
       <Logo href={null} />
       <div className="flex flex-1 flex-col justify-center gap-5 sm:gap-6">{children}</div>
@@ -75,7 +75,7 @@ export default async function JoinCodePage({ params }: { params: Promise<{ code:
       <Shell>
         <div>
           <p className="text-sm font-medium text-primary">{t("code", { code: session.joinCode })}</p>
-          <h1 className="mt-1 text-2xl font-semibold">{session.title}</h1>
+          <h1 className="mt-1 text-2xl font-semibold max-md:text-balance">{session.title}</h1>
           {/* Rascunho: já dá para entrar; a tela do celular espera o início sozinha. */}
           {session.status === "draft" ? <p className="mt-2 text-sm text-muted-foreground">{t("notStarted")}</p> : null}
         </div>

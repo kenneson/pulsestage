@@ -36,6 +36,9 @@ async function oauthReady(): Promise<boolean> {
   }
 }
 
+// Celular: endereço e botão com 44 px de altura.
+const COPY_ROW_MOBILE = "max-md:[&>button]:h-11 max-md:[&>button]:text-sm max-md:[&>code]:py-3";
+
 function Steps({ items }: { items: React.ReactNode[] }) {
   return (
     <ol className="flex flex-col gap-2 text-sm [&>li]:ml-5 [&>li]:list-decimal">
@@ -78,7 +81,7 @@ export default async function IntegrationsPage() {
           <CardDescription>{t("server.description")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <CopyField value={url} label={t("server.copyLabel")} />
+          <CopyField value={url} label={t("server.copyLabel")} className={COPY_ROW_MOBILE} />
         </CardContent>
       </Card>
 
@@ -124,7 +127,11 @@ export default async function IntegrationsPage() {
                 content: (
                   <div className="flex flex-col gap-3 text-sm">
                     <p>{t("connect.code.terminal")}</p>
-                    <CopyField value={`claude mcp add --transport http pulsestage ${url}`} label={t("connect.code.commandLabel")} />
+                    <CopyField
+                      value={`claude mcp add --transport http pulsestage ${url}`}
+                      label={t("connect.code.commandLabel")}
+                      className={COPY_ROW_MOBILE}
+                    />
                     <p>
                       {t.rich("connect.code.after", {
                         b,
@@ -172,7 +179,13 @@ export default async function IntegrationsPage() {
             return (
               <div key={key} className="flex flex-col gap-1.5">
                 <p className="text-sm font-medium">{title}</p>
-                <CopyField value={t(`examples.${key}.text`)} label={t("examples.copyLabel", { title })} multiline />
+                {/* Celular: o texto usa a largura toda e o botão desce para baixo dele. */}
+                <CopyField
+                  value={t(`examples.${key}.text`)}
+                  label={t("examples.copyLabel", { title })}
+                  multiline
+                  className="max-md:flex-col max-md:[&>button]:h-11 max-md:[&>button]:text-sm max-md:[&>code]:w-full"
+                />
               </div>
             );
           })}

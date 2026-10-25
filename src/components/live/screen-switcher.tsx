@@ -97,7 +97,12 @@ export function ScreenSwitcher({
 
   return (
     <div className="flex flex-col gap-2">
-      <div role="group" aria-label={t("groupLabel")} className="flex flex-wrap gap-1.5">
+      {/* No celular, uma faixa de botões que rola na horizontal, de ponta a ponta do card. */}
+      <div
+        role="group"
+        aria-label={t("groupLabel")}
+        className="flex flex-wrap gap-1.5 max-md:-mx-5 max-md:flex-nowrap max-md:gap-2 max-md:overflow-x-auto max-md:px-5 max-md:py-0.5 max-md:[scrollbar-width:none]"
+      >
         {modes.map((mode) => {
           const Icon = ICONS[mode];
           const on = mode === current;
@@ -110,6 +115,7 @@ export function ScreenSwitcher({
               onClick={() => select(mode)}
               className={cn(
                 "relative inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-colors disabled:opacity-50 [&_svg]:size-3.5",
+                "max-md:h-11 max-md:shrink-0 max-md:px-4 max-md:text-sm max-md:[&_svg]:size-4",
                 on
                   ? "border-primary text-primary-foreground"
                   : "border-input bg-background text-muted-foreground hover:bg-muted hover:text-foreground",

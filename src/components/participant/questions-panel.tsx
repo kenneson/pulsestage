@@ -120,7 +120,7 @@ export function QuestionsPanel({ sessionId, myName, onClose }: { sessionId: stri
 
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="questions-title" className="fixed inset-0 z-40 flex flex-col bg-background">
-      <div className="mx-auto flex w-full max-w-md items-center justify-between gap-3 px-5 py-4">
+      <div className="mx-auto flex w-full max-w-md items-center justify-between gap-3 px-5 py-4 max-md:px-4 max-md:pb-2 max-md:pt-[max(env(safe-area-inset-top),0.75rem)]">
         <h2 id="questions-title" className="flex items-center gap-2 text-lg font-semibold">
           <MessageQuestionIcon /> {t("title")}
         </h2>
@@ -128,7 +128,7 @@ export function QuestionsPanel({ sessionId, myName, onClose }: { sessionId: stri
           <XIcon />
         </Button>
       </div>
-      <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 overflow-y-auto px-5 pb-8">
+      <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 overflow-y-auto px-5 pb-8 max-md:overscroll-contain max-md:px-4 max-md:pb-[max(env(safe-area-inset-bottom),2rem)]">
         {data && !data.enabled ? (
           <Alert tone="info">{t("closed")}</Alert>
         ) : (
@@ -150,8 +150,8 @@ export function QuestionsPanel({ sessionId, myName, onClose }: { sessionId: stri
             />
             <div className="flex items-center justify-between gap-3 text-sm">
               {myName ? (
-                <label className="flex items-center gap-2">
-                  <input type="checkbox" checked={withName} onChange={(e) => setWithName(e.target.checked)} className="size-4 accent-primary" />
+                <label className="flex items-center gap-2 max-md:min-h-11">
+                  <input type="checkbox" checked={withName} onChange={(e) => setWithName(e.target.checked)} className="size-4 accent-primary max-md:size-5" />
                   {t("showName", { name: myName })}
                 </label>
               ) : (

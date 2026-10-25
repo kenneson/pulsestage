@@ -21,6 +21,7 @@ import { MessageQuestionIcon } from "@/components/icons";
 import { AnimatedCheck } from "@/components/motion/animated";
 import { SCREEN } from "@/components/motion/presets";
 import { Logo } from "@/components/logo";
+import { cn } from "@/lib/utils";
 import { AnswerForm } from "./answer-form";
 import { RaffleTicketCard } from "./raffle-ticket";
 import { ReactionBar } from "./reaction-bar";
@@ -47,8 +48,8 @@ async function fetchCurrent(sessionId: string): Promise<CurrentInteractionRespon
 
 function Screen({ title, text, children }: { title: string; text?: string; children?: React.ReactNode }) {
   return (
-    <div className="flex flex-col items-center gap-3 py-16 text-center">
-      <h2 className="text-2xl font-semibold">{title}</h2>
+    <div className="flex flex-col items-center gap-3 py-16 text-center max-md:py-10">
+      <h2 className="text-2xl font-semibold max-md:text-balance">{title}</h2>
       {text ? <p className="text-muted-foreground">{text}</p> : null}
       {children}
     </div>
@@ -216,8 +217,17 @@ export function ParticipateView({
   const showQuestions = features.questions && (status === "live" || status === "paused");
   const showReactions = features.reactions && status === "live";
 
+  const hasFooter = showQuestions || showReactions;
+
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 py-5">
+    // Celular: respeita o entalhe e a barra de gestos (viewport-fit=cover); com o rodapé fixo, ele mesmo
+    // ocupa o fim da tela (sem a faixa vazia do padding embaixo).
+    <div
+      className={cn(
+        "mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 py-5 max-md:px-4 max-md:pt-[max(env(safe-area-inset-top),1rem)]",
+        hasFooter ? "max-md:pb-0" : "max-md:pb-[max(env(safe-area-inset-bottom),1.25rem)]",
+      )}
+    >
       <header className="flex items-center justify-between gap-3">
         {/* Sem link: um toque na marca não pode tirar a pessoa da sessão. */}
         <Logo href={null} className="text-sm" />
@@ -230,7 +240,7 @@ export function ParticipateView({
           ) : null}
         </span>
       </header>
-      <main className="flex flex-1 flex-col justify-center py-6" aria-live="polite">
+      <main className="flex flex-1 flex-col justify-center py-6 max-md:py-5" aria-live="polite">
         {error ? <Alert className="mb-4">{error}</Alert> : null}
         <AnimatePresence mode="wait" initial={false}>
           <m.div key={screenKey} {...SCREEN}>
@@ -239,8 +249,8 @@ export function ParticipateView({
         </AnimatePresence>
         {showTicket ? <RaffleTicketCard sessionId={sessionId} drawnAt={live?.raffle_drawn_at ?? null} className="mt-6" /> : null}
       </main>
-      {showQuestions || showReactions ? (
-        <footer className="sticky bottom-0 -mx-5 flex flex-col gap-3 border-t bg-background/95 px-5 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-3 backdrop-blur">
+      {hasFooter ? (
+        <footer className="sticky bottom-0 -mx-5 flex flex-col gap-3 border-t bg-background/95 px-5 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-3 backdrop-blur max-md:-mx-4 max-md:px-4">
           {showReactions ? <ReactionBar sessionId={sessionId} /> : null}
           {showQuestions ? (
             <Button variant="outline" size="lg" className="w-full" onClick={() => setQuestionsOpen(true)}>

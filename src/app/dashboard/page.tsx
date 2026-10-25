@@ -144,7 +144,7 @@ export default async function DashboardPage() {
           <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{firstName ? t("greeting", { name: firstName }) : t("title")}</h1>
           <p className="text-muted-foreground">{t("tagline")}</p>
         </div>
-        <Link href="/dashboard/sessions/new" className={buttonVariants()}>
+        <Link href="/dashboard/sessions/new" className={cn(buttonVariants(), "max-md:h-11")}>
           <PlusIcon /> {t("newSession")}
         </Link>
       </div>
@@ -178,7 +178,8 @@ export default async function DashboardPage() {
               {next.title}
             </h2>
           </div>
-          <div className="flex flex-wrap gap-2">
+          {/* No celular: botões em grade de 2, com 44 px, e a ação principal na largura toda. */}
+          <div className="flex flex-wrap gap-2 max-md:grid max-md:w-full max-md:grid-cols-2 max-md:[&>a]:h-11 max-md:[&>a]:text-sm max-md:[&>button]:h-11 max-md:[&>button]:text-sm">
             <QrDownloadButton joinUrl={joinUrl(next.join_code)} code={next.join_code} />
             <DuplicateSessionButton sessionId={next.id} title={next.title} size="sm" />
             {nextStatus === "draft" ? (
@@ -189,7 +190,7 @@ export default async function DashboardPage() {
                 <StartSessionButton sessionId={next.id} hasInteractions={nextQuestions > 0} />
               </>
             ) : (
-              <Link href={`/dashboard/sessions/${next.id}/live`} className={buttonVariants()}>
+              <Link href={`/dashboard/sessions/${next.id}/live`} className={cn(buttonVariants(), "max-md:col-span-2")}>
                 {t("openLive")}
               </Link>
             )}
@@ -241,7 +242,7 @@ export default async function DashboardPage() {
               <h2 id="recent" className="font-semibold">
                 {t("recent")}
               </h2>
-              <Link href="/dashboard/sessions" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
+              <Link href="/dashboard/sessions" className="inline-flex items-center gap-1 text-sm text-primary hover:underline max-md:min-h-11">
                 {t("seeAll")} <ChevronRightIcon />
               </Link>
             </div>

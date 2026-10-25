@@ -28,6 +28,9 @@ import { useConfirm } from "@/components/ui/confirm-dialog";
 import { ArrowDownIcon, ArrowUpIcon, EditIcon, GiftIcon, PlusIcon, TrashIcon } from "@/components/icons";
 import { WinnerList } from "./winner-list";
 
+/** Alvo de toque de 44px no celular. */
+const ICON_MOBILE = "max-md:size-11";
+
 type PrizeDraft = { name: string; description: string; kind: PrizeKind; quantity: number; winnerMessage: string };
 
 const EMPTY_PRIZE: PrizeDraft = { name: "", description: "", kind: "physical", quantity: 1, winnerMessage: "" };
@@ -82,8 +85,8 @@ function PrizeForm({
 
   return (
     <div className="flex flex-col gap-4 rounded-xl border bg-background p-4">
-      <div className="grid gap-4 sm:grid-cols-[1fr_10rem_8rem]">
-        <Field>
+      <div className="grid gap-4 sm:grid-cols-[1fr_10rem_8rem] max-sm:grid-cols-2 max-sm:gap-3">
+        <Field className="max-sm:col-span-2">
           <Label htmlFor="prize-name">{t("name")}</Label>
           <Input
             id="prize-name"
@@ -136,11 +139,11 @@ function PrizeForm({
         <p className="text-xs text-muted-foreground">{t("messageHelp")}</p>
       </Field>
       {error ? <Alert>{error}</Alert> : null}
-      <div className="flex gap-2">
-        <Button onClick={save} disabled={pending}>
+      <div className="flex gap-2 max-md:grid max-md:grid-cols-2">
+        <Button onClick={save} disabled={pending} className="max-md:h-auto max-md:min-h-11 max-md:whitespace-normal">
           {pending ? tActions("saving") : t("save")}
         </Button>
-        <Button variant="ghost" onClick={onDone} disabled={pending}>
+        <Button variant="ghost" onClick={onDone} disabled={pending} className="max-md:h-11">
           {tActions("cancel")}
         </Button>
       </div>
@@ -175,10 +178,10 @@ export function RaffleEditor({ sessionId, state }: { sessionId: string; state: R
   return (
     <div className="flex flex-col gap-6">
       {confirmDialog}
-      <label className="flex items-start gap-3">
+      <label className="flex items-start gap-3 max-md:cursor-pointer">
         <input
           type="checkbox"
-          className="mt-0.5 size-4"
+          className="mt-0.5 size-4 max-md:size-5"
           checked={enabled}
           disabled={pending}
           onChange={(e) => saveEligibility(e.target.checked ? "survey" : null)}
@@ -229,7 +232,7 @@ export function RaffleEditor({ sessionId, state }: { sessionId: string; state: R
             <div className="flex items-center justify-between gap-2">
               <h3 className="font-medium">{t("prizes")}</h3>
               {editing === null && state.prizes.length < MAX_PRIZES ? (
-                <Button variant="outline" size="sm" onClick={() => setEditing("new")}>
+                <Button variant="outline" size="sm" className="max-md:h-11 max-md:text-sm" onClick={() => setEditing("new")}>
                   <PlusIcon /> {t("addPrize")}
                 </Button>
               ) : null}
@@ -240,7 +243,7 @@ export function RaffleEditor({ sessionId, state }: { sessionId: string; state: R
                 title={t("emptyTitle")}
                 description={t("emptyDescription")}
                 action={
-                  <Button size="sm" onClick={() => setEditing("new")}>
+                  <Button size="sm" className="max-md:h-11 max-md:text-sm" onClick={() => setEditing("new")}>
                     <GiftIcon /> {t("registerPrize")}
                   </Button>
                 }
@@ -254,8 +257,11 @@ export function RaffleEditor({ sessionId, state }: { sessionId: string; state: R
                     <PrizeForm sessionId={sessionId} prizeId={prize.id} initial={draftOf(prize)} onDone={() => setEditing(null)} />
                   </li>
                 ) : (
-                  <li key={prize.id} className="flex flex-col gap-3 rounded-xl border p-4">
-                    <div className="flex flex-wrap items-start gap-3">
+                  <li
+                    key={prize.id}
+                    className={cn("flex flex-col gap-3 rounded-xl border p-4", prize.winners.length === 0 && "max-md:pb-2")}
+                  >
+                    <div className="flex flex-wrap items-start gap-3 max-md:gap-y-2">
                       <span className="w-7 shrink-0 pt-0.5 font-display text-xl font-bold leading-none tabular-nums">{index + 1}</span>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
@@ -275,10 +281,12 @@ export function RaffleEditor({ sessionId, state }: { sessionId: string; state: R
                           </p>
                         ) : null}
                       </div>
-                      <div className="flex">
+                      {/* No celular, as ações ficam numa linha própria, abaixo do prêmio. */}
+                      <div className="flex max-md:-mx-2 max-md:w-[calc(100%+1rem)] max-md:justify-end max-md:gap-1 max-md:border-t max-md:pt-1">
                         <Button
                           variant="ghost"
                           size="icon"
+                          className={ICON_MOBILE}
                           aria-label={t("moveUp")}
                           disabled={pending || index === 0}
                           onClick={() => run(() => movePrizeAction(sessionId, prize.id, -1))}
@@ -288,18 +296,20 @@ export function RaffleEditor({ sessionId, state }: { sessionId: string; state: R
                         <Button
                           variant="ghost"
                           size="icon"
+                          className={ICON_MOBILE}
                           aria-label={t("moveDown")}
                           disabled={pending || index === state.prizes.length - 1}
                           onClick={() => run(() => movePrizeAction(sessionId, prize.id, 1))}
                         >
                           <ArrowDownIcon />
                         </Button>
-                        <Button variant="ghost" size="icon" aria-label={tActions("edit")} onClick={() => setEditing(prize.id)}>
+                        <Button variant="ghost" size="icon" className={ICON_MOBILE} aria-label={tActions("edit")} onClick={() => setEditing(prize.id)}>
                           <EditIcon />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
+                          className={ICON_MOBILE}
                           aria-label={tActions("delete")}
                           disabled={pending}
                           onClick={async () => {

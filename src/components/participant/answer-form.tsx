@@ -23,6 +23,11 @@ function enter(index: number, selected = false) {
   };
 }
 
+/** Colunas da escala no celular: até 6 numa linha; acima disso, duas linhas parelhas (no máximo 6 por linha). */
+function ratingColumns(count: number) {
+  return count <= 6 ? count : Math.min(6, Math.ceil(count / 2));
+}
+
 type Props = {
   interaction: PublicInteraction;
   onSubmit: (payload: AnswerPayload) => void;
@@ -157,7 +162,13 @@ function RankingPicker({
           <div className="flex flex-col gap-2">
             <m.div layout="position" transition={SPRING.soft} className="flex items-center justify-between text-sm">
               <span className="font-medium">{t("yourOrder")}</span>
-              <button type="button" className="text-muted-foreground underline" disabled={disabled} onClick={() => onChange([])}>
+              {/* Celular: área de toque de 44 px sem mudar a linha (pseudo-elemento invisível). */}
+              <button
+                type="button"
+                className="text-muted-foreground underline max-md:relative max-md:after:absolute max-md:after:-inset-x-3 max-md:after:-inset-y-3"
+                disabled={disabled}
+                onClick={() => onChange([])}
+              >
                 {t("restart")}
               </button>
             </m.div>
@@ -232,6 +243,8 @@ export function AnswerForm({ interaction, onSubmit, submitting = false, preview 
   const [text, setText] = useState("");
   const { settings } = interaction;
   const disabled = submitting || preview;
+  const scaleSize = settings.max - settings.min + 1;
+  const longScale = interaction.type === "rating" && scaleSize > 6;
 
   function submit() {
     if (preview) return;
@@ -314,8 +327,17 @@ export function AnswerForm({ interaction, onSubmit, submitting = false, preview 
 
       {interaction.type === "rating" ? (
         <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap justify-center gap-2" role="radiogroup" aria-label={interaction.title}>
-            {Array.from({ length: settings.max - settings.min + 1 }, (_, i) => settings.min + i).map((value, index) => (
+          {/* Celular: escalas longas (0 a 10) em duas linhas parelhas (6 + 5), sem um número sozinho embaixo. */}
+          <div
+            className={cn(
+              "flex flex-wrap justify-center gap-2",
+              longScale && "max-md:mx-auto max-md:w-full max-md:max-w-[calc(var(--cols)_*_3.5rem_+_(var(--cols)_-_1)_*_0.5rem)]",
+            )}
+            role="radiogroup"
+            aria-label={interaction.title}
+            style={{ "--cols": ratingColumns(scaleSize) } as React.CSSProperties}
+          >
+            {Array.from({ length: scaleSize }, (_, i) => settings.min + i).map((value, index) => (
               <m.button
                 key={value}
                 {...enter(index, rating === value)}
@@ -326,6 +348,8 @@ export function AnswerForm({ interaction, onSubmit, submitting = false, preview 
                 onClick={() => setRating(value)}
                 className={cn(
                   "grid size-14 place-items-center rounded-xl border-2 text-lg font-semibold transition-colors",
+                  longScale &&
+                    "max-md:aspect-square max-md:h-auto max-md:w-[min(3.5rem,calc((100%_-_(var(--cols)_-_1)_*_0.5rem)_/_var(--cols)))]",
                   rating === value ? "border-primary bg-primary text-primary-foreground" : "border-border hover:border-primary/40",
                 )}
               >
@@ -354,7 +378,7 @@ export function AnswerForm({ interaction, onSubmit, submitting = false, preview 
           placeholder={t("wordPlaceholder")}
           aria-label={t("yourAnswer")}
           disabled={submitting}
-          className="h-14 text-lg"
+          className="h-14 text-lg max-md:h-14"
           autoComplete="off"
         />
       ) : null}

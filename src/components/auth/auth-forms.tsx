@@ -78,7 +78,7 @@ export function LoginForm({ next, notice, signupHref }: { next?: string; notice?
           <p className="text-center text-sm text-muted-foreground">
             {t.rich("noAccount", {
               link: (chunks) => (
-                <Link href={signupHref} className="font-medium text-primary hover:underline">
+                <Link href={signupHref} className="font-medium text-primary hover:underline max-md:py-2.5">
                   {chunks}
                 </Link>
               ),
@@ -137,7 +137,7 @@ export function SignUpForm({ loginHref, privacyHref }: { loginHref: string; priv
               <p className="text-center text-sm text-muted-foreground">
                 {t.rich("hasAccount", {
                   link: (chunks) => (
-                    <Link href={loginHref} className="font-medium text-primary hover:underline">
+                    <Link href={loginHref} className="font-medium text-primary hover:underline max-md:py-2.5">
                       {chunks}
                     </Link>
                   ),

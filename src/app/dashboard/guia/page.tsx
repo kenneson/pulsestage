@@ -97,17 +97,21 @@ export default async function GuidePage() {
           <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
           <p className="text-muted-foreground">{t("subtitle")}</p>
         </div>
-        <Link href="/dashboard/sessions/new" className={buttonVariants()}>
+        <Link href="/dashboard/sessions/new" className={buttonVariants({ className: "max-md:h-11" })}>
           <PlusIcon /> {t("newSession")}
         </Link>
       </div>
 
-      <div className="grid gap-10 lg:grid-cols-[220px_1fr]">
-        <nav aria-label={t("navLabel")} className="lg:sticky lg:top-24 lg:self-start">
-          <ol className="flex flex-col gap-1 text-sm">
+      <div className="grid gap-10 lg:grid-cols-[220px_1fr] max-md:gap-6">
+        {/* Celular: o índice vira uma faixa de atalhos que rola de lado (sem empurrar o conteúdo 13 linhas para baixo). */}
+        <nav aria-label={t("navLabel")} className="lg:sticky lg:top-24 lg:self-start max-md:-mx-4 max-md:min-w-0">
+          <ol className="flex flex-col gap-1 text-sm max-md:flex-row max-md:gap-2 max-md:overflow-x-auto max-md:px-4 max-md:pb-1 max-md:[scrollbar-width:none]">
             {SECTIONS.map((s) => (
-              <li key={s.id}>
-                <a href={`#${s.id}`} className="block rounded-md px-3 py-1.5 text-muted-foreground hover:bg-muted hover:text-foreground">
+              <li key={s.id} className="max-md:shrink-0">
+                <a
+                  href={`#${s.id}`}
+                  className="block rounded-md px-3 py-1.5 text-muted-foreground hover:bg-muted hover:text-foreground max-md:flex max-md:min-h-11 max-md:items-center max-md:rounded-full max-md:border max-md:bg-card max-md:px-4 max-md:whitespace-nowrap"
+                >
                   {titles[s.key]}
                 </a>
               </li>
@@ -134,7 +138,7 @@ export default async function GuidePage() {
           </Section>
 
           <Section id="roteiro" title={titles.lineup}>
-            <p>{t("lineup.intro")}</p>
+            <p>{t.rich("lineup.intro", tags)}</p>
             <ul className="flex flex-col gap-1">
               {LINEUP_TYPES.map((k) => (
                 <li key={k}>{t.rich(`lineup.types.${k}`, tags)}</li>

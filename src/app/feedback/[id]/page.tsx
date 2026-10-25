@@ -61,12 +61,12 @@ export default async function FeedbackPage({ params }: { params: Promise<{ id: s
 
   return (
     <SessionIntl locale={session.locale}>
-      <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-6 px-5 py-8">
+      <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-6 px-5 py-8 max-md:px-4 max-md:pb-[max(env(safe-area-inset-bottom),2rem)] max-md:pt-[max(env(safe-area-inset-top),1.5rem)]">
         {/* Sem link: a pesquisa é o fim do fluxo da plateia, a marca não leva para a landing. */}
         <Logo href={null} />
         <div>
           <p className="text-sm text-muted-foreground">{t("eyebrow")}</p>
-          <h1 className="mt-1 text-2xl font-semibold">{session.title}</h1>
+          <h1 className="mt-1 text-2xl font-semibold max-md:text-balance">{session.title}</h1>
         </div>
         {session.status !== "completed" ? (
           <p className="rounded-lg bg-muted p-4 text-muted-foreground">{t("notOpen")}</p>

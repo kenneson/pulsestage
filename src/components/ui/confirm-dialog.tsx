@@ -47,8 +47,10 @@ export function useConfirm() {
       ref={ref}
       onClose={onClose}
       aria-labelledby={titleId}
-      className="fixed inset-0 m-auto h-fit w-[calc(100%-2rem)] max-w-md rounded-xl border bg-card p-6 text-card-foreground shadow-lg backdrop:bg-black/50"
+      className="app-sheet fixed inset-0 m-auto h-fit w-[calc(100%-2rem)] max-w-md rounded-xl border bg-card p-6 text-card-foreground shadow-lg backdrop:bg-black/50 max-md:mb-0 max-md:w-full max-md:max-w-none max-md:rounded-b-none max-md:rounded-t-2xl max-md:border-x-0 max-md:border-b-0 max-md:px-4 max-md:pb-[calc(1rem+env(safe-area-inset-bottom))] max-md:pt-3"
     >
+      {/* Celular: folha presa embaixo (alça, largura toda, botões empilhados ao alcance do polegar). */}
+      <div aria-hidden className="mx-auto mb-3 h-1 w-10 rounded-full bg-border md:hidden" />
       {/* method="dialog": o botão clicado vira o returnValue e o diálogo fecha sozinho. */}
       <form method="dialog" className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
@@ -57,7 +59,7 @@ export function useConfirm() {
           </h2>
           {options.description ? <p className="text-sm text-muted-foreground">{options.description}</p> : null}
         </div>
-        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end max-md:mt-1 max-md:flex-col-reverse!">
           {/* Foco inicial em Cancelar: Enter acidental não confirma uma ação destrutiva. */}
           <Button type="submit" value="cancel" variant="outline" autoFocus>
             {t("cancel")}

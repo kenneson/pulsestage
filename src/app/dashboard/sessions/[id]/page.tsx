@@ -11,6 +11,7 @@ import { getSpeakerProfile } from "@/lib/data/profile";
 import { toPublicInteraction } from "@/lib/domain/interactions";
 import { utcToZonedParts, formatDateTime } from "@/lib/datetime";
 import { isUuid } from "@/lib/action-result";
+import { cn } from "@/lib/utils";
 import { EngagementSettings } from "@/components/engagement/engagement-settings";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,6 +38,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("session.page");
   return { title: t("metaTitle") };
 }
+
+// Botões do cabeçalho no celular (abaixo de 768 px; no computador nada muda).
+const PRIMARY_MOBILE = "max-md:col-span-2 max-md:h-11";
+const SECONDARY_MOBILE = "max-md:h-auto max-md:min-h-11 max-md:whitespace-normal max-md:px-3 max-md:py-2";
 
 const TAB_ALIASES: Record<string, string> = {
   sorteio: "raffle",
@@ -126,7 +131,7 @@ export default async function SessionBuilderPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-4 max-md:flex-col max-md:items-stretch">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <StatusBadge status={status} />
@@ -134,33 +139,44 @@ export default async function SessionBuilderPage({
               {t("joinCode")} <span className="font-display font-semibold text-foreground">{session.join_code}</span>
             </span>
           </div>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight">{session.title}</h1>
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight max-md:text-balance max-md:[overflow-wrap:anywhere]">
+            {session.title}
+          </h1>
           <p className="text-sm text-muted-foreground">
             {session.scheduled_at ? formatDateTime(session.scheduled_at, timeZone, locale) : tStates("noDate")}
           </p>
         </div>
-        {/* Ação principal primeiro (no celular é a que aparece no topo); excluir sempre por último. */}
-        <div className="flex flex-wrap items-center gap-2">
-          {status === "draft" ? <StartSessionButton sessionId={id} hasInteractions={items.length > 0} /> : null}
+        {/* Ação principal primeiro; excluir sempre por último. No celular: principal em largura total e as
+            outras numa grade de duas colunas, todas com 44px. */}
+        <div className="flex flex-wrap items-center gap-2 max-md:grid max-md:grid-cols-2">
+          {status === "draft" ? (
+            <StartSessionButton sessionId={id} hasInteractions={items.length > 0} className={PRIMARY_MOBILE} />
+          ) : null}
           {status === "live" || status === "paused" ? (
-            <Link href={`/dashboard/sessions/${id}/live`} className={buttonVariants()}>
+            <Link href={`/dashboard/sessions/${id}/live`} className={cn(buttonVariants(), PRIMARY_MOBILE)}>
               {t("openLive")}
             </Link>
           ) : null}
           {status === "completed" ? (
-            <Link href={`/dashboard/sessions/${id}/analytics`} className={buttonVariants()}>
+            <Link href={`/dashboard/sessions/${id}/analytics`} className={cn(buttonVariants(), PRIMARY_MOBILE)}>
               {t("viewAnalytics")}
             </Link>
           ) : null}
           {status === "completed" && session.raffle_eligibility ? (
-            <Link href={`/dashboard/sessions/${id}/live`} className={buttonVariants({ variant: "outline" })}>
+            <Link href={`/dashboard/sessions/${id}/live`} className={cn(buttonVariants({ variant: "outline" }), SECONDARY_MOBILE)}>
               {t("raffleRoom")}
             </Link>
           ) : null}
-          {status !== "completed" && !session.is_test ? <RehearsalButton sessionId={id} /> : null}
-          {status !== "completed" ? <QrDownloadButton joinUrl={joinUrl(session.join_code)} code={session.join_code} /> : null}
-          <DuplicateSessionButton sessionId={id} title={session.title} />
-          <DeleteSessionButton sessionId={id} title={session.title} />
+          {status !== "completed" && !session.is_test ? <RehearsalButton sessionId={id} className={SECONDARY_MOBILE} /> : null}
+          {status !== "completed" ? (
+            <QrDownloadButton
+              joinUrl={joinUrl(session.join_code)}
+              code={session.join_code}
+              className={cn(SECONDARY_MOBILE, "max-md:text-sm")}
+            />
+          ) : null}
+          <DuplicateSessionButton sessionId={id} title={session.title} className={SECONDARY_MOBILE} />
+          <DeleteSessionButton sessionId={id} title={session.title} className={SECONDARY_MOBILE} />
         </div>
       </div>
 

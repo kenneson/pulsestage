@@ -143,7 +143,7 @@ export async function DirectoryView({
           </Select>
         </div>
         <div className="flex gap-2">
-          <Button type="submit">
+          <Button type="submit" className="max-sm:flex-1">
             <SearchIcon /> {t("filter")}
           </Button>
           {hasFilters ? (
@@ -165,7 +165,7 @@ export async function DirectoryView({
                 href={href(`/palestrantes/tema/${topic.key}`)}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "rounded-full border px-3 py-1 text-sm",
+                  "rounded-full border px-3 py-1 text-sm max-md:inline-flex max-md:min-h-10 max-md:items-center",
                   active ? "border-primary bg-primary text-primary-foreground" : "hover:bg-muted",
                 )}
               >

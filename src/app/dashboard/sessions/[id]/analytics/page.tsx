@@ -147,16 +147,22 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
             {talkTime ? ` · ${talkTime}` : ""}
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        {/* No celular: grade de 2 com botões de 44 px; o menu Exportar abre alinhado à esquerda (fica na 1ª coluna). */}
+        <div className="flex flex-wrap gap-2 max-md:grid max-md:w-full max-md:grid-cols-2 max-md:[&>a]:h-11 max-md:[&>button]:h-11">
           <Link href={`/dashboard/sessions/${id}`} className={buttonVariants({ variant: "outline" })}>
             {t("viewInteractions")}
           </Link>
           <DuplicateSessionButton sessionId={id} title={session.title} />
           <details className="relative">
-            <summary className={buttonVariants({ variant: "outline", className: "cursor-pointer list-none [&::-webkit-details-marker]:hidden" })}>
+            <summary
+              className={buttonVariants({
+                variant: "outline",
+                className: "cursor-pointer list-none [&::-webkit-details-marker]:hidden max-md:h-11 max-md:w-full",
+              })}
+            >
               <DownloadIcon /> {t("export")}
             </summary>
-            <div className="absolute right-0 z-20 mt-2 flex w-64 flex-col rounded-md border bg-card p-1.5 shadow-lg">
+            <div className="absolute right-0 z-20 mt-2 flex w-64 flex-col rounded-md border bg-card p-1.5 shadow-lg max-md:right-auto max-md:left-0 max-md:w-[min(16rem,calc(100vw-2rem))] max-md:[&>a]:min-h-11">
               <Link href={`/dashboard/sessions/${id}/relatorio`} className="flex items-center gap-2.5 rounded px-3 py-2.5 text-sm hover:bg-muted">
                 <FileTextIcon className="text-muted-foreground" /> {t("exportPdf")}
               </Link>
@@ -169,7 +175,7 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
             </div>
           </details>
           {session.status === "live" || session.status === "paused" ? (
-            <Link href={`/dashboard/sessions/${id}/live`} className={buttonVariants()}>
+            <Link href={`/dashboard/sessions/${id}/live`} className={buttonVariants({ className: "max-md:col-span-2" })}>
               {t("liveRoom")}
             </Link>
           ) : null}

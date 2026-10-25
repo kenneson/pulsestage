@@ -90,7 +90,7 @@ export function TalkTimeline({
         {active ? (
           <div
             role="status"
-            className="pointer-events-none absolute top-9 z-10 w-max max-w-72 -translate-x-1/2 rounded-md border bg-card px-3 py-2 text-sm text-card-foreground shadow-md"
+            className="pointer-events-none absolute top-9 z-10 w-max max-w-72 -translate-x-1/2 rounded-md border bg-card px-3 py-2 text-sm text-card-foreground shadow-md max-md:right-0 max-md:left-0! max-md:w-auto max-md:max-w-none max-md:translate-x-0"
             style={{ left: `${Math.min(88, Math.max(12, x((active.start + active.end) / 2)))}%` }}
           >
             <p className="truncate font-medium">{describe(t, active, interactions, recorded).long}</p>
@@ -139,12 +139,14 @@ export function TalkTimeline({
         </div>
 
         <div className="relative mt-1 h-4 border-t text-[11px] text-muted-foreground" aria-hidden>
-          {ticks.map((tick) => (
+          {ticks.map((tick, index) => (
             <span
               key={tick}
               className={cn(
                 "absolute top-1 whitespace-nowrap tabular-nums",
                 tick === 0 ? "" : x(tick) > 94 ? "-translate-x-full" : "-translate-x-1/2",
+                // No celular, com muitas marcações, uma sim, uma não (senão os rótulos se sobrepõem).
+                ticks.length > 5 && index % 2 === 1 && "max-md:hidden",
               )}
               style={{ left: `${x(tick)}%` }}
             >
@@ -182,7 +184,7 @@ export function TalkTimeline({
       ) : null}
 
       <details className="text-sm">
-        <summary className="cursor-pointer text-muted-foreground hover:text-foreground">{t("viewTable")}</summary>
+        <summary className="cursor-pointer text-muted-foreground hover:text-foreground max-md:-my-3 max-md:py-3">{t("viewTable")}</summary>
         <div className="mt-2 overflow-x-auto">
           <table className="w-full text-left">
             <thead className="text-muted-foreground">

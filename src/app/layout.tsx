@@ -33,12 +33,17 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: safeUrl(publicEnv.appUrl),
     title: { default: "PulseStage", template: "%s · PulseStage" },
     description: t("description"),
+    applicationName: "PulseStage",
+    // Instalado na tela de início (app/manifest.ts): abre sem a barra do navegador; barra de status opaca.
+    appleWebApp: { capable: true, title: "PulseStage", statusBarStyle: "default" },
   };
 }
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  // Ocupa a tela toda (cantos arredondados, barra de gestos); as barras fixas do celular usam env(safe-area-inset-*).
+  viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f8f9fc" },
     { media: "(prefers-color-scheme: dark)", color: "#0d1324" },

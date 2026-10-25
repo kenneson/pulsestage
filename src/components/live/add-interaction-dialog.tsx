@@ -74,17 +74,18 @@ export function AddInteractionDialog({
 
   return (
     <>
-      <Button variant="outline" size="sm" onClick={open}>
+      <Button variant="outline" size="sm" className="max-md:h-11" onClick={open}>
         <PlusIcon /> {t("open")}
       </Button>
       <dialog
         ref={ref}
         onClose={() => setType(null)}
         aria-labelledby="add-interaction-title"
-        className="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto rounded-xl border bg-card p-6 text-card-foreground shadow-lg backdrop:bg-black/50"
+        className="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto rounded-xl border bg-card p-6 text-card-foreground shadow-lg backdrop:bg-black/50 max-md:mb-0 max-md:max-h-[calc(100dvh-1.5rem)] max-md:w-full max-md:max-w-none max-md:overscroll-contain max-md:rounded-b-none max-md:border-x-0 max-md:border-b-0 max-md:p-4 max-md:pb-[calc(1rem+env(safe-area-inset-bottom))]"
       >
         <div className="flex flex-col gap-4">
-          <div className="flex items-start justify-between gap-4">
+          {/* No celular, folha que sobe do rodapé; o cabeçalho com o fechar fica preso no topo ao rolar. */}
+          <div className="flex items-start justify-between gap-4 max-md:sticky max-md:top-0 max-md:z-10 max-md:-mx-4 max-md:-mt-4 max-md:gap-2 max-md:border-b max-md:bg-card max-md:px-4 max-md:pt-4 max-md:pb-3">
             <div className="flex flex-col gap-1">
               <h2 id="add-interaction-title" className="text-lg font-semibold">
                 {t("title")}
@@ -93,7 +94,7 @@ export function AddInteractionDialog({
                 {t("description")}
               </p>
             </div>
-            <Button variant="ghost" size="icon" aria-label={tCommon("close")} onClick={close}>
+            <Button variant="ghost" size="icon" className="max-md:-mr-2 max-md:size-11 max-md:shrink-0" aria-label={tCommon("close")} onClick={close}>
               <XIcon />
             </Button>
           </div>
@@ -101,6 +102,7 @@ export function AddInteractionDialog({
           {type ? (
             <InteractionForm
               key={type}
+              embedded
               sessionId={sessionId}
               initial={emptyDraft(type)}
               actions={actions}

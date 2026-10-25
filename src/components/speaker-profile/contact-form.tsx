@@ -90,7 +90,7 @@ export function ContactForm({ slug, speakerName, privacyHref }: { slug: string; 
       </div>
       {state.error ? <Alert>{state.error}</Alert> : null}
       <div className="flex flex-wrap items-center gap-3">
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={pending} className="max-sm:w-full">
           <SendIcon /> {pending ? tCommon("sending") : t("submit")}
         </Button>
         <p className="text-xs text-muted-foreground">

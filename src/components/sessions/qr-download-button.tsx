@@ -10,7 +10,7 @@ const QR_SIZE = 1024;
 const FOOTER = 240;
 
 /** Baixa um PNG com QR Code, código e endereço de entrada, pronto para colar num slide. */
-export function QrDownloadButton({ joinUrl, code }: { joinUrl: string; code: string }) {
+export function QrDownloadButton({ joinUrl, code, className }: { joinUrl: string; code: string; className?: string }) {
   const t = useTranslations("session.qr");
   const qrRef = useRef<HTMLCanvasElement>(null);
 
@@ -44,7 +44,7 @@ export function QrDownloadButton({ joinUrl, code }: { joinUrl: string; code: str
   return (
     <>
       <QRCodeCanvas ref={qrRef} value={joinUrl} size={QR_SIZE} marginSize={4} className="hidden" aria-hidden />
-      <Button variant="outline" size="sm" onClick={download}>
+      <Button variant="outline" size="sm" className={className} onClick={download}>
         <DownloadIcon /> {t("download")}
       </Button>
     </>

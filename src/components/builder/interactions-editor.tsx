@@ -22,6 +22,9 @@ import { emptyDraft, InteractionForm, type InteractionDraft } from "./interactio
 import { InteractionTypePicker } from "./interaction-type-picker";
 import { AISuggestionsPanel, useAISuggestions } from "./ai-suggestions";
 
+/** Alvo de toque de 44px no celular (no computador, o tamanho do botão continua o mesmo). */
+const ICON_MOBILE = "max-md:size-11";
+
 export type EditorItem = {
   interaction: PublicInteraction;
   draft: InteractionDraft;
@@ -144,7 +147,8 @@ export function InteractionsEditor({
             }
             return (
               <li key={interaction.id} className="rounded-xl border bg-background">
-                <div className="flex items-start gap-3 p-4">
+                {/* No celular, as ações descem para uma linha própria e o texto usa a largura toda do card. */}
+                <div className={cn("flex items-start gap-3 p-4", !readOnly && "max-md:flex-wrap max-md:gap-y-2 max-md:pb-2")}>
                   <span className="w-7 shrink-0 pt-0.5 font-display text-xl font-bold leading-none tabular-nums" aria-label={t("cue", { number: index + 1 })}>
                     {index + 1}
                   </span>
@@ -168,10 +172,19 @@ export function InteractionsEditor({
                       </p>
                     ) : null}
                   </div>
-                  <div className="flex shrink-0 items-center">
+                  {/* Só leitura: sobra apenas o olho, que fica ao lado do texto. */}
+                  <div
+                    className={cn(
+                      "flex shrink-0 items-center",
+                      readOnly
+                        ? "max-md:-my-2 max-md:-mr-2"
+                        : "max-md:-mx-2 max-md:w-[calc(100%+1rem)] max-md:gap-1 max-md:border-t max-md:pt-1",
+                    )}
+                  >
                     <Button
                       variant="ghost"
                       size="icon"
+                      className={cn(ICON_MOBILE, "max-md:mr-auto")}
                       aria-label={t("preview")}
                       onClick={() => setPreviewing(previewing === interaction.id ? null : interaction.id)}
                     >
@@ -179,22 +192,23 @@ export function InteractionsEditor({
                     </Button>
                     {!readOnly ? (
                       <>
-                        <Button variant="ghost" size="icon" aria-label={t("moveUp")} disabled={pending || index === 0} onClick={() => move(index, -1)}>
+                        <Button variant="ghost" size="icon" className={ICON_MOBILE} aria-label={t("moveUp")} disabled={pending || index === 0} onClick={() => move(index, -1)}>
                           <ArrowUpIcon />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
+                          className={ICON_MOBILE}
                           aria-label={t("moveDown")}
                           disabled={pending || index === items.length - 1}
                           onClick={() => move(index, 1)}
                         >
                           <ArrowDownIcon />
                         </Button>
-                        <Button variant="ghost" size="icon" aria-label={tCommon("edit")} onClick={() => setEditing(interaction.id)}>
+                        <Button variant="ghost" size="icon" className={ICON_MOBILE} aria-label={tCommon("edit")} onClick={() => setEditing(interaction.id)}>
                           <EditIcon />
                         </Button>
-                        <Button variant="ghost" size="icon" aria-label={tCommon("delete")} disabled={pending} onClick={() => remove(item)}>
+                        <Button variant="ghost" size="icon" className={ICON_MOBILE} aria-label={tCommon("delete")} disabled={pending} onClick={() => remove(item)}>
                           <TrashIcon />
                         </Button>
                       </>
@@ -231,7 +245,7 @@ export function InteractionsEditor({
               <PlusIcon /> {t("addInteraction")}
             </p>
             <InteractionTypePicker onPick={(type) => setCreating({ draft: emptyDraft(type), example: false })} />
-            <div className="flex flex-wrap items-center gap-2 border-t pt-3">
+            <div className="flex flex-wrap items-center gap-2 border-t pt-3 max-md:grid max-md:grid-cols-1 max-md:[&>button]:h-11 max-md:[&>span>button]:h-11">
               <LibraryPicker sessionId={sessionId} items={library} />
               {aiEnabled ? (
                 <Button

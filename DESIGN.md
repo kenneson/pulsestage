@@ -299,6 +299,10 @@ barra.
 - **Campos:** borda `input`, 40px, foco com anel `ring`.
 - **Barras de resultado:** trilho `muted`, barra líder em tinta, demais em tinta a 35%, correta em `primary` com "✓".
 - **Telão:** sempre escuro (`dark`), texto grande, alto contraste.
+- **Celular (abaixo de 768 px):** estilo app. Barra superior fixa e barra de abas embaixo com safe-area; menus e
+  confirmações como folhas inferiores; alvos de toque de 44 px; título e texto sempre na largura toda (ações em linha
+  própria); nada de rolagem lateral da página (faixas roláveis contidas). Ajustes só com `max-md:`/`max-sm:`: o
+  computador não muda.
 - **Movimento (Motion, `components/motion/`):** o movimento explica uma mudança de estado. Molas de `presets.ts`:
   `snappy` (toque, selo ✓, ↑/↓ do ranking), `soft` (troca de tela, entrada de lista, item que muda de lugar),
   `bar` (barra de resultado). Troca de tela sobe 14px e aparece; alternativas entram uma depois da outra

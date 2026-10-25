@@ -76,7 +76,7 @@ export function AISuggestionsPanel({
   }
 
   return (
-    <aside aria-labelledby="ai-suggestions" aria-busy={ai.loading} className="flex flex-col gap-4 self-start rounded-xl border bg-card p-5 lg:sticky lg:top-6">
+    <aside aria-labelledby="ai-suggestions" aria-busy={ai.loading} className="flex flex-col gap-4 self-start rounded-xl border bg-card p-5 lg:sticky lg:top-6 max-md:p-4">
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-col gap-1">
           <h2 id="ai-suggestions" className="flex items-center gap-2 font-semibold">
@@ -84,7 +84,7 @@ export function AISuggestionsPanel({
           </h2>
           <p className="text-sm text-muted-foreground">{t("description")}</p>
         </div>
-        <Button variant="ghost" size="icon" aria-label={t("close")} onClick={ai.close}>
+        <Button variant="ghost" size="icon" className="max-md:-mr-2 max-md:-mt-2 max-md:size-11" aria-label={t("close")} onClick={ai.close}>
           <XIcon />
         </Button>
       </div>
@@ -108,7 +108,13 @@ export function AISuggestionsPanel({
                 <TypeTag type={s.type} />
                 <p className="text-sm font-medium">{s.title}</p>
                 {extra ? <p className="text-sm text-muted-foreground">{extra}</p> : null}
-                <Button variant="outline" size="sm" className="w-fit" disabled={adding !== null} onClick={() => add(s)}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-fit max-md:h-11 max-md:w-full max-md:text-sm"
+                  disabled={adding !== null}
+                  onClick={() => add(s)}
+                >
                   <PlusIcon /> {adding === s.title ? t("adding") : t("addToLineup")}
                 </Button>
               </li>
@@ -117,7 +123,7 @@ export function AISuggestionsPanel({
         </ul>
       )}
 
-      <Button variant="outline" onClick={ai.generate} disabled={ai.loading}>
+      <Button variant="outline" className="max-md:h-11" onClick={ai.generate} disabled={ai.loading}>
         <RefreshIcon /> {t("regenerate")}
       </Button>
     </aside>

@@ -40,14 +40,14 @@ function JoinPanel({ code, joinUrl, size = 260 }: { code: string; joinUrl: strin
       >
         <QRCodeSVG value={joinUrl} size={size} marginSize={0} />
       </m.div>
-      <p className="text-2xl text-muted-foreground">
+      <p className="text-2xl text-muted-foreground max-md:text-center max-md:text-lg">
         {t.rich("prompt", {
           host: joinHost(joinUrl),
           b: (chunks) => <span className="font-semibold text-foreground">{chunks}</span>,
         })}
       </p>
       {/* O código entra letra a letra, para chamar o olhar de quem vai digitar. */}
-      <p className="font-display text-8xl font-bold tracking-[0.2em]" aria-label={code}>
+      <p className="font-display text-8xl font-bold tracking-[0.2em] max-md:text-5xl" aria-label={code}>
         {Array.from(code).map((char, index) => (
           <m.span
             key={`${index}-${char}`}
@@ -136,8 +136,8 @@ export function DisplayView({
   } else if (screen.kind === "ended") {
     body = (
       <div className="flex flex-col items-center gap-8 text-center">
-        <h1 className="text-6xl font-semibold">{t("completed.title")}</h1>
-        <p className="text-3xl text-muted-foreground">{t("completed.subtitle")}</p>
+        <h1 className="text-6xl font-semibold max-md:text-4xl">{t("completed.title")}</h1>
+        <p className="text-3xl text-muted-foreground max-md:text-xl">{t("completed.subtitle")}</p>
         <div className="rounded-3xl bg-white p-5">
           <QRCodeSVG value={feedbackUrl} size={280} marginSize={0} />
         </div>
@@ -146,8 +146,8 @@ export function DisplayView({
   } else if (screen.kind === "paused") {
     body = (
       <div className="flex flex-col items-center gap-6 text-center">
-        <h1 className="text-6xl font-semibold">{t("paused.title")}</h1>
-        <p className="text-3xl text-muted-foreground">{t("paused.subtitle")}</p>
+        <h1 className="text-6xl font-semibold max-md:text-4xl">{t("paused.title")}</h1>
+        <p className="text-3xl text-muted-foreground max-md:text-xl">{t("paused.subtitle")}</p>
       </div>
     );
   } else if (screen.kind === "leaderboard") {
@@ -156,8 +156,8 @@ export function DisplayView({
     body = <AudienceQuestionsStage sessionId={session.id} version={state?.questions_at ?? null} joinHost={joinHost(joinUrl)} />;
   } else if (active) {
     body = (
-      <div className="flex w-full max-w-6xl flex-col gap-10">
-        <h1 className="text-center text-5xl font-semibold leading-tight md:text-6xl">{active.title}</h1>
+      <div className="flex w-full min-w-0 max-w-6xl flex-col gap-10 max-md:gap-6">
+        <h1 className="text-center text-5xl font-semibold leading-tight max-md:text-3xl md:text-6xl">{active.title}</h1>
         <ResultsView
           interaction={active}
           snapshot={snapshot}
@@ -185,8 +185,9 @@ export function DisplayView({
   }
 
   return (
-    <div className={cn("dark flex flex-col bg-background text-foreground", slideUrl ? "h-dvh" : "min-h-dvh")}>
-      <main className={cn("flex min-h-0 flex-1 items-center justify-center", slideUrl ? "p-4" : "px-10 py-12")}>
+    // O telão é para o projetor; aberto num celular, só não pode vazar para os lados nem estourar o texto.
+    <div className={cn("dark flex flex-col bg-background text-foreground max-md:overflow-x-clip", slideUrl ? "h-dvh" : "min-h-dvh")}>
+      <main className={cn("flex min-h-0 flex-1 items-center justify-center", slideUrl ? "p-4" : "px-10 py-12 max-md:px-4 max-md:py-8")}>
         {/* Troca de tela (QR, pergunta, ranking, slides…) com transição; de um slide para outro, troca direta. */}
         <AnimatePresence mode="wait" initial={false}>
           <m.div
@@ -201,7 +202,7 @@ export function DisplayView({
       <ReactionStream sessionId={session.id} active={status === "live"} />
       <footer
         className={cn(
-          "flex items-center justify-between px-10 text-muted-foreground",
+          "flex items-center justify-between px-10 text-muted-foreground max-md:flex-wrap max-md:gap-x-4 max-md:gap-y-1 max-md:px-4 max-md:text-sm",
           slideUrl ? "pb-3 text-lg" : "pb-6 text-xl",
         )}
       >

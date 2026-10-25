@@ -45,9 +45,9 @@ export function AvatarForm({ src, name, email }: { src: string | null; name: str
   const feedback = useFeedback(state);
 
   return (
-    <form ref={formRef} action={action} className="flex flex-wrap items-center gap-4">
+    <form ref={formRef} action={action} className="flex flex-wrap items-center gap-4 max-md:flex-nowrap">
       <Avatar src={src} name={name} email={email} size={72} />
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 max-md:min-w-0">
         <div className="flex flex-wrap gap-2">
           <input
             ref={fileRef}
@@ -58,7 +58,7 @@ export function AvatarForm({ src, name, email }: { src: string | null; name: str
             aria-label={t("choose")}
             onChange={() => formRef.current?.requestSubmit()}
           />
-          <Button variant="outline" size="sm" disabled={pending} onClick={() => fileRef.current?.click()}>
+          <Button variant="outline" size="sm" disabled={pending} onClick={() => fileRef.current?.click()} className="max-md:h-11 max-md:text-sm">
             <CameraIcon /> {pending ? tCommon("sending") : t("change")}
           </Button>
           {src ? (
@@ -66,6 +66,7 @@ export function AvatarForm({ src, name, email }: { src: string | null; name: str
               variant="ghost"
               size="sm"
               disabled={removing}
+              className="max-md:h-11 max-md:text-sm"
               onClick={() =>
                 startRemoving(async () => {
                   const result = await removeAvatarAction();
@@ -109,7 +110,7 @@ export function ProfileForm({ name, email, bio }: { name: string | null; email: 
       </Field>
       {feedback}
       <div>
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={pending} className="max-md:h-11 max-md:w-full">
           {pending ? tCommon("saving") : t("save")}
         </Button>
       </div>
@@ -210,7 +211,7 @@ export function PreferencesForm({
       </div>
       {feedback}
       <div>
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={pending} className="max-md:h-11 max-md:w-full">
           {pending ? tCommon("actions.saving") : t("save")}
         </Button>
       </div>
@@ -236,7 +237,7 @@ export function PasswordForm() {
       </div>
       {feedback}
       <div>
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={pending} className="max-md:h-11 max-md:w-full">
           {pending ? t("changing") : t("change")}
         </Button>
       </div>
@@ -254,6 +255,7 @@ export function SignOutOthersButton() {
       <Button
         variant="outline"
         disabled={pending}
+        className="max-md:h-11 max-md:w-full"
         onClick={async () => {
           const confirmed = await confirm({
             title: t("confirmTitle"),
@@ -292,12 +294,12 @@ export function DeleteAccountForm() {
           value={typed}
           onChange={(e) => setTyped(e.target.value)}
           autoComplete="off"
-          className="max-w-xs"
+          className="max-w-xs max-md:max-w-none"
         />
       </Field>
       {state.error ? <Alert>{state.error}</Alert> : null}
       <div>
-        <Button type="submit" variant="destructive" disabled={pending || typed !== word}>
+        <Button type="submit" variant="destructive" disabled={pending || typed !== word} className="max-md:h-11 max-md:w-full">
           <TrashIcon /> {pending ? t("deleting") : t("button")}
         </Button>
       </div>

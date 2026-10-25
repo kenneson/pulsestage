@@ -8,7 +8,7 @@ import { FileTextIcon } from "@/components/icons";
 export function PrintButton() {
   const t = useTranslations("analytics.print");
   return (
-    <Button onClick={() => window.print()}>
+    <Button onClick={() => window.print()} className="max-md:h-11">
       <FileTextIcon /> {t("button")}
     </Button>
   );

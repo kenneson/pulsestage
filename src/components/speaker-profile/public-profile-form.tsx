@@ -219,7 +219,7 @@ export function PublicProfileForm({ initialValues, profileUrlBase }: { initialVa
 
       {state.error ? <Alert>{state.error}</Alert> : null}
       <div>
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={pending} className="max-md:h-11 max-md:w-full">
           {pending ? tCommon("saving") : t("submit")}
         </Button>
       </div>
@@ -231,11 +231,13 @@ export function ShareProfileLink({ url }: { url: string }) {
   const t = useTranslations("profile.share");
   const [copied, setCopied] = useState(false);
   return (
+    // Celular: o link numa linha inteira; "Copiar" e "Abrir" embaixo, com 44 px.
     <div className="flex flex-wrap items-center gap-2">
-      <code className="min-w-0 flex-1 truncate rounded-md bg-muted px-3 py-2 text-sm">{url}</code>
+      <code className="min-w-0 flex-1 truncate rounded-md bg-muted px-3 py-2 text-sm max-md:basis-full">{url}</code>
       <Button
         variant="outline"
         size="sm"
+        className="max-md:h-11 max-md:flex-1"
         onClick={async () => {
           try {
             await navigator.clipboard.writeText(url);
@@ -248,7 +250,7 @@ export function ShareProfileLink({ url }: { url: string }) {
       >
         {copied ? <CheckIcon /> : <CopyIcon />} {copied ? t("copied") : t("copyLink")}
       </Button>
-      <Link href={url} target="_blank" className="inline-flex min-h-9 items-center gap-1.5 px-2 text-sm font-medium text-primary hover:underline">
+      <Link href={url} target="_blank" className="inline-flex min-h-9 items-center gap-1.5 px-2 text-sm font-medium text-primary hover:underline max-md:min-h-11 max-md:px-4">
         {t("open")} <ExternalIcon />
       </Link>
     </div>
@@ -279,7 +281,7 @@ export function SessionVisibilityList({ sessions }: { sessions: SessionVisibilit
     <ul className="divide-y rounded-md border">
       {optimistic.map((s) => (
         <li key={s.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-          <label className={cn("flex min-w-0 flex-1 items-start gap-3", s.verified ? "cursor-pointer" : "cursor-default")}>
+          <label className={cn("flex min-w-0 flex-1 items-start gap-3 max-md:basis-full", s.verified ? "cursor-pointer" : "cursor-default")}>
             <input
               type="checkbox"
               checked={s.listed && s.verified}
@@ -296,7 +298,8 @@ export function SessionVisibilityList({ sessions }: { sessions: SessionVisibilit
               }}
             />
             <span className="flex min-w-0 flex-col gap-0.5">
-              <span className="truncate font-medium">{s.title}</span>
+              {/* Celular: título em até duas linhas e o selo embaixo (ao lado, o título virava "…"). */}
+              <span className="truncate font-medium max-md:line-clamp-2 max-md:whitespace-normal">{s.title}</span>
               <span className="text-xs text-muted-foreground">
                 {s.date} · {s.audience}
                 {s.rating ? ` · ${t("rating", { rating: s.rating })}` : ""}
@@ -305,11 +308,11 @@ export function SessionVisibilityList({ sessions }: { sessions: SessionVisibilit
             </span>
           </label>
           {s.verified ? (
-            <Badge variant="secondary" className="gap-1">
+            <Badge variant="secondary" className="gap-1 max-md:ml-7">
               <BadgeCheckIcon className="text-primary" /> {t("verified")}
             </Badge>
           ) : (
-            <Badge variant="outline">{t("notCounted")}</Badge>
+            <Badge variant="outline" className="max-md:ml-7">{t("notCounted")}</Badge>
           )}
         </li>
       ))}

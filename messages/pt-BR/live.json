@@ -42,6 +42,7 @@
     "endedHint": "Sessão encerrada.",
     "upNextSlides": "A seguir: <strong>{item}</strong> · → ou PageDown avança, ← volta",
     "upNextKeys": "A seguir: <strong>{item}</strong> · → avança",
+    "upNext": "A seguir: <strong>{item}</strong>",
     "lineupEnd": "Fim do roteiro.",
     "itemLabel": "{type}: {title}",
     "interactionFallback": "Interação",

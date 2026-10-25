@@ -489,3 +489,29 @@ html {
     print-color-adjust: exact;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Folhas do celular (menu "Mais" e confirmações): sobem de baixo; a página atrás não rola.
+   Só abaixo de 768 px; no computador a confirmação continua um diálogo central, sem animação.
+   --------------------------------------------------------------------------- */
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@media (max-width: 767.98px) {
+  html:has(dialog.app-sheet[open]) {
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 767.98px) and (prefers-reduced-motion: no-preference) {
+  dialog.app-sheet[open] {
+    animation: sheet-up 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  dialog.app-sheet[open]::backdrop {
+    animation: fade-in 0.2s ease-out;
+  }
+}

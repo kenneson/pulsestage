@@ -42,6 +42,7 @@
     "endedHint": "Session ended.",
     "upNextSlides": "Up next: <strong>{item}</strong> · → or Page Down advances, ← goes back",
     "upNextKeys": "Up next: <strong>{item}</strong> · → advances",
+    "upNext": "Up next: <strong>{item}</strong>",
     "lineupEnd": "End of the lineup.",
     "itemLabel": "{type}: {title}",
     "interactionFallback": "Interaction",

@@ -175,6 +175,13 @@
   que ninguém mais pode responder (`quizReveal` em `lib/domain/quiz-result.ts`; quiz que nunca foi ao ar não revela) e
   devolve acertou, pontos, resposta certa e a posição da própria pessoa (`rankQuiz`/`standingIn`, ranking em memória
   por 5 s em `lib/data/quiz-result.ts`). A tela de resultado fica até a próxima pergunta.
+- **Celular estilo app** (abaixo de 768 px): painel com barra superior fixa e barra de abas embaixo
+  (`components/dashboard/mobile-nav.tsx`: Visão geral, Sessões, Nova sessão, Pesquisas e "Mais", que abre uma folha com o
+  resto do menu, idioma, tema e sair); a barra lateral só aparece a partir de `md`. Confirmações e diálogos viram folhas
+  inferiores; botões, campos e abas com 44 px de toque; sala ao vivo com "Anterior/Próxima" fixos no rodapé. PWA:
+  `app/manifest.ts`, `app/icon.tsx`, `app/apple-icon.tsx`, `favicon.ico`. **Regra:** ajuste de celular só com `max-md:`/
+  `max-sm:` (ou `md:contents`/`md:hidden`); a partir de `md` nada muda. Conferência: capturas de 1440 px antes e depois,
+  comparadas pixel a pixel.
 
 ## Mapa do código
 - `src/lib/domain/` regras puras (status, interações, palavras, resultados, métricas). Sem I/O.

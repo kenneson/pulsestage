@@ -16,7 +16,7 @@ export function JoinCodeForm({ defaultValue = "" }: { defaultValue?: string }) {
         autoComplete="off"
         maxLength={10}
         required
-        className="h-12 text-center text-lg font-semibold uppercase tracking-widest"
+        className="h-12 text-center text-lg font-semibold uppercase tracking-widest max-md:h-12"
       />
       <Button type="submit" size="lg" className="h-12">
         {t("submit")}
