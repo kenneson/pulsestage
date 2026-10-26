@@ -20,8 +20,9 @@ import profile from "./profile.json";
 import integrations from "./integrations.json";
 import guide from "./guide.json";
 import email from "./email.json";
+import templates from "./templates.json";
 
-const messages = { common, errors, domain, landing, legal, auth, dashboard, session, builder, live, display, participant, results, analytics, surveys, account, profile, integrations, guide, email };
+const messages = { common, errors, domain, landing, legal, auth, dashboard, session, builder, live, display, participant, results, analytics, surveys, account, profile, integrations, guide, email, templates };
 
 export type Messages = typeof messages;
 export default messages;

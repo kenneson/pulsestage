@@ -21,8 +21,9 @@ import profile from "./profile.json";
 import integrations from "./integrations.json";
 import guide from "./guide.json";
 import email from "./email.json";
+import templates from "./templates.json";
 
 // `satisfies` faz o tsc acusar qualquer chave que falte em relação ao português.
-const messages = { common, errors, domain, landing, legal, auth, dashboard, session, builder, live, display, participant, results, analytics, surveys, account, profile, integrations, guide, email } satisfies Messages;
+const messages = { common, errors, domain, landing, legal, auth, dashboard, session, builder, live, display, participant, results, analytics, surveys, account, profile, integrations, guide, email, templates } satisfies Messages;
 
 export default messages;

@@ -24,6 +24,13 @@ export const liveStateSchema = z.object({
   show_questions: z.boolean().default(false),
   questions_at: z.string().nullable().default(null),
   question_id: z.string().nullable().default(null),
+  // Revelar resultados/resposta no telão (zeram ao abrir outra pergunta).
+  results_revealed: z.boolean().default(false),
+  answer_revealed: z.boolean().default(false),
+  // Ranking do telão por pessoas ou por equipes.
+  leaderboard_mode: z.enum(["people", "teams"]).catch("people").default("people"),
+  // Filtro "comparar grupos": alternativa de uma enquete de perfil (null = todos).
+  segment_option_id: z.string().nullable().default(null),
   updated_at: z.string(),
 });
 
