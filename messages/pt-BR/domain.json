@@ -23,6 +23,30 @@
     "ranking": {
       "label": "Ranking",
       "description": "A plateia ordena as alternativas por preferência."
+    },
+    "points_100": {
+      "label": "100 pontos",
+      "description": "Cada pessoa distribui 100 pontos entre as alternativas."
+    },
+    "matrix_2x2": {
+      "label": "Matriz 2×2",
+      "description": "Cada pessoa posiciona os itens em dois eixos, como esforço × impacto."
+    },
+    "pin_image": {
+      "label": "Marcar na imagem",
+      "description": "Cada pessoa toca num ponto da imagem; o telão mostra o mapa de calor."
+    },
+    "guess_number": {
+      "label": "Adivinhe o número",
+      "description": "Cada pessoa chuta um número; quem chega mais perto ganha mais pontos."
+    },
+    "quiz_text": {
+      "label": "Quiz de digitar",
+      "description": "A pessoa digita a resposta; variações de escrita contam como certas."
+    },
+    "content": {
+      "label": "Slide de conteúdo",
+      "description": "Título, texto, imagem ou vídeo no telão, sem resposta."
     }
   },
   "sessionStatus": {

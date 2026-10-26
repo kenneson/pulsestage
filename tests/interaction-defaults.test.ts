@@ -11,8 +11,11 @@ import {
 import { parseQuestionSuggestions } from "../src/lib/ai/questions.ts";
 import { toInteractionInput } from "../src/lib/domain/mcp.ts";
 
+// "Marcar na imagem" precisa da imagem e o "Quiz de digitar", de uma resposta aceita: o formulário pede antes de salvar.
+const NEEDS_MORE = new Set(["pin_image", "quiz_text"]);
+
 test("pergunta nova de cada tipo: só falta o texto para passar na validação", () => {
-  for (const type of INTERACTION_TYPES) {
+  for (const type of INTERACTION_TYPES.filter((t) => !NEEDS_MORE.has(t))) {
     const input = defaultInteractionInput(type);
     assert.equal(input.type, type);
     assert.equal(input.title, "");
@@ -28,7 +31,7 @@ test("pergunta nova de cada tipo: só falta o texto para passar na validação",
 test("quiz novo: formas, 30 s, bônus de velocidade e a primeira alternativa correta", () => {
   const quiz = defaultInteractionInput("quiz");
   assert.ok(quiz.type === "quiz");
-  assert.deepEqual(quiz.settings, { timerSeconds: 30, optionStyle: "shapes", speedBonus: true });
+  assert.deepEqual(quiz.settings, { timerSeconds: 30, hideResults: false, showResultsOnPhone: false, optionStyle: "shapes", speedBonus: true });
   assert.deepEqual(
     quiz.options.map((o) => [o.isCorrect, o.points]),
     [

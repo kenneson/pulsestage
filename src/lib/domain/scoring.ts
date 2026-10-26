@@ -77,3 +77,124 @@ export function quizAnswerOutcome(input: {
 export function isRatingInRange(value: number, range: { min: number; max: number }): boolean {
   return value >= range.min && value <= range.max;
 }
+
+// ---------------------------------------------------------------------------
+// Adivinhe o número
+// ---------------------------------------------------------------------------
+
+/**
+ * Proximidade do chute (1 = em cheio, 0 = longe). Zera a uma distância de 25% da faixa (max − min):
+ * numa faixa de 0 a 100, errar por 10 vale 60% dos pontos e errar por 25 ou mais não vale nada.
+ */
+export const GUESS_ZERO_AT = 0.25;
+/** "Acertou" no celular: chegou a 90% ou mais de proximidade. */
+export const GUESS_HIT = 0.9;
+
+export function guessCloseness(guess: number, correct: number, range: { min: number; max: number }): number {
+  const span = Math.max(range.max - range.min, Number.EPSILON);
+  return Math.max(0, 1 - Math.abs(guess - correct) / (span * GUESS_ZERO_AT));
+}
+
+/** Arredonda o chute para as casas decimais permitidas (0 a 2). */
+export function roundGuess(value: number, decimals: number): number {
+  const factor = 10 ** decimals;
+  return Math.round(value * factor) / factor;
+}
+
+export type ScoredOutcome =
+  | { ok: true; isCorrect: boolean; points: number; responseTimeMs: number }
+  | { ok: false; error: "participant.errors.timeUp"; code: "timeout" }
+  | { ok: false; error: "participant.errors.guessOutOfRange"; code?: undefined };
+
+export function guessOutcome(input: {
+  value: number;
+  correct: number;
+  settings: { numMin: number; numMax: number; decimals: number; maxPoints: number; timerSeconds: number | null };
+  activatedAt: string | null;
+  now: number;
+}): ScoredOutcome {
+  const elapsed = responseTimeMs(input.activatedAt, input.now);
+  if (quizTimedOut(elapsed, input.settings.timerSeconds)) {
+    return { ok: false, error: "participant.errors.timeUp", code: "timeout" };
+  }
+  const value = roundGuess(input.value, input.settings.decimals);
+  if (value < input.settings.numMin || value > input.settings.numMax) {
+    return { ok: false, error: "participant.errors.guessOutOfRange" };
+  }
+  const closeness = guessCloseness(value, input.correct, { min: input.settings.numMin, max: input.settings.numMax });
+  return {
+    ok: true,
+    isCorrect: closeness >= GUESS_HIT,
+    points: Math.round(input.settings.maxPoints * closeness),
+    responseTimeMs: elapsed,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Quiz de digitar
+// ---------------------------------------------------------------------------
+
+/** Forma comparável de uma resposta digitada: sem acentos, maiúsculas, pontuação nem espaços repetidos. */
+export function normalizeAnswerText(text: string): string {
+  return text
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim()
+    .replace(/\s+/g, " ")
+    .slice(0, 100);
+}
+
+/** Uma letra de diferença é tolerada em respostas com 6 letras ou mais (erro de digitação). */
+function withinOneEdit(a: string, b: string): boolean {
+  if (a === b) return true;
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0;
+  let j = 0;
+  let edits = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) {
+      i++;
+      j++;
+      continue;
+    }
+    if (++edits > 1) return false;
+    if (a.length > b.length) i++;
+    else if (b.length > a.length) j++;
+    else {
+      i++;
+      j++;
+    }
+  }
+  return edits + (a.length - i) + (b.length - j) <= 1;
+}
+
+export function isAcceptedAnswer(text: string, accepted: readonly string[]): boolean {
+  const answer = normalizeAnswerText(text);
+  if (!answer) return false;
+  return accepted.some((raw) => {
+    const target = normalizeAnswerText(raw);
+    return target === answer || (target.length >= 6 && withinOneEdit(target, answer));
+  });
+}
+
+export function quizTextOutcome(input: {
+  text: string;
+  accepted: readonly string[];
+  settings: { maxPoints: number; speedBonus: boolean; timerSeconds: number | null };
+  activatedAt: string | null;
+  now: number;
+}): ScoredOutcome {
+  const elapsed = responseTimeMs(input.activatedAt, input.now);
+  if (quizTimedOut(elapsed, input.settings.timerSeconds)) {
+    return { ok: false, error: "participant.errors.timeUp", code: "timeout" };
+  }
+  const isCorrect = isAcceptedAnswer(input.text, input.accepted);
+  return {
+    ok: true,
+    isCorrect,
+    points: isCorrect ? quizPoints(input.settings.maxPoints, elapsed, input.settings.timerSeconds, input.settings.speedBonus) : 0,
+    responseTimeMs: elapsed,
+  };
+}

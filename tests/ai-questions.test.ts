@@ -33,7 +33,7 @@ test("converte sugestões válidas e descarta inválidas e repetidas", () => {
   );
   const rating = result[2];
   assert.ok(rating?.type === "rating");
-  assert.deepEqual(rating.settings, { min: 1, max: 5, minLabel: "Nada", maxLabel: "Muito" });
+  assert.deepEqual(rating.settings, { timerSeconds: null, hideResults: false, showResultsOnPhone: false, min: 1, max: 5, minLabel: "Nada", maxLabel: "Muito" });
 });
 
 test("falha quando nada é aproveitável", () => {

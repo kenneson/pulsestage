@@ -11,6 +11,7 @@ import { toSurveyQuestions, type SurveyQuestion } from "@/lib/domain/survey";
 import type { DeckSession } from "@/lib/data/slides";
 import { fetchAllRows } from "@/lib/supabase/fetch-all";
 import { leaderboard, type LeaderboardEntry } from "@/lib/domain/leaderboard";
+import { SCORED_TYPES } from "@/lib/domain/interactions";
 import { avatarOf } from "@/lib/domain/gamification";
 import { LOBBY_LIMIT, publicName, toLobby, type Lobby } from "@/lib/domain/lobby";
 import { screenContent } from "@/lib/domain/screen";
@@ -132,13 +133,15 @@ export async function getCurrentForParticipant(
 ): Promise<CurrentInteractionResponse> {
   const [state, flags] = await Promise.all([
     getLiveState(admin, sessionId),
-    admin.from("sessions").select("qa_enabled, reactions_enabled").eq("id", sessionId).maybeSingle(),
+    admin.from("sessions").select("qa_enabled, reactions_enabled, pace").eq("id", sessionId).maybeSingle(),
   ]);
   const features = { questions: Boolean(flags.data?.qa_enabled), reactions: Boolean(flags.data?.reactions_enabled) };
-  if (!state) return { status: "draft", interaction: null, answered: false, features };
+  // Ritmo próprio: o celular percorre o roteiro inteiro (GET /api/participant/[id]/journey).
+  const pace = flags.data?.pace === "self" ? "self" : "live";
+  if (!state) return { status: "draft", interaction: null, answered: false, features, pace };
 
   if (state.status !== "live" || !state.active_interaction_id) {
-    return { status: state.status, interaction: null, answered: false, features };
+    return { status: state.status, interaction: null, answered: false, features, pace };
   }
 
   const interaction = await getPublicInteraction(admin, state.active_interaction_id);
@@ -149,7 +152,7 @@ export async function getCurrentForParticipant(
     .eq("participant_id", participantId);
   if (error) throw new Error(error.message);
 
-  return { status: state.status, interaction, answered: (count ?? 0) > 0, features };
+  return { status: state.status, interaction, answered: (count ?? 0) > 0, features, pace };
 }
 
 export type PublicSurvey = { name: string; questions: SurveyQuestion[] };
@@ -185,7 +188,7 @@ export async function getPublicLeaderboard(
     .from("interactions")
     .select("id, activated_at")
     .eq("session_id", sessionId)
-    .eq("type", "quiz");
+    .in("type", [...SCORED_TYPES]);
   if (error) throw new Error(error.message);
   if (quizzes.length === 0) return [];
 

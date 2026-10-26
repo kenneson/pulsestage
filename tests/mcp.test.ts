@@ -41,7 +41,7 @@ test("quiz: alternativa correta pelo número, pontos e bônus só com tempo", ()
 test("quiz sem ajustes usa os padrões do painel (tempo, formas e bônus)", () => {
   const r = toInteractionInput({ type: "quiz", question: "Q", options: ["a", "b"], correct_option: 1 });
   assert.ok(r.ok && r.input.type === "quiz");
-  assert.deepEqual(r.input.settings, { timerSeconds: 30, optionStyle: "shapes", speedBonus: true });
+  assert.deepEqual(r.input.settings, { timerSeconds: 30, hideResults: false, showResultsOnPhone: false, optionStyle: "shapes", speedBonus: true });
   assert.deepEqual(
     r.input.options.map((o) => o.points),
     [100, 100],
@@ -49,7 +49,7 @@ test("quiz sem ajustes usa os padrões do painel (tempo, formas e bônus)", () =
 
   const plain = toInteractionInput({ type: "quiz", question: "Q", options: ["a", "b"], correct_option: 1, shapes: false, speed_bonus: false });
   assert.ok(plain.ok && plain.input.type === "quiz");
-  assert.deepEqual(plain.input.settings, { timerSeconds: 30, optionStyle: "text", speedBonus: false });
+  assert.deepEqual(plain.input.settings, { timerSeconds: 30, hideResults: false, showResultsOnPhone: false, optionStyle: "text", speedBonus: false });
 });
 
 test("quiz sem resposta certa ou com número inexistente falha com mensagem clara", () => {

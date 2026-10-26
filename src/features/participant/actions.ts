@@ -15,11 +15,17 @@ import { hasDbErrorCode, isForeignKeyViolation, isUniqueViolation } from "@/lib/
 import type { Json } from "@/lib/supabase/database.types";
 import type { InteractionRow } from "@/lib/supabase/types";
 import {
+  acceptsResponses,
   answerPayloadSchema,
   isInteractionType,
+  isScoredType,
   normalizeSettings,
+  parseGuessAnswerKey,
+  parseQuizTextAnswerKey,
   type AnswerPayload,
+  type NormalizedSettings,
 } from "@/lib/domain/interactions";
+import { guessTally, matrixAnswer, multiChoiceAnswer, pinAnswer, pointsAnswer, type BuiltAnswer } from "@/lib/domain/answers";
 import { MAX_PARTICIPANTS_PER_SESSION, normalizeJoinCode } from "@/lib/domain/session";
 import { normalizeTerm } from "@/lib/domain/words";
 import { ANONYMOUS_SURVEY_LIMIT_PER_IP, parseSurveyAnswers } from "@/lib/domain/survey";
@@ -28,10 +34,15 @@ import { hitWindow, pruneOldest } from "@/lib/domain/rate-limit";
 import { avatarKeySchema } from "@/lib/domain/gamification";
 import { bordaPoints, isValidRanking } from "@/lib/domain/ranking";
 import {
+  guessOutcome,
   isFilteredText,
   isRatingInRange,
   moderationFor,
+  normalizeAnswerText,
   quizAnswerOutcome,
+  quizTextOutcome,
+  quizTimedOut,
+  responseTimeMs,
   type Moderation,
 } from "@/lib/domain/scoring";
 import { localeOrDefault, type Locale } from "@/lib/domain/locale";
@@ -150,7 +161,19 @@ type BuiltResponse =
   | { ok: true; value: Json; aggregateKey: string | null; moderation: Moderation; filtered?: boolean }
   | { ok: false; /** chave de mensagem (traduzida no idioma da sessão) */ error: string; code?: string };
 
-type SessionRules = { profanityFilter: boolean; moderateOpenText: boolean; locale: Locale };
+/** `pace: "self"`: ritmo próprio (sem cronômetro nem bônus de velocidade; qualquer pergunta da sessão). */
+type SessionRules = { profanityFilter: boolean; moderateOpenText: boolean; locale: Locale; pace: "live" | "self" };
+
+async function loadOptionIds(admin: AdminSupabase, interactionId: string): Promise<string[]> {
+  const { data } = await admin.from("interaction_options").select("id").eq("interaction_id", interactionId);
+  return (data ?? []).map((o) => o.id);
+}
+
+/** Resposta montada pelas regras puras de `lib/domain/answers.ts` → resposta visível. */
+function fromAnswer(built: BuiltAnswer): BuiltResponse {
+  if (!built.ok) return { ok: false, error: built.error };
+  return { ok: true, value: built.value as Json, aggregateKey: built.aggregateKey, moderation: "visible" };
+}
 
 async function loadOption(admin: AdminSupabase, interactionId: string, optionId: string) {
   const { data } = await admin
@@ -169,13 +192,25 @@ async function buildResponse(
   payload: AnswerPayload,
   rules: SessionRules,
 ): Promise<BuiltResponse> {
-  if (!isInteractionType(interaction.type) || payload.type !== interaction.type) {
+  if (!isInteractionType(interaction.type) || payload.type !== interaction.type || !acceptsResponses(interaction.type)) {
     return { ok: false, error: "participant.errors.invalidAnswerType" };
   }
-  const settings = normalizeSettings(interaction.type, interaction.settings);
+  const configured = normalizeSettings(interaction.type, interaction.settings);
+  // Ritmo próprio: cada um responde quando quiser; cronômetro e bônus de velocidade não valem.
+  const settings: NormalizedSettings =
+    rules.pace === "self" ? { ...configured, timerSeconds: null, speedBonus: false } : configured;
+  const now = Date.now();
+  // Cronômetro dos tipos que não pontuam (os que pontuam conferem o tempo na própria regra, abaixo).
+  if (!isScoredType(interaction.type) && quizTimedOut(responseTimeMs(interaction.activated_at, now), settings.timerSeconds)) {
+    return { ok: false, error: "participant.errors.timeUp", code: "timeout" };
+  }
 
   switch (payload.type) {
     case "multiple_choice": {
+      if (payload.optionIds) {
+        return fromAnswer(multiChoiceAnswer(payload.optionIds, await loadOptionIds(admin, interaction.id), settings.maxChoices));
+      }
+      if (!payload.optionId) return { ok: false, error: "validation.chooseAtLeastOne" };
       const option = await loadOption(admin, interaction.id, payload.optionId);
       if (!option) return { ok: false, error: "participant.errors.invalidOption" };
       return { ok: true, value: { optionId: option.id }, aggregateKey: option.id, moderation: "visible" };
@@ -186,7 +221,7 @@ async function buildResponse(
       const outcome = quizAnswerOutcome({
         option: { isCorrect: option.is_correct, points: option.points },
         activatedAt: interaction.activated_at,
-        now: Date.now(),
+        now,
         timerSeconds: settings.timerSeconds,
         speedBonus: settings.speedBonus,
       });
@@ -247,6 +282,53 @@ async function buildResponse(
         moderation: "visible",
       };
     }
+    case "points_100":
+      return fromAnswer(pointsAnswer(payload.allocations, await loadOptionIds(admin, interaction.id)));
+    case "matrix_2x2":
+      return fromAnswer(matrixAnswer(payload.positions, await loadOptionIds(admin, interaction.id)));
+    case "pin_image":
+      return fromAnswer(pinAnswer(payload.x, payload.y));
+    case "guess_number": {
+      const key = parseGuessAnswerKey(interaction.answer_key);
+      if (!key) return { ok: false, error: "participant.errors.invalidAnswerType" };
+      const outcome = guessOutcome({ value: payload.value, correct: key.value, settings, activatedAt: interaction.activated_at, now });
+      if (!outcome.ok) return { ok: false, error: outcome.error, code: outcome.code };
+      return {
+        ok: true,
+        value: {
+          value: payload.value,
+          isCorrect: outcome.isCorrect,
+          points: outcome.points,
+          responseTimeMs: outcome.responseTimeMs,
+          tally: guessTally(payload.value, settings),
+        },
+        aggregateKey: null,
+        moderation: "visible",
+      };
+    }
+    case "quiz_text": {
+      const key = parseQuizTextAnswerKey(interaction.answer_key);
+      if (!key) return { ok: false, error: "participant.errors.invalidAnswerType" };
+      if (payload.text.length > settings.maxLength) return { ok: false, error: "validation.answerTooLong" };
+      const outcome = quizTextOutcome({ text: payload.text, accepted: key.accepted, settings, activatedAt: interaction.activated_at, now });
+      if (!outcome.ok) return { ok: false, error: outcome.error, code: outcome.code };
+      const normalized = normalizeAnswerText(payload.text);
+      // Palavrão não aparece entre as respostas reveladas no telão (a pontuação não muda).
+      const filtered = isFilteredText(payload.text, rules);
+      return {
+        ok: true,
+        value: {
+          text: payload.text,
+          normalized,
+          isCorrect: outcome.isCorrect,
+          points: outcome.points,
+          responseTimeMs: outcome.responseTimeMs,
+        },
+        aggregateKey: normalized || null,
+        moderation: filtered ? "hidden" : "visible",
+        ...(filtered ? { filtered: true } : {}),
+      };
+    }
   }
 }
 
@@ -267,16 +349,19 @@ export async function submitAnswerAction(
   // Interação e regras da sessão em paralelo: o idioma vem junto, sem leitura a mais.
   const [{ data: interaction }, { data: session }] = await Promise.all([
     admin.from("interactions").select("*").eq("id", interactionId).eq("session_id", sessionId).maybeSingle(),
-    admin.from("sessions").select("profanity_filter, moderate_open_text, locale").eq("id", sessionId).maybeSingle(),
+    admin.from("sessions").select("profanity_filter, moderate_open_text, locale, pace").eq("id", sessionId).maybeSingle(),
   ]);
   const { tr, t } = await texts(session ? localeOrDefault(session.locale) : null);
   if (!interaction) return fail(tr.message("core.interactionNotFound"), "not_found");
-  if (!interaction.is_active) return fail(t("interactionClosed"), "closed");
+  const pace = session?.pace === "self" ? "self" : "live";
+  // Ao vivo: só a pergunta aberta. Ritmo próprio: qualquer pergunta da sessão (o banco confere a sessão ao vivo).
+  if (!interaction.is_active && pace !== "self") return fail(t("interactionClosed"), "closed");
 
   const built = await buildResponse(admin, interaction, payload.data, {
     profanityFilter: session?.profanity_filter ?? true,
     moderateOpenText: session?.moderate_open_text ?? false,
     locale: localeOrDefault(session?.locale),
+    pace,
   });
   if (!built.ok) return fail(tr.message(built.error), built.code);
 

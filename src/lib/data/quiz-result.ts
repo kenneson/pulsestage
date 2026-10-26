@@ -1,7 +1,14 @@
 import "server-only";
 import type { AdminSupabase } from "@/lib/supabase/admin";
 import { fetchAllRows } from "@/lib/supabase/fetch-all";
-import { normalizeSettings } from "@/lib/domain/interactions";
+import {
+  isInteractionType,
+  isScoredType,
+  normalizeSettings,
+  parseGuessAnswerKey,
+  parseQuizTextAnswerKey,
+  SCORED_TYPES,
+} from "@/lib/domain/interactions";
 import { parseQuizValue } from "@/lib/domain/metrics";
 import { rankQuiz, standingIn, type QuizRanking } from "@/lib/domain/leaderboard";
 import { quizReveal, type QuizResult } from "@/lib/domain/quiz-result";
@@ -20,7 +27,11 @@ function sessionRanking(admin: AdminSupabase, sessionId: string, interactionId: 
   if (cached && now - cached.at < RANKING_TTL_MS) return cached.ranking;
 
   const ranking = (async () => {
-    const { data: quizzes, error } = await admin.from("interactions").select("id").eq("session_id", sessionId).eq("type", "quiz");
+    const { data: quizzes, error } = await admin
+      .from("interactions")
+      .select("id")
+      .eq("session_id", sessionId)
+      .in("type", [...SCORED_TYPES]);
     if (error) throw new Error(error.message);
     const responses = await fetchAllRows<{ participant_id: string; interaction_id: string; value: unknown }>((from, to) =>
       admin
@@ -51,14 +62,15 @@ export async function getQuizResult(
 ): Promise<QuizResult | null> {
   const { data: interaction, error } = await admin
     .from("interactions")
-    .select("id, type, is_active, activated_at, settings")
+    .select("id, type, is_active, activated_at, settings, answer_key")
     .eq("id", interactionId)
     .eq("session_id", sessionId)
     .maybeSingle();
   if (error) throw new Error(error.message);
-  if (!interaction || interaction.type !== "quiz") return null;
+  if (!interaction || !isInteractionType(interaction.type) || !isScoredType(interaction.type)) return null;
+  const type = interaction.type;
 
-  const { timerSeconds } = normalizeSettings("quiz", interaction.settings);
+  const { timerSeconds, unit } = normalizeSettings(type, interaction.settings);
   const reveal = quizReveal({ isActive: interaction.is_active, activatedAt: interaction.activated_at, timerSeconds, now });
   if (!reveal.revealed) return { status: "pending", retryInMs: reveal.retryInMs };
 
@@ -69,7 +81,9 @@ export async function getQuizResult(
       .eq("interaction_id", interactionId)
       .eq("participant_id", participantId)
       .maybeSingle(),
-    admin.from("interaction_options").select("label").eq("interaction_id", interactionId).eq("is_correct", true).maybeSingle(),
+    type === "quiz"
+      ? admin.from("interaction_options").select("label").eq("interaction_id", interactionId).eq("is_correct", true).maybeSingle()
+      : Promise.resolve({ data: null, error: null }),
     sessionRanking(admin, sessionId, interactionId, now),
   ]);
   if (response.error) throw new Error(response.error.message);
@@ -81,7 +95,15 @@ export async function getQuizResult(
     answered: value !== null,
     correct: value?.isCorrect ?? false,
     points: value?.points ?? 0,
-    correctLabel: value?.isCorrect ? null : (correct.data?.label ?? null),
+    correctLabel: value?.isCorrect ? null : correctLabelOf(type, correct.data?.label ?? null, interaction.answer_key, unit),
     standing: standingIn(ranking, participantId),
   };
+}
+
+/** Resposta certa para quem errou: a alternativa (quiz), a primeira resposta aceita ou o número (com a unidade). */
+function correctLabelOf(type: string, optionLabel: string | null, answerKey: unknown, unit: string | null): string | null {
+  if (type === "quiz") return optionLabel;
+  if (type === "quiz_text") return parseQuizTextAnswerKey(answerKey)?.accepted[0] ?? null;
+  const guess = parseGuessAnswerKey(answerKey);
+  return guess ? `${guess.value}${unit ? ` ${unit}` : ""}` : null;
 }

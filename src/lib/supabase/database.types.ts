@@ -375,6 +375,8 @@ export type Database = {
           title: string
           type: string
           updated_at: string
+          answer_key: Json | null
+          speaker_notes: string | null
         }
         Insert: {
           activated_at?: string | null
@@ -390,6 +392,8 @@ export type Database = {
           title: string
           type: string
           updated_at?: string
+          answer_key?: Json | null
+          speaker_notes?: string | null
         }
         Update: {
           activated_at?: string | null
@@ -405,6 +409,8 @@ export type Database = {
           title?: string
           type?: string
           updated_at?: string
+          answer_key?: Json | null
+          speaker_notes?: string | null
         }
         Relationships: [
           {
@@ -459,6 +465,7 @@ export type Database = {
           display_name: string | null
           id: string
           session_id: string
+          team_id: string | null
         }
         Insert: {
           anonymous?: boolean
@@ -467,6 +474,7 @@ export type Database = {
           display_name?: string | null
           id?: string
           session_id: string
+          team_id?: string | null
         }
         Update: {
           anonymous?: boolean
@@ -475,6 +483,7 @@ export type Database = {
           display_name?: string | null
           id?: string
           session_id?: string
+          team_id?: string | null
         }
         Relationships: [
           {
@@ -512,6 +521,8 @@ export type Database = {
           topics: string[]
           updated_at: string
           website_url: string | null
+          brand_logo_path: string | null
+          brand_color: string | null
         }
         Insert: {
           audiences?: string[]
@@ -538,6 +549,8 @@ export type Database = {
           topics?: string[]
           updated_at?: string
           website_url?: string | null
+          brand_logo_path?: string | null
+          brand_color?: string | null
         }
         Update: {
           audiences?: string[]
@@ -564,6 +577,8 @@ export type Database = {
           topics?: string[]
           updated_at?: string
           website_url?: string | null
+          brand_logo_path?: string | null
+          brand_color?: string | null
         }
         Relationships: [
           {
@@ -872,6 +887,10 @@ export type Database = {
           show_raffle: boolean
           status: string
           updated_at: string
+          results_revealed: boolean
+          answer_revealed: boolean
+          leaderboard_mode: string
+          segment_option_id: string | null
         }
         Insert: {
           active_interaction_activated_at?: string | null
@@ -892,6 +911,10 @@ export type Database = {
           show_raffle?: boolean
           status: string
           updated_at?: string
+          results_revealed?: boolean
+          answer_revealed?: boolean
+          leaderboard_mode?: string
+          segment_option_id?: string | null
         }
         Update: {
           active_interaction_activated_at?: string | null
@@ -912,6 +935,10 @@ export type Database = {
           show_raffle?: boolean
           status?: string
           updated_at?: string
+          results_revealed?: boolean
+          answer_revealed?: boolean
+          leaderboard_mode?: string
+          segment_option_id?: string | null
         }
         Relationships: [
           {
@@ -1007,6 +1034,41 @@ export type Database = {
           },
         ]
       }
+      session_teams: {
+        Row: {
+          color: number
+          created_at: string
+          id: string
+          name: string
+          position: number
+          session_id: string
+        }
+        Insert: {
+          color?: number
+          created_at?: string
+          id?: string
+          name: string
+          position?: number
+          session_id: string
+        }
+        Update: {
+          color?: number
+          created_at?: string
+          id?: string
+          name?: string
+          position?: number
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_teams_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sessions: {
         Row: {
           created_at: string
@@ -1037,6 +1099,10 @@ export type Database = {
           survey_template_id: string | null
           title: string
           updated_at: string
+          slide_notes: Json
+          pace: string
+          teams_enabled: boolean
+          use_brand: boolean
         }
         Insert: {
           created_at?: string
@@ -1067,6 +1133,10 @@ export type Database = {
           survey_template_id?: string | null
           title: string
           updated_at?: string
+          slide_notes?: Json
+          pace?: string
+          teams_enabled?: boolean
+          use_brand?: boolean
         }
         Update: {
           created_at?: string
@@ -1097,6 +1167,10 @@ export type Database = {
           survey_template_id?: string | null
           title?: string
           updated_at?: string
+          slide_notes?: Json
+          pace?: string
+          teams_enabled?: boolean
+          use_brand?: boolean
         }
         Relationships: [
           {
@@ -1277,6 +1351,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      reveal_answer: {
+        Args: { p_reveal: boolean; p_session_id: string }
+        Returns: undefined
+      }
+      reveal_results: {
+        Args: { p_reveal: boolean; p_session_id: string }
+        Returns: undefined
+      }
+      set_leaderboard_mode: {
+        Args: { p_mode: string; p_session_id: string }
+        Returns: undefined
+      }
+      set_segment_filter: {
+        Args: { p_option_id?: string; p_session_id: string }
+        Returns: undefined
+      }
       arrange_interactions: {
         Args: { p_after_slides: number[]; p_ids: string[]; p_session_id: string }
         Returns: undefined

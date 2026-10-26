@@ -23,6 +23,30 @@
     "ranking": {
       "label": "Ranking",
       "description": "The audience ranks the options by preference."
+    },
+    "points_100": {
+      "label": "100 points",
+      "description": "Each person splits 100 points across the options."
+    },
+    "matrix_2x2": {
+      "label": "2×2 matrix",
+      "description": "Each person places the items on two axes, like effort × impact."
+    },
+    "pin_image": {
+      "label": "Pin on image",
+      "description": "Each person taps a spot on the image; the big screen shows a heat map."
+    },
+    "guess_number": {
+      "label": "Guess the number",
+      "description": "Each person guesses a number; the closest guesses earn the most points."
+    },
+    "quiz_text": {
+      "label": "Type-answer quiz",
+      "description": "People type the answer; spelling variations still count as correct."
+    },
+    "content": {
+      "label": "Content slide",
+      "description": "Title, text, image, or video on the big screen, with no answers."
     }
   },
   "sessionStatus": {

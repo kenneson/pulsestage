@@ -146,7 +146,11 @@
     "reactionsOff": "Reactions are off right now.",
     "reactionFailed": "Couldn't send your reaction.",
     "surveyTooMany": "Too many responses were sent from this network. Please try again later.",
-    "consentPurpose": "Receive materials and communications about this session"
+    "consentPurpose": "Receive materials and communications about this session",
+    "tooManyChoices": "You picked more options than allowed.",
+    "pointsMustTotal": "Split exactly 100 points.",
+    "placeAtLeastOne": "Place at least one item.",
+    "guessOutOfRange": "The number must be within the question's range."
   },
   "quizResult": {
     "correct": "Correct!",

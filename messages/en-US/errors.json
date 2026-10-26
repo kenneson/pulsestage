@@ -64,7 +64,17 @@
     "answerTooLong": "The answer is too long.",
     "answerAtLeastOne": "Answer at least one question.",
     "answerRequiredIn": "Please answer: “{label}”",
-    "invalidAnswerIn": "Invalid answer for “{label}”."
+    "invalidAnswerIn": "Invalid answer for “{label}”.",
+    "chooseAtLeastOne": "Choose at least one option.",
+    "maxChoicesTooHigh": "The choice limit can't be higher than the number of options.",
+    "imagesRequired": "In the image grid, every option needs an image.",
+    "atLeastOneItem": "Add at least one item.",
+    "answerOutOfRange": "The correct answer must be between the minimum and the maximum.",
+    "acceptedRequired": "Enter at least one accepted answer.",
+    "acceptedMax": "Up to {max} accepted answers.",
+    "notesTooLong": "Notes can be up to 2,000 characters.",
+    "contentTooLong": "The text can be up to 2,000 characters.",
+    "videoUrl": "Use a YouTube or Vimeo link."
   },
   "core": {
     "interactionCreateFailed": "Couldn't create the interaction.",

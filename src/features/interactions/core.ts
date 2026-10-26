@@ -1,7 +1,8 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import type { ServerSupabase } from "@/lib/supabase/server";
-import { hasOptions, type ParsedInteractionInput } from "@/lib/domain/interactions";
+import { answerKeyOf, hasOptions, type ParsedInteractionInput } from "@/lib/domain/interactions";
+import type { Json } from "@/lib/supabase/database.types";
 import type { Arrangement } from "@/lib/domain/deck";
 import { droppedImages, imageOwner } from "@/lib/domain/gamification";
 import { optionImagesOf, removeUnusedOptionImages } from "@/lib/data/option-images";
@@ -22,7 +23,19 @@ async function responseCount(supabase: ServerSupabase, interactionId: string): P
 
 /** Imagem de alternativa só da pasta do próprio speaker (as de outros poderiam sumir sem aviso). */
 export function foreignImage(input: ParsedInteractionInput, speakerId: string): boolean {
-  return "options" in input && input.options.some((o) => o.imagePath && imageOwner(o.imagePath) !== speakerId);
+  const optionImages = "options" in input ? input.options.map((o) => o.imagePath) : [];
+  // Imagem da própria pergunta: "Marcar na imagem" e slide de conteúdo.
+  const settingsImage = "imagePath" in input.settings ? input.settings.imagePath : null;
+  return [...optionImages, settingsImage].some((path) => path && imageOwner(path) !== speakerId);
+}
+
+/** Colunas que vêm da entrada além de tipo e texto: gabarito privado e notas do palestrante. */
+function extraColumns(input: ParsedInteractionInput) {
+  const answerKey = answerKeyOf(input);
+  return {
+    answer_key: answerKey ? (answerKey as Json) : null,
+    speaker_notes: input.notes || null,
+  };
 }
 
 function optionRows(interactionId: string, input: ParsedInteractionInput) {
@@ -60,6 +73,7 @@ export async function createInteraction(
       title: input.title,
       description: input.description || null,
       settings: input.settings,
+      ...extraColumns(input),
       session_id: sessionId,
       position: last ? last.position + 1 : 0,
     })
@@ -117,7 +131,13 @@ export async function updateInteraction(
 
   const { error: updateError } = await supabase
     .from("interactions")
-    .update({ type: input.type, title: input.title, description: input.description || null, settings: input.settings })
+    .update({
+      type: input.type,
+      title: input.title,
+      description: input.description || null,
+      settings: input.settings,
+      ...extraColumns(input),
+    })
     .eq("id", interactionId);
   if (updateError) return fail("core.interactionSaveFailed");
 

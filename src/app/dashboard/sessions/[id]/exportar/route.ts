@@ -49,7 +49,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const { id } = await params;
   const kind = request.nextUrl.searchParams.get("tipo");
   // Idioma da requisição (o do painel de quem exporta).
-  const [t, tDomain] = await Promise.all([getTranslations("analytics.export"), getTranslations("domain")]);
+  const t = await getTranslations("analytics.export");
+  const tDomain = await getTranslations("domain");
   if (!isUuid(id) || (kind !== "interacoes" && kind !== "pesquisa")) {
     return NextResponse.json({ error: t("errors.invalidParams") }, { status: 400 });
   }

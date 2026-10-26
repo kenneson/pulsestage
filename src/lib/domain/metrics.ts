@@ -160,7 +160,8 @@ export function confidenceFromSample(sampleSize: number): Confidence {
 // ---------------------------------------------------------------------------
 
 const quizValueSchema = z.object({
-  optionId: z.string(),
+  /** só no quiz de alternativas (quiz de digitar e adivinhe o número não têm) */
+  optionId: z.string().optional(),
   isCorrect: z.boolean(),
   points: z.number(),
   responseTimeMs: z.number(),

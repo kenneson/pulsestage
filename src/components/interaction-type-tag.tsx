@@ -10,6 +10,13 @@ export const TYPE_PAPER: Record<InteractionType, string> = {
   open_text: "bg-rev-green",
   quiz: "bg-rev-gold",
   ranking: "bg-rev-violet",
+  points_100: "bg-rev-orange",
+  matrix_2x2: "bg-rev-teal",
+  pin_image: "bg-rev-lime",
+  guess_number: "bg-rev-magenta",
+  quiz_text: "bg-rev-coral",
+  // Slide de conteúdo não é pergunta: papel neutro.
+  content: "bg-rev-slate",
 };
 
 // Sem "use client": também roda em Server Components (análise), com useTranslations síncrono.

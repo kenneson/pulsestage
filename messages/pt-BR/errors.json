@@ -64,7 +64,17 @@
     "answerTooLong": "Resposta muito longa.",
     "answerAtLeastOne": "Responda pelo menos uma pergunta.",
     "answerRequiredIn": "Responda: “{label}”",
-    "invalidAnswerIn": "Resposta inválida em “{label}”."
+    "invalidAnswerIn": "Resposta inválida em “{label}”.",
+    "chooseAtLeastOne": "Escolha pelo menos uma alternativa.",
+    "maxChoicesTooHigh": "O limite de escolhas não pode passar do número de alternativas.",
+    "imagesRequired": "Na grade de imagens, toda alternativa precisa de imagem.",
+    "atLeastOneItem": "Adicione pelo menos um item.",
+    "answerOutOfRange": "A resposta certa precisa estar entre o mínimo e o máximo.",
+    "acceptedRequired": "Escreva pelo menos uma resposta aceita.",
+    "acceptedMax": "No máximo {max} respostas aceitas.",
+    "notesTooLong": "As notas podem ter até 2.000 caracteres.",
+    "contentTooLong": "O texto pode ter até 2.000 caracteres.",
+    "videoUrl": "Use um link do YouTube ou do Vimeo."
   },
   "core": {
     "interactionCreateFailed": "Não foi possível criar a interação.",

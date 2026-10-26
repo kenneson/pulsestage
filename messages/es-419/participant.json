@@ -146,7 +146,11 @@
     "reactionsOff": "Las reacciones están desactivadas por ahora.",
     "reactionFailed": "No se pudo enviar la reacción.",
     "surveyTooMany": "Se enviaron demasiadas respuestas desde esta red. Intenta de nuevo más tarde.",
-    "consentPurpose": "Recibir materiales y comunicaciones sobre esta sesión"
+    "consentPurpose": "Recibir materiales y comunicaciones sobre esta sesión",
+    "tooManyChoices": "Elegiste más opciones de las permitidas.",
+    "pointsMustTotal": "Reparte exactamente 100 puntos.",
+    "placeAtLeastOne": "Ubica al menos un ítem.",
+    "guessOutOfRange": "El número debe estar dentro del rango de la pregunta."
   },
   "quizResult": {
     "correct": "¡Correcto!",

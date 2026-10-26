@@ -46,7 +46,8 @@ export function avatarOf(key: string | null | undefined): Avatar | null {
 // Formas e cores das alternativas
 // ---------------------------------------------------------------------------
 
-export const OPTION_STYLES = ["text", "shapes"] as const;
+/** "images": grade de imagens grandes (enquete e quiz; a imagem é obrigatória e o texto vira legenda). */
+export const OPTION_STYLES = ["text", "shapes", "images"] as const;
 export type OptionStyle = (typeof OPTION_STYLES)[number];
 export const optionStyleSchema = z.enum(OPTION_STYLES);
 
