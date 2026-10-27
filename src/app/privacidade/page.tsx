@@ -19,11 +19,12 @@ export async function generateMetadata(): Promise<Metadata> {
 // ps_signup_tz em features/auth/actions.ts, contatos em participant_contacts (seção 0.4 da spec), hash do IP em
 // lib/request-ip.ts (pesquisa anônima, código errado, convites), ensaio em features/sessions/actions.ts, entrada da
 // IA em lib/ai/build-input.ts e perfil público/convites em lib/data/speaker-profile.ts e
-// features/speaker-profile/actions.ts; assistentes (MCP) em lib/mcp/.
+// features/speaker-profile/actions.ts; assistentes (MCP) em lib/mcp/;
+// equipes em features/teams/, marca em features/account/actions.ts (bucket brand) e suplemento em app/office/.
 // Textos nos três idiomas em messages/<idioma>/legal.json.
 
 // Data da última mudança do texto (formatada no idioma de quem lê).
-const UPDATED_AT = new Date("2026-10-21T12:00:00Z");
+const UPDATED_AT = new Date("2026-10-27T12:00:00Z");
 
 const b = (chunks: React.ReactNode) => <strong className="text-foreground">{chunks}</strong>;
 const code = (chunks: React.ReactNode) => <code>{chunks}</code>;
@@ -37,7 +38,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-const PARTICIPANT_ITEMS = ["name", "avatar", "raffle", "answers", "questions", "reactions", "contact"] as const;
+const PARTICIPANT_ITEMS = ["name", "avatar", "team", "raffle", "answers", "questions", "reactions", "contact"] as const;
 const COOKIE_ITEMS = ["participation", "feedback", "login", "signupTimeZone", "language", "theme"] as const;
 
 export default async function PrivacyPage() {
@@ -74,6 +75,8 @@ export default async function PrivacyPage() {
           <p>{t("speakers.account")}</p>
           <p>{t("speakers.slides")}</p>
           <p>{t("speakers.optionImages")}</p>
+          <p>{t("speakers.brand")}</p>
+          <p>{t("speakers.powerpoint")}</p>
           <p>{t.rich("speakers.publicProfile", { b })}</p>
         </Section>
 
