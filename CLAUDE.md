@@ -198,6 +198,16 @@
 - **Sessão em etapas** (`lib/domain/session-steps.ts`, `components/sessions/session-stepper.tsx`): `?etapa=configuracoes|
   slides|enquetes|pesquisa|sorteio|pronto` (o `?aba=` antigo ainda funciona). Criar a sessão leva direto a Slides; cada
   etapa carrega só os próprios dados.
+- **UX mais enxuta** (sem migration): barra lateral em grupos (principal, Resultados, Seu perfil; Integrações, Ajuda e
+  Configurações no rodapé) e recolhível para ícones (botão ao lado do logo ou Ctrl/Cmd+B; cookie `ps_sidebar`, lido no
+  layout, nome em `components/dashboard/sidebar-cookie.ts` porque exportação de módulo "use client" não chega ao servidor
+  como valor). Topo da sessão: ação principal + "Testar sessão" + menu "⋯" (`SessionMoreMenu`; baixar QR Code, duplicar,
+  excluir) com `components/ui/menu.tsx` (itens só disparam callbacks; diálogos ficam fora do menu). Etapa 1: "Mais opções"
+  recolhido também na edição, um só lugar para salvar (rodapé "Salvar" + "Próximo", `SessionForm externalSubmit`) e
+  Participação/Equipes em `DisclosureCard` (`components/ui/disclosure-card.tsx`, mostra o que está ligado). Etapa
+  "Perguntas" (era "Enquetes"): "Adicionar pergunta" abre os tipos numa janela (`AddQuestionButton`); tocar na pergunta
+  edita; ↑ ↓ e "⋯" (prévia, editar, excluir). Nomes: "interação" virou "pergunta", "analytics" virou "Resultados",
+  "Visão geral" virou "Início" e "Guia" virou "Ajuda". Sala ao vivo: Participação recolhida.
 
 ## Mapa do código
 - `src/lib/domain/` regras puras (status, interações, palavras, resultados, métricas). Sem I/O.

@@ -187,12 +187,15 @@ export function TeamsSettings({
   initial,
   status,
   className,
+  bare = false,
 }: {
   sessionId: string;
   initial: TeamsState;
   /** status da sessão: "draft" | "live" | "paused" | "completed" */
   status: string;
   className?: string;
+  /** só o conteúdo, sem cartão nem título (dentro de um cartão recolhível) */
+  bare?: boolean;
 }) {
   const t = useTranslations("session.teams");
   const [state, setState] = useState(initial);
@@ -211,13 +214,8 @@ export function TeamsSettings({
   const removable = canRemoveTeam(state.teams.length, state.enabled);
   const withoutTeam = status !== "draft" && state.enabled;
 
-  return (
-    <Card className={className}>
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-        <CardDescription>{t("description")}</CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4">
+  const content = (
+    <>
         <label className={cn("flex cursor-pointer items-start gap-3 max-md:min-h-11", readOnly && "cursor-not-allowed opacity-60")}>
           <input
             type="checkbox"
@@ -267,7 +265,16 @@ export function TeamsSettings({
             </div>
           </>
         ) : null}
-      </CardContent>
+    </>
+  );
+  if (bare) return <div className={cn("flex flex-col gap-4", className)}>{content}</div>;
+  return (
+    <Card className={className}>
+      <CardHeader>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">{content}</CardContent>
     </Card>
   );
 }

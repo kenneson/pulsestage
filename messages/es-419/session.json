@@ -2,7 +2,7 @@
   "new": {
     "metaTitle": "Nueva sesión",
     "title": "Nueva sesión",
-    "description": "Una charla, clase, taller o capacitación. Después agregas las interacciones.",
+    "description": "Una charla, clase, taller o capacitación. Después agregas las preguntas.",
     "templatesHint": "¿Prefieres empezar con un guion listo?",
     "templatesLink": "Ver plantillas"
   },
@@ -11,10 +11,10 @@
     "joinCode": "Código",
     "openLive": "Abrir sala en vivo",
     "raffleRoom": "Sala del sorteo",
-    "viewAnalytics": "Ver análisis"
+    "viewAnalytics": "Ver resultados"
   },
   "tabs": {
-    "interactions": "Interacciones ({count})",
+    "interactions": "Preguntas ({count})",
     "slides": "Diapositivas",
     "slidesCount": "Diapositivas ({count})",
     "engagement": "Participación",
@@ -23,8 +23,8 @@
     "info": "Información"
   },
   "cards": {
-    "interactionsTitle": "Interacciones",
-    "interactionsDescription": "En el orden en que se presentarán. Usa el ojo para ver lo que ve el participante.",
+    "interactionsTitle": "Preguntas",
+    "interactionsDescription": "Las preguntas de la sesión, en el orden en que se presentarán. Toca una pregunta para editarla; en ⋯ ves la vista previa o la eliminas.",
     "slidesTitle": "Diapositivas",
     "slidesDescription": "Presenta desde PulseStage: diapositivas y preguntas en la misma secuencia, sin cambiar de ventana.",
     "engagementTitle": "Participación",
@@ -68,8 +68,8 @@
     "createNext": "Crear e ir a Diapositivas"
   },
   "controls": {
-    "startConfirmTitle": "¿Iniciar sin interacciones?",
-    "startConfirmDescription": "La sesión todavía no tiene ninguna interacción.",
+    "startConfirmTitle": "¿Iniciar sin preguntas?",
+    "startConfirmDescription": "La sesión todavía no tiene ninguna pregunta.",
     "startConfirmLabel": "Iniciar de todos modos",
     "starting": "Iniciando…",
     "start": "Iniciar sesión",
@@ -87,7 +87,9 @@
     "duplicateAndEdit": "Duplicar y editar",
     "rehearsal": "Probar sesión",
     "rehearsalStarting": "Abriendo ensayo…",
-    "rehearsalHint": "Abre un ensayo en vivo para probar con un celular; nada del ensayo cuenta en las estadísticas."
+    "rehearsalHint": "Abre un ensayo en vivo para probar con un celular; nada del ensayo cuenta en las estadísticas.",
+    "moreActions": "Más acciones de la sesión",
+    "more": "Más"
   },
   "qr": {
     "download": "Descargar código QR"
@@ -239,7 +241,8 @@
     "moderate_open_text": {
       "label": "Aprobar respuestas abiertas antes de la pantalla",
       "description": "Cada respuesta abierta espera tu aprobación para aparecer en la pantalla."
-    }
+    },
+    "allOff": "Todo desactivado"
   },
   "teams": {
     "title": "Equipos",
@@ -285,7 +288,9 @@
       "notFound": "Equipo no encontrado.",
       "tooMany": "La sesión puede tener hasta 8 equipos.",
       "tooFew": "Con equipos activados, la sesión necesita al menos dos."
-    }
+    },
+    "summaryOn": "Activado · {count, plural, one {# equipo} other {# equipos}}",
+    "summaryOff": "Desactivado"
   },
   "errors": {
     "titleRequired": "Escribe el título.",
@@ -331,9 +336,9 @@
       "short": "Diapos"
     },
     "enquetes": {
-      "label": "Votaciones",
-      "description": "Las preguntas de la sesión, en el orden en que se presentarán. Usa el ojo para ver cómo las ve el público.",
-      "short": "Votaciones"
+      "label": "Preguntas",
+      "description": "Las preguntas de la sesión, en el orden en que se presentarán. Toca una pregunta para editarla; en ⋯ ves la vista previa o la eliminas.",
+      "short": "Preguntas"
     },
     "pesquisa": {
       "label": "Encuesta posterior",

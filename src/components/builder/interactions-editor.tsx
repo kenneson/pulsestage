@@ -14,12 +14,13 @@ import { TypeTag } from "@/components/interaction-type-tag";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/components/ui/confirm-dialog";
 import { EmptyState } from "@/components/ui/misc";
-import { ArrowDownIcon, ArrowUpIcon, EditIcon, EyeIcon, PlusIcon, SparklesIcon, TrashIcon } from "@/components/icons";
+import { ArrowDownIcon, ArrowUpIcon, EditIcon, EyeIcon, MoreIcon, PlusIcon, SparklesIcon, TrashIcon } from "@/components/icons";
+import { Menu } from "@/components/ui/menu";
 import { AnswerForm } from "@/components/participant/answer-form";
 import { LibraryPicker } from "@/components/library/library-picker";
 import type { LibraryItem } from "@/lib/domain/library";
 import { emptyDraft, InteractionForm, type InteractionDraft } from "./interaction-form";
-import { InteractionTypePicker } from "./interaction-type-picker";
+import { AddQuestionButton } from "./interaction-type-picker";
 import { AISuggestionsPanel, useAISuggestions } from "./ai-suggestions";
 import { InteractionSummary, NotesBadge } from "./interaction-summary";
 import { ContentPreview } from "./content-preview";
@@ -149,13 +150,17 @@ export function InteractionsEditor({
               );
             }
             return (
-              <li key={interaction.id} className="rounded-xl border bg-background">
+              <li key={interaction.id} className="relative rounded-xl border bg-background">
                 {/* No celular, as ações descem para uma linha própria e o texto usa a largura toda do card. */}
                 <div className={cn("flex items-start gap-3 p-4", !readOnly && "max-md:flex-wrap max-md:gap-y-2 max-md:pb-2")}>
                   <span className="w-7 shrink-0 pt-0.5 font-display text-xl font-bold leading-none tabular-nums" aria-label={t("cue", { number: index + 1 })}>
                     {index + 1}
                   </span>
-                  <div className="min-w-0 flex-1">
+                  {/* Tocar no texto abre a edição (o lápis saiu: um ícone a menos por linha). */}
+                  <div
+                    className={cn("min-w-0 flex-1", !readOnly && "-m-1 cursor-pointer rounded-md p-1 hover:bg-muted/50")}
+                    onClick={readOnly ? undefined : () => setEditing(interaction.id)}
+                  >
                     <div className="flex flex-wrap items-center gap-2">
                       <TypeTag type={interaction.type} />
                       {item.isActive ? <Badge variant="live">{t("active")}</Badge> : null}
@@ -169,7 +174,21 @@ export function InteractionsEditor({
                         </span>
                       ) : null}
                     </div>
-                    <p className="mt-1 font-medium">{interaction.title}</p>
+                    {readOnly ? (
+                      <p className="mt-1 font-medium">{interaction.title}</p>
+                    ) : (
+                      <button
+                        type="button"
+                        className="mt-1 block text-left font-medium underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        aria-label={t("editAria", { title: interaction.title })}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditing(interaction.id);
+                        }}
+                      >
+                        {interaction.title}
+                      </button>
+                    )}
                     <InteractionSummary draft={item.draft} />
                   </div>
                   {/* Só leitura: sobra apenas o olho, que fica ao lado do texto. */}
@@ -181,18 +200,19 @@ export function InteractionsEditor({
                         : "max-md:-mx-2 max-md:w-[calc(100%+1rem)] max-md:gap-1 max-md:border-t max-md:pt-1",
                     )}
                   >
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={cn(ICON_MOBILE, "max-md:mr-auto")}
-                      aria-label={t("preview")}
-                      onClick={() => setPreviewing(previewing === interaction.id ? null : interaction.id)}
-                    >
-                      <EyeIcon />
-                    </Button>
-                    {!readOnly ? (
+                    {readOnly ? (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={ICON_MOBILE}
+                        aria-label={t("preview")}
+                        onClick={() => setPreviewing(previewing === interaction.id ? null : interaction.id)}
+                      >
+                        <EyeIcon />
+                      </Button>
+                    ) : (
                       <>
-                        <Button variant="ghost" size="icon" className={ICON_MOBILE} aria-label={t("moveUp")} disabled={pending || index === 0} onClick={() => move(index, -1)}>
+                        <Button variant="ghost" size="icon" className={cn(ICON_MOBILE, "max-md:ml-auto")} aria-label={t("moveUp")} disabled={pending || index === 0} onClick={() => move(index, -1)}>
                           <ArrowUpIcon />
                         </Button>
                         <Button
@@ -205,14 +225,23 @@ export function InteractionsEditor({
                         >
                           <ArrowDownIcon />
                         </Button>
-                        <Button variant="ghost" size="icon" className={ICON_MOBILE} aria-label={tCommon("edit")} onClick={() => setEditing(interaction.id)}>
-                          <EditIcon />
-                        </Button>
-                        <Button variant="ghost" size="icon" className={ICON_MOBILE} aria-label={tCommon("delete")} disabled={pending} onClick={() => remove(item)}>
-                          <TrashIcon />
-                        </Button>
+                        <Menu
+                          label={t("moreFor", { title: interaction.title })}
+                          trigger={<MoreIcon />}
+                          triggerClassName={cn("size-9 border-0 bg-transparent px-0 shadow-none hover:bg-muted", ICON_MOBILE)}
+                          className="max-md:static"
+                          items={[
+                            {
+                              label: previewing === interaction.id ? t("hidePreview") : t("preview"),
+                              icon: <EyeIcon />,
+                              onSelect: () => setPreviewing(previewing === interaction.id ? null : interaction.id),
+                            },
+                            { label: tCommon("edit"), icon: <EditIcon />, onSelect: () => setEditing(interaction.id) },
+                            { label: tCommon("delete"), icon: <TrashIcon />, onSelect: () => remove(item), destructive: true, disabled: pending },
+                          ]}
+                        />
                       </>
-                    ) : null}
+                    )}
                   </div>
                 </div>
                 {previewing === interaction.id ? (
@@ -251,25 +280,17 @@ export function InteractionsEditor({
             />
           </div>
         ) : !readOnly ? (
-          <div className="flex flex-col gap-2 rounded-xl border border-dashed p-4">
-            <p className="flex items-center gap-2 text-sm font-medium">
-              <PlusIcon /> {t("addInteraction")}
-            </p>
-            <InteractionTypePicker onPick={(type) => setCreating({ draft: emptyDraft(type), example: false })} />
-            <div className="flex flex-wrap items-center gap-2 border-t pt-3 max-md:grid max-md:grid-cols-1 max-md:[&>button]:h-11 max-md:[&>span>button]:h-11">
-              <LibraryPicker sessionId={sessionId} items={library} />
-              {aiEnabled ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-primary/60 text-primary"
-                  disabled={ai.loading}
-                  onClick={ai.generate}
-                >
-                  <SparklesIcon /> {t("generateWithAI")}
-                </Button>
-              ) : null}
-            </div>
+          <div className="flex flex-wrap items-center gap-2 max-md:grid max-md:grid-cols-1 max-md:[&>button]:h-11 max-md:[&>span>button]:h-11">
+            <AddQuestionButton
+              label={t("addQuestion")}
+              onPick={(type) => setCreating({ draft: emptyDraft(type), example: false })}
+            />
+            <LibraryPicker sessionId={sessionId} items={library} />
+            {aiEnabled ? (
+              <Button variant="outline" className="border-primary/60 text-primary" disabled={ai.loading} onClick={ai.generate}>
+                <SparklesIcon /> {t("generateWithAI")}
+              </Button>
+            ) : null}
           </div>
         ) : null}
       </div>

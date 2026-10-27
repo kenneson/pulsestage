@@ -1,6 +1,6 @@
 {
   "nav": {
-    "overview": "Overview",
+    "overview": "Home",
     "sessions": "Sessions",
     "surveys": "Surveys",
     "library": "Library",
@@ -9,7 +9,7 @@
     "publicProfile": "Public profile",
     "invites": "Speaking requests",
     "integrations": "Integrations",
-    "guide": "Guide",
+    "guide": "Help",
     "newSession": "New session",
     "mainNav": "Main navigation",
     "openMenu": "Open menu",
@@ -19,7 +19,13 @@
     "unreadInvites": "{count, plural, one {# new request} other {# new requests}}",
     "settings": "Settings",
     "profileAndAccount": "Profile and account",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "groups": {
+      "results": "Results",
+      "profile": "Your profile"
+    },
+    "collapseSidebar": "Collapse menu",
+    "expandSidebar": "Expand menu"
   },
   "home": {
     "metaTitle": "Overview",

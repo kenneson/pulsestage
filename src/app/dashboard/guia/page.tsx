@@ -32,7 +32,7 @@ const SECTIONS = [
 
 type SectionKey = (typeof SECTIONS)[number]["key"];
 
-const CREATE_STEPS = ["newSession", "fields", "stepper", "joinCode", "templates", "mode", "teams", "brand"] as const;
+const CREATE_STEPS = ["newSession", "fields", "save", "stepper", "joinCode", "templates", "mode", "teams", "brand"] as const;
 const LANGUAGE_ITEMS = ["dashboard", "public", "session"] as const;
 const LINEUP_TYPES = [
   "poll", "scale", "cloud", "open", "quiz", "ranking", "points", "matrix", "pin", "guess", "quizText", "content",
@@ -46,7 +46,7 @@ const RAFFLE_ELIGIBILITY = ["survey", "everyone"] as const;
 const ANALYTICS_ITEMS = ["time", "participation", "timeline", "pulse", "results", "scorecard", "survey", "insights"] as const;
 const PROFILE_STEPS = ["address", "publish", "sessions"] as const;
 const ASSISTANT_STEPS = ["attach", "propose", "create", "upload"] as const;
-const TIPS = ["rehearse", "icebreaker", "pace", "qr", "powerpoint", "survey"] as const;
+const TIPS = ["menu", "rehearse", "icebreaker", "pace", "qr", "powerpoint", "survey"] as const;
 
 const linkClass = "font-medium text-primary hover:underline";
 

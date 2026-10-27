@@ -51,6 +51,7 @@ import { ScreenSwitcher } from "./screen-switcher";
 import { ModerationPanel } from "./moderation-panel";
 import { ReactionTotals } from "./reaction-totals";
 import { EngagementSettings, type EngagementFlags } from "@/components/engagement/engagement-settings";
+import { DisclosureCard } from "@/components/ui/disclosure-card";
 import { screenContent } from "@/lib/domain/screen";
 import { QuestionCountdown } from "./question-countdown";
 import { SpeakerNotes } from "./speaker-notes";
@@ -717,14 +718,17 @@ export function ControlRoom({
             </CardContent>
           </Card>
 
-          <Card id={ENGAGEMENT_ANCHOR} className="scroll-mt-20">
-            <CardHeader>
-              <CardTitle>{t("participation")}</CardTitle>
-            </CardHeader>
-            <CardContent className="max-md:[&_input]:mt-0 max-md:[&_label]:min-h-11 max-md:[&_label]:items-center max-md:[&_ul]:gap-0">
+          {/* Ajuste raro durante a palestra: recolhido, com quantas opções estão ligadas. */}
+          <DisclosureCard
+            id={ENGAGEMENT_ANCHOR}
+            className="scroll-mt-20"
+            title={t("participation")}
+            summary={t("participationOn", { count: Object.values(engagement).filter(Boolean).length })}
+          >
+            <div className="max-md:[&_input]:mt-0 max-md:[&_label]:min-h-11 max-md:[&_label]:items-center max-md:[&_ul]:gap-0">
               <EngagementSettings sessionId={session.id} initial={engagement} compact />
-            </CardContent>
-          </Card>
+            </div>
+          </DisclosureCard>
         </div>
       </div>
     </div>

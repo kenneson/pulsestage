@@ -2,7 +2,7 @@
   "new": {
     "metaTitle": "New session",
     "title": "New session",
-    "description": "A talk, class, workshop, or training. You'll add the interactions next.",
+    "description": "A talk, class, workshop, or training. You'll add the questions next.",
     "templatesHint": "Rather start from a ready-made script?",
     "templatesLink": "See templates"
   },
@@ -11,10 +11,10 @@
     "joinCode": "Code",
     "openLive": "Open live room",
     "raffleRoom": "Giveaway room",
-    "viewAnalytics": "View analytics"
+    "viewAnalytics": "View results"
   },
   "tabs": {
-    "interactions": "Interactions ({count})",
+    "interactions": "Questions ({count})",
     "slides": "Slides",
     "slidesCount": "Slides ({count})",
     "engagement": "Engagement",
@@ -23,8 +23,8 @@
     "info": "Details"
   },
   "cards": {
-    "interactionsTitle": "Interactions",
-    "interactionsDescription": "In the order they'll be presented. Use the eye icon to see what participants see.",
+    "interactionsTitle": "Questions",
+    "interactionsDescription": "The session's questions, in the order you'll present them. Tap a question to edit it; use ⋯ to preview or delete it.",
     "slidesTitle": "Slides",
     "slidesDescription": "Present from PulseStage: slides and questions in one sequence, no window switching.",
     "engagementTitle": "Engagement",
@@ -68,8 +68,8 @@
     "createNext": "Create and go to Slides"
   },
   "controls": {
-    "startConfirmTitle": "Start without interactions?",
-    "startConfirmDescription": "This session doesn't have any interactions yet.",
+    "startConfirmTitle": "Start without questions?",
+    "startConfirmDescription": "This session doesn't have any questions yet.",
     "startConfirmLabel": "Start anyway",
     "starting": "Starting…",
     "start": "Start session",
@@ -87,7 +87,9 @@
     "duplicateAndEdit": "Duplicate and edit",
     "rehearsal": "Test session",
     "rehearsalStarting": "Opening rehearsal…",
-    "rehearsalHint": "Opens a live rehearsal to test with a phone; nothing from it counts in your stats."
+    "rehearsalHint": "Opens a live rehearsal to test with a phone; nothing from it counts in your stats.",
+    "moreActions": "More session actions",
+    "more": "More"
   },
   "qr": {
     "download": "Download QR code"
@@ -239,7 +241,8 @@
     "moderate_open_text": {
       "label": "Approve open-ended answers before the big screen",
       "description": "Each open-ended answer waits for your approval before it appears on the big screen."
-    }
+    },
+    "allOff": "All off"
   },
   "teams": {
     "title": "Teams",
@@ -285,7 +288,9 @@
       "notFound": "Team not found.",
       "tooMany": "A session can have up to 8 teams.",
       "tooFew": "With teams on, the session needs at least two."
-    }
+    },
+    "summaryOn": "On · {count, plural, one {# team} other {# teams}}",
+    "summaryOff": "Off"
   },
   "errors": {
     "titleRequired": "Enter a title.",
@@ -331,9 +336,9 @@
       "short": "Slides"
     },
     "enquetes": {
-      "label": "Polls",
-      "description": "The session's questions, in the order they'll be presented. Use the eye to see what the audience sees.",
-      "short": "Polls"
+      "label": "Questions",
+      "description": "The session's questions, in the order you'll present them. Tap a question to edit it; use ⋯ to preview or delete it.",
+      "short": "Questions"
     },
     "pesquisa": {
       "label": "Post-event survey",

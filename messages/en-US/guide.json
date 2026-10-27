@@ -8,28 +8,29 @@
   "create": {
     "title": "Create the session",
     "steps": {
-      "newSession": "Click <b>“New session”</b>. The session is built in five steps, shown on a timeline at the top: <b>“Settings”</b>, <b>“Slides”</b>, <b>“Polls”</b>, <b>“Post-event survey”</b>, and <b>“Giveaway”</b>.",
+      "newSession": "Click <b>“New session”</b>. The session is built in five steps, shown on a timeline at the top: <b>“Settings”</b>, <b>“Slides”</b>, <b>“Questions”</b>, <b>“Post-event survey”</b>, and <b>“Giveaway”</b>.",
       "fields": "In <b>“Settings”</b>, fill in the title and, if you like, the date and time. Only the title is required. Description, <b>“Session mode”</b>, estimated duration, language, and join code are under <b>“More options”</b>. Click <b>“Create and go to Slides”</b>.",
       "joinCode": "<b>Join code (optional):</b> pick a code that's easy to say out loud, like <code>AI2026</code>. If you leave it blank, one is generated automatically. Once the session starts, the code doesn't change.",
       "stepper": "On each step, <b>“Next”</b> takes you forward and <b>“Back”</b> goes back. Slides and Giveaway are optional: while they are empty, <b>“Skip”</b> appears. You can also tap any step on the timeline. After the Giveaway, <b>“Finish”</b> opens <b>“Ready to present”</b>: a summary of each step, what is missing, and the buttons to start or rehearse the session.",
       "templates": "<b>Session templates:</b> in <b>“Sessions”</b>, in the menu, <b>“Templates”</b> shows ready-made scripts (class opener, quiz review, retrospective, training, planning, and a self-paced survey). <b>“Use this template”</b> creates the session as a draft, with the questions already in, for you to adjust.",
       "mode": "<b>“Session mode”:</b> <em>Live, you lead</em> (you open each question) or <em>Self-paced</em>: while the session is live, each person goes through the whole lineup on their phone without waiting for you. In self-paced mode, the timer and speed bonus do not apply.",
       "teams": "<b>Teams:</b> on the <b>“Teams”</b> card in the Settings step, turn on <b>“Play in teams”</b>. Four teams come ready; you can rename, recolor, reorder, or delete them. When joining, each person picks a team (with no pick, they join the one with the fewest people).",
-      "brand": "<b>Your brand:</b> in <b>Settings</b>, in the menu, the <b>“Brand”</b> section takes your logo and color. In each session, <b>“Use my brand”</b> shows both on the audience's phones and on the big screen. If the color is hard to read, PulseStage darkens or lightens it only as much as needed."
+      "brand": "<b>Your brand:</b> in <b>Settings</b>, in the menu, the <b>“Brand”</b> section takes your logo and color. In each session, <b>“Use my brand”</b> shows both on the audience's phones and on the big screen. If the color is hard to read, PulseStage darkens or lightens it only as much as needed.",
+      "save": "In Settings, <b>“Save”</b> (at the bottom) saves your changes and <b>“Next”</b> saves and moves on. <b>“Engagement”</b> and <b>“Teams”</b> are collapsed and show what's on: click to open them. The top of the session has <b>“Start session”</b> and <b>“Test session”</b>; <b>“Download QR code”</b>, <b>“Duplicate”</b>, and <b>“Delete”</b> are under <b>⋯</b>."
     }
   },
   "languages": {
     "title": "Choose the language",
     "intro": "PulseStage works in Portuguese, Spanish, and English. The dashboard, the public pages, and each session have their own language.",
     "items": {
-      "dashboard": "<b>Dashboard:</b> use the language switcher (the globe with PT, ES, and EN) at the bottom of the menu, next to the theme button. Your choice is saved under <b>“Language”</b> in <b>Settings</b> → <b>“Preferences”</b>, and it applies to the dashboard, new sessions, and emails. Analytics insights come out in your dashboard language.",
+      "dashboard": "<b>Dashboard:</b> use the language switcher (the globe with PT, ES, and EN) at the bottom of the menu, next to the theme button. Your choice is saved under <b>“Language”</b> in <b>Settings</b> → <b>“Preferences”</b>, and it applies to the dashboard, new sessions, and emails. Insights come out in your dashboard language.",
       "public": "<b>Public pages:</b> the home page, the join page, your public profile, and the speaker directory have the same switcher at the top. Spanish addresses start with <code>/es</code> and English ones with <code>/en</code>.",
       "session": "<b>“Session language”</b>, in the session form: the audience's phones and the big screen use this language, whatever your dashboard is set to. The profanity filter, the word cloud, <b>“Generate with AI”</b> suggestions, and the default survey template also follow the session language. New sessions start in the language from your preferences."
     }
   },
   "lineup": {
     "title": "Build the lineup",
-    "intro": "In the <b>“Polls”</b> step, add the interactions in the order you will use them in the presentation. Types come in four groups: Opinion, Free answers, Competition, and Content. Empty lineup? <b>“Create your first poll”</b> opens a sample poll, ready to edit.",
+    "intro": "In the <b>“Questions”</b> step, click <b>“Add question”</b> and pick a type: they come in four groups (Opinion, Free answers, Competition, and Content). Add them in the order you'll use them in the presentation. Empty lineup? <b>“Create your first poll”</b> opens a sample poll, ready to edit.",
     "types": {
       "poll": "<b>Poll:</b> choose among options. With <b>“Allow multiple choices”</b>, each person picks up to the limit you set. <b>“Use to compare groups”</b> turns the poll into a profile question (department, class, city) to filter results live.",
       "scale": "<b>Scale:</b> a rating between a minimum and a maximum (e.g., 1 to 5), with optional labels at each end.",
@@ -45,7 +46,7 @@
       "content": "<b>Content slide:</b> a title, text, image, or YouTube or Vimeo video on the big screen, with no answers. Good for explaining something between questions."
     },
     "optionStyle": "In polls and quizzes, <b>“Option style”</b> swaps plain text for <b>“Shapes and colors”</b>: each option gets a shape (triangle, diamond, circle, square…) and a color, on phones and on the big screen. The image icon next to each option attaches a photo or illustration; the text is still required and appears below it.",
-    "tools": "Use the eye icon to <b>preview</b> how participants will see each question, the arrows to <b>move it up or down</b>, and the pencil to edit. To reuse questions from other sessions, click <b>“From library”</b>; to repeat a whole talk, use <b>“Duplicate”</b> (at the top of the session, in analytics, or the copy icon in the session list): you choose the name and date, and the copy opens as a draft with questions, slides, survey, and prizes, ready to edit. Out of ideas? <b>“Generate with AI”</b> suggests questions from the title and description: review them and use <b>“Add to lineup”</b> on the ones that fit, or <b>“Edit first”</b> to adjust them before adding.",
+    "tools": "Tap a question to <b>edit</b> it. The arrows <b>move it up or down</b>; <b>⋯</b> has <b>“Preview”</b> (how the audience sees it) and <b>“Delete”</b>. To reuse questions from other sessions, click <b>“From library”</b>; to repeat a whole talk, use <b>“Duplicate”</b> (in the <b>⋯</b> at the top of the session, in results, or the copy icon in the session list): you choose the name and date, and the copy opens as a draft with questions, slides, survey, and prizes, ready to edit. Out of ideas? <b>“Generate with AI”</b> suggests questions from the title and description: review them and use <b>“Add to lineup”</b> on the ones that fit, or <b>“Edit first”</b> to adjust them before adding.",
     "extras": "On any question, <b>“More settings”</b> has the timer, <b>“Hide results until I reveal them”</b>, and <b>“Show results on the phone after answering”</b>. <b>“Speaker notes”</b> keeps what you want to remember; only you see it, in the live room. In polls, <b>“Image grid”</b> shows the options as pictures."
   },
   "slides": {
@@ -73,7 +74,7 @@
       "selfPace": "<b>Self-paced</b> session: the live room becomes <b>“Progress”</b>, with how many joined, started, and finished everything, and how many answered each question. There is no Previous/Next: each person moves on their own."
     },
     "pause": "<b>“Pause”</b> freezes the session (no one can answer) and <b>“Resume”</b> brings it back. The “connected now” number is approximate; the participants who actually joined appear in the total next to it.",
-    "timer": "Next to the status is the <b>talk timer</b>: the time since “Start session”, not counting pauses, compared with the duration you planned in the session details. It turns amber when you go over. The actual duration is recorded in analytics and in the report."
+    "timer": "Next to the status is the <b>talk timer</b>: the time since “Start session”, not counting pauses, compared with the duration you planned in the session details. It turns amber when you go over. The actual duration is recorded in results and in the report."
   },
   "audience": {
     "title": "What the audience sees",
@@ -89,7 +90,7 @@
     "intro": "On the <b>“Engagement”</b> card in the Settings step (and the <b>“Engagement”</b> card in the live room), you turn each feature on or off. Everything starts on, except approvals.",
     "items": {
       "qa": "<b>Audience Q&A:</b> phones show <b>“Ask the speaker”</b>. People write a question, choose whether to show their name, and upvote other people's questions. In the live room, the <b>“Audience Q&A”</b> card lists the most upvoted: <b>“Feature”</b> puts one on the big screen, <b>“Answered”</b> takes it out of the queue, and <b>“Hide”</b> hides it. To show the most upvoted ones on the big screen, pick <b>“Audience Q&A”</b> under <b>“On the big screen now”</b>. With <b>“Approve questions before they appear”</b>, new ones wait in <b>“Waiting”</b> until you approve them.",
-      "reactions": "<b>Live reactions:</b> 👏 ❤️ 😂 😮 🤔 sit at the bottom of the phone screen during the session. The emojis float up on the big screen and the total shows in the live room. In analytics, you can see the minutes with the most reactions.",
+      "reactions": "<b>Live reactions:</b> 👏 ❤️ 😂 😮 🤔 sit at the bottom of the phone screen during the session. The emojis float up on the big screen and the total shows in the live room. In results, you can see the minutes with the most reactions.",
       "profanity": "<b>Profanity filter:</b> word cloud entries, open-ended answers, and questions with profanity don't go to the big screen. The sender isn't told (so they don't try to get around it). You can see what was blocked and let it through.",
       "moderation": "<b>Live moderation:</b> in a word cloud, open <b>“Moderate words”</b> and click the × to take a word off the big screen (future submissions of it are left out too). In an open-ended question, <b>“Moderate responses”</b> hides answers; with <b>“Approve open-ended answers before the big screen”</b>, each one waits for your <b>“Approve”</b>."
     }
@@ -113,7 +114,7 @@
   },
   "analytics": {
     "title": "Analyze the results",
-    "intro": "In the <b>session analytics</b> you'll find:",
+    "intro": "In the <b>session results</b> you'll find:",
     "items": {
       "time": "<b>Talk time:</b> right below the title, the actual duration (without pauses) and the difference from the planned duration.",
       "participation": "<b>Participation:</b> people who answered something divided by people who joined.",
@@ -124,7 +125,7 @@
       "survey": "<b>Survey results:</b> each question with its answer distribution, NPS for 0–10 scores, and comments, with search.",
       "insights": "<b>Insights:</b> click <b>“Generate insights”</b> for an AI analysis (strengths, areas to watch, and recommendations). It only gets aggregated data and excerpts from answers, never names or contact info. With fewer than 10 responses, the confidence shown is low."
     },
-    "evolution": "In <b>“Progress”</b>, in the menu, compare your ratings across ended sessions and see whether your changes paid off. To share, use <b>“Export”</b> in analytics: a PDF report for the organizer or client, and CSV files of the answers and survey for spreadsheets."
+    "evolution": "In <b>“Progress”</b>, in the menu, compare your ratings across ended sessions and see whether your changes paid off. To share, use <b>“Export”</b> in results: a PDF report for the organizer or client, and CSV files of the answers and survey for spreadsheets."
   },
   "publicProfile": {
     "title": "Public profile and speaking requests",
@@ -155,9 +156,9 @@
       "icebreaker": "Start with an easy question (a poll or word cloud) to break the ice.",
       "pace": "One interaction every 10 to 15 minutes keeps the audience engaged without breaking your rhythm.",
       "qr": "Keep the QR code visible for the first few minutes so latecomers can join too.",
-      "powerpoint": "Prefer presenting from PowerPoint or Google Slides, with animations? Click <b>“Download QR code”</b> (on the session page or in the live room) and paste the image on a slide. When it's time for each question, switch from your slides to the projector screen with <kbd>Alt</kbd>+<kbd>Tab</kbd>. To skip switching windows, just upload the PDF in the <b>“Slides”</b> tab.",
-      "survey": "Ask people to answer the survey while they're still in the room. The response rate drops sharply once the audience leaves."
-    },
-    "powerpoint": "Prefer presenting from PowerPoint, with animations? In <b>Integrations</b>, the <b>“PowerPoint”</b> card has the add-in (<b>“Download the add-in (manifest.xml)”</b>) and the install steps: it shows the live big screen inside a slide, with no window switching. In Google Slides, click <b>“Download QR code”</b> (on the session page or in the live room), paste the image on a slide, and switch to the projector screen with <kbd>Alt</kbd>+<kbd>Tab</kbd> for each question, or upload the PDF in the <b>“Slides”</b> step."
+      "powerpoint": "Prefer presenting from PowerPoint, with animations? In <b>Integrations</b>, the <b>“PowerPoint”</b> card has the add-in (<b>“Download the add-in (manifest.xml)”</b>) and the install steps: it shows the live big screen inside a slide, with no window switching. In Google Slides, click <b>“Download QR code”</b> (under <b>⋯</b> on the session page or in the live room), paste the image on a slide, and switch to the projector screen with <kbd>Alt</kbd>+<kbd>Tab</kbd> for each question, or upload the PDF in the <b>“Slides”</b> step.",
+      "survey": "Ask people to answer the survey while they're still in the room. The response rate drops sharply once the audience leaves.",
+      "menu": "On a computer, the button next to the logo (or <kbd>Ctrl</kbd>+<kbd>B</kbd>) <b>collapses the side menu</b> to icons for more room; your choice is remembered."
+    }
   }
 }

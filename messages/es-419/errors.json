@@ -77,21 +77,21 @@
     "videoUrl": "Usa un enlace de YouTube o de Vimeo."
   },
   "core": {
-    "interactionCreateFailed": "No se pudo crear la interacción.",
+    "interactionCreateFailed": "No se pudo crear la pregunta.",
     "optionsSaveFailed": "No se pudieron guardar las opciones.",
-    "interactionNotFound": "Interacción no encontrada.",
+    "interactionNotFound": "Pregunta no encontrada.",
     "optionsLoadFailed": "No se pudieron cargar las opciones.",
     "typeLocked": "Ya hay respuestas: el tipo no puede cambiar.",
     "optionsLocked": "Ya hay respuestas: edita el texto de las opciones, sin agregar ni quitar.",
     "correctLocked": "Ya hay respuestas: la opción correcta no puede cambiar.",
-    "interactionSaveFailed": "No se pudo guardar la interacción.",
+    "interactionSaveFailed": "No se pudo guardar la pregunta.",
     "optionsUpdateFailed": "No se pudieron actualizar las opciones.",
     "sessionCreateFailed": "No se pudo crear la sesión.",
     "joinCodeTaken": "Ese código ya lo usa otra sesión activa.",
     "joinCodeExhausted": "No se pudo generar un código único. Intenta de nuevo.",
     "sessionEnded": "La sesión ya finalizó y no se puede editar.",
-    "interactionActive": "La interacción está abierta para el público ahora: ciérrala antes de eliminarla.",
-    "interactionDeleteFailed": "No se pudo eliminar la interacción."
+    "interactionActive": "La pregunta está abierta para el público ahora: ciérrala antes de eliminarla.",
+    "interactionDeleteFailed": "No se pudo eliminar la pregunta."
   },
   "verify": {
     "needResponders": "Se necesitan {min} personas respondiendo (hubo {had}).",

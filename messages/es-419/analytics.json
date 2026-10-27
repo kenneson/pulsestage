@@ -23,9 +23,9 @@
     }
   },
   "session": {
-    "metaTitle": "Análisis de la sesión",
+    "metaTitle": "Resultados de la sesión",
     "questionFallback": "Pregunta",
-    "viewInteractions": "Ver interacciones",
+    "viewInteractions": "Ver preguntas",
     "export": "Exportar",
     "exportPdf": "Informe en PDF",
     "exportResponses": "Respuestas en vivo (CSV)",
@@ -52,8 +52,8 @@
     },
     "pulse": {
       "title": "Señal de participación",
-      "description": "Respuestas ÷ participantes presentes en cada interacción. Mide participación, no atención.",
-      "empty": "No se activó ninguna interacción"
+      "description": "Respuestas ÷ participantes presentes en cada pregunta. Mide participación, no atención.",
+      "empty": "No se activó ninguna pregunta"
     },
     "timeline": {
       "title": "Línea de tiempo de la presentación",
@@ -61,8 +61,8 @@
     },
     "insightsTitle": "Insights",
     "results": {
-      "title": "Resultados por interacción",
-      "empty": "No hay interacciones en esta sesión",
+      "title": "Resultados por pregunta",
+      "empty": "No hay preguntas en esta sesión",
       "ofPresent": "{rate} de los presentes",
       "median": "Mediana {value}",
       "quiz": "Aciertos {rate} · tiempo promedio {time}"
@@ -96,7 +96,7 @@
   },
   "report": {
     "metaTitle": "Informe de la sesión",
-    "back": "Volver al análisis",
+    "back": "Volver a los resultados",
     "printHint": "En la ventana de impresión, elige “Guardar como PDF”.",
     "header": "Informe de la sesión",
     "surveyName": "encuesta “{name}”",

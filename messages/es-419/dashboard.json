@@ -1,6 +1,6 @@
 {
   "nav": {
-    "overview": "Resumen",
+    "overview": "Inicio",
     "sessions": "Sesiones",
     "surveys": "Encuestas",
     "library": "Biblioteca",
@@ -9,7 +9,7 @@
     "publicProfile": "Perfil público",
     "invites": "Invitaciones",
     "integrations": "Integraciones",
-    "guide": "Guía",
+    "guide": "Ayuda",
     "newSession": "Nueva sesión",
     "mainNav": "Navegación principal",
     "openMenu": "Abrir menú",
@@ -19,7 +19,13 @@
     "unreadInvites": "{count, plural, one {# invitación nueva} other {# invitaciones nuevas}}",
     "settings": "Configuración",
     "profileAndAccount": "Perfil y cuenta",
-    "signOut": "Salir"
+    "signOut": "Salir",
+    "groups": {
+      "results": "Resultados",
+      "profile": "Tu perfil"
+    },
+    "collapseSidebar": "Contraer menú",
+    "expandSidebar": "Expandir menú"
   },
   "home": {
     "metaTitle": "Resumen",

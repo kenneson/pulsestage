@@ -1,9 +1,12 @@
 "use client";
 
+import { useRef } from "react";
 import { useTranslations } from "next-intl";
 import type { InteractionType } from "@/lib/domain/interactions";
 import { cn } from "@/lib/utils";
 import { TYPE_PAPER } from "@/components/interaction-type-tag";
+import { Button } from "@/components/ui/button";
+import { PlusIcon, XIcon } from "@/components/icons";
 
 /** Os 12 tipos em grupos (organização da tela; a ordem dentro do grupo é a de uso mais comum). */
 export const TYPE_GROUPS = [
@@ -61,5 +64,55 @@ export function InteractionTypePicker({
         </section>
       ))}
     </div>
+  );
+}
+
+/**
+ * "Adicionar pergunta": um botão só; os tipos aparecem numa janela (folha no celular) e a escolha abre o
+ * formulário. Assim o roteiro não fica com os 12 tipos sempre à mostra.
+ */
+export function AddQuestionButton({
+  onPick,
+  label,
+  className,
+}: {
+  onPick: (type: InteractionType) => void;
+  label: string;
+  className?: string;
+}) {
+  const t = useTranslations("builder.picker");
+  const tActions = useTranslations("common.actions");
+  const ref = useRef<HTMLDialogElement>(null);
+  return (
+    <>
+      <Button className={className} onClick={() => ref.current?.showModal()}>
+        <PlusIcon /> {label}
+      </Button>
+      <dialog
+        ref={ref}
+        aria-labelledby="add-question-title"
+        className="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-4xl overflow-y-auto rounded-xl border bg-card p-6 text-card-foreground shadow-lg backdrop:bg-black/50 max-md:mb-0 max-md:max-h-[calc(100dvh-1.5rem)] max-md:w-full max-md:max-w-none max-md:overscroll-contain max-md:rounded-b-none max-md:border-x-0 max-md:border-b-0 max-md:p-4 max-md:pb-[calc(1rem+env(safe-area-inset-bottom))]"
+      >
+        <div className="flex flex-col gap-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex flex-col gap-1">
+              <h2 id="add-question-title" className="text-lg font-semibold">
+                {t("dialogTitle")}
+              </h2>
+              <p className="text-sm text-muted-foreground">{t("dialogDescription")}</p>
+            </div>
+            <Button variant="ghost" size="icon" className="max-md:-mr-2 max-md:shrink-0" aria-label={tActions("close")} onClick={() => ref.current?.close()}>
+              <XIcon />
+            </Button>
+          </div>
+          <InteractionTypePicker
+            onPick={(type) => {
+              ref.current?.close();
+              onPick(type);
+            }}
+          />
+        </div>
+      </dialog>
+    </>
   );
 }

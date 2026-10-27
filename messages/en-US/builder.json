@@ -33,8 +33,8 @@
     "maxLength": "Character limit",
     "showOnDisplay": "Show responses on the big screen",
     "reviewFields": "Check the fields.",
-    "created": "Interaction created.",
-    "updated": "Interaction updated.",
+    "created": "Question created.",
+    "updated": "Question updated.",
     "contentTitle": "Slide title",
     "titlePlaceholderPoints": "Where should we invest next semester's budget?",
     "titlePlaceholderMatrix": "Where do these ideas fall on effort and impact?",
@@ -78,7 +78,7 @@
   "editor": {
     "deleteTitle": "Delete \"{title}\"?",
     "deleteResponses": "{count, plural, one {Its # response will also be deleted.} other {Its # responses will also be deleted.}}",
-    "deleted": "Interaction deleted.",
+    "deleted": "Question deleted.",
     "emptyTitle": "No questions yet",
     "emptyDescription": "Add polls, quizzes, scales, word clouds, matrices, content slides and more. The audience answers on their phones.",
     "cue": "Question {number}",
@@ -87,7 +87,7 @@
     "preview": "Preview",
     "moveUp": "Move up",
     "moveDown": "Move down",
-    "addInteraction": "Add interaction",
+    "addInteraction": "Add question",
     "generateWithAI": "Generate with AI",
     "createFirstPoll": "Create your first poll",
     "createFirstPollHint": "Opens a sample poll that's already filled in. Change the text and save.",
@@ -98,7 +98,11 @@
       "option2": "I've heard of it",
       "option3": "I use it every day",
       "option4": "I could give this talk"
-    }
+    },
+    "addQuestion": "Add question",
+    "editAria": "Edit question {title}",
+    "moreFor": "More actions for question {title}",
+    "hidePreview": "Close preview"
   },
   "ai": {
     "title": "AI suggestions",
@@ -173,11 +177,11 @@
     "tooSoon": "Wait a few seconds before generating again.",
     "lineupLoadFailed": "Couldn't load the lineup.",
     "suggestFailed": "Couldn't generate suggestions.",
-    "endBeforeDelete": "Close the interaction before deleting it.",
-    "deleteFailed": "Couldn't delete the interaction.",
+    "endBeforeDelete": "Close the question before deleting it.",
+    "deleteFailed": "Couldn't delete the question.",
     "reorderFailed": "Couldn't reorder.",
-    "startToActivate": "Start or resume the session to activate interactions.",
-    "activeChangeFailed": "Couldn't change the active interaction.",
+    "startToActivate": "Start or resume the session to activate questions.",
+    "activeChangeFailed": "Couldn't change the active question.",
     "resumeToLaunch": "Resume the session to launch the question.",
     "createdNotPlaced": "The question was created at the end of the lineup, but it couldn't be moved into place.",
     "createdNotLaunched": "The question was created as the next one, but it couldn't be launched."
@@ -198,7 +202,9 @@
     "content": {
       "title": "Content",
       "hint": "no answers"
-    }
+    },
+    "dialogTitle": "What kind of question?",
+    "dialogDescription": "Pick a format. You can change the text and options later."
   },
   "poll": {
     "multiple": "Allow multiple choices",

@@ -20,7 +20,7 @@
       "descriptionRaffle": "Os participantes verão o link de avaliação. Não dá para reabrir. O sorteio continua nesta sala.",
       "confirm": "Encerrar"
     },
-    "viewAnalytics": "Ver analytics",
+    "viewAnalytics": "Ver resultados",
     "onScreen": "No telão",
     "highlightedQuestion": "Pergunta da plateia em destaque",
     "audienceQuestions": "Perguntas da plateia",
@@ -45,14 +45,15 @@
     "upNext": "A seguir: <strong>{item}</strong>",
     "lineupEnd": "Fim do roteiro.",
     "itemLabel": "{type}: {title}",
-    "interactionFallback": "Interação",
+    "interactionFallback": "Pergunta",
     "joinCode": "Código de entrada",
     "showOnScreen": "Mostrar no telão",
     "openAsParticipant": "Abrir como participante",
     "lineup": "Roteiro",
     "active": "Ativa",
-    "noInteractions": "Nenhuma interação.",
-    "participation": "Participação"
+    "noInteractions": "Nenhuma pergunta.",
+    "participation": "Participação",
+    "participationOn": "{count, plural, =0 {Tudo desligado} one {# opção ligada} other {# opções ligadas}}"
   },
   "screen": {
     "now": "No telão agora",

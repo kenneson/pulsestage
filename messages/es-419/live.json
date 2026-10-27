@@ -20,7 +20,7 @@
       "descriptionRaffle": "Los participantes verán el enlace de evaluación. No se puede volver a abrir. El sorteo sigue en esta sala.",
       "confirm": "Finalizar"
     },
-    "viewAnalytics": "Ver análisis",
+    "viewAnalytics": "Ver resultados",
     "onScreen": "En pantalla",
     "highlightedQuestion": "Pregunta del público destacada",
     "audienceQuestions": "Preguntas del público",
@@ -45,14 +45,15 @@
     "upNext": "A continuación: <strong>{item}</strong>",
     "lineupEnd": "Fin del guion.",
     "itemLabel": "{type}: {title}",
-    "interactionFallback": "Interacción",
+    "interactionFallback": "Pregunta",
     "joinCode": "Código de acceso",
     "showOnScreen": "Mostrar en pantalla",
     "openAsParticipant": "Abrir como participante",
     "lineup": "Guion",
     "active": "Activa",
-    "noInteractions": "Ninguna interacción.",
-    "participation": "Participación"
+    "noInteractions": "Ninguna pregunta.",
+    "participation": "Participación",
+    "participationOn": "{count, plural, =0 {Todo desactivado} one {# opción activada} other {# opciones activadas}}"
   },
   "screen": {
     "now": "En pantalla ahora",

@@ -9,11 +9,9 @@ import { DownloadIcon } from "@/components/icons";
 const QR_SIZE = 1024;
 const FOOTER = 240;
 
-/** Baixa um PNG com QR Code, código e endereço de entrada, pronto para colar num slide. */
-export function QrDownloadButton({ joinUrl, code, className }: { joinUrl: string; code: string; className?: string }) {
-  const t = useTranslations("session.qr");
+/** Baixar o QR Code de entrada em PNG (fundo branco, código e endereço embaixo). `canvas` precisa estar na página. */
+export function useQrDownload(joinUrl: string, code: string) {
   const qrRef = useRef<HTMLCanvasElement>(null);
-
   function download() {
     const qr = qrRef.current;
     if (!qr) return;
@@ -41,9 +39,16 @@ export function QrDownloadButton({ joinUrl, code, className }: { joinUrl: string
     link.click();
   }
 
+  const canvas = <QRCodeCanvas ref={qrRef} value={joinUrl || " "} size={QR_SIZE} marginSize={4} className="hidden" aria-hidden />;
+  return { download, canvas };
+}
+
+export function QrDownloadButton({ joinUrl, code, className }: { joinUrl: string; code: string; className?: string }) {
+  const t = useTranslations("session.qr");
+  const { download, canvas } = useQrDownload(joinUrl, code);
   return (
     <>
-      <QRCodeCanvas ref={qrRef} value={joinUrl} size={QR_SIZE} marginSize={4} className="hidden" aria-hidden />
+      {canvas}
       <Button variant="outline" size="sm" className={className} onClick={download}>
         <DownloadIcon /> {t("download")}
       </Button>

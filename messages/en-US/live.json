@@ -20,7 +20,7 @@
       "descriptionRaffle": "Participants will see the feedback link. You can't reopen it. The giveaway stays available in this room.",
       "confirm": "End"
     },
-    "viewAnalytics": "View analytics",
+    "viewAnalytics": "View results",
     "onScreen": "On the big screen",
     "highlightedQuestion": "Featured audience question",
     "audienceQuestions": "Audience Q&A",
@@ -45,14 +45,15 @@
     "upNext": "Up next: <strong>{item}</strong>",
     "lineupEnd": "End of the lineup.",
     "itemLabel": "{type}: {title}",
-    "interactionFallback": "Interaction",
+    "interactionFallback": "Question",
     "joinCode": "Join code",
     "showOnScreen": "Show on the big screen",
     "openAsParticipant": "Open as participant",
     "lineup": "Lineup",
     "active": "Active",
-    "noInteractions": "No interactions.",
-    "participation": "Engagement"
+    "noInteractions": "No questions.",
+    "participation": "Engagement",
+    "participationOn": "{count, plural, =0 {All off} one {# option on} other {# options on}}"
   },
   "screen": {
     "now": "On the big screen now",

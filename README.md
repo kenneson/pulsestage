@@ -146,6 +146,7 @@ rode `npm run db:types` com o projeto linkado; não edite o arquivo à mão.
 | Animações com Motion (motion.dev): troca de tela no celular e no telão, alternativas e toques, barras e números que contam, ranking do quiz, listas que reordenam; respeita "reduzir movimento" | ✅ |
 | Leva inspirada no Mentimeter: 100 pontos, matriz 2×2, marcar na imagem, adivinhe o número, quiz de digitar, slide de conteúdo; várias escolhas, imagens, revelar no telão, comparar grupos, equipes, ritmo próprio, notas do palestrante, modelos, marca própria e suplemento do PowerPoint | ✅ |
 | Sessão em etapas (Configurações → Slides → Enquetes → Pesquisa pós-evento → Sorteio) | ✅ |
+| UX mais enxuta: menu lateral em grupos e recolhível (Ctrl+B), ações secundárias no "⋯", um só "Salvar", tipos de pergunta numa janela, nomes unificados ("pergunta", "Resultados") | ✅ |
 | Testes unitários (domínio, cookie do participante, MCP, traduções nos três idiomas) | ✅ |
 | Testes de integração e E2E | ⏳ |
 | Deploy na Vercel | ✅ |

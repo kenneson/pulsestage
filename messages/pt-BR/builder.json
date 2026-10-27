@@ -33,8 +33,8 @@
     "maxLength": "Limite de caracteres",
     "showOnDisplay": "Mostrar respostas na tela do projetor",
     "reviewFields": "Revise os campos.",
-    "created": "Interação criada.",
-    "updated": "Interação atualizada.",
+    "created": "Pergunta criada.",
+    "updated": "Pergunta atualizada.",
     "contentTitle": "Título do slide",
     "titlePlaceholderPoints": "Onde devemos investir o orçamento do próximo semestre?",
     "titlePlaceholderMatrix": "Onde ficam estas ideias em esforço e impacto?",
@@ -78,7 +78,7 @@
   "editor": {
     "deleteTitle": "Excluir \"{title}\"?",
     "deleteResponses": "{count, plural, one {A # resposta também será apagada.} other {As # respostas também serão apagadas.}}",
-    "deleted": "Interação excluída.",
+    "deleted": "Pergunta excluída.",
     "emptyTitle": "Nenhuma pergunta ainda",
     "emptyDescription": "Adicione enquetes, quizzes, escalas, nuvens de palavras, matrizes, slides de conteúdo e mais. A plateia responde pelo celular.",
     "cue": "Deixa {number}",
@@ -87,7 +87,7 @@
     "preview": "Pré-visualizar",
     "moveUp": "Subir",
     "moveDown": "Descer",
-    "addInteraction": "Adicionar interação",
+    "addInteraction": "Adicionar pergunta",
     "generateWithAI": "Gerar com IA",
     "createFirstPoll": "Criar primeira enquete",
     "createFirstPollHint": "Abre uma enquete de exemplo já preenchida. Troque o texto e salve.",
@@ -98,7 +98,11 @@
       "option2": "Já ouvi falar",
       "option3": "Uso no dia a dia",
       "option4": "Poderia dar esta palestra"
-    }
+    },
+    "addQuestion": "Adicionar pergunta",
+    "editAria": "Editar a pergunta {title}",
+    "moreFor": "Mais ações da pergunta {title}",
+    "hidePreview": "Fechar a prévia"
   },
   "ai": {
     "title": "Sugestões da IA",
@@ -173,11 +177,11 @@
     "tooSoon": "Aguarde alguns segundos antes de gerar de novo.",
     "lineupLoadFailed": "Não foi possível carregar o roteiro.",
     "suggestFailed": "Falha ao gerar sugestões.",
-    "endBeforeDelete": "Encerre a interação antes de excluí-la.",
-    "deleteFailed": "Não foi possível excluir a interação.",
+    "endBeforeDelete": "Encerre a pergunta antes de excluí-la.",
+    "deleteFailed": "Não foi possível excluir a pergunta.",
     "reorderFailed": "Não foi possível reordenar.",
-    "startToActivate": "Inicie ou retome a sessão para ativar interações.",
-    "activeChangeFailed": "Não foi possível alterar a interação ativa.",
+    "startToActivate": "Inicie ou retome a sessão para ativar perguntas.",
+    "activeChangeFailed": "Não foi possível alterar a pergunta ativa.",
     "resumeToLaunch": "Retome a sessão para lançar a pergunta.",
     "createdNotPlaced": "A pergunta foi criada no fim do roteiro, mas não foi possível posicioná-la.",
     "createdNotLaunched": "A pergunta foi criada como a próxima, mas não foi possível lançá-la."
@@ -198,7 +202,9 @@
     "content": {
       "title": "Conteúdo",
       "hint": "sem resposta"
-    }
+    },
+    "dialogTitle": "Que tipo de pergunta?",
+    "dialogDescription": "Escolha o formato. Dá para trocar o texto e as opções depois."
   },
   "poll": {
     "multiple": "Permitir várias escolhas",

@@ -33,8 +33,8 @@
     "maxLength": "Límite de caracteres",
     "showOnDisplay": "Mostrar las respuestas en la pantalla del proyector",
     "reviewFields": "Revisa los campos.",
-    "created": "Interacción creada.",
-    "updated": "Interacción actualizada.",
+    "created": "Pregunta creada.",
+    "updated": "Pregunta actualizada.",
     "contentTitle": "Título de la diapositiva",
     "titlePlaceholderPoints": "¿Dónde deberíamos invertir el presupuesto del próximo semestre?",
     "titlePlaceholderMatrix": "¿Dónde quedan estas ideas en esfuerzo e impacto?",
@@ -78,7 +78,7 @@
   "editor": {
     "deleteTitle": "¿Eliminar \"{title}\"?",
     "deleteResponses": "{count, plural, one {También se borrará # respuesta.} other {También se borrarán las # respuestas.}}",
-    "deleted": "Interacción eliminada.",
+    "deleted": "Pregunta eliminada.",
     "emptyTitle": "Aún no hay preguntas",
     "emptyDescription": "Agrega votaciones, quizzes, escalas, nubes de palabras, matrices, diapositivas de contenido y más. El público responde desde el celular.",
     "cue": "Pregunta {number}",
@@ -87,7 +87,7 @@
     "preview": "Vista previa",
     "moveUp": "Subir",
     "moveDown": "Bajar",
-    "addInteraction": "Agregar interacción",
+    "addInteraction": "Agregar pregunta",
     "generateWithAI": "Generar con IA",
     "createFirstPoll": "Crear primera votación",
     "createFirstPollHint": "Abre una votación de ejemplo ya completa. Cambia el texto y guárdala.",
@@ -98,7 +98,11 @@
       "option2": "Ya escuché hablar de él",
       "option3": "Lo uso en el día a día",
       "option4": "Podría dar esta presentación"
-    }
+    },
+    "addQuestion": "Agregar pregunta",
+    "editAria": "Editar la pregunta {title}",
+    "moreFor": "Más acciones de la pregunta {title}",
+    "hidePreview": "Cerrar la vista previa"
   },
   "ai": {
     "title": "Sugerencias de la IA",
@@ -173,11 +177,11 @@
     "tooSoon": "Espera unos segundos antes de generar de nuevo.",
     "lineupLoadFailed": "No se pudo cargar el guion.",
     "suggestFailed": "No se pudieron generar las sugerencias.",
-    "endBeforeDelete": "Cierra la interacción antes de eliminarla.",
-    "deleteFailed": "No se pudo eliminar la interacción.",
+    "endBeforeDelete": "Cierra la pregunta antes de eliminarla.",
+    "deleteFailed": "No se pudo eliminar la pregunta.",
     "reorderFailed": "No se pudo reordenar.",
-    "startToActivate": "Inicia o reanuda la sesión para activar interacciones.",
-    "activeChangeFailed": "No se pudo cambiar la interacción activa.",
+    "startToActivate": "Inicia o reanuda la sesión para activar preguntas.",
+    "activeChangeFailed": "No se pudo cambiar la pregunta activa.",
     "resumeToLaunch": "Reanuda la sesión para lanzar la pregunta.",
     "createdNotPlaced": "La pregunta se creó al final del guion, pero no se pudo ubicar en su lugar.",
     "createdNotLaunched": "La pregunta se creó como la siguiente, pero no se pudo lanzar."
@@ -198,7 +202,9 @@
     "content": {
       "title": "Contenido",
       "hint": "sin respuesta"
-    }
+    },
+    "dialogTitle": "¿Qué tipo de pregunta?",
+    "dialogDescription": "Elige el formato. Puedes cambiar el texto y las opciones después."
   },
   "poll": {
     "multiple": "Permitir varias opciones",

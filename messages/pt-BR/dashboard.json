@@ -1,6 +1,6 @@
 {
   "nav": {
-    "overview": "Visão geral",
+    "overview": "Início",
     "sessions": "Sessões",
     "surveys": "Pesquisas",
     "library": "Biblioteca",
@@ -9,7 +9,7 @@
     "publicProfile": "Perfil público",
     "invites": "Convites",
     "integrations": "Integrações",
-    "guide": "Guia",
+    "guide": "Ajuda",
     "newSession": "Nova sessão",
     "mainNav": "Navegação principal",
     "openMenu": "Abrir menu",
@@ -19,7 +19,13 @@
     "unreadInvites": "{count, plural, one {# convite novo} other {# convites novos}}",
     "settings": "Configurações",
     "profileAndAccount": "Perfil e conta",
-    "signOut": "Sair"
+    "signOut": "Sair",
+    "groups": {
+      "results": "Resultados",
+      "profile": "Seu perfil"
+    },
+    "collapseSidebar": "Recolher menu",
+    "expandSidebar": "Expandir menu"
   },
   "home": {
     "metaTitle": "Visão geral",

@@ -23,9 +23,9 @@
     }
   },
   "session": {
-    "metaTitle": "Session analytics",
+    "metaTitle": "Session results",
     "questionFallback": "Question",
-    "viewInteractions": "View interactions",
+    "viewInteractions": "View questions",
     "export": "Export",
     "exportPdf": "PDF report",
     "exportResponses": "Live responses (CSV)",
@@ -52,8 +52,8 @@
     },
     "pulse": {
       "title": "Participation signal",
-      "description": "Responses ÷ participants present for each interaction. It measures participation, not attention.",
-      "empty": "No interactions were launched"
+      "description": "Responses ÷ participants present for each question. It measures participation, not attention.",
+      "empty": "No questions were launched"
     },
     "timeline": {
       "title": "Talk timeline",
@@ -61,8 +61,8 @@
     },
     "insightsTitle": "Insights",
     "results": {
-      "title": "Results by interaction",
-      "empty": "No interactions in this session",
+      "title": "Results by question",
+      "empty": "No questions in this session",
       "ofPresent": "{rate} of those present",
       "median": "Median {value}",
       "quiz": "Correct {rate} · average time {time}"
@@ -96,7 +96,7 @@
   },
   "report": {
     "metaTitle": "Session report",
-    "back": "Back to analytics",
+    "back": "Back to results",
     "printHint": "In the print dialog, choose “Save as PDF”.",
     "header": "Session report",
     "surveyName": "“{name}” survey",

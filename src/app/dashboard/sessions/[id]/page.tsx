@@ -33,15 +33,9 @@ import { StatusBadge } from "@/components/sessions/status-badge";
 import { SessionForm } from "@/components/sessions/session-form";
 import { NextStepLink, SessionStepper, StepFooter, StepFooterSpacer } from "@/components/sessions/session-stepper";
 import { SurveyStep, type SurveyStepTemplate } from "@/components/sessions/survey-step";
-import {
-  DeleteSessionButton,
-  DuplicateSessionButton,
-  RehearsalButton,
-  StartSessionButton,
-} from "@/components/sessions/session-controls";
+import { RehearsalButton, SessionMoreMenu, StartSessionButton } from "@/components/sessions/session-controls";
 import { loadLibrary } from "@/lib/data/library";
 import { isAIConfigured } from "@/lib/ai";
-import { QrDownloadButton } from "@/components/sessions/qr-download-button";
 import { joinUrl } from "@/lib/env";
 import { InteractionsEditor, type EditorItem } from "@/components/builder/interactions-editor";
 import { draftFromRow } from "@/components/builder/draft";
@@ -51,6 +45,7 @@ import { getSlideUrls } from "@/lib/data/slides";
 import { getRaffleState } from "@/lib/data/raffle";
 import { RaffleEditor } from "@/components/raffle/raffle-editor";
 import { TeamsSettings } from "@/components/teams/teams-settings";
+import { DisclosureCard } from "@/components/ui/disclosure-card";
 import { getTeamsState } from "@/features/teams/data";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -149,7 +144,23 @@ export default async function SessionBuilderPage({
       supabase.from("profiles").select("brand_logo_path, brand_color").eq("id", session.speaker_id).maybeSingle(),
       getTeamsState(supabase, id, session.teams_enabled),
     ]);
-    const tCards = await getTranslations("session.cards");
+    const [tCards, tTeams, tEngagement, tActionsCommon] = await Promise.all([
+      getTranslations("session.cards"),
+      getTranslations("session.teams"),
+      getTranslations("session.engagement"),
+      getTranslations("common.actions"),
+    ]);
+    const engagementOn = (
+      [
+        ["qa_enabled", session.qa_enabled],
+        ["reactions_enabled", session.reactions_enabled],
+        ["profanity_filter", session.profanity_filter],
+        ["qa_moderated", session.qa_moderated],
+        ["moderate_open_text", session.moderate_open_text],
+      ] as const
+    ).filter(([, on]) => on);
+    const engagementSummary =
+      engagementOn.length > 0 ? engagementOn.map(([key]) => tEngagement(`${key}.label`)).join(" · ") : tEngagement("allOff");
     const surveyOptions = templates.map((x) => ({ id: x.id, name: x.name, isPlatform: x.isPlatform, locale: x.locale, slug: x.slug }));
     body = (
       <>
@@ -172,29 +183,35 @@ export default async function SessionBuilderPage({
               pace: session.pace === "self" ? "self" : "live",
               useBrand: session.use_brand,
             }}
+            externalSubmit
           />,
         )}
-        <Card>
-          <CardHeader>
-            <CardTitle>{tCards("engagementTitle")}</CardTitle>
-            <CardDescription>{tCards("engagementDescription")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <EngagementSettings
-              sessionId={id}
-              initial={{
-                qa_enabled: session.qa_enabled,
-                qa_moderated: session.qa_moderated,
-                reactions_enabled: session.reactions_enabled,
-                profanity_filter: session.profanity_filter,
-                moderate_open_text: session.moderate_open_text,
-              }}
-            />
-          </CardContent>
-        </Card>
-        <TeamsSettings sessionId={id} initial={teams} status={status} />
-        {/* "Próximo" salva o formulário de configurações e segue para Slides. */}
+        {/* Opções que se ajustam uma vez: recolhidas, com o que está ligado à vista. */}
+        <DisclosureCard title={tCards("engagementTitle")} summary={engagementSummary}>
+          <p className="mb-4 text-sm text-muted-foreground">{tCards("engagementDescription")}</p>
+          <EngagementSettings
+            sessionId={id}
+            initial={{
+              qa_enabled: session.qa_enabled,
+              qa_moderated: session.qa_moderated,
+              reactions_enabled: session.reactions_enabled,
+              profanity_filter: session.profanity_filter,
+              moderate_open_text: session.moderate_open_text,
+            }}
+          />
+        </DisclosureCard>
+        <DisclosureCard
+          title={tTeams("title")}
+          summary={teams.enabled ? tTeams("summaryOn", { count: teams.teams.length }) : tTeams("summaryOff")}
+        >
+          <p className="mb-4 text-sm text-muted-foreground">{tTeams("description")}</p>
+          <TeamsSettings sessionId={id} initial={teams} status={status} bare />
+        </DisclosureCard>
+        {/* Um lugar só para salvar: "Salvar" fica na página; "Próximo" salva e segue para Slides. */}
         <StepFooter back={null}>
+          <Button type="submit" form="session-form" variant="outline" className="max-md:min-w-0 max-md:px-3">
+            {tActionsCommon("save")}
+          </Button>
           <Button type="submit" form="session-form" name="continueTo" value="slides" className="max-md:min-w-0 max-md:px-3">
             <span className="truncate">{tSteps("next", { label: label("slides") })}</span> <ChevronRightIcon />
           </Button>
@@ -419,15 +436,13 @@ export default async function SessionBuilderPage({
             </Link>
           ) : null}
           {status !== "completed" && !session.is_test ? <RehearsalButton sessionId={id} className={SECONDARY_MOBILE} /> : null}
-          {status !== "completed" ? (
-            <QrDownloadButton
-              joinUrl={joinUrl(session.join_code)}
-              code={session.join_code}
-              className={cn(SECONDARY_MOBILE, "max-md:text-sm")}
-            />
-          ) : null}
-          <DuplicateSessionButton sessionId={id} title={session.title} className={SECONDARY_MOBILE} />
-          <DeleteSessionButton sessionId={id} title={session.title} className={SECONDARY_MOBILE} />
+          {/* Baixar QR Code, duplicar e excluir: menos usados, ficam no "⋯". */}
+          <SessionMoreMenu
+            sessionId={id}
+            title={session.title}
+            qr={status !== "completed" ? { joinUrl: joinUrl(session.join_code), code: session.join_code } : null}
+            className={SECONDARY_MOBILE}
+          />
         </div>
       </div>
 

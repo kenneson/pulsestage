@@ -53,6 +53,7 @@ export function SessionForm({
   surveyOptions,
   hasBrand = false,
   stepSubmitLabel,
+  externalSubmit = false,
 }: {
   sessionId?: string;
   defaults?: Defaults;
@@ -62,6 +63,8 @@ export function SessionForm({
   hasBrand?: boolean;
   /** Nova sessão em passos: o envio vira "Próximo" na barra de passos (StepFooter), com este rótulo. */
   stepSubmitLabel?: string;
+  /** Os botões de envio ficam fora do formulário (barra de passos da página, com `form="session-form"`). */
+  externalSubmit?: boolean;
 }) {
   const t = useTranslations("session.form");
   const tActions = useTranslations("common.actions");
@@ -207,20 +210,16 @@ export function SessionForm({
           <Input id="time" name="time" type="time" defaultValue={defaults.time} />
         </Field>
       </div>
-      {sessionId ? (
-        advanced
-      ) : (
-        <details className="group rounded-lg border">
-          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 px-4 py-2.5 [&::-webkit-details-marker]:hidden">
-            <ChevronRightIcon aria-hidden className="shrink-0 transition-transform group-open:rotate-90" />
-            <span className="flex min-w-0 flex-col">
-              <span className="text-sm font-medium">{t("moreOptions")}</span>
-              <span className="text-xs text-muted-foreground">{t("moreOptionsHint")}</span>
-            </span>
-          </summary>
-          <div className="border-t p-4">{advanced}</div>
-        </details>
-      )}
+      <details className="group rounded-lg border">
+        <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 px-4 py-2.5 [&::-webkit-details-marker]:hidden">
+          <ChevronRightIcon aria-hidden className="shrink-0 transition-transform group-open:rotate-90" />
+          <span className="flex min-w-0 flex-col">
+            <span className="text-sm font-medium">{t("moreOptions")}</span>
+            <span className="text-xs text-muted-foreground">{t("moreOptionsHint")}</span>
+          </span>
+        </summary>
+        <div className="border-t p-4">{advanced}</div>
+      </details>
       {state.error ? <Alert>{state.error}</Alert> : null}
       {state.success ? <Alert tone="success">{state.success}</Alert> : null}
       {stepSubmitLabel ? (
@@ -229,7 +228,7 @@ export function SessionForm({
             <span className="truncate">{pending ? tActions("saving") : stepSubmitLabel}</span> <ChevronRightIcon />
           </Button>
         </StepFooter>
-      ) : (
+      ) : externalSubmit ? null : (
         <div>
           <Button type="submit" disabled={pending} className="max-md:h-11 max-md:w-full">
             {pending ? tActions("saving") : sessionId ? t("saveInfo") : t("create")}

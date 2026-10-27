@@ -8,28 +8,29 @@
   "create": {
     "title": "Criar a sessão",
     "steps": {
-      "newSession": "Clique em <b>“Nova sessão”</b>. A sessão é montada em cinco etapas, mostradas numa linha do tempo no topo: <b>“Configurações”</b>, <b>“Slides”</b>, <b>“Enquetes”</b>, <b>“Pesquisa pós-evento”</b> e <b>“Sorteio”</b>.",
+      "newSession": "Clique em <b>“Nova sessão”</b>. A sessão é montada em cinco etapas, mostradas numa linha do tempo no topo: <b>“Configurações”</b>, <b>“Slides”</b>, <b>“Perguntas”</b>, <b>“Pesquisa pós-evento”</b> e <b>“Sorteio”</b>.",
       "fields": "Em <b>“Configurações”</b>, preencha o título e, se quiser, a data e o horário. Só o título é obrigatório. Descrição, <b>“Modo da sessão”</b>, duração estimada, idioma e código de entrada ficam em <b>“Mais opções”</b>. Clique em <b>“Criar e ir para Slides”</b>.",
       "joinCode": "<b>Código de entrada (opcional):</b> escolha um código fácil de ditar, como <code>IA2026</code>. Em branco, o sistema gera um automaticamente. Depois que a sessão começa, o código não muda.",
       "stepper": "Em cada etapa, <b>“Próximo”</b> leva à seguinte e <b>“Voltar”</b> à anterior. Slides e Sorteio são opcionais: enquanto estiverem vazios, aparece <b>“Pular”</b>. Também dá para tocar em qualquer etapa da linha do tempo. Depois do Sorteio, <b>“Concluir”</b> abre <b>“Pronto para apresentar”</b>: um resumo de cada etapa, o que falta e os botões para iniciar ou testar a sessão.",
       "templates": "<b>Modelos de sessão:</b> em <b>“Sessões”</b>, no menu, <b>“Modelos”</b> mostra roteiros prontos (abertura de aula, revisão com quiz, retrospectiva, treinamento, planejamento e pesquisa no ritmo de cada um). <b>“Usar este modelo”</b> cria a sessão em rascunho, já com as perguntas, para você ajustar.",
       "mode": "<b>“Modo da sessão”:</b> <em>Ao vivo, você conduz</em> (você abre cada pergunta) ou <em>No ritmo de cada um</em>: com a sessão no ar, cada pessoa percorre o roteiro inteiro no celular, sem esperar por você. No ritmo de cada um, o cronômetro e o bônus de velocidade não valem.",
       "teams": "<b>Equipes:</b> no card <b>“Equipes”</b> da etapa Configurações, ligue <b>“Jogar em equipes”</b>. Já vêm quatro equipes, que você pode renomear, recolorir, reordenar ou excluir. Na entrada, cada pessoa escolhe uma equipe (sem escolha, entra na que tem menos gente).",
-      "brand": "<b>Sua marca:</b> em <b>Configurações</b>, no menu, a seção <b>“Marca”</b> recebe o seu logo e a sua cor. Em cada sessão, <b>“Usar minha marca”</b> mostra os dois no celular da plateia e no telão. Se a cor ficar difícil de ler, o PulseStage escurece ou clareia só o necessário."
+      "brand": "<b>Sua marca:</b> em <b>Configurações</b>, no menu, a seção <b>“Marca”</b> recebe o seu logo e a sua cor. Em cada sessão, <b>“Usar minha marca”</b> mostra os dois no celular da plateia e no telão. Se a cor ficar difícil de ler, o PulseStage escurece ou clareia só o necessário.",
+      "save": "Em Configurações, <b>“Salvar”</b> (no rodapé) grava as mudanças e <b>“Próximo”</b> salva e segue para a etapa seguinte. <b>“Participação”</b> e <b>“Equipes”</b> ficam recolhidos, mostrando o que está ligado: clique para abrir. No topo da sessão ficam <b>“Iniciar sessão”</b> e <b>“Testar sessão”</b>; <b>“Baixar QR Code”</b>, <b>“Duplicar”</b> e <b>“Excluir”</b> estão no <b>⋯</b>."
     }
   },
   "languages": {
     "title": "Escolher o idioma",
     "intro": "O PulseStage funciona em português, espanhol e inglês. O painel, as páginas públicas e cada sessão têm o seu idioma.",
     "items": {
-      "dashboard": "<b>Painel:</b> use o seletor de idioma (o globo com PT, ES e EN) no rodapé do menu, ao lado do botão de tema. A escolha fica salva em <b>“Idioma”</b>, em <b>Configurações</b> → <b>“Preferências”</b>, e vale para o painel, para as sessões novas e para os e-mails. Os insights do analytics saem no idioma do seu painel.",
+      "dashboard": "<b>Painel:</b> use o seletor de idioma (o globo com PT, ES e EN) no rodapé do menu, ao lado do botão de tema. A escolha fica salva em <b>“Idioma”</b>, em <b>Configurações</b> → <b>“Preferências”</b>, e vale para o painel, para as sessões novas e para os e-mails. Os insights dos resultados saem no idioma do seu painel.",
       "public": "<b>Páginas públicas:</b> a página inicial, a entrada na sessão, o seu perfil público e o diretório de palestrantes têm o mesmo seletor no topo. Os endereços em espanhol começam com <code>/es</code> e os em inglês com <code>/en</code>.",
       "session": "<b>“Idioma da sessão”</b>, no formulário da sessão: o celular da plateia e o telão aparecem nesse idioma, seja qual for o do seu painel. O filtro de palavrões, a nuvem de palavras, as sugestões do <b>“Gerar com IA”</b> e o modelo de pesquisa padrão também seguem o idioma da sessão. Uma sessão nova começa no idioma das suas preferências."
     }
   },
   "lineup": {
     "title": "Montar o roteiro",
-    "intro": "Na etapa <b>“Enquetes”</b>, adicione as interações na ordem em que vai usá-las na apresentação. Os tipos estão em quatro grupos: Opinião, Respostas livres, Competição e Conteúdo. Roteiro vazio? <b>“Criar primeira enquete”</b> abre uma enquete de exemplo, pronta para editar.",
+    "intro": "Na etapa <b>“Perguntas”</b>, clique em <b>“Adicionar pergunta”</b> e escolha o tipo: eles estão em quatro grupos (Opinião, Respostas livres, Competição e Conteúdo). Adicione na ordem em que vai usá-las na apresentação. Roteiro vazio? <b>“Criar primeira enquete”</b> abre uma enquete de exemplo, pronta para editar.",
     "types": {
       "poll": "<b>Enquete:</b> escolha entre alternativas. Com <b>“Permitir várias escolhas”</b>, cada pessoa marca até o limite que você definir. <b>“Usar para comparar grupos”</b> transforma a enquete numa pergunta de perfil (área, turma, cidade) para filtrar os resultados ao vivo.",
       "scale": "<b>Escala:</b> nota entre um mínimo e um máximo (ex.: 1 a 5), com rótulos opcionais nas pontas.",
@@ -45,7 +46,7 @@
       "content": "<b>Slide de conteúdo:</b> título, texto, imagem ou vídeo do YouTube ou do Vimeo no telão, sem resposta. Bom para explicar algo entre as perguntas."
     },
     "optionStyle": "Em enquetes e quizzes, <b>“Aparência das alternativas”</b> troca o texto simples por <b>“Formas e cores”</b>: cada alternativa ganha uma forma (triângulo, losango, círculo, quadrado…) e uma cor, no celular e no telão. O ícone de imagem ao lado de cada alternativa anexa uma foto ou ilustração; o texto continua obrigatório e aparece embaixo dela.",
-    "tools": "Use o ícone de olho para <b>pré-visualizar</b> como o participante verá cada pergunta, as setas para <b>subir ou descer</b> na ordem e o lápis para editar. Para reaproveitar perguntas de outras sessões, clique em <b>“Da biblioteca”</b>; para repetir uma palestra inteira, use <b>“Duplicar”</b> (no topo da sessão, no analytics ou no ícone de cópia na lista de sessões): você escolhe o nome e a data, e a cópia abre em rascunho com perguntas, slides, pesquisa e prêmios, pronta para editar. Sem ideias? <b>“Gerar com IA”</b> sugere perguntas a partir do título e da descrição: revise e use <b>“Adicionar ao roteiro”</b> nas que servirem, ou <b>“Editar antes”</b> para ajustar primeiro.",
+    "tools": "Toque numa pergunta para <b>editar</b>. As setas <b>sobem ou descem</b> na ordem; no <b>⋯</b> ficam <b>“Pré-visualizar”</b> (como a plateia vê) e <b>“Excluir”</b>. Para reaproveitar perguntas de outras sessões, clique em <b>“Da biblioteca”</b>; para repetir uma palestra inteira, use <b>“Duplicar”</b> (no <b>⋯</b> do topo da sessão, nos resultados ou no ícone de cópia na lista de sessões): você escolhe o nome e a data, e a cópia abre em rascunho com perguntas, slides, pesquisa e prêmios, pronta para editar. Sem ideias? <b>“Gerar com IA”</b> sugere perguntas a partir do título e da descrição: revise e use <b>“Adicionar ao roteiro”</b> nas que servirem, ou <b>“Editar antes”</b> para ajustar primeiro.",
     "extras": "Em qualquer pergunta, <b>“Mais ajustes”</b> tem o cronômetro, <b>“Esconder resultados até eu revelar”</b> e <b>“Mostrar o resultado no celular depois de responder”</b>. <b>“Notas do palestrante”</b> guarda o que você quer lembrar; só você vê, na sala ao vivo. Em enquetes, <b>“Grade de imagens”</b> mostra as alternativas como fotos."
   },
   "slides": {
@@ -73,7 +74,7 @@
       "selfPace": "Sessão <b>no ritmo de cada um</b>: a sala ao vivo vira <b>“Acompanhamento”</b>, com quantos entraram, começaram e terminaram tudo, e quantos responderam cada pergunta. Não há Anterior/Próxima: cada pessoa avança sozinha."
     },
     "pause": "<b>“Pausar”</b> congela a sessão (ninguém responde) e <b>“Retomar”</b> volta ao normal. O número de “conectados agora” é aproximado; os participantes que entraram de fato aparecem no total ao lado.",
-    "timer": "Ao lado do status fica o <b>cronômetro da palestra</b>: o tempo desde “Iniciar sessão”, sem contar as pausas, comparado com a duração que você previu nas informações da sessão. Ele fica âmbar quando passa do previsto. A duração real fica registrada no analytics e no relatório."
+    "timer": "Ao lado do status fica o <b>cronômetro da palestra</b>: o tempo desde “Iniciar sessão”, sem contar as pausas, comparado com a duração que você previu nas informações da sessão. Ele fica âmbar quando passa do previsto. A duração real fica registrada nos resultados e no relatório."
   },
   "audience": {
     "title": "O que a audiência vê",
@@ -89,7 +90,7 @@
     "intro": "No card <b>“Participação”</b> da etapa Configurações (e no card <b>“Participação”</b> da sala ao vivo) você liga ou desliga cada recurso. Tudo começa ligado, menos as aprovações.",
     "items": {
       "qa": "<b>Perguntas da plateia:</b> no celular aparece <b>“Perguntar ao palestrante”</b>. A pessoa escreve, escolhe se mostra o nome e curte as perguntas dos outros. Na sala ao vivo, o card <b>“Perguntas da plateia”</b> lista as mais curtidas: <b>“Destacar”</b> põe uma no telão, <b>“Respondida”</b> tira da fila e <b>“Ocultar”</b> esconde. Para mostrar as mais curtidas no telão, escolha <b>“Perguntas da plateia”</b> em <b>“No telão agora”</b>. Com <b>“Aprovar perguntas antes de aparecerem”</b>, as novas esperam em <b>“Aguardando”</b> até você aprovar.",
-      "reactions": "<b>Reações ao vivo:</b> 👏 ❤️ 😂 😮 🤔 ficam no rodapé do celular durante a sessão. Os emojis sobem no telão e o total aparece na sala ao vivo. No analytics, você vê os minutos com mais reações.",
+      "reactions": "<b>Reações ao vivo:</b> 👏 ❤️ 😂 😮 🤔 ficam no rodapé do celular durante a sessão. Os emojis sobem no telão e o total aparece na sala ao vivo. Nos resultados, você vê os minutos com mais reações.",
       "profanity": "<b>Filtro de palavrões:</b> nuvem de palavras, respostas abertas e perguntas com palavrões não vão ao telão. Quem enviou não é avisado (para não tentar burlar). Você vê o que foi barrado e pode liberar.",
       "moderation": "<b>Moderação ao vivo:</b> numa nuvem de palavras, abra <b>“Moderar palavras”</b> e clique no × para tirar uma palavra do telão (os próximos envios dela também ficam de fora). Numa pergunta aberta, <b>“Moderar respostas”</b> oculta respostas; com <b>“Aprovar respostas abertas antes do telão”</b>, cada uma espera o seu <b>“Aprovar”</b>."
     }
@@ -113,7 +114,7 @@
   },
   "analytics": {
     "title": "Analisar os resultados",
-    "intro": "No <b>analytics da sessão</b> você encontra:",
+    "intro": "Nos <b>resultados da sessão</b> você encontra:",
     "items": {
       "time": "<b>Tempo de palestra:</b> logo abaixo do título, a duração real (sem as pausas) e a diferença para a duração prevista.",
       "participation": "<b>Participação:</b> quem respondeu algo dividido por quem entrou.",
@@ -124,7 +125,7 @@
       "survey": "<b>Resultados da pesquisa:</b> cada pergunta com a distribuição das respostas, o NPS nas notas de 0 a 10 e os comentários, com busca.",
       "insights": "<b>Insights:</b> clique em <b>“Gerar insights”</b> para uma análise com IA (pontos fortes, pontos de atenção e recomendações). Ela recebe só dados agregados e trechos de respostas, nunca nomes ou contatos. Com menos de 10 respostas, a confiança indicada é baixa."
     },
-    "evolution": "Em <b>“Evolução”</b>, no menu, compare suas avaliações entre sessões encerradas e veja se as mudanças surtiram efeito. Para compartilhar, use <b>“Exportar”</b> no analytics: relatório em PDF para o organizador ou cliente, e CSV das respostas e da pesquisa para planilhas."
+    "evolution": "Em <b>“Evolução”</b>, no menu, compare suas avaliações entre sessões encerradas e veja se as mudanças surtiram efeito. Para compartilhar, use <b>“Exportar”</b> nos resultados: relatório em PDF para o organizador ou cliente, e CSV das respostas e da pesquisa para planilhas."
   },
   "publicProfile": {
     "title": "Perfil público e convites",
@@ -155,9 +156,9 @@
       "icebreaker": "Comece com uma pergunta fácil (enquete ou nuvem de palavras) para quebrar o gelo.",
       "pace": "Uma interação a cada 10 ou 15 minutos mantém o público envolvido sem quebrar o ritmo.",
       "qr": "Deixe o QR Code visível nos primeiros minutos: quem chega atrasado também entra.",
-      "powerpoint": "Prefere apresentar pelo PowerPoint ou Google Slides, com animações? Clique em <b>“Baixar QR Code”</b> (na página da sessão ou na sala ao vivo) e cole a imagem num slide. Na hora de cada pergunta, alterne dos slides para a tela do projetor com <kbd>Alt</kbd>+<kbd>Tab</kbd>. Sem trocar de janela, só enviando o PDF na aba <b>“Slides”</b>.",
-      "survey": "Peça para responderem a pesquisa ainda na sala. A taxa de resposta cai muito depois que o público sai."
-    },
-    "powerpoint": "Prefere apresentar pelo PowerPoint, com animações? Em <b>Integrações</b>, o card <b>“PowerPoint”</b> tem o suplemento (<b>“Baixar o suplemento (manifest.xml)”</b>) e o passo a passo para instalar: ele mostra o telão ao vivo dentro de um slide, sem trocar de janela. No Google Slides, clique em <b>“Baixar QR Code”</b> (na página da sessão ou na sala ao vivo), cole a imagem num slide e alterne para a tela do projetor com <kbd>Alt</kbd>+<kbd>Tab</kbd> na hora de cada pergunta, ou envie o PDF na etapa <b>“Slides”</b>."
+      "powerpoint": "Prefere apresentar pelo PowerPoint, com animações? Em <b>Integrações</b>, o card <b>“PowerPoint”</b> tem o suplemento (<b>“Baixar o suplemento (manifest.xml)”</b>) e o passo a passo para instalar: ele mostra o telão ao vivo dentro de um slide, sem trocar de janela. No Google Slides, clique em <b>“Baixar QR Code”</b> (no <b>⋯</b> da página da sessão ou na sala ao vivo), cole a imagem num slide e alterne para a tela do projetor com <kbd>Alt</kbd>+<kbd>Tab</kbd> na hora de cada pergunta, ou envie o PDF na etapa <b>“Slides”</b>.",
+      "survey": "Peça para responderem a pesquisa ainda na sala. A taxa de resposta cai muito depois que o público sai.",
+      "menu": "No computador, o botão ao lado do logo (ou <kbd>Ctrl</kbd>+<kbd>B</kbd>) <b>recolhe o menu lateral</b> para os ícones e dá mais espaço à tela; a escolha fica lembrada."
+    }
   }
 }
