@@ -48,7 +48,9 @@
   `session_live_state.current_slide` e encerra a pergunta ativa; projetor e sala recebem URLs assinadas (12 h) geradas
   no servidor (`lib/data/slides.ts`). Navegação compartilhada em `components/live/use-deck-controls.ts` (→/PageDown,
   ←/PageUp); o projetor aceita o teclado só quando o dono da sessão está logado nele. Excluir sessão/conta apaga os
-  arquivos; duplicar copia para um lote novo.
+  arquivos; duplicar copia para um lote novo. “Reordenar slides” (só em rascunho, `reorderSlidesAction`, regras em
+  `lib/domain/slide-order.ts`) copia os arquivos para um lote novo já na ordem nova; perguntas (`after_slide`) e notas
+  acompanham o slide.
 - **Nova pergunta ao vivo**: botão no card Roteiro da sala ao vivo (`components/live/add-interaction-dialog.tsx`,
   reaproveita `InteractionForm` com `actions`). `addLiveInteractionAction` cria, posiciona logo depois do item no telão
   (`insertAfterItem` em `lib/domain/deck.ts`) e, com “Lançar agora”, ativa. O cursor do deck guarda o item, não o

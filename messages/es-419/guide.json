@@ -52,7 +52,8 @@
     "title": "Presentar con tus diapositivas",
     "upload": "Opcional, pero evita cambiar de ventana en el escenario: en el paso <b>“Diapositivas”</b>, haz clic en <b>“Elegir PDF”</b> y sube el PDF de la presentación (en PowerPoint: Archivo → Exportar → PDF; en Google Slides: Archivo → Descargar → PDF). El PDF se convierte en tu navegador y solo se suben las imágenes de las diapositivas. No se mantienen animaciones, transiciones ni videos.",
     "position": "Arrastra cada pregunta al punto donde debe entrar (suéltala en la mitad izquierda de una diapositiva para que quede antes, en la derecha para que quede después), o elige en el selector: <em>Antes de la 1.ª diapositiva</em>, <em>Después de la diapositiva 3</em>, etc. En la sala en vivo, el guion se vuelve una sola secuencia: diapositiva, pregunta, siguiente diapositiva. Usa <b>“Cambiar PDF”</b> para subir una versión nueva; las preguntas se quedan en los mismos puntos.",
-    "notes": "<b>“Nota”</b>, en cada diapositiva, guarda un recordatorio para esa diapositiva. En la sala en vivo, la tarjeta <b>“Notas”</b> muestra la nota de lo que está en pantalla; solo tú la ves."
+    "notes": "<b>“Nota”</b>, en cada diapositiva, guarda un recordatorio para esa diapositiva. En la sala en vivo, la tarjeta <b>“Notas”</b> muestra la nota de lo que está en pantalla; solo tú la ves.",
+    "reorder": "<b>“Reordenar diapositivas”</b> cambia el orden de las diapositivas subidas sin enviar el PDF de nuevo: arrastra las diapositivas o toca una y después el lugar adonde va, y haz clic en <b>“Guardar orden”</b>. Las preguntas y las notas acompañan a la diapositiva a la que estaban ligadas. Solo se puede reordenar antes de iniciar la sesión."
   },
   "live": {
     "title": "Presentar en vivo",

@@ -132,7 +132,10 @@
       "notLive": "Start or resume the session to show slides.",
       "slideNotFound": "Slide not found.",
       "changeFailed": "Couldn't change the slide.",
-      "noteSaveFailed": "Couldn't save the note."
+      "noteSaveFailed": "Couldn't save the note.",
+      "reorderOnlyDraft": "You can only change the slide order before starting the session.",
+      "reorderInvalid": "Invalid slide order. Reload the page and try again.",
+      "reorderFailed": "Couldn't save the new slide order."
     },
     "notes": {
       "add": "Note",
@@ -145,6 +148,23 @@
       "placeholder": "What to say on this slide, numbers to quote, reminders…",
       "saved": "Note saved.",
       "removed": "Note removed."
+    },
+    "reorder": {
+      "open": "Reorder slides",
+      "title": "Reorder slides",
+      "description": "Drag the slides, or tap one and then the spot where it goes. Questions and notes move with their slide.",
+      "selected": "Slide {number} selected. Tap the spot where it goes.",
+      "position": "Position {number}",
+      "was": "was {number}",
+      "moveEarlier": "Move the slide in position {number} earlier",
+      "moveLater": "Move the slide in position {number} later",
+      "pick": "Select the slide in position {number} to move",
+      "dropHere": "Move the selected slide to position {number}",
+      "reset": "Original order",
+      "save": "Save order",
+      "saving": "Saving…",
+      "saved": "New order saved.",
+      "draftOnly": "The slide order can only change before the session starts."
     }
   },
   "raffle": {

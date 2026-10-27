@@ -28,7 +28,9 @@ import { Select, Textarea } from "@/components/ui/input";
 import { useConfirm } from "@/components/ui/confirm-dialog";
 import { TYPE_PAPER, TypeTag } from "@/components/interaction-type-tag";
 import { EditIcon, FileTextIcon, GripIcon, PlusIcon, PresentationIcon, RefreshIcon, TrashIcon, XIcon } from "@/components/icons";
-import { SLIDE_NOTE_MAX, type SlideNotes } from "@/lib/domain/slide-notes";
+import { parseSlideNotes, SLIDE_NOTE_MAX, type SlideNotes } from "@/lib/domain/slide-notes";
+import { reorderSlideNotes } from "@/lib/domain/slide-order";
+import { ReorderSlidesDialog } from "./reorder-slides-dialog";
 
 export type SlideDeckInteraction = DeckInteraction & { type: InteractionType; title: string };
 
@@ -258,6 +260,7 @@ export function SlidesEditor({
   interactions,
   readOnly,
   slideNotes = {},
+  canReorder = false,
 }: {
   sessionId: string;
   speakerId: string;
@@ -267,6 +270,8 @@ export function SlidesEditor({
   readOnly: boolean;
   /** notas do palestrante por slide (número a partir de 1) */
   slideNotes?: SlideNotes;
+  /** reordenar só em rascunho (ao vivo, telão e sala já usam o deck atual) */
+  canReorder?: boolean;
 }) {
   const t = useTranslations("session.slides");
   const tActions = useTranslations("common.actions");
@@ -286,6 +291,7 @@ export function SlidesEditor({
   // Notas salvas aparecem na hora (a página também é revalidada).
   const [notes, setNotes] = useState<SlideNotes>(slideNotes);
   const [noteSlide, setNoteSlide] = useState<number | null>(null);
+  const [reordering, setReordering] = useState(false);
 
   function save(arrangement: Arrangement) {
     startTransition(async () => {
@@ -424,6 +430,18 @@ export function SlidesEditor({
           onSaved={setNotes}
         />
       ) : null}
+      {reordering ? (
+        <ReorderSlidesDialog
+          sessionId={sessionId}
+          slideUrls={slideUrls}
+          onClose={() => setReordering(false)}
+          onSaved={(order) => {
+            // As notas acompanham o slide (a página também é revalidada).
+            setNotes(parseSlideNotes(reorderSlideNotes(notes, order)));
+            router.refresh();
+          }}
+        />
+      ) : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">
           {t.rich("summary", {
@@ -435,6 +453,11 @@ export function SlidesEditor({
         </p>
         {!readOnly ? (
           <div className="flex gap-2 max-md:grid max-md:w-full max-md:grid-cols-2">
+            {canReorder && slideCount > 1 ? (
+              <Button variant="outline" disabled={busy} onClick={() => setReordering(true)} className={cn(BUTTON_MOBILE, "max-md:col-span-2")}>
+                <GripIcon /> {t("reorder.open")}
+              </Button>
+            ) : null}
             <PdfPicker onFile={upload} disabled={busy} className={BUTTON_MOBILE}>
               <RefreshIcon /> {t("replacePdf")}
             </PdfPicker>

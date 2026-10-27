@@ -156,6 +156,7 @@ export default async function GuidePage() {
           <Section id="slides" title={titles.slides}>
             <p>{t.rich("slides.upload", tags)}</p>
             <p>{t.rich("slides.position", tags)}</p>
+            <p>{t.rich("slides.reorder", tags)}</p>
             <p>{t.rich("slides.notes", tags)}</p>
           </Section>
 

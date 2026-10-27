@@ -132,7 +132,10 @@
       "notLive": "Inicia o reanuda la sesión para mostrar diapositivas.",
       "slideNotFound": "Diapositiva no encontrada.",
       "changeFailed": "No se pudo cambiar la diapositiva.",
-      "noteSaveFailed": "No se pudo guardar la nota."
+      "noteSaveFailed": "No se pudo guardar la nota.",
+      "reorderOnlyDraft": "Solo puedes cambiar el orden de las diapositivas antes de iniciar la sesión.",
+      "reorderInvalid": "Orden de diapositivas no válido. Recarga la página e intenta de nuevo.",
+      "reorderFailed": "No se pudo guardar el nuevo orden de las diapositivas."
     },
     "notes": {
       "add": "Nota",
@@ -145,6 +148,23 @@
       "placeholder": "Qué decir en esta diapositiva, cifras para citar, recordatorios…",
       "saved": "Nota guardada.",
       "removed": "Nota eliminada."
+    },
+    "reorder": {
+      "open": "Reordenar diapositivas",
+      "title": "Reordenar diapositivas",
+      "description": "Arrastra las diapositivas o toca una y después el lugar adonde va. Las preguntas y las notas acompañan a la diapositiva.",
+      "selected": "Diapositiva {number} elegida. Toca el lugar adonde va.",
+      "position": "Posición {number}",
+      "was": "era la {number}",
+      "moveEarlier": "Mover la diapositiva de la posición {number} hacia antes",
+      "moveLater": "Mover la diapositiva de la posición {number} hacia después",
+      "pick": "Elegir la diapositiva de la posición {number} para mover",
+      "dropHere": "Mover la diapositiva elegida a la posición {number}",
+      "reset": "Orden original",
+      "save": "Guardar orden",
+      "saving": "Guardando…",
+      "saved": "Nuevo orden guardado.",
+      "draftOnly": "El orden de las diapositivas solo cambia antes de iniciar la sesión."
     }
   },
   "raffle": {

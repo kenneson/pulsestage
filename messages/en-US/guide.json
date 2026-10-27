@@ -52,7 +52,8 @@
     "title": "Present with your slides",
     "upload": "Optional, but it saves switching windows on stage: in the <b>“Slides”</b> step, click <b>“Choose PDF”</b> and upload your presentation PDF (in PowerPoint: File → Export → PDF; in Google Slides: File → Download → PDF). The PDF is converted in your browser and only the slide images are uploaded. Animations, transitions, and videos are not kept.",
     "position": "Drag each question to the point where it should come in (drop it on the left half of a slide to place it before, on the right half to place it after), or pick from the selector: <em>Before slide 1</em>, <em>After slide 3</em>, and so on. In the live room, the lineup becomes a single sequence: slide, question, next slide. Use <b>“Replace PDF”</b> to upload a new version; the questions stay at the same points.",
-    "notes": "<b>“Note”</b>, on each slide, keeps a reminder for that slide. In the live room, the <b>“Notes”</b> card shows the note for what is on screen; only you see it."
+    "notes": "<b>“Note”</b>, on each slide, keeps a reminder for that slide. In the live room, the <b>“Notes”</b> card shows the note for what is on screen; only you see it.",
+    "reorder": "<b>“Reorder slides”</b> changes the order of your uploaded slides without uploading the PDF again: drag the slides, or tap one and then the spot where it goes, and click <b>“Save order”</b>. Questions and notes move with the slide they were attached to. You can only reorder before the session starts."
   },
   "live": {
     "title": "Present live",

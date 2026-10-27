@@ -218,6 +218,7 @@ export default async function SessionBuilderPage({
             interactions={deckInteractions}
             readOnly={readOnly}
             slideNotes={visibleSlideNotes(parseSlideNotes(session.slide_notes), slideUrls.length)}
+            canReorder={status === "draft"}
           />,
         )}
         {footer("slides")}

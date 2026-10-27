@@ -52,7 +52,8 @@
     "title": "Apresentar com seus slides",
     "upload": "Opcional, mas evita trocar de janela no palco: na etapa <b>“Slides”</b>, clique em <b>“Escolher PDF”</b> e envie o PDF da apresentação (no PowerPoint: Arquivo → Exportar → PDF; no Google Slides: Arquivo → Fazer download → PDF). O PDF é convertido no seu navegador e só as imagens dos slides são enviadas. Animações, transições e vídeos não são mantidos.",
     "position": "Arraste cada pergunta para o ponto em que ela deve entrar (solte na metade esquerda de um slide para ficar antes dele, na direita para ficar depois), ou escolha no seletor: <em>Antes do 1º slide</em>, <em>Depois do slide 3</em> etc. Na sala ao vivo, o roteiro vira uma sequência só: slide, pergunta, próximo slide. Use <b>“Trocar PDF”</b> para enviar uma versão nova; as perguntas continuam nos mesmos pontos.",
-    "notes": "<b>“Nota”</b>, em cada slide, guarda um lembrete para aquele slide. Na sala ao vivo, o card <b>“Notas”</b> mostra a nota do que está no telão; só você vê."
+    "notes": "<b>“Nota”</b>, em cada slide, guarda um lembrete para aquele slide. Na sala ao vivo, o card <b>“Notas”</b> mostra a nota do que está no telão; só você vê.",
+    "reorder": "<b>“Reordenar slides”</b> muda a ordem dos slides enviados sem mandar o PDF de novo: arraste os slides ou toque em um e depois no lugar para onde ele vai, e clique em <b>“Salvar ordem”</b>. As perguntas e as notas acompanham o slide a que estavam ligadas. Só dá para reordenar antes de iniciar a sessão."
   },
   "live": {
     "title": "Apresentar ao vivo",

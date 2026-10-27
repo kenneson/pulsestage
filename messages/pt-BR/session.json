@@ -132,7 +132,10 @@
       "notLive": "Inicie ou retome a sessão para mostrar slides.",
       "slideNotFound": "Slide não encontrado.",
       "changeFailed": "Não foi possível mudar o slide.",
-      "noteSaveFailed": "Não foi possível salvar a nota."
+      "noteSaveFailed": "Não foi possível salvar a nota.",
+      "reorderOnlyDraft": "Dá para mudar a ordem dos slides só antes de iniciar a sessão.",
+      "reorderInvalid": "Ordem de slides inválida. Recarregue a página e tente de novo.",
+      "reorderFailed": "Não foi possível salvar a nova ordem dos slides."
     },
     "notes": {
       "add": "Nota",
@@ -145,6 +148,23 @@
       "placeholder": "O que dizer neste slide, números para citar, lembretes…",
       "saved": "Nota salva.",
       "removed": "Nota removida."
+    },
+    "reorder": {
+      "open": "Reordenar slides",
+      "title": "Reordenar slides",
+      "description": "Arraste os slides ou toque em um e depois no lugar para onde ele vai. As perguntas e as notas acompanham o slide.",
+      "selected": "Slide {number} escolhido. Toque no lugar para onde ele vai.",
+      "position": "Posição {number}",
+      "was": "era o {number}",
+      "moveEarlier": "Mover o slide da posição {number} para antes",
+      "moveLater": "Mover o slide da posição {number} para depois",
+      "pick": "Escolher o slide da posição {number} para mover",
+      "dropHere": "Mover o slide escolhido para a posição {number}",
+      "reset": "Ordem original",
+      "save": "Salvar ordem",
+      "saving": "Salvando…",
+      "saved": "Nova ordem salva.",
+      "draftOnly": "A ordem dos slides só muda antes de iniciar a sessão."
     }
   },
   "raffle": {

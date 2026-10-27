@@ -5,8 +5,17 @@ import { z } from "zod";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getOwnedSession } from "@/lib/data/sessions";
-import { removeSlideFiles, SLIDES_BUCKET } from "@/lib/data/slides";
-import { MAX_SLIDES, SLIDE_FORMATS, slidePath } from "@/lib/domain/deck";
+import { randomUUID } from "node:crypto";
+import { removeSlideFiles, slidePaths, SLIDES_BUCKET } from "@/lib/data/slides";
+import { isSlideFormat, MAX_SLIDES, SLIDE_FORMATS, slidePath } from "@/lib/domain/deck";
+import {
+  isIdentityOrder,
+  isSlideOrder,
+  reorderInteractions,
+  reorderSlideNotes,
+  slideOrderSchema,
+} from "@/lib/domain/slide-order";
+import { saveArrangement } from "@/features/interactions/core";
 import { isEditable } from "@/lib/domain/session";
 import { slideNoteInputSchema, withSlideNote } from "@/lib/domain/slide-notes";
 import { hasDbErrorCode } from "@/lib/supabase/errors";
@@ -89,6 +98,87 @@ export async function removeSlidesAction(sessionId: string): Promise<ActionResul
   if (error) return fail(t("removeFailed"));
 
   await removeSlideFiles(supabase, `${session.speaker_id}/${sessionId}`);
+  revalidateSession(sessionId);
+  return ok(null);
+}
+
+const COPY_CONCURRENCY = 6;
+
+/**
+ * Nova ordem dos slides (só em rascunho: ao vivo, telão e sala já têm as URLs do deck atual).
+ * Os arquivos são copiados para um lote novo, já na ordem nova; assim telão, sala ao vivo, duplicar e MCP
+ * continuam lendo 001, 002… sem saber de reordenação. Perguntas e notas acompanham o slide.
+ */
+export async function reorderSlidesAction(sessionId: string, raw: unknown): Promise<ActionResult> {
+  const [t, tSession, tr] = await Promise.all([
+    getTranslations("session.slides.errors"),
+    getTranslations("session.errors"),
+    getMessageTranslator(),
+  ]);
+  if (!isUuid(sessionId)) return fail(tSession("invalidSession"));
+  const parsed = slideOrderSchema.safeParse(raw);
+  if (!parsed.success) return fail(tr.message("errors.invalidData"));
+  const order = parsed.data;
+
+  const supabase = await createClient();
+  const session = await getOwnedSession(supabase, sessionId);
+  if (!session) return fail(tSession("sessionNotFound"));
+  if (session.status !== "draft") return fail(t("reorderOnlyDraft"));
+  if (!session.slides_batch || !isSlideFormat(session.slides_format) || !isSlideOrder(order, session.slide_count)) {
+    return fail(t("reorderInvalid"));
+  }
+  if (isIdentityOrder(order)) return ok(null);
+
+  const { data: rows, error: readError } = await supabase
+    .from("interactions")
+    .select("id, after_slide")
+    .eq("session_id", sessionId)
+    .order("position", { ascending: true });
+  if (readError) return fail(t("reorderFailed"));
+
+  // 1. Copia para o lote novo (nada muda para quem usa a sessão até o passo 3).
+  const batch = randomUUID();
+  const from = slidePaths(session);
+  const to = slidePaths({ ...session, slides_batch: batch });
+  const bucket = supabase.storage.from(SLIDES_BUCKET);
+  const folder = `${session.speaker_id}/${sessionId}`;
+  const queue = order.map((slide, index) => ({ from: from[slide - 1]!, to: to[index]! }));
+  let copyFailed = false;
+  const worker = async () => {
+    for (let next = queue.shift(); next && !copyFailed; next = queue.shift()) {
+      const { error } = await bucket.copy(next.from, next.to);
+      if (error) copyFailed = true;
+    }
+  };
+  await Promise.all(Array.from({ length: COPY_CONCURRENCY }, worker));
+  if (copyFailed) {
+    await bucket.remove(to);
+    return fail(t("reorderFailed"));
+  }
+
+  // 2. Perguntas seguem o seu slide.
+  const before = { ids: rows.map((r) => r.id), afterSlides: rows.map((r) => r.after_slide) };
+  const arrangement = reorderInteractions(
+    rows.map((r) => ({ id: r.id, afterSlide: r.after_slide })),
+    order,
+  );
+  if (rows.length > 0 && !(await saveArrangement(supabase, sessionId, arrangement))) {
+    await bucket.remove(to);
+    return fail(t("reorderFailed"));
+  }
+
+  // 3. Troca o deck e as notas de uma vez.
+  const { error } = await supabase
+    .from("sessions")
+    .update({ slides_batch: batch, slide_notes: reorderSlideNotes(session.slide_notes, order) })
+    .eq("id", sessionId);
+  if (error) {
+    if (rows.length > 0) await saveArrangement(supabase, sessionId, before);
+    await bucket.remove(to);
+    return fail(t("reorderFailed"));
+  }
+
+  await removeSlideFiles(supabase, folder, batch);
   revalidateSession(sessionId);
   return ok(null);
 }
