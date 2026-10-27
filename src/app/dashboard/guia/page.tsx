@@ -32,10 +32,14 @@ const SECTIONS = [
 
 type SectionKey = (typeof SECTIONS)[number]["key"];
 
-const CREATE_STEPS = ["newSession", "fields", "joinCode"] as const;
+const CREATE_STEPS = ["newSession", "fields", "stepper", "joinCode", "templates", "mode", "teams", "brand"] as const;
 const LANGUAGE_ITEMS = ["dashboard", "public", "session"] as const;
-const LINEUP_TYPES = ["poll", "scale", "cloud", "open", "quiz", "ranking"] as const;
-const LIVE_STEPS = ["start", "projector", "launch", "deck", "mirror", "results", "addQuestion", "answer", "leaderboard"] as const;
+const LINEUP_TYPES = [
+  "poll", "scale", "cloud", "open", "quiz", "ranking", "points", "matrix", "pin", "guess", "quizText", "content",
+] as const;
+const LIVE_STEPS = [
+  "start", "projector", "launch", "deck", "mirror", "results", "addQuestion", "answer", "segment", "leaderboard", "teams", "notes", "selfPace",
+] as const;
 const AUDIENCE_ITEMS = ["join", "active", "once", "contact"] as const;
 const ENGAGEMENT_ITEMS = ["qa", "reactions", "profanity", "moderation"] as const;
 const RAFFLE_ELIGIBILITY = ["survey", "everyone"] as const;
@@ -144,6 +148,7 @@ export default async function GuidePage() {
                 <li key={k}>{t.rich(`lineup.types.${k}`, tags)}</li>
               ))}
             </ul>
+            <p>{t.rich("lineup.extras", tags)}</p>
             <p>{t.rich("lineup.optionStyle", tags)}</p>
             <p>{t.rich("lineup.tools", tags)}</p>
           </Section>
@@ -151,6 +156,7 @@ export default async function GuidePage() {
           <Section id="slides" title={titles.slides}>
             <p>{t.rich("slides.upload", tags)}</p>
             <p>{t.rich("slides.position", tags)}</p>
+            <p>{t.rich("slides.notes", tags)}</p>
           </Section>
 
           <Section id="ao-vivo" title={titles.live}>

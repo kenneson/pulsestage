@@ -70,7 +70,7 @@ function Bars({
             key={bar.key}
             className={cn("grid gap-1.5 transition-opacity duration-500", revealed && !correct && shapes && "opacity-50")}
           >
-            <div className={cn("flex items-center justify-between gap-4", big ? "text-3xl max-md:text-lg" : "text-sm")}>
+            <div className={cn("flex items-center justify-between gap-4", big ? "text-3xl max-md:text-lg md:[@media(max-height:800px)]:text-2xl" : "text-sm")}>
               <span className={cn("flex min-w-0 items-center font-medium", big ? "gap-4" : "gap-2", correct && "text-primary")}>
                 {shapes && d ? <ShapeGlyph index={d.index} className={cn(shapeText(d.index), big ? "size-9" : "size-4")} /> : null}
                 {d?.imagePath ? (
@@ -91,7 +91,7 @@ function Bars({
                 {big ? null : <span className="ml-2 text-xs">({formatInt(bar.count, locale)})</span>}
               </span>
             </div>
-            <div className={cn("w-full overflow-hidden rounded-full bg-muted", big ? "h-6" : "h-2.5")}>
+            <div className={cn("w-full overflow-hidden rounded-full bg-muted", big ? "h-6 [@media(max-height:800px)]:h-4" : "h-2.5")}>
               {animated ? (
                 <AnimatedBarFill pct={bar.pct} delay={index * STAGGER_S} className={cn("transition-colors duration-500", fill)} />
               ) : (
@@ -392,7 +392,7 @@ function QuizTextResults({
   const share = textCorrectShare(snapshot.counts, snapshot.total, answer);
   const accepted = answer?.kind === "text" ? answer.accepted : null;
   return (
-    <div className={cn("grid", big ? "gap-8 max-md:gap-4" : "gap-3")}>
+    <div className={cn("grid", big ? "gap-8 max-md:gap-4 [@media(max-height:800px)]:gap-4" : "gap-3")}>
       {accepted ? (
         <div className={cn("grid justify-items-center text-center", big ? "gap-2" : "gap-0.5")}>
           <p className={cn("font-semibold text-primary", big ? "text-4xl max-md:text-2xl" : "text-base")}>

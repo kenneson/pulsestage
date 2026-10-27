@@ -547,7 +547,11 @@ export function ControlRoom({
                   </div>
                 </div>
                 {screenSwitcher}
-                {segments.length > 0 && (status === "live" || status === "paused") ? (
+                {segments.length > 0 &&
+            (status === "live" || status === "paused") &&
+            screen.kind !== "leaderboard" &&
+            screen.kind !== "raffle" &&
+            screen.kind !== "questions" ? (
                   <SegmentFilter
                     sessionId={session.id}
                     groups={segments}

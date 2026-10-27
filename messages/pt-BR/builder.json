@@ -111,9 +111,14 @@
     "addToLineup": "Adicionar ao roteiro",
     "added": "Pergunta adicionada ao roteiro.",
     "regenerate": "Gerar outras sugestões",
-    "answer": "Resposta: {value}",
+    "answer": "Resposta certa: {value}",
     "needsImage": "Precisa de uma imagem: abra no formulário para enviar.",
-    "editFirst": "Editar antes"
+    "editFirst": "Editar antes",
+    "pointsSplit": "Cada pessoa distribui 100 pontos entre:",
+    "axes": "Eixos: {x} × {y}",
+    "items": "Itens: {items}",
+    "accepted": "Respostas aceitas: {answers}",
+    "maxChoices": "Até {count} escolhas"
   },
   "library": {
     "search": "Buscar perguntas",

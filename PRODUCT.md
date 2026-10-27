@@ -34,8 +34,14 @@ Não é mais um clone de Mentimeter, Slido ou AhaSlides. A interação ao vivo �
 
 ## Capabilities and Constraints
 
-- Seis tipos de interação: Enquete, Escala, Nuvem de palavras, Pergunta aberta, Quiz (com pontos, tempo e ranking) e
-  Ranking (ordenar alternativas). Durante a sessão: perguntas da plateia (com curtidas e telão) e reações ao vivo.
+- Doze tipos de interação em quatro grupos: Opinião (Enquete, com várias escolhas e "comparar grupos"; Escala; Ranking;
+  100 pontos; Matriz 2×2), Respostas livres (Nuvem de palavras, Pergunta aberta, Marcar na imagem), Competição (Quiz,
+  Quiz de digitar, Adivinhe o número; com pontos, tempo e ranking por pessoa ou por equipe) e Conteúdo (slide com texto,
+  imagem ou vídeo do YouTube/Vimeo). Em qualquer pergunta: cronômetro, esconder resultados até revelar, resultado no
+  celular e notas do palestrante. Durante a sessão: perguntas da plateia (com curtidas e telão) e reações ao vivo.
+- Sessão montada em etapas (Configurações, Slides, Enquetes, Pesquisa pós-evento, Sorteio), modelos de sessão prontos,
+  modo "no ritmo de cada um" (cada pessoa percorre o roteiro sozinha), equipes, marca do speaker (logo e cor no celular e
+  no telão) e suplemento do PowerPoint (telão dentro do slide; sem Google Slides).
 - Filtro de palavrões ligado por padrão e moderação antes do telão (respostas abertas, nuvem e perguntas): pensado para escolas.
 - Slides em PDF convertidos no navegador; perguntas posicionadas entre os slides; nova pergunta durante a sessão.
 - Gamificação: avatares, alternativas com formas/cores e imagens, bônus de velocidade, ranking do quiz no telão (só durante a sessão) e sorteio de prêmios (telão mostra o resultado até 24 h depois do fim). Sala de espera no telão (quem entra aparece com avatar e nome enquanto o QR Code está na tela; nome com palavrão não aparece) e resultado do quiz no celular quando a pergunta fecha (acertou, pontos, resposta certa e a própria posição).

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SessionForm } from "@/components/sessions/session-form";
@@ -37,6 +38,12 @@ export default async function NewSessionPage() {
           <CardHeader>
             <CardTitle className="text-xl">{t("title")}</CardTitle>
             <CardDescription>{t("description")}</CardDescription>
+            <p className="text-sm text-muted-foreground">
+              {t("templatesHint")}{" "}
+              <Link href="/dashboard/sessions/modelos" className="font-medium text-primary underline-offset-4 hover:underline">
+                {t("templatesLink")}
+              </Link>
+            </p>
           </CardHeader>
           <CardContent>
             <SessionForm

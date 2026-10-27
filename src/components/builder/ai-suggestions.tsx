@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { saveInteractionAction, suggestInteractionsAction } from "@/features/interactions/actions";
 import type { ParsedInteractionInput } from "@/lib/domain/interactions";
@@ -37,31 +37,47 @@ export function useAISuggestions(sessionId: string) {
 
 type AIT = ReturnType<typeof useTranslations<"builder.ai">>;
 
-function detail(t: AIT, s: ParsedInteractionInput): string | null {
+/** Ponta de eixo da matriz: "Esforço (Baixo → Alto)"; sem rótulos das pontas, só o nome. */
+function axis(name: string | undefined, low: string | undefined, high: string | undefined): string | null {
+  if (!name) return null;
+  return low || high ? `${name} (${low ?? "…"} → ${high ?? "…"})` : name;
+}
+
+/** Linhas de detalhe da sugestão (o que dá para conferir antes de "Adicionar ao roteiro"). */
+function detail(t: AIT, s: ParsedInteractionInput, locale: string): string[] {
+  // Sem separador de milhar até 9999 (anos como 1995 ficam como se escrevem).
+  const num = (n: number, decimals = 2) =>
+    new Intl.NumberFormat(locale, { maximumFractionDigits: decimals, useGrouping: Math.abs(n) >= 10000 }).format(n);
+  const labels = "options" in s ? s.options.map((o) => o.label).join(" · ") : "";
   switch (s.type) {
     case "multiple_choice":
-      return s.options.map((o) => o.label).join(" · ");
+      return [labels, s.settings.maxChoices > 1 ? t("maxChoices", { count: s.settings.maxChoices }) : ""].filter(Boolean);
     case "quiz":
-      return s.options.map((o) => (o.isCorrect ? `${o.label} ✓` : o.label)).join(" · ");
+      return [s.options.map((o) => (o.isCorrect ? `${o.label} ✓` : o.label)).join(" · ")];
     case "rating":
-      return [t("ratingRange", { min: s.settings.min, max: s.settings.max }), s.settings.minLabel, s.settings.maxLabel].filter(Boolean).join(" · ");
+      return [[t("ratingRange", { min: s.settings.min, max: s.settings.max }), s.settings.minLabel, s.settings.maxLabel].filter(Boolean).join(" · ")];
     case "ranking":
+      return [labels];
     case "points_100":
-      return s.options.map((o) => o.label).join(" · ");
-    case "matrix_2x2":
-      return [s.settings.xLabel && s.settings.yLabel ? `${s.settings.xLabel} × ${s.settings.yLabel}` : null, s.options.map((o) => o.label).join(" · ")]
-        .filter(Boolean)
-        .join(" · ");
-    case "guess_number":
-      return [t("ratingRange", { min: s.settings.numMin, max: s.settings.numMax }), s.settings.unit, t("answer", { value: s.answerKey.value })]
-        .filter(Boolean)
-        .join(" · ");
+      return [t("pointsSplit"), labels];
+    case "matrix_2x2": {
+      const x = axis(s.settings.xLabel, s.settings.xLow, s.settings.xHigh);
+      const y = axis(s.settings.yLabel, s.settings.yLow, s.settings.yHigh);
+      return [x && y ? t("axes", { x, y }) : "", t("items", { items: labels })].filter(Boolean);
+    }
+    case "guess_number": {
+      const unit = s.settings.unit ? ` ${s.settings.unit}` : "";
+      return [
+        t("ratingRange", { min: num(s.settings.numMin, s.settings.decimals), max: num(s.settings.numMax, s.settings.decimals) }) + unit,
+        t("answer", { value: num(s.answerKey.value, s.settings.decimals) + unit }),
+      ];
+    }
     case "quiz_text":
-      return s.answerKey.accepted.map((a) => `${a} ✓`).join(" · ");
+      return [t("accepted", { answers: s.answerKey.accepted.join(" · ") })];
     case "content":
-      return s.settings.body ? s.settings.body.slice(0, 160) : null;
+      return s.settings.body ? [s.settings.body.slice(0, 160)] : [];
     default:
-      return null;
+      return [];
   }
 }
 
@@ -78,6 +94,7 @@ export function AISuggestionsPanel({
   onEdit?: (suggestion: ParsedInteractionInput) => void;
 }) {
   const t = useTranslations("builder.ai");
+  const locale = useLocale();
   const [adding, setAdding] = useState<string | null>(null);
 
   async function add(suggestion: ParsedInteractionInput) {
@@ -120,12 +137,16 @@ export function AISuggestionsPanel({
       ) : (
         <ul className="flex flex-col gap-2.5">
           {ai.suggestions.map((s) => {
-            const extra = detail(t, s);
+            const extra = detail(t, s, locale);
             return (
               <li key={s.title} className="flex flex-col gap-2 rounded-md border p-3">
                 <TypeTag type={s.type} />
                 <p className="text-sm font-medium">{s.title}</p>
-                {extra ? <p className="text-sm text-muted-foreground">{extra}</p> : null}
+                {extra.map((line, index) => (
+                  <p key={index} className="text-sm text-muted-foreground [overflow-wrap:anywhere]">
+                    {line}
+                  </p>
+                ))}
                 {s.type === "pin_image" ? <p className="text-xs text-muted-foreground">{t("needsImage")}</p> : null}
                 <div className="flex flex-wrap gap-2 max-md:grid max-md:grid-cols-1">
                   {s.type !== "pin_image" ? (

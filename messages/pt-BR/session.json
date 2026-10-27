@@ -2,7 +2,9 @@
   "new": {
     "metaTitle": "Nova sessão",
     "title": "Nova sessão",
-    "description": "Uma palestra, aula, workshop ou treinamento. Depois você adiciona as interações."
+    "description": "Uma palestra, aula, workshop ou treinamento. Depois você adiciona as interações.",
+    "templatesHint": "Prefere começar de um roteiro pronto?",
+    "templatesLink": "Ver modelos"
   },
   "page": {
     "metaTitle": "Editar sessão",

@@ -5,6 +5,7 @@ import { z } from "zod";
 import { avatarOf } from "./gamification.ts";
 import { isFilteredText } from "./scoring.ts";
 import type { Locale } from "./locale.ts";
+import { opaqueKey } from "./opaque-key.ts";
 
 /** Quantas pessoas aparecem no telão (as mais recentes); o resto vira "+N". */
 export const LOBBY_LIMIT = 48;
@@ -15,7 +16,7 @@ export const LOBBY_LIMIT = 48;
 export const LOBBY_POLL_MS = 3000;
 
 export type LobbyEntry = {
-  /** chave estável para a animação (não é o id do participante) */
+  /** chave estável para a animação, derivada do id sem expô-lo (um pedaço do id repetia com ids parecidos) */
   key: string;
   /** nome escolhido; null = anônimo ou barrado pelo filtro de palavrões */
   name: string | null;
@@ -47,7 +48,7 @@ export function toLobby(
   return {
     total,
     entries: rows.slice(0, LOBBY_LIMIT).map((row) => ({
-      key: row.id.slice(0, 8),
+      key: opaqueKey(row.id),
       name: publicName(row.display_name, rules),
       avatar: avatarOf(row.avatar)?.emoji ?? null,
     })),

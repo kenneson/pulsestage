@@ -106,7 +106,7 @@ export function JoinLobby({
   const people = entries.length > 0;
 
   return (
-    <div className="flex w-full max-w-7xl flex-col items-center gap-10 max-md:gap-6">
+    <div className="flex w-full max-w-7xl flex-col items-center gap-10 max-md:gap-6 [@media(max-height:800px)]:gap-6">
       <h1 className="max-w-5xl text-center text-5xl font-semibold leading-tight max-md:text-3xl">{title}</h1>
       {/* Celular (telão aberto por engano): QR em cima, sala embaixo. */}
       <div className={cn("flex w-full items-center gap-14 max-md:flex-col max-md:gap-8", people ? "justify-between" : "justify-center")}>
@@ -128,7 +128,8 @@ export function JoinLobby({
               <p className="font-display text-4xl font-bold max-md:text-2xl">
                 <AnimatedNumber value={total} locale={locale} duration={0.6} render={(count) => t("count", { count })} />
               </p>
-              <ul className="flex flex-wrap content-start gap-x-4 gap-y-5">
+              {/* A sala não empurra o QR e o código para fora da tela: o excesso some num degradê embaixo. */}
+              <ul className="flex max-h-[25rem] flex-wrap content-start gap-x-4 gap-y-5 overflow-hidden [mask-image:linear-gradient(to_bottom,black_80%,transparent)] max-md:max-h-none max-md:[mask-image:none]">
                 <AnimatePresence initial={false}>
                   {entries.map((entry) => (
                     <Person key={entry.key} entry={entry} fresh={known !== null && !known.has(entry.key)} />

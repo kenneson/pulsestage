@@ -26,18 +26,28 @@ export default async function SessionsPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
-        <Link href="/dashboard/sessions/new" className={buttonVariants({ className: "max-md:h-11" })}>
-          <PlusIcon /> {t("newSession")}
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link href="/dashboard/sessions/modelos" className={buttonVariants({ variant: "outline", className: "max-md:h-11" })}>
+            {t("templates")}
+          </Link>
+          <Link href="/dashboard/sessions/new" className={buttonVariants({ className: "max-md:h-11" })}>
+            <PlusIcon /> {t("newSession")}
+          </Link>
+        </div>
       </div>
       {sessions.length === 0 ? (
         <EmptyState
           title={t("emptyTitle")}
           description={t("emptyDescription")}
           action={
-            <Link href="/dashboard/sessions/new" className={buttonVariants()}>
-              <PlusIcon /> {t("newSession")}
-            </Link>
+            <div className="flex flex-wrap justify-center gap-2">
+              <Link href="/dashboard/sessions/new" className={buttonVariants()}>
+                <PlusIcon /> {t("newSession")}
+              </Link>
+              <Link href="/dashboard/sessions/modelos" className={buttonVariants({ variant: "outline" })}>
+                {t("templates")}
+              </Link>
+            </div>
           }
         />
       ) : (

@@ -84,9 +84,9 @@ export function MatrixBoard({
               {big ? (
                 <span
                   className={cn(
-                    "absolute top-1/2 max-w-[12rem] -translate-y-1/2 truncate rounded-md bg-background/85 px-2 py-0.5 text-xl font-medium max-md:hidden",
-                    // Na metade direita, o nome vai para a esquerda do ponto (não sai do quadro).
-                    point.x > 55 ? "right-full mr-2" : "left-full ml-2",
+                    "absolute left-1/2 max-w-[11rem] -translate-x-1/2 truncate rounded-md bg-background/85 px-2 py-0.5 text-lg font-medium max-md:hidden",
+                    // Nome embaixo do ponto (acima, perto da borda de baixo): pontos na mesma altura não se cobrem.
+                    point.y < 14 ? "bottom-full mb-1" : "top-full mt-1",
                   )}
                 >
                   {point.label}

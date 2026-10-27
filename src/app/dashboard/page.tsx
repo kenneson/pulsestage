@@ -129,6 +129,9 @@ export default async function DashboardPage() {
           <Link href="/dashboard/sessions/new" className={buttonVariants()}>
             <PlusIcon /> {t("createSession")}
           </Link>
+          <Link href="/dashboard/sessions/modelos" className={buttonVariants({ variant: "outline" })}>
+            {t("useTemplate")}
+          </Link>
           <Link href="/dashboard/guia" className={buttonVariants({ variant: "outline" })}>
             {t("seeGuide")}
           </Link>

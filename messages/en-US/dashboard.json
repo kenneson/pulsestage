@@ -56,7 +56,8 @@
       "addQuestionsHint": "Start with the sample poll and change the text.",
       "presentLiveHint": "Use “Test session” to rehearse with your phone. Rehearsals don't count in your stats.",
       "extrasTitle": "Next steps"
-    }
+    },
+    "useTemplate": "Use a template"
   },
   "sessionList": {
     "meta": "{date} · code <b>{code}</b>"
@@ -66,7 +67,8 @@
     "title": "Sessions",
     "newSession": "New session",
     "emptyTitle": "No sessions",
-    "emptyDescription": "Your talks, classes and workshops show up here. Create your first one: only the title is required."
+    "emptyDescription": "Your talks, classes and workshops show up here. Create your first one: only the title is required.",
+    "templates": "Templates"
   },
   "library": {
     "metaTitle": "Question library",

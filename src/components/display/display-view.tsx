@@ -25,6 +25,7 @@ import { JoinLobby } from "./join-lobby";
 import { DisplayTimer } from "./display-timer";
 import { useRevealedAnswer, useSegmentResults } from "./use-display-data";
 import { ContentSlide } from "@/components/results/content-slide";
+import { BrandMark } from "@/components/brand/brand-mark";
 import { screenContent } from "@/lib/domain/screen";
 import { useAudioUnlock } from "@/lib/raffle/use-audio-unlock";
 import { lastActivatedOf, useDeckControls } from "@/components/live/use-deck-controls";
@@ -35,7 +36,7 @@ const joinHost = (url: string) => url.replace(/^https?:\/\//, "").replace(/\/joi
 function JoinPanel({ code, joinUrl, size = 260 }: { code: string; joinUrl: string; size?: number }) {
   const t = useTranslations("display.join");
   return (
-    <div className="flex flex-col items-center gap-6">
+    <div className="flex flex-col items-center gap-6 [@media(max-height:800px)]:gap-4">
       <m.div
         className="rounded-3xl bg-white p-5"
         initial={{ opacity: 0, scale: 0.9 }}
@@ -51,7 +52,7 @@ function JoinPanel({ code, joinUrl, size = 260 }: { code: string; joinUrl: strin
         })}
       </p>
       {/* O código entra letra a letra, para chamar o olhar de quem vai digitar. */}
-      <p className="font-display text-8xl font-bold tracking-[0.2em] max-md:text-5xl" aria-label={code}>
+      <p className="font-display text-8xl font-bold tracking-[0.2em] max-md:text-5xl md:[@media(max-height:800px)]:text-7xl" aria-label={code}>
         {Array.from(code).map((char, index) => (
           <m.span
             key={`${index}-${char}`}
@@ -67,6 +68,32 @@ function JoinPanel({ code, joinUrl, size = 260 }: { code: string; joinUrl: strin
       </p>
     </div>
   );
+}
+
+/** Altura de referência do telão (projetor 1280×720): abaixo dela, o telão inteiro encolhe para caber. */
+const DESIGN_HEIGHT = 720;
+/** Só encolhe em janelas baixas e largas (quadro do PowerPoint, 960×540); tela cheia e celular ficam como estão. */
+const FIT_BELOW_HEIGHT = 680;
+
+/**
+ * Escala do telão num quadro baixo (suplemento do PowerPoint): desenha como 1280×720 e encolhe com `zoom`,
+ * para nada cortar embaixo (QR, código, rodapé). Em tela cheia (≥ 680 px de altura), 1.
+ */
+function useFitZoom(): number {
+  const [zoom, setZoom] = useState(1);
+  useEffect(() => {
+    const measure = () => {
+      const { innerHeight: h, innerWidth: w } = window;
+      setZoom(h < FIT_BELOW_HEIGHT && w >= 768 ? Math.max(0.4, h / DESIGN_HEIGHT) : 1);
+    };
+    const first = window.setTimeout(measure, 0);
+    window.addEventListener("resize", measure);
+    return () => {
+      window.clearTimeout(first);
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+  return zoom;
 }
 
 export function DisplayView({
@@ -100,6 +127,7 @@ export function DisplayView({
   const results = useInteractionResults(session.id, initialResults);
   const online = usePresence(session.id, "observer");
   const soundOn = useAudioUnlock();
+  const zoom = useFitZoom();
   const status = toSessionStatus(state?.status ?? "draft");
   const byId = new Map(interactions.map((i) => [i.id, i]));
   const rawScreen = screenContent(state, status, { slideCount: slideUrls.length, knowsInteraction: (id) => byId.has(id) });
@@ -240,7 +268,11 @@ export function DisplayView({
 
   return (
     // O telão é para o projetor; aberto num celular, só não pode vazar para os lados nem estourar o texto.
-    <div className={cn("dark flex flex-col bg-background text-foreground max-md:overflow-x-clip", slideUrl ? "h-dvh" : "min-h-dvh")}>
+    <div
+      className={cn("dark flex flex-col bg-background text-foreground max-md:overflow-x-clip", slideUrl ? "h-dvh" : "min-h-dvh")}
+      // Quadro baixo (PowerPoint): desenha em 720 px de altura e encolhe; `zoom` também escala os px da altura.
+      style={zoom < 1 ? { zoom, [slideUrl ? "height" : "minHeight"]: `${DESIGN_HEIGHT}px` } : undefined}
+    >
       <main className={cn("flex min-h-0 flex-1 items-center justify-center", slideUrl ? "p-4" : "px-10 py-12 max-md:px-4 max-md:py-8")}>
         {/* Troca de tela (QR, pergunta, ranking, slides…) com transição; de um slide para outro, troca direta. */}
         <AnimatePresence mode="wait" initial={false}>
@@ -276,11 +308,15 @@ export function DisplayView({
             .filter(Boolean)
             .join(" · ")}
         </span>
-        <span>
-          {t.rich("footer.code", {
-            code: session.joinCode,
-            b: (chunks) => <span className="font-display font-bold text-foreground">{chunks}</span>,
-          })}
+        <span className="flex items-center gap-5 max-md:gap-3">
+          {/* Logo do palestrante (sessão com "Usar minha marca"); sem marca, nada. */}
+          <BrandMark size="md" />
+          <span>
+            {t.rich("footer.code", {
+              code: session.joinCode,
+              b: (chunks) => <span className="font-display font-bold text-foreground">{chunks}</span>,
+            })}
+          </span>
         </span>
       </footer>
     </div>

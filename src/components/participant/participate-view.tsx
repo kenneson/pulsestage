@@ -21,6 +21,8 @@ import { MessageQuestionIcon } from "@/components/icons";
 import { AnimatedCheck } from "@/components/motion/animated";
 import { SCREEN } from "@/components/motion/presets";
 import { Logo } from "@/components/logo";
+import { BrandMark } from "@/components/brand/brand-mark";
+import { useBrand } from "@/components/brand/brand-context";
 import { cn } from "@/lib/utils";
 import { AnswerForm } from "./answer-form";
 import { RaffleTicketCard } from "./raffle-ticket";
@@ -80,6 +82,7 @@ export function ParticipateView({
   me: { name: string | null; avatar: string | null; team?: PublicTeam | null };
 }) {
   const t = useTranslations("participant.view");
+  const hasBrandLogo = Boolean(useBrand()?.logoUrl);
   const [current, setCurrent] = useState<CurrentInteractionResponse>(initialCurrent);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -250,8 +253,8 @@ export function ParticipateView({
       )}
     >
       <header className="flex items-center justify-between gap-3">
-        {/* Sem link: um toque na marca não pode tirar a pessoa da sessão. */}
-        <Logo href={null} className="text-sm" />
+        {/* Sem link: um toque na marca não pode tirar a pessoa da sessão. Com marca do palestrante, o logo dele. */}
+        {hasBrandLogo ? <BrandMark size="sm" /> : <Logo href={null} className="text-sm" />}
         <span className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
           <span className="truncate">{title}</span>
           {me.team ? <TeamBadge team={me.team} label={t("team", { name: me.team.name })} /> : null}

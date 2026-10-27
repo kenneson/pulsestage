@@ -56,7 +56,8 @@
       "addQuestionsHint": "Empieza con la votación de ejemplo y cambia el texto.",
       "presentLiveHint": "Usa “Probar sesión” para ensayar con tu celular. El ensayo no cuenta en las estadísticas.",
       "extrasTitle": "Próximos pasos"
-    }
+    },
+    "useTemplate": "Usar una plantilla"
   },
   "sessionList": {
     "meta": "{date} · código <b>{code}</b>"
@@ -66,7 +67,8 @@
     "title": "Sesiones",
     "newSession": "Nueva sesión",
     "emptyTitle": "No hay sesiones",
-    "emptyDescription": "Tus charlas, clases y talleres aparecen aquí. Crea la primera: solo el título es obligatorio."
+    "emptyDescription": "Tus charlas, clases y talleres aparecen aquí. Crea la primera: solo el título es obligatorio.",
+    "templates": "Plantillas"
   },
   "library": {
     "metaTitle": "Biblioteca de preguntas",

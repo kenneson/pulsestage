@@ -8,9 +8,14 @@
   "create": {
     "title": "Create the session",
     "steps": {
-      "newSession": "Click <b>“New session”</b>.",
-      "fields": "Fill in the title and, if you like, the date and time. Only the title is required. Description, estimated duration, language, join code, and survey are under <b>“More options”</b>.",
-      "joinCode": "<b>Join code (optional):</b> pick a code that's easy to say out loud, like <code>AI2026</code>. If you leave it blank, one is generated automatically. Once the session starts, the code doesn't change."
+      "newSession": "Click <b>“New session”</b>. The session is built in five steps, shown on a timeline at the top: <b>“Settings”</b>, <b>“Slides”</b>, <b>“Polls”</b>, <b>“Post-event survey”</b>, and <b>“Giveaway”</b>.",
+      "fields": "In <b>“Settings”</b>, fill in the title and, if you like, the date and time. Only the title is required. Description, <b>“Session mode”</b>, estimated duration, language, and join code are under <b>“More options”</b>. Click <b>“Create and go to Slides”</b>.",
+      "joinCode": "<b>Join code (optional):</b> pick a code that's easy to say out loud, like <code>AI2026</code>. If you leave it blank, one is generated automatically. Once the session starts, the code doesn't change.",
+      "stepper": "On each step, <b>“Next”</b> takes you forward and <b>“Back”</b> goes back. Slides and Giveaway are optional: while they are empty, <b>“Skip”</b> appears. You can also tap any step on the timeline. After the Giveaway, <b>“Finish”</b> opens <b>“Ready to present”</b>: a summary of each step, what is missing, and the buttons to start or rehearse the session.",
+      "templates": "<b>Session templates:</b> in <b>“Sessions”</b>, in the menu, <b>“Templates”</b> shows ready-made scripts (class opener, quiz review, retrospective, training, planning, and a self-paced survey). <b>“Use this template”</b> creates the session as a draft, with the questions already in, for you to adjust.",
+      "mode": "<b>“Session mode”:</b> <em>Live, you lead</em> (you open each question) or <em>Self-paced</em>: while the session is live, each person goes through the whole lineup on their phone without waiting for you. In self-paced mode, the timer and speed bonus do not apply.",
+      "teams": "<b>Teams:</b> on the <b>“Teams”</b> card in the Settings step, turn on <b>“Play in teams”</b>. Four teams come ready; you can rename, recolor, reorder, or delete them. When joining, each person picks a team (with no pick, they join the one with the fewest people).",
+      "brand": "<b>Your brand:</b> in <b>Settings</b>, in the menu, the <b>“Brand”</b> section takes your logo and color. In each session, <b>“Use my brand”</b> shows both on the audience's phones and on the big screen. If the color is hard to read, PulseStage darkens or lightens it only as much as needed."
     }
   },
   "languages": {
@@ -24,22 +29,30 @@
   },
   "lineup": {
     "title": "Build the lineup",
-    "intro": "On the session page, add your interactions in the order you'll use them in the presentation. Empty lineup? <b>“Create your first poll”</b> opens a sample poll, ready to edit.",
+    "intro": "In the <b>“Polls”</b> step, add the interactions in the order you will use them in the presentation. Types come in four groups: Opinion, Free answers, Competition, and Content. Empty lineup? <b>“Create your first poll”</b> opens a sample poll, ready to edit.",
     "types": {
-      "poll": "<b>Poll:</b> a single choice among options. Great for opening the talk and getting to know the audience.",
+      "poll": "<b>Poll:</b> choose among options. With <b>“Allow multiple choices”</b>, each person picks up to the limit you set. <b>“Use to compare groups”</b> turns the poll into a profile question (department, class, city) to filter results live.",
       "scale": "<b>Scale:</b> a rating between a minimum and a maximum (e.g., 1 to 5), with optional labels at each end.",
       "cloud": "<b>Word cloud:</b> short answers grouped by frequency. Repeated words grow on screen.",
       "open": "<b>Open-ended:</b> free-form answers. You read them in the live room.",
       "quiz": "<b>Quiz:</b> mark the correct option, set the points and, if you want, a time limit. It builds a leaderboard. With a time limit, the <b>“Speed bonus”</b> gives full points to people who get it right instantly and half to those who get it right at the last second.",
-      "ranking": "<b>Ranking:</b> the audience orders the options from favorite to least favorite by tapping them in order. The result shows the group's order and each option's average position."
+      "ranking": "<b>Ranking:</b> the audience orders the options from favorite to least favorite by tapping them in order. The result shows the group's order and each option's average position.",
+      "points": "<b>100 points:</b> each person spreads 100 points across the options. Good for prioritizing.",
+      "matrix": "<b>2×2 matrix:</b> each person drags the items onto a two-axis grid (for example, effort × impact). The big screen shows each item's average position.",
+      "pin": "<b>Pin on image:</b> upload an image (map, screen, diagram) and each person taps a spot. The big screen shows the heat map.",
+      "guess": "<b>Guess the number:</b> set the minimum, maximum, unit, and correct answer. The closer the guess, the more points.",
+      "quizText": "<b>Type-in quiz:</b> people type the answer. List the accepted answers; small spelling variations (accents, capitals, one wrong letter) count as correct.",
+      "content": "<b>Content slide:</b> a title, text, image, or YouTube or Vimeo video on the big screen, with no answers. Good for explaining something between questions."
     },
     "optionStyle": "In polls and quizzes, <b>“Option style”</b> swaps plain text for <b>“Shapes and colors”</b>: each option gets a shape (triangle, diamond, circle, square…) and a color, on phones and on the big screen. The image icon next to each option attaches a photo or illustration; the text is still required and appears below it.",
-    "tools": "Use the eye icon to <b>preview</b> how participants will see each question, the arrows to <b>move up or down</b> in the order, and the pencil to edit. To reuse questions from other sessions, click <b>“From library”</b>; to repeat a whole talk, use <b>“Duplicate”</b> (at the top of the session, in analytics, or with the copy icon in the session list): you choose the name and date, and the copy opens as a draft with questions, slides, survey, and prizes, ready to edit. Out of ideas? <b>“Generate with AI”</b> suggests questions based on the title and description: review them and use <b>“Add to lineup”</b> on the ones that work."
+    "tools": "Use the eye icon to <b>preview</b> how participants will see each question, the arrows to <b>move it up or down</b>, and the pencil to edit. To reuse questions from other sessions, click <b>“From library”</b>; to repeat a whole talk, use <b>“Duplicate”</b> (at the top of the session, in analytics, or the copy icon in the session list): you choose the name and date, and the copy opens as a draft with questions, slides, survey, and prizes, ready to edit. Out of ideas? <b>“Generate with AI”</b> suggests questions from the title and description: review them and use <b>“Add to lineup”</b> on the ones that fit, or <b>“Edit first”</b> to adjust them before adding.",
+    "extras": "On any question, <b>“More settings”</b> has the timer, <b>“Hide results until I reveal them”</b>, and <b>“Show results on the phone after answering”</b>. <b>“Speaker notes”</b> keeps what you want to remember; only you see it, in the live room. In polls, <b>“Image grid”</b> shows the options as pictures."
   },
   "slides": {
     "title": "Present with your slides",
-    "upload": "Optional, but it saves you from switching windows on stage: in the session's <b>“Slides”</b> tab, click <b>“Choose PDF”</b> and upload your presentation as a PDF (in PowerPoint: File → Export → PDF; in Google Slides: File → Download → PDF). The PDF is converted in your browser and only the slide images are uploaded. Animations, transitions, and videos aren't kept.",
-    "position": "Drag each question to the point where it should come in (drop it on the left half of a slide to place it before, on the right half to place it after), or pick from the selector: <em>Before slide 1</em>, <em>After slide 3</em>, and so on. In the live room, the lineup becomes a single sequence: slide, question, next slide. Use <b>“Replace PDF”</b> to upload a new version; the questions stay at the same points."
+    "upload": "Optional, but it saves switching windows on stage: in the <b>“Slides”</b> step, click <b>“Choose PDF”</b> and upload your presentation PDF (in PowerPoint: File → Export → PDF; in Google Slides: File → Download → PDF). The PDF is converted in your browser and only the slide images are uploaded. Animations, transitions, and videos are not kept.",
+    "position": "Drag each question to the point where it should come in (drop it on the left half of a slide to place it before, on the right half to place it after), or pick from the selector: <em>Before slide 1</em>, <em>After slide 3</em>, and so on. In the live room, the lineup becomes a single sequence: slide, question, next slide. Use <b>“Replace PDF”</b> to upload a new version; the questions stay at the same points.",
+    "notes": "<b>“Note”</b>, on each slide, keeps a reminder for that slide. In the live room, the <b>“Notes”</b> card shows the note for what is on screen; only you see it."
   },
   "live": {
     "title": "Present live",
@@ -51,8 +64,12 @@
       "mirror": "Using a single screen mirrored to the projector? Open the projector screen while signed in to your account: there, the clicker and the arrow keys also advance the presentation, and anyone with the link who isn't signed in can only watch.",
       "results": "Results show up in real time on the projector and in the live room. Click <b>“Close”</b> to stop accepting answers for that interaction.",
       "addQuestion": "A question came up that wasn't in the lineup? Click <b>“New question”</b>, next to Lineup, pick the type, and write it. <b>“Launch now”</b> opens it to the audience right away; <b>“Keep as next”</b> places it right after what's on the big screen, for the next <kbd>→</kbd>. With slides, it goes in at that same point of the presentation.",
-      "answer": "In a quiz, <b>“Show answer”</b> highlights the correct option in your live room, so you can talk through the result with the audience.",
-      "leaderboard": "At the top of the live room, <b>“On the big screen now”</b> shows what the audience sees and switches it in one click: <b>“Lineup”</b>, <b>“QR code”</b>, <b>“Leaderboard”</b> (with a quiz in the lineup), <b>“Audience Q&A”</b> (when it's on), and <b>“Giveaway”</b> (if there is one). <b>“Lineup”</b> goes back to the slide or question you were on. The leaderboard shows the top 10: each person appears where they stood before the last quiz and slides to their new spot as the points count up. People who joined without a name appear as “Participant” plus a code."
+      "answer": "On questions with <b>“Hide results until I reveal them”</b>, the big screen shows only the response count until you click <b>“Reveal results”</b>. On quiz, type-in quiz, and guess the number, <b>“Reveal answer”</b> shows the correct answer on the big screen. In the live room you always see everything, with the correct answer marked “only you see”.",
+      "leaderboard": "At the top of the live room, <b>“On the big screen now”</b> shows what the audience is seeing and switches with one click: <b>“Lineup”</b>, <b>“QR code”</b>, <b>“Leaderboard”</b> (with a quiz, type-in quiz, or guess the number in the lineup), <b>“Audience Q&A”</b> (if turned on), and <b>“Giveaway”</b> (if there is one). <b>“Lineup”</b> returns to the slide or question you were on. The leaderboard shows the top 10: each person starts at their position before the last quiz and slides to the new one as the points count up. People who joined without a name appear as “Participant” plus a code. A content slide leaves the big screen with <b>“Take off screen”</b>.",
+      "segment": "<b>Compare groups:</b> with a poll marked <b>“Use to compare groups”</b>, the <b>“Show only”</b> selector filters results by one of its options (for example, only people from Engineering), in the live room and on the big screen. <b>“All”</b> goes back to the overall result.",
+      "teams": "With teams, the leaderboard on the big screen has a <b>“People”</b> | <b>“Teams”</b> toggle. The team leaderboard uses the average points per person, so teams of different sizes compete fairly.",
+      "notes": "The <b>“Notes”</b> card shows the speaker notes for the item on screen (or the next one) and can be collapsed.",
+      "selfPace": "<b>Self-paced</b> session: the live room becomes <b>“Progress”</b>, with how many joined, started, and finished everything, and how many answered each question. There is no Previous/Next: each person moves on their own."
     },
     "pause": "<b>“Pause”</b> freezes the session (no one can answer) and <b>“Resume”</b> brings it back. The “connected now” number is approximate; the participants who actually joined appear in the total next to it.",
     "timer": "Next to the status is the <b>talk timer</b>: the time since “Start session”, not counting pauses, compared with the duration you planned in the session details. It turns amber when you go over. The actual duration is recorded in analytics and in the report."
@@ -68,7 +85,7 @@
   },
   "engagement": {
     "title": "Audience Q&A, reactions, and moderation",
-    "intro": "In the session's <b>“Engagement”</b> tab (and the card of the same name in the live room) you turn each feature on or off. Everything starts on, except approvals.",
+    "intro": "On the <b>“Engagement”</b> card in the Settings step (and the <b>“Engagement”</b> card in the live room), you turn each feature on or off. Everything starts on, except approvals.",
     "items": {
       "qa": "<b>Audience Q&A:</b> phones show <b>“Ask the speaker”</b>. People write a question, choose whether to show their name, and upvote other people's questions. In the live room, the <b>“Audience Q&A”</b> card lists the most upvoted: <b>“Feature”</b> puts one on the big screen, <b>“Answered”</b> takes it out of the queue, and <b>“Hide”</b> hides it. To show the most upvoted ones on the big screen, pick <b>“Audience Q&A”</b> under <b>“On the big screen now”</b>. With <b>“Approve questions before they appear”</b>, new ones wait in <b>“Waiting”</b> until you approve them.",
       "reactions": "<b>Live reactions:</b> 👏 ❤️ 😂 😮 🤔 sit at the bottom of the phone screen during the session. The emojis float up on the big screen and the total shows in the live room. In analytics, you can see the minutes with the most reactions.",
@@ -79,12 +96,12 @@
   "survey": {
     "title": "End the session and run the survey",
     "end": "When you're done, click <b>“End session”</b>. Phones show the survey link and the projector displays a QR code for it. Leave that screen up for a minute.",
-    "template": "The survey is about the talk or class as a whole. Pick the template under <b>“Post-event survey”</b> in the session form: <em>General feedback</em> (default), <em>Satisfaction and NPS</em>, <em>Attention and engagement</em>, <em>Teaching (classes)</em>, <em>Corporate training</em>, or one of your own.",
+    "template": "The survey is about the talk or class as a whole. Pick the template in the <b>“Post-event survey”</b> step: <em>General evaluation</em> (default), <em>Satisfaction and NPS</em>, <em>Attention and engagement</em>, <em>Teaching (classes)</em>, <em>Corporate training</em>, or one of your own. Your choice is saved right away.",
     "templates": "In <b>“Surveys”</b>, in the menu, you can create your own templates from scratch or duplicate a ready-made one. Questions can be a 1–5 scale, a 0–10 score, multiple choice, or free text. Tag each rating question with a dimension (clarity, attention, teaching, etc.) so it counts toward the scorecard and your progress. An ended session can't be reopened, and editing a template later doesn't change past reports."
   },
   "raffle": {
     "title": "Run a giveaway",
-    "intro": "Optional. On the session page, open the <b>“Giveaway”</b> tab, check <b>“Run a giveaway in this session”</b>, and choose <b>“Who's entered”</b>:",
+    "intro": "Optional. In the session's <b>“Giveaway”</b> step, check <b>“Run a giveaway in this session”</b> and choose <b>“Who's entered”</b>:",
     "eligibility": {
       "survey": "<b>People who answer the survey:</b> when they submit the post-event survey, they get a lucky number on their phone. People who don't answer aren't entered. Since the survey opens when the session ends, the drawing happens after <b>“End session”</b>: the live room stays open for it.",
       "everyone": "<b>Everyone who joins the session:</b> each person gets a number when they join, even without answering the survey."
@@ -126,7 +143,7 @@
       "attach": "Attach your presentation PDF in the chat and say who the audience is and how long the talk runs.",
       "propose": "The assistant proposes the questions and which slide each one comes after (using the PDF's page numbers). Adjust and approve.",
       "create": "It creates the session (or uses one you point it to) and saves the questions.",
-      "upload": "In the session, open the <b>“Slides”</b> tab and upload the same PDF: the questions appear between the right slides."
+      "upload": "In the session, open the <b>“Slides”</b> step and upload the same PDF: the questions show up between the right slides."
     },
     "more": "The assistant can also edit, move, and delete questions, and read results from sessions you've already presented to analyze them with you. It doesn't start or end the live session. In <b>Integrations</b>, the <b>“Connected assistants”</b> list shows who has access; <b>“Revoke”</b> cuts off access immediately."
   },
@@ -139,6 +156,7 @@
       "qr": "Keep the QR code visible for the first few minutes so latecomers can join too.",
       "powerpoint": "Prefer presenting from PowerPoint or Google Slides, with animations? Click <b>“Download QR code”</b> (on the session page or in the live room) and paste the image on a slide. When it's time for each question, switch from your slides to the projector screen with <kbd>Alt</kbd>+<kbd>Tab</kbd>. To skip switching windows, just upload the PDF in the <b>“Slides”</b> tab.",
       "survey": "Ask people to answer the survey while they're still in the room. The response rate drops sharply once the audience leaves."
-    }
+    },
+    "powerpoint": "Prefer presenting from PowerPoint, with animations? In <b>Integrations</b>, the <b>“PowerPoint”</b> card has the add-in (<b>“Download the add-in (manifest.xml)”</b>) and the install steps: it shows the live big screen inside a slide, with no window switching. In Google Slides, click <b>“Download QR code”</b> (on the session page or in the live room), paste the image on a slide, and switch to the projector screen with <kbd>Alt</kbd>+<kbd>Tab</kbd> for each question, or upload the PDF in the <b>“Slides”</b> step."
   }
 }

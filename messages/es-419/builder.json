@@ -111,9 +111,14 @@
     "addToLineup": "Agregar al guion",
     "added": "Pregunta agregada al guion.",
     "regenerate": "Generar otras sugerencias",
-    "answer": "Respuesta: {value}",
+    "answer": "Respuesta correcta: {value}",
     "needsImage": "Necesita una imagen: ábrela en el formulario para subirla.",
-    "editFirst": "Editar antes"
+    "editFirst": "Editar antes",
+    "pointsSplit": "Cada persona reparte 100 puntos entre:",
+    "axes": "Ejes: {x} × {y}",
+    "items": "Elementos: {items}",
+    "accepted": "Respuestas aceptadas: {answers}",
+    "maxChoices": "Hasta {count} opciones"
   },
   "library": {
     "search": "Buscar preguntas",

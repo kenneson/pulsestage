@@ -182,6 +182,20 @@
   `app/manifest.ts`, `app/icon.tsx`, `app/apple-icon.tsx`, `favicon.ico`. **Regra:** ajuste de celular só com `max-md:`/
   `max-sm:` (ou `md:contents`/`md:hidden`); a partir de `md` nada muda. Conferência: capturas de 1440 px antes e depois,
   comparadas pixel a pixel.
+- **Leva Mentimeter** (migration `20261020000000_menti_features.sql`, já aplicada): 12 tipos (novos: `points_100`,
+  `matrix_2x2`, `pin_image`, `guess_number`, `quiz_text`, `content`). Respostas com várias chaves gravam `value.tally`, que o
+  banco soma em `interaction_results.counts` (`response_tally()`, numérico). Gabarito privado em `interactions.answer_key`
+  (nunca vai ao público); notas em `interactions.speaker_notes` e `sessions.slide_notes`. Regras em `lib/domain/answers.ts`,
+  `scoring.ts` (`guessOutcome`, `quizTextOutcome`), `results.ts`, `content.ts` (`toEmbedUrl`). Telão: `reveal_results()`,
+  `reveal_answer()`, `set_segment_filter()` (enquete com `settings.isSegment`), `set_leaderboard_mode()` (pessoas/equipes)
+  em `session_live_state`. `sessions.pace = 'self'`: qualquer pergunta aceita resposta, sem cronômetro nem bônus; sala ao
+  vivo vira "Acompanhamento" (`/api/live/[id]/progress`). Equipes em `session_teams` + `participants.team_id`
+  (`features/teams/`). Marca: `profiles.brand_logo_path/brand_color`, bucket público `brand`, `sessions.use_brand`,
+  contraste em `lib/domain/brand.ts`, `<BrandScope>` na área da sessão. Modelos de sessão em `lib/domain/session-templates.ts`
+  (`/dashboard/sessions/modelos`). PowerPoint: `/office` (office.js), `/office/manifest.xml`, cartão em Integrações.
+- **Sessão em etapas** (`lib/domain/session-steps.ts`, `components/sessions/session-stepper.tsx`): `?etapa=configuracoes|
+  slides|enquetes|pesquisa|sorteio|pronto` (o `?aba=` antigo ainda funciona). Criar a sessão leva direto a Slides; cada
+  etapa carrega só os próprios dados.
 
 ## Mapa do código
 - `src/lib/domain/` regras puras (status, interações, palavras, resultados, métricas). Sem I/O.

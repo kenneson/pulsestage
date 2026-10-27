@@ -2,7 +2,9 @@
   "new": {
     "metaTitle": "Nueva sesión",
     "title": "Nueva sesión",
-    "description": "Una charla, clase, taller o capacitación. Después agregas las interacciones."
+    "description": "Una charla, clase, taller o capacitación. Después agregas las interacciones.",
+    "templatesHint": "¿Prefieres empezar con un guion listo?",
+    "templatesLink": "Ver plantillas"
   },
   "page": {
     "metaTitle": "Editar sesión",

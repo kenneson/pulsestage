@@ -111,9 +111,14 @@
     "addToLineup": "Add to lineup",
     "added": "Question added to the lineup.",
     "regenerate": "Generate more suggestions",
-    "answer": "Answer: {value}",
+    "answer": "Correct answer: {value}",
     "needsImage": "Needs an image: open it in the form to upload one.",
-    "editFirst": "Edit first"
+    "editFirst": "Edit first",
+    "pointsSplit": "Each person splits 100 points across:",
+    "axes": "Axes: {x} × {y}",
+    "items": "Items: {items}",
+    "accepted": "Accepted answers: {answers}",
+    "maxChoices": "Up to {count} choices"
   },
   "library": {
     "search": "Search questions",

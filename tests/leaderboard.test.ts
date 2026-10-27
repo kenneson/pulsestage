@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { leaderboard, type LeaderboardResponse } from "../src/lib/domain/leaderboard.ts";
+import { opaqueKey } from "../src/lib/domain/opaque-key.ts";
 
 const answer = (participantId: string, interactionId: string, points: number): LeaderboardResponse => ({
   participantId,
@@ -31,7 +32,8 @@ test("ranking atual com a posição de antes do último quiz", () => {
       ["Participante CCCC", 3, 100, null, 0], // entrou agora
     ],
   );
-  assert.equal(board[0]?.key, "bbbbbbbb");
+  assert.equal(board[0]?.key, opaqueKey("bbbbbbbb-2"));
+  assert.notEqual(board[0]?.key, "bbbbbbbb-2");
   // Avatar vira emoji; chave desconhecida ou ausente, sem avatar.
   assert.deepEqual(
     board.map((e) => e.avatar),

@@ -61,6 +61,8 @@ type Variant = "display" | "compact";
 
 const ROW: Record<Variant, number> = { display: 76, compact: 44 };
 const TEAM_ROW: Record<Variant, number> = { display: 96, compact: 56 };
+/** Menor linha do telão (texto ainda legível do fundo da sala). */
+const MIN_ROW = 50;
 
 async function loadEntries(sessionId: string, mode: LeaderboardMode): Promise<Entry[] | null> {
   const res = await fetch(`/api/session/${sessionId}/leaderboard${mode === "teams" ? "?mode=teams" : ""}`, { cache: "no-store" });
@@ -82,6 +84,7 @@ async function loadEntries(sessionId: string, mode: LeaderboardMode): Promise<En
   }
   return responseSchema.parse(json).entries.map((entry) => ({ ...entry, color: null, people: null, total: null }));
 }
+
 /** Quanto tempo o ranking fica na posição de antes do último quiz antes de deslizar. */
 const SETTLE_MS = 700;
 
@@ -102,6 +105,8 @@ function Row({
   const locale = useLocale();
   const big = variant === "display";
   const team = entry.color !== null;
+  // Linha apertada (projetor de 720 px com 10 pessoas): texto e avatar um pouco menores.
+  const tight = big && height < 70;
   const startRank = entry.previousRank !== null && entry.previousRank <= total ? entry.previousRank : total + 1;
   const position = (settled ? entry.rank : startRank) - 1;
   const moved = entry.previousRank === null ? null : entry.previousRank - entry.rank;
@@ -111,7 +116,7 @@ function Row({
     <m.li
       className={cn(
         "absolute inset-x-0 top-0 flex items-center gap-4 rounded-lg px-4 transition-colors duration-700",
-        big ? "text-3xl" : "gap-3 px-3 text-sm",
+        big ? (tight ? "text-2xl" : "text-3xl") : "gap-3 px-3 text-sm",
         leader && settled ? "bg-primary/15" : "bg-muted/60",
       )}
       style={{ height: height - (big ? 10 : 6) }}
@@ -130,7 +135,7 @@ function Row({
           className={cn(
             "grid shrink-0 place-items-center rounded-full font-display font-bold text-white",
             shapeBg((entry.color ?? 1) - 1),
-            big ? "size-14 text-3xl" : "size-8 text-base",
+            big ? (tight ? "size-11 text-2xl" : "size-14 text-3xl") : "size-8 text-base",
           )}
         >
           {entry.name.charAt(0).toUpperCase()}
@@ -140,7 +145,7 @@ function Row({
           aria-hidden
           className={cn(
             "grid shrink-0 place-items-center rounded-full bg-background leading-none",
-            big ? "size-14 text-4xl" : "size-8 text-lg",
+            big ? (tight ? "size-11 text-3xl" : "size-14 text-4xl") : "size-8 text-lg",
           )}
         >
           {entry.avatar ?? <span className="font-display text-muted-foreground">{entry.name.charAt(0).toUpperCase()}</span>}
@@ -215,6 +220,17 @@ export function QuizLeaderboard({
     failed: false,
   });
   const [settled, setSettled] = useState(false);
+  const [viewportHeight, setViewportHeight] = useState<number | null>(null);
+
+  useEffect(() => {
+    const measure = () => setViewportHeight(window.innerHeight);
+    const first = window.setTimeout(measure, 0);
+    window.addEventListener("resize", measure);
+    return () => {
+      window.clearTimeout(first);
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
   const reduce = useReducedMotion();
 
   useEffect(() => {
@@ -240,12 +256,17 @@ export function QuizLeaderboard({
 
   const big = variant === "display";
   const entries = state.entries;
-  const row = mode === "teams" ? TEAM_ROW[variant] : ROW[variant];
+  const base = mode === "teams" ? TEAM_ROW[variant] : ROW[variant];
+  // No telão, a lista inteira cabe na altura da tela (título, margens e rodapé ocupam ~300 px).
+  const row =
+    big && viewportHeight && entries && entries.length > 0
+      ? Math.max(MIN_ROW, Math.min(base, Math.floor((viewportHeight - 300) / entries.length)))
+      : base;
 
   return (
-    <div className={cn("flex w-full flex-col", big ? "max-w-4xl gap-8" : "gap-3")}>
+    <div className={cn("flex w-full flex-col", big ? "max-w-4xl gap-8 [@media(max-height:800px)]:gap-5" : "gap-3")}>
       {big ? (
-        <h1 className="text-center text-6xl font-semibold max-md:text-4xl">{mode === "teams" ? t("teamsTitle") : t("title")}</h1>
+        <h1 className="text-center text-6xl font-semibold max-md:text-4xl [@media(max-height:800px)]:text-5xl">{mode === "teams" ? t("teamsTitle") : t("title")}</h1>
       ) : null}
       {entries === null ? (
         <p className={cn("text-center text-muted-foreground", big ? "text-3xl" : "text-sm")}>

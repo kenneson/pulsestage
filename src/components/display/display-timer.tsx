@@ -39,7 +39,7 @@ export function DisplayTimer({ activatedAt, seconds }: { activatedAt: string | n
       aria-label={c.ended ? t("ended") : t("label", { seconds: c.remaining })}
       className="flex shrink-0 flex-col items-center gap-1"
     >
-      <div className={cn("relative grid size-32 place-items-center max-md:size-20", tone)}>
+      <div className={cn("relative grid size-32 place-items-center max-md:size-20 md:[@media(max-height:800px)]:size-24", tone)}>
         <svg viewBox="0 0 100 100" className="absolute inset-0 size-full -rotate-90" aria-hidden>
           <circle cx="50" cy="50" r={R} fill="none" stroke="currentColor" strokeOpacity={0.18} strokeWidth={8} />
           <circle
@@ -57,7 +57,7 @@ export function DisplayTimer({ activatedAt, seconds }: { activatedAt: string | n
         </svg>
         <m.span
           key={c.urgent ? c.remaining : "steady"}
-          className="font-display text-6xl font-bold tabular-nums max-md:text-3xl"
+          className="font-display text-6xl font-bold tabular-nums max-md:text-3xl md:[@media(max-height:800px)]:text-5xl"
           initial={c.urgent && !c.ended ? { scale: 1.3 } : false}
           animate={{ scale: 1 }}
           transition={SPRING.snappy}

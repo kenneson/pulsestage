@@ -50,6 +50,8 @@ import { SlidesEditor, type SlideDeckInteraction } from "@/components/slides/sli
 import { getSlideUrls } from "@/lib/data/slides";
 import { getRaffleState } from "@/lib/data/raffle";
 import { RaffleEditor } from "@/components/raffle/raffle-editor";
+import { TeamsSettings } from "@/components/teams/teams-settings";
+import { getTeamsState } from "@/features/teams/data";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("session.page");
@@ -143,11 +145,10 @@ export default async function SessionBuilderPage({
   let body: React.ReactNode = null;
   if (step === "configuracoes") {
     const when = utcToZonedParts(session.scheduled_at, timeZone);
-    const { data: brand } = await supabase
-      .from("profiles")
-      .select("brand_logo_path, brand_color")
-      .eq("id", session.speaker_id)
-      .maybeSingle();
+    const [{ data: brand }, teams] = await Promise.all([
+      supabase.from("profiles").select("brand_logo_path, brand_color").eq("id", session.speaker_id).maybeSingle(),
+      getTeamsState(supabase, id, session.teams_enabled),
+    ]);
     const tCards = await getTranslations("session.cards");
     const surveyOptions = templates.map((x) => ({ id: x.id, name: x.name, isPlatform: x.isPlatform, locale: x.locale, slug: x.slug }));
     body = (
@@ -191,7 +192,7 @@ export default async function SessionBuilderPage({
             />
           </CardContent>
         </Card>
-        {/* Equipes */}
+        <TeamsSettings sessionId={id} initial={teams} status={status} />
         {/* "Próximo" salva o formulário de configurações e segue para Slides. */}
         <StepFooter back={null}>
           <Button type="submit" form="session-form" name="continueTo" value="slides" className="max-md:min-w-0 max-md:px-3">

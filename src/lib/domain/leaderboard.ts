@@ -4,12 +4,13 @@
 
 import { participantLabel, parseQuizValue } from "./metrics.ts";
 import { avatarOf } from "./gamification.ts";
+import { opaqueKey } from "./opaque-key.ts";
 
 export type LeaderboardResponse = { participantId: string; interactionId: string; value: unknown };
 export type LeaderboardParticipant = { id: string; display_name: string | null; avatar?: string | null };
 
 export type LeaderboardEntry = {
-  /** chave estável para a animação (não é o id do participante) */
+  /** chave estável para a animação, derivada do id sem expô-lo (um pedaço do id repetia com ids parecidos) */
   key: string;
   name: string;
   /** emoji do avatar escolhido ao entrar; null = sem avatar */
@@ -64,7 +65,7 @@ export function leaderboard(
       const participant = byId.get(id);
       const previousIndex = beforeOrder.indexOf(id);
       return {
-        key: id.slice(0, 8),
+        key: opaqueKey(id),
         name: participantLabel(participant, id, anonymous),
         avatar: avatarOf(participant?.avatar)?.emoji ?? null,
         rank: index + 1,

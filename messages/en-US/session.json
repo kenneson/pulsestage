@@ -2,7 +2,9 @@
   "new": {
     "metaTitle": "New session",
     "title": "New session",
-    "description": "A talk, class, workshop, or training. You'll add the interactions next."
+    "description": "A talk, class, workshop, or training. You'll add the interactions next.",
+    "templatesHint": "Rather start from a ready-made script?",
+    "templatesLink": "See templates"
   },
   "page": {
     "metaTitle": "Edit session",
@@ -319,9 +321,9 @@
       "short": "Survey"
     },
     "sorteio": {
-      "label": "Raffle",
-      "description": "Optional. Draw prizes among people who answered the survey or everyone who joined.",
-      "short": "Raffle"
+      "label": "Giveaway",
+      "description": "Optional. Give away prizes to people who answered the survey or to everyone who joined.",
+      "short": "Giveaway"
     },
     "state": {
       "done": "Done",
@@ -343,7 +345,7 @@
     "survey": "Survey: {name}",
     "noSurvey": "No survey chosen",
     "raffle": "{count, plural, =0 {Raffle on, no prizes yet} one {Raffle with # prize} other {Raffle with # prizes}}",
-    "noRaffle": "No raffle",
+    "noRaffle": "No giveaway",
     "missing": "Before presenting, check: {steps}.",
     "edit": "Edit",
     "startHint": "\"Start session\" opens the session to the audience. \"Test session\" creates a private rehearsal that doesn't count in your stats.",
