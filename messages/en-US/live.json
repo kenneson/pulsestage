@@ -157,6 +157,65 @@
     "questionNotOpen": "That question isn't open.",
     "screenFailed": "Couldn't change the big screen.",
     "responseUpdateFailed": "Couldn't update the response.",
-    "wordUpdateFailed": "Couldn't update the word."
+    "wordUpdateFailed": "Couldn't update the word.",
+    "revealFailed": "Couldn't change what the screen reveals.",
+    "segmentFailed": "Couldn't filter the screen."
+  },
+  "reveal": {
+    "results": "Reveal results",
+    "hideResults": "Hide results",
+    "answer": "Reveal answer",
+    "hideAnswer": "Hide answer",
+    "hiddenOnScreen": "Hidden on screen",
+    "hiddenHint": "The screen shows only the response count until you reveal.",
+    "answerOnScreen": "Answer on screen",
+    "answerKey": "Correct answer: <strong>{answer}</strong>",
+    "acceptedAnswers": "Accepted answers: <strong>{answers}</strong>",
+    "onlyYou": "only you see this"
+  },
+  "countdown": {
+    "label": "Time to answer: {time}",
+    "timeUp": "Time's up"
+  },
+  "segment": {
+    "label": "Show only",
+    "all": "Everyone",
+    "filtered": "Only <strong>{group}</strong> · {count, plural, one {# person} other {# people}}",
+    "screenToo": "The screen also shows only this group.",
+    "notOnProfile": "The filter doesn't apply to the profile question itself.",
+    "loading": "Filtering…"
+  },
+  "leaderboardMode": {
+    "label": "Rank by",
+    "people": "People",
+    "teams": "Teams"
+  },
+  "notes": {
+    "title": "Notes",
+    "show": "Show notes",
+    "hide": "Collapse notes",
+    "onlyYou": "Only you see these",
+    "forItem": "Now: {item}",
+    "forNext": "Up next: {item}",
+    "empty": "No notes for this item."
+  },
+  "content": {
+    "item": "Content slide",
+    "noResponses": "Content slide: no responses.",
+    "hasImage": "With image",
+    "hasVideo": "With video",
+    "removeFromScreen": "Take off screen"
+  },
+  "selfPace": {
+    "badge": "Self-paced",
+    "title": "Progress",
+    "hint": "Each person answers at their own pace on their phone, in the order of the lineup. The screen shows the join QR code.",
+    "joined": "Joined",
+    "started": "Started",
+    "finished": "Finished everything",
+    "ofJoined": "of {count, number}",
+    "answered": "{count, number} of {participants, number}",
+    "questions": "Questions",
+    "noQuestions": "No questions in the lineup."
   }
 }

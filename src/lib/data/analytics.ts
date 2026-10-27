@@ -18,9 +18,13 @@ import {
 import { toSurveyQuestions, type AnswerLike } from "@/lib/domain/survey";
 import { getOwnedSession, getSessionInteractions, type InteractionWithOptions } from "./sessions";
 
+export type SessionTeam = { id: string; name: string; color: number; position: number };
+
 export type SessionAnalyticsBundle = AnalyticsData & {
   interactionsWithOptions: InteractionWithOptions[];
   latestInsights: InsightRow[];
+  /** equipes da sessão (vazio sem `teams_enabled`) */
+  teams: SessionTeam[];
 };
 
 /**
@@ -80,7 +84,7 @@ export async function loadSessionAnalytics(
   const session = await getOwnedSession(supabase, sessionId);
   if (!session) return null;
 
-  const [interactionsWithOptions, participants, responses, surveys, insights] = await Promise.all([
+  const [interactionsWithOptions, participants, responses, surveys, insights, teams] = await Promise.all([
     getSessionInteractions(supabase, sessionId),
     fetchAllRows<ParticipantRow>((from, to) =>
       supabase.from("participants").select("*").eq("session_id", sessionId).order("created_at").range(from, to),
@@ -90,9 +94,13 @@ export async function loadSessionAnalytics(
     ),
     loadSessionSurveys(supabase, [sessionId], true),
     supabase.from("insights").select("*").eq("session_id", sessionId).order("created_at", { ascending: false }).limit(50),
+    session.teams_enabled
+      ? supabase.from("session_teams").select("id, name, color, position").eq("session_id", sessionId).order("position")
+      : Promise.resolve({ data: [] as SessionTeam[], error: null }),
   ]);
 
   if (insights.error) throw new Error(insights.error.message);
+  if (teams.error) throw new Error(teams.error.message);
   const latestGeneration = insights.data[0]?.generation_id;
   const latestInsights = latestGeneration ? insights.data.filter((i) => i.generation_id === latestGeneration) : [];
 
@@ -104,6 +112,7 @@ export async function loadSessionAnalytics(
     responses,
     survey: surveys.get(sessionId) ?? EMPTY_SURVEY,
     latestInsights,
+    teams: teams.data,
   };
 }
 

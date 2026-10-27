@@ -29,7 +29,9 @@
     "consent": "I allow the speaker to use my contact info to send materials and updates about this session. My contact info is kept separate from my answers. <link>Privacy policy</link>",
     "submit": "Join",
     "submitting": "Joining…",
-    "terms": "By joining, you agree to the <link>privacy policy</link>."
+    "terms": "By joining, you agree to the <link>privacy policy</link>.",
+    "teamLegend": "Choose your team",
+    "teamHint": "If you don't choose, you join the team with the fewest people."
   },
   "participate": {
     "metaTitle": "Participate"
@@ -47,7 +49,10 @@
     "startingSoon": "The session starts in a moment.",
     "answeredTitle": "Answer received",
     "answeredText": "Watch the results on the speaker's screen.",
-    "askSpeaker": "Ask the speaker"
+    "askSpeaker": "Ask the speaker",
+    "team": "Your team: {name}",
+    "liveResults": "Live results",
+    "answeredShort": "Answer recorded"
   },
   "answer": {
     "secondsLeft": "{seconds}s",
@@ -61,7 +66,35 @@
     "textPlaceholder": "Type your answer",
     "yourAnswer": "Your answer",
     "submitPreview": "Submit (preview)",
-    "submit": "Submit answer"
+    "submit": "Submit answer",
+    "timeLeft": "{seconds} seconds left",
+    "timeUp": "Time's up",
+    "chooseUpTo": "Choose up to {max}",
+    "chosenCount": "{count} of {max}",
+    "pointsLeftLabel": "Left to give",
+    "pointsDone": "Done: all 100 points given",
+    "pointsLeft": "{left, plural, one {# point} other {# points}}",
+    "pointsLess": "Fewer points for {label}",
+    "pointsMore": "More points for {label}",
+    "pointsValue": "{points, plural, one {# point} other {# points}}",
+    "matrixPlace": "Tap the grid to place <b>{label}</b>",
+    "matrixMove": "Drag or tap the grid to move <b>{label}</b>",
+    "matrixDone": "Done! Tap an item to adjust where it sits.",
+    "matrixBoard": "Grid for placing the items. Use the arrow keys to move the selected item.",
+    "matrixPlaced": "Placed",
+    "matrixRemove": "Remove",
+    "matrixSkip": "Skip",
+    "pinPlace": "Tap the image to drop your pin.",
+    "pinMove": "Tap or drag to move your pin.",
+    "pinArea": "Image to mark. Use the arrow keys to move the pin.",
+    "pinNoImage": "The image for this question isn't available.",
+    "yourGuess": "Your guess",
+    "guessSlider": "Adjust your guess",
+    "guessOutOfRange": "Between {min} and {max}",
+    "quizTextPlaceholder": "Type your answer",
+    "quizTextHint": "Capital letters and accents don't matter.",
+    "video": "Video: {title}",
+    "followScreen": "Follow along on the big screen."
   },
   "questions": {
     "title": "Audience Q&A",
@@ -159,6 +192,22 @@
     "points": "+{points, number} points",
     "correctAnswer": "Correct answer: <b>{label}</b>",
     "standing": "You're in {rank, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place out of {of, number}",
-    "total": "{points, number} points in total"
+    "total": "{points, number} points in total",
+    "close": "So close!"
+  },
+  "journey": {
+    "progress": "{current} of {total}",
+    "previous": "Previous",
+    "next": "Next",
+    "answered": "Answered",
+    "answeredText": "You've already answered this question.",
+    "doneTitle": "You're done!",
+    "doneText": "Thanks for taking part. Your answers have been recorded.",
+    "doneSurveyLater": "When the session ends, the survey opens here.",
+    "missing": "{count, plural, one {# question left} other {# questions left}}.",
+    "answerMissing": "Answer what's left",
+    "review": "Back to the start",
+    "empty": "This session has no questions yet.",
+    "loading": "Loading…"
   }
 }

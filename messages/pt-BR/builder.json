@@ -34,7 +34,25 @@
     "showOnDisplay": "Mostrar respostas na tela do projetor",
     "reviewFields": "Revise os campos.",
     "created": "Interação criada.",
-    "updated": "Interação atualizada."
+    "updated": "Interação atualizada.",
+    "contentTitle": "Título do slide",
+    "titlePlaceholderPoints": "Onde devemos investir o orçamento do próximo semestre?",
+    "titlePlaceholderMatrix": "Onde ficam estas ideias em esforço e impacto?",
+    "titlePlaceholderPin": "Onde fica a sua sala no mapa do campus?",
+    "titlePlaceholderGuess": "Em que ano a internet comercial chegou ao Brasil?",
+    "titlePlaceholderQuizText": "Qual é a capital da Austrália?",
+    "titlePlaceholderContent": "Agenda de hoje",
+    "optionStyleImages": "Grade de imagens",
+    "optionsPoints": "Alternativas (a plateia distribui 100 pontos)",
+    "optionsMatrix": "Itens (a plateia posiciona cada um)",
+    "item": "Item {number}",
+    "removeItem": "Remover item",
+    "addItem": "Item",
+    "imagesStyleHint": "Na grade de imagens, toda alternativa precisa de imagem. O texto aparece como legenda e serve de descrição para leitores de tela.",
+    "pointsBudgetHint": "Cada pessoa reparte 100 pontos entre as alternativas; o telão mostra a média de cada uma.",
+    "answerKeyLockedHint": "Já existem respostas: mudar a resposta certa não recalcula os pontos já dados.",
+    "pinImageRequired": "Envie a imagem em que a plateia vai marcar.",
+    "guessAnswerRequired": "Informe a resposta certa."
   },
   "images": {
     "add": "Adicionar imagem à alternativa {number}",
@@ -49,14 +67,20 @@
       "tooLargeResult": "A imagem ficou grande demais.",
       "sessionExpired": "Sua sessão expirou. Entre de novo.",
       "uploadFailed": "Falha ao enviar a imagem. Tente de novo."
-    }
+    },
+    "preview": "Prévia da imagem",
+    "replace": "Trocar imagem",
+    "removeImage": "Remover imagem",
+    "choose": "Escolher imagem",
+    "chooseHint": "PNG, JPEG ou WebP. A imagem é reduzida no seu navegador antes de enviar.",
+    "uploading": "Enviando…"
   },
   "editor": {
     "deleteTitle": "Excluir \"{title}\"?",
     "deleteResponses": "{count, plural, one {A # resposta também será apagada.} other {As # respostas também serão apagadas.}}",
     "deleted": "Interação excluída.",
     "emptyTitle": "Nenhuma pergunta ainda",
-    "emptyDescription": "Adicione enquetes, quizzes, escalas, rankings, nuvens de palavras ou perguntas abertas. A plateia responde pelo celular.",
+    "emptyDescription": "Adicione enquetes, quizzes, escalas, nuvens de palavras, matrizes, slides de conteúdo e mais. A plateia responde pelo celular.",
     "cue": "Deixa {number}",
     "active": "Ativa",
     "responses": "{count, plural, one {# resposta} other {# respostas}}",
@@ -86,7 +110,10 @@
     "adding": "Adicionando...",
     "addToLineup": "Adicionar ao roteiro",
     "added": "Pergunta adicionada ao roteiro.",
-    "regenerate": "Gerar outras sugestões"
+    "regenerate": "Gerar outras sugestões",
+    "answer": "Resposta: {value}",
+    "needsImage": "Precisa de uma imagem: abra no formulário para enviar.",
+    "editFirst": "Editar antes"
   },
   "library": {
     "search": "Buscar perguntas",
@@ -149,5 +176,113 @@
     "resumeToLaunch": "Retome a sessão para lançar a pergunta.",
     "createdNotPlaced": "A pergunta foi criada no fim do roteiro, mas não foi possível posicioná-la.",
     "createdNotLaunched": "A pergunta foi criada como a próxima, mas não foi possível lançá-la."
+  },
+  "picker": {
+    "opinion": {
+      "title": "Opinião",
+      "hint": "votar, avaliar e priorizar"
+    },
+    "open": {
+      "title": "Respostas livres",
+      "hint": "palavras, frases e toques"
+    },
+    "competition": {
+      "title": "Competição",
+      "hint": "valem pontos no ranking"
+    },
+    "content": {
+      "title": "Conteúdo",
+      "hint": "sem resposta"
+    }
+  },
+  "poll": {
+    "multiple": "Permitir várias escolhas",
+    "multipleHint": "Cada pessoa marca mais de uma alternativa, até o limite.",
+    "maxChoices": "Até quantas escolhas",
+    "maxChoicesValue": "Até {count}",
+    "maxChoicesAll": "Todas ({count})",
+    "segment": "Usar para comparar grupos",
+    "segmentHint": "Ex.: área de atuação ou turma. Depois dá para filtrar os resultados das outras perguntas por resposta desta, no telão e na análise."
+  },
+  "matrix": {
+    "preview": "Prévia da grade",
+    "xAxis": "Eixo horizontal",
+    "yAxis": "Eixo vertical",
+    "name": "Nome do eixo",
+    "left": "Ponta esquerda",
+    "right": "Ponta direita",
+    "bottom": "Ponta de baixo",
+    "top": "Ponta de cima",
+    "xNamePlaceholder": "Esforço",
+    "yNamePlaceholder": "Impacto",
+    "lowPlaceholder": "Baixo",
+    "highPlaceholder": "Alto"
+  },
+  "pin": {
+    "image": "Imagem",
+    "hint": "Mapa, planta, gráfico ou foto. Cada pessoa toca num ponto; o telão mostra o mapa de calor."
+  },
+  "guess": {
+    "min": "Mínimo",
+    "max": "Máximo",
+    "decimals": "Casas decimais",
+    "decimals0": "Nenhuma",
+    "decimals1": "1 casa",
+    "decimals2": "2 casas",
+    "unit": "Unidade (opcional)",
+    "unitPlaceholder": "km, %, anos",
+    "answer": "Resposta certa",
+    "answerPlaceholder": "Ex.: 1995",
+    "maxPoints": "Pontos máximos",
+    "hint": "Quem acerta em cheio leva os pontos máximos; quanto mais longe, menos pontos. A resposta só aparece quando você revelar."
+  },
+  "quizText": {
+    "accepted": "Respostas aceitas",
+    "answer": "Resposta aceita {number}",
+    "remove": "Remover resposta aceita {number}",
+    "firstPlaceholder": "Canberra",
+    "otherPlaceholder": "Outra forma de escrever (opcional)",
+    "add": "Resposta aceita",
+    "hint": "Até {max}. Maiúsculas, acentos e espaços a mais não contam: \"São Paulo\" também aceita \"sao paulo\".",
+    "maxPoints": "Pontos se acertar"
+  },
+  "content": {
+    "body": "Texto",
+    "bodyPlaceholder": "Escreva o que vai aparecer no telão.",
+    "bodyHint": "Deixe uma linha em branco para começar outro parágrafo; comece a linha com \"- \" para fazer uma lista.",
+    "image": "Imagem (opcional)",
+    "video": "Vídeo do YouTube ou do Vimeo (opcional)",
+    "videoPlaceholder": "https://www.youtube.com/watch?v=…",
+    "videoHint": "Cole o link do vídeo. Ele toca no telão.",
+    "videoInvalid": "Use um link do YouTube ou do Vimeo.",
+    "videoTitle": "Prévia do vídeo"
+  },
+  "common": {
+    "title": "Mais ajustes",
+    "hint": "Cronômetro, resultados ocultos e resultado no celular",
+    "hintScored": "Resultados ocultos até você revelar",
+    "hideResults": "Esconder resultados até eu revelar",
+    "hideResultsHint": "O telão mostra só quantas pessoas responderam. Na sala ao vivo, você vê tudo e revela quando quiser.",
+    "showOnPhone": "Mostrar o resultado no celular depois de responder",
+    "showOnPhoneHint": "Quem respondeu acompanha o gráfico ao vivo no próprio celular."
+  },
+  "notes": {
+    "title": "Notas do palestrante",
+    "hint": "Só você vê, na sala ao vivo, quando este item estiver no telão",
+    "placeholder": "O que dizer antes de abrir, perguntas de apoio, lembretes…"
+  },
+  "summary": {
+    "hasNotes": "Tem notas do palestrante",
+    "notes": "Notas",
+    "range": "De {min} a {max}",
+    "accepted": "{count, plural, =0 {Nenhuma resposta aceita} one {# resposta aceita} other {# respostas aceitas}}",
+    "maxChoices": "Até {count} escolhas",
+    "segment": "Compara grupos",
+    "imageGrid": "Grade de imagens",
+    "video": "Vídeo",
+    "timer": "{seconds} s",
+    "hidden": "Resultados ocultos",
+    "onPhone": "Resultado no celular",
+    "points": "{points} pts"
   }
 }

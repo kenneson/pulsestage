@@ -18,7 +18,14 @@ export type NewSession = {
   surveyTemplateId: string | null;
   /** Idioma do telão, do celular da plateia, do filtro de palavrões e da IA. */
   locale: Locale;
+  /** 'live' = o palestrante conduz; 'self' = cada pessoa responde no seu ritmo (padrão do banco: 'live'). */
+  pace?: SessionPace;
+  /** logo e cor do palestrante no celular e no telão (padrão do banco: true) */
+  useBrand?: boolean;
 };
+
+export const SESSION_PACES = ["live", "self"] as const;
+export type SessionPace = (typeof SESSION_PACES)[number];
 
 /** O modelo precisa ser visível ao speaker (RLS: da plataforma ou dele). */
 export async function isVisibleTemplate(supabase: ServerSupabase, id: string | null): Promise<boolean> {
@@ -45,6 +52,8 @@ export async function insertSession(
         join_code: joinCode,
         survey_template_id: values.surveyTemplateId,
         locale: values.locale,
+        ...(values.pace ? { pace: values.pace } : {}),
+        ...(values.useBrand !== undefined ? { use_brand: values.useBrand } : {}),
       })
       .select("id, join_code")
       .single();

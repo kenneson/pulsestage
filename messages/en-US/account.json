@@ -11,7 +11,9 @@
     "preferencesDescription": "Defaults for new sessions and how dates are shown.",
     "security": "Security",
     "privacy": "Privacy",
-    "privacyTitle": "Privacy and data"
+    "privacyTitle": "Privacy and data",
+    "brand": "Brand",
+    "brandDescription": "Your logo and color on the audience's phones and on the session screen."
   },
   "security": {
     "emailPassword": "Email and password",
@@ -50,6 +52,61 @@
     "defaultDuration": "Default duration (min)",
     "themeHint": "Applies to this browser.",
     "save": "Save preferences"
+  },
+  "brand": {
+    "logo": "Logo",
+    "chooseLogo": "Upload logo",
+    "changeLogo": "Change logo",
+    "logoHint": "PNG, JPG or WebP. We shrink it to 400 px at most (up to 512 KB); transparent backgrounds are kept.",
+    "logoAlt": "Presenter's logo",
+    "logoAltPreview": "Your current logo",
+    "color": "Main color",
+    "colorPicker": "Pick the main color",
+    "colorSaved": "Your brand color",
+    "colorDefault": "No color of your own: sessions use the PulseStage blue.",
+    "saveColor": "Save color",
+    "resetColor": "Back to the default blue",
+    "where": "The brand shows in sessions with “Use my brand” on (it's on for new sessions). The dashboard keeps the PulseStage colors.",
+    "check": {
+      "textWhite": "White text on the color: {ratio}:1 contrast.",
+      "textDark": "Dark text on the color (white would be unreadable): {ratio}:1 contrast.",
+      "lightOk": "Readable on the light background ({ratio}:1).",
+      "lightAdjusted": "Low contrast on the light background ({ratio}:1): there we use a darker shade of the same color.",
+      "darkOk": "Readable on the dark background and on the screen ({ratio}:1).",
+      "darkAdjusted": "Low contrast on the dark background ({ratio}:1): on the screen we use a lighter shade of the same color."
+    },
+    "preview": {
+      "phone": "Audience phone",
+      "screen": "Screen",
+      "sessionTitle": "Your session",
+      "question": "Which topic should we dig into?",
+      "optionA": "Strategy",
+      "optionB": "Tools",
+      "optionC": "Real cases",
+      "send": "Send",
+      "joinAt": "Code"
+    },
+    "session": {
+      "label": "Use my brand",
+      "description": "Your logo and color on the audience's phones and on this session's screen.",
+      "noBrand": "You don't have a logo or color yet. <link>Set up your brand in Account</link>."
+    },
+    "success": {
+      "logoSaved": "Logo saved.",
+      "logoRemoved": "Logo removed.",
+      "colorSaved": "Color saved.",
+      "colorRemoved": "Sessions are back to the default blue."
+    },
+    "errors": {
+      "notImage": "Choose a PNG, JPG or WebP image.",
+      "tooLarge": "The image can be up to {max} MB.",
+      "tooLargeResult": "Even shrunk, the logo is over {max} KB. Try a simpler image.",
+      "cannotOpen": "Couldn't open this image.",
+      "sessionExpired": "Your session expired. Sign in again.",
+      "uploadFailed": "Couldn't upload the logo.",
+      "logoInvalid": "Invalid logo. Upload it again.",
+      "saveFailed": "Couldn't save the brand."
+    }
   },
   "password": {
     "new": "New password",
@@ -105,6 +162,8 @@
     "signOutOthersFailed": "Couldn't end your other sessions.",
     "typeToConfirm": "Type {word} to confirm.",
     "deleteFailed": "Couldn't delete your account. Try again.",
-    "unauthenticated": "Not authenticated."
+    "unauthenticated": "Not authenticated.",
+    "brandColorInvalid": "Use a color in the #RRGGBB format.",
+    "brandLogoInvalid": "Invalid logo. Upload it again."
   }
 }

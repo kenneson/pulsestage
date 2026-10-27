@@ -8,6 +8,7 @@ import { getOwnedSession } from "@/lib/data/sessions";
 import { removeSlideFiles, SLIDES_BUCKET } from "@/lib/data/slides";
 import { MAX_SLIDES, SLIDE_FORMATS, slidePath } from "@/lib/domain/deck";
 import { isEditable } from "@/lib/domain/session";
+import { slideNoteInputSchema, withSlideNote } from "@/lib/domain/slide-notes";
 import { hasDbErrorCode } from "@/lib/supabase/errors";
 import { messageKey } from "@/lib/domain/message-key";
 import { getMessageTranslator } from "@/i18n/server";
@@ -90,6 +91,38 @@ export async function removeSlidesAction(sessionId: string): Promise<ActionResul
   await removeSlideFiles(supabase, `${session.speaker_id}/${sessionId}`);
   revalidateSession(sessionId);
   return ok(null);
+}
+
+/**
+ * Nota do palestrante de um slide (só ele vê, na sala ao vivo). Texto vazio apaga a nota.
+ * Vale também durante a sessão ao vivo; depois de encerrada, não muda mais.
+ */
+export async function saveSlideNoteAction(
+  sessionId: string,
+  raw: unknown,
+): Promise<ActionResult<{ notes: Record<string, string> }>> {
+  const [t, tSession, tr] = await Promise.all([
+    getTranslations("session.slides.errors"),
+    getTranslations("session.errors"),
+    getMessageTranslator(),
+  ]);
+  if (!isUuid(sessionId)) return fail(tSession("invalidSession"));
+  const parsed = slideNoteInputSchema.safeParse(raw);
+  if (!parsed.success) return fail(tr.issue(parsed.error));
+  const { slide, text } = parsed.data;
+
+  const supabase = await createClient();
+  const session = await getOwnedSession(supabase, sessionId);
+  if (!session) return fail(tSession("sessionNotFound"));
+  if (!isEditable(session.status)) return fail(tSession("sessionEnded"));
+  if (slide > session.slide_count) return fail(t("slideNotFound"));
+
+  const notes = withSlideNote(session.slide_notes, slide, text);
+  const { error } = await supabase.from("sessions").update({ slide_notes: notes }).eq("id", sessionId);
+  if (error) return fail(tr.message("session.slides.errors.noteSaveFailed"));
+
+  revalidateSession(sessionId);
+  return ok({ notes });
 }
 
 /** Mostra um slide no telão (encerrando a pergunta ativa) ou, com `slide` null, o QR Code. */

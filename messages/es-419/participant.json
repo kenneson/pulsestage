@@ -29,7 +29,9 @@
     "consent": "Autorizo al presentador a usar mis datos de contacto para enviarme materiales y comunicaciones sobre esta sesión. Mis datos de contacto se guardan separados de mis respuestas. <link>Política de privacidad</link>",
     "submit": "Participar",
     "submitting": "Entrando…",
-    "terms": "Al participar, aceptas la <link>política de privacidad</link>."
+    "terms": "Al participar, aceptas la <link>política de privacidad</link>.",
+    "teamLegend": "Elige tu equipo",
+    "teamHint": "Si no eliges, entras en el equipo con menos personas."
   },
   "participate": {
     "metaTitle": "Participar"
@@ -47,7 +49,10 @@
     "startingSoon": "La sesión comienza en unos instantes.",
     "answeredTitle": "Respuesta registrada",
     "answeredText": "Mira el resultado en la pantalla del presentador.",
-    "askSpeaker": "Preguntar al presentador"
+    "askSpeaker": "Preguntar al presentador",
+    "team": "Tu equipo: {name}",
+    "liveResults": "Resultados en vivo",
+    "answeredShort": "Respuesta registrada"
   },
   "answer": {
     "secondsLeft": "{seconds}s",
@@ -61,7 +66,35 @@
     "textPlaceholder": "Escribe tu respuesta",
     "yourAnswer": "Tu respuesta",
     "submitPreview": "Enviar (vista previa)",
-    "submit": "Enviar respuesta"
+    "submit": "Enviar respuesta",
+    "timeLeft": "Quedan {seconds} segundos",
+    "timeUp": "Se acabó el tiempo",
+    "chooseUpTo": "Elige hasta {max}",
+    "chosenCount": "{count} de {max}",
+    "pointsLeftLabel": "Por repartir",
+    "pointsDone": "Listo: 100 puntos repartidos",
+    "pointsLeft": "{left, plural, one {# punto} other {# puntos}}",
+    "pointsLess": "Menos puntos para {label}",
+    "pointsMore": "Más puntos para {label}",
+    "pointsValue": "{points, plural, one {# punto} other {# puntos}}",
+    "matrixPlace": "Toca el cuadro para ubicar <b>{label}</b>",
+    "matrixMove": "Arrastra o toca el cuadro para mover <b>{label}</b>",
+    "matrixDone": "¡Listo! Toca un ítem para ajustar su posición.",
+    "matrixBoard": "Cuadro para ubicar los ítems. Usa las flechas para mover el ítem elegido.",
+    "matrixPlaced": "En el cuadro",
+    "matrixRemove": "Quitar",
+    "matrixSkip": "Saltar",
+    "pinPlace": "Toca la imagen para marcar el punto.",
+    "pinMove": "Toca o arrastra para mover el punto.",
+    "pinArea": "Imagen para marcar. Usa las flechas para mover el punto.",
+    "pinNoImage": "La imagen de esta pregunta no está disponible.",
+    "yourGuess": "Tu respuesta",
+    "guessSlider": "Ajustar tu respuesta",
+    "guessOutOfRange": "Entre {min} y {max}",
+    "quizTextPlaceholder": "Escribe tu respuesta",
+    "quizTextHint": "Las mayúsculas y las tildes no importan.",
+    "video": "Video: {title}",
+    "followScreen": "Sigue la pantalla."
   },
   "questions": {
     "title": "Preguntas del público",
@@ -159,6 +192,22 @@
     "points": "+{points, number} puntos",
     "correctAnswer": "Respuesta correcta: <b>{label}</b>",
     "standing": "Estás en el {rank}.º lugar de {of, number}",
-    "total": "{points, number} puntos en total"
+    "total": "{points, number} puntos en total",
+    "close": "¡Casi!"
+  },
+  "journey": {
+    "progress": "{current} de {total}",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "answered": "Respondida",
+    "answeredText": "Ya respondiste esta pregunta.",
+    "doneTitle": "¡Terminaste!",
+    "doneText": "Gracias por participar. Tus respuestas quedaron registradas.",
+    "doneSurveyLater": "Cuando la sesión termine, la encuesta se abre aquí.",
+    "missing": "{count, plural, one {Falta # pregunta} other {Faltan # preguntas}}.",
+    "answerMissing": "Responder lo que falta",
+    "review": "Volver al inicio",
+    "empty": "Todavía no hay preguntas en esta sesión.",
+    "loading": "Cargando…"
   }
 }

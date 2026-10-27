@@ -55,7 +55,15 @@
     "required": "required",
     "requiredHint": "Only the title is required. You can adjust the rest later.",
     "moreOptions": "More options",
-    "moreOptionsHint": "Description, duration, language, join code and survey"
+    "moreOptionsHint": "Description, mode, duration, language and join code",
+    "pace": "Session mode",
+    "paceLive": "Live, you lead",
+    "paceLiveHint": "You open each question and the audience answers together, at your pace.",
+    "paceSelf": "Self-paced",
+    "paceSelfHint": "While the session is live, each person goes through the whole lineup on their phone without waiting for you. Timers and the speed bonus don't apply.",
+    "useBrand": "Use my brand",
+    "useBrandHint": "Your logo and color show on the audience's phones and on the big screen.",
+    "createNext": "Create and go to Slides"
   },
   "controls": {
     "startConfirmTitle": "Start without interactions?",
@@ -97,7 +105,7 @@
     "exportHelp": "PowerPoint: File → Export → PDF · Google Slides: File → Download → PDF · Keynote: File → Export To → PDF · Canva: Share → Download → PDF. The PDF is converted in your browser; only the slide images are uploaded. Animations and videos aren't kept.",
     "summary": "<num>{slides}</num> {slides, plural, one {slide} other {slides}} · {questions, plural, one {# question} other {# questions}}.",
     "readOnlyHint": "Each question comes in at the marked spot.",
-    "editHint": "Drag questions to the point in the presentation where they should come in, or use each one's selector.",
+    "editHint": "Drag questions to the point in the presentation where they should come in, or use each one's selector. On each slide, \"Note\" keeps what you want to remember in the moment.",
     "replacePdf": "Replace PDF",
     "removeSlides": "Remove slides",
     "slideAlt": "Slide {number}",
@@ -121,7 +129,20 @@
       "removeFailed": "Couldn't remove the slides.",
       "notLive": "Start or resume the session to show slides.",
       "slideNotFound": "Slide not found.",
-      "changeFailed": "Couldn't change the slide."
+      "changeFailed": "Couldn't change the slide.",
+      "noteSaveFailed": "Couldn't save the note."
+    },
+    "notes": {
+      "add": "Note",
+      "edit": "Note",
+      "addAria": "Add a note to slide {number}",
+      "editAria": "Edit the note for slide {number}",
+      "label": "Note",
+      "title": "Note for slide {number}",
+      "description": "Only you see it, in the live room, while this slide is on the big screen.",
+      "placeholder": "What to say on this slide, numbers to quote, reminders…",
+      "saved": "Note saved.",
+      "removed": "Note removed."
     }
   },
   "raffle": {
@@ -198,6 +219,52 @@
       "description": "Each open-ended answer waits for your approval before it appears on the big screen."
     }
   },
+  "teams": {
+    "title": "Teams",
+    "description": "For quizzes and competitions: each person plays for a team and the screen can show the team ranking.",
+    "enable": "Play in teams",
+    "enableDescription": "When joining, each person picks a team (without a choice, they join the smallest one). The team ranking uses the average points per person.",
+    "liveHint": "People who joined before teams were turned on stay without a team; anyone joining now picks one.",
+    "listLabel": "Session teams",
+    "nameLabel": "Name of team {number}",
+    "colorLabel": "Color of team {name}: {color}. Change color",
+    "colorPicker": "Color of team {name}",
+    "members": "{count, plural, =0 {no one yet} one {# person} other {# people}}",
+    "moveUp": "Move team {name} up",
+    "moveDown": "Move team {name} down",
+    "deleteLabel": "Delete team {name}",
+    "delete": "Delete team",
+    "deleteTitle": "Delete team “{name}”?",
+    "deleteDescription": "{count, plural, one {# person is already in it and will be left} other {# people are already in it and will be left}} without a team. Everyone keeps their points.",
+    "minHint": "With teams on, at least two remain.",
+    "add": "Add team",
+    "limits": "From 2 to 8 teams. The order is the one on the join screen.",
+    "newName": "Team {number}",
+    "defaults": {
+      "red": "Red Team",
+      "blue": "Blue Team",
+      "yellow": "Yellow Team",
+      "green": "Green Team"
+    },
+    "colors": {
+      "1": "red (triangle)",
+      "2": "blue (diamond)",
+      "3": "yellow (circle)",
+      "4": "green (square)",
+      "5": "purple (star)",
+      "6": "teal (hexagon)",
+      "7": "orange (pentagon)",
+      "8": "pink (heart)"
+    },
+    "errors": {
+      "nameRequired": "Give the team a name.",
+      "nameTooLong": "The team name can have up to 40 characters.",
+      "saveFailed": "Couldn't save the teams.",
+      "notFound": "Team not found.",
+      "tooMany": "A session can have up to 8 teams.",
+      "tooFew": "With teams on, the session needs at least two."
+    }
+  },
   "errors": {
     "titleRequired": "Enter a title.",
     "titleTooLong": "Title is too long.",
@@ -213,7 +280,8 @@
     "joinCodeTaken": "That code is already in use.",
     "deleteFailed": "Couldn't delete the session.",
     "statusNotAllowed": "That status change isn't allowed.",
-    "updateFailed": "Couldn't update the session."
+    "updateFailed": "Couldn't update the session.",
+    "surveyLocked": "This session already ended with this survey."
   },
   "rehearsal": {
     "title": "Rehearsal: {title}",
@@ -224,5 +292,72 @@
       "startFailed": "Couldn't start the rehearsal.",
       "endFailed": "Couldn't end the rehearsal."
     }
+  },
+  "steps": {
+    "aria": "Session steps",
+    "progress": "Step {number} of {total} · {label}",
+    "readyHeading": "Ready to present",
+    "doneCount": "{count} of {total} steps done",
+    "configuracoes": {
+      "label": "Settings",
+      "description": "Name, date, session mode and how the audience takes part.",
+      "short": "Session"
+    },
+    "slides": {
+      "label": "Slides",
+      "description": "Optional. Present from PulseStage: slides and questions in one sequence, with notes per slide.",
+      "short": "Slides"
+    },
+    "enquetes": {
+      "label": "Polls",
+      "description": "The session's questions, in the order they'll be presented. Use the eye to see what the audience sees.",
+      "short": "Polls"
+    },
+    "pesquisa": {
+      "label": "Post-event survey",
+      "description": "What the audience answers when the session ends. The answers become the session report.",
+      "short": "Survey"
+    },
+    "sorteio": {
+      "label": "Raffle",
+      "description": "Optional. Draw prizes among people who answered the survey or everyone who joined.",
+      "short": "Raffle"
+    },
+    "state": {
+      "done": "Done",
+      "optional": "Optional",
+      "pending": "To do"
+    },
+    "needsSession": "available after the session is created",
+    "back": "Back",
+    "backTo": "Back to {label}",
+    "next": "Next: {label}",
+    "skip": "Skip",
+    "finish": "Finish"
+  },
+  "ready": {
+    "title": "Ready to present",
+    "description": "Check what you've set up. You can go back to any step from the timeline.",
+    "slides": "{count, plural, =0 {No slides} one {# slide} other {# slides}}",
+    "interactions": "{count, plural, =0 {No questions yet} one {# question} other {# questions}}",
+    "survey": "Survey: {name}",
+    "noSurvey": "No survey chosen",
+    "raffle": "{count, plural, =0 {Raffle on, no prizes yet} one {Raffle with # prize} other {Raffle with # prizes}}",
+    "noRaffle": "No raffle",
+    "missing": "Before presenting, check: {steps}.",
+    "edit": "Edit",
+    "startHint": "\"Start session\" opens the session to the audience. \"Test session\" creates a private rehearsal that doesn't count in your stats.",
+    "completed": "This session has already been presented."
+  },
+  "survey": {
+    "previewTitle": "Questions in “{name}”",
+    "locked": "The session ended with the “{name}” survey; it can't change anymore.",
+    "platform": "Ready-made templates",
+    "mine": "My templates",
+    "questions": "{count, plural, one {# question} other {# questions}}",
+    "help": "The audience answers when the session ends.",
+    "manage": "View or create templates",
+    "saved": "Survey chosen.",
+    "none": "Choose a template to see its questions."
   }
 }

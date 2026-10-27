@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getLiveState, getPublicInteractions, getPublicSession, getSessionDeck, getSessionResults } from "@/lib/data/public";
 import { getSlideUrls } from "@/lib/data/slides";
+import { getSessionPace } from "@/lib/data/display";
 import { buildDeck } from "@/lib/domain/deck";
 import { getCurrentUser } from "@/lib/supabase/server";
 import { toResultsMap } from "@/lib/domain/results";
@@ -34,12 +35,13 @@ export default async function DisplayPage({ params }: { params: Promise<{ id: st
   const session = await loadSession(id);
   if (!session) notFound();
 
-  const [interactions, live, results, deckSession, user] = await Promise.all([
+  const [interactions, live, results, deckSession, user, pace] = await Promise.all([
     getPublicInteractions(admin, id),
     getLiveState(admin, id),
     getSessionResults(admin, id),
     getSessionDeck(admin, id),
     getCurrentUser(),
+    getSessionPace(admin, id),
   ]);
   const slideUrls = deckSession ? await getSlideUrls(admin, deckSession) : [];
   const initialLive = liveStateSchema.safeParse(live);
@@ -56,6 +58,7 @@ export default async function DisplayPage({ params }: { params: Promise<{ id: st
         deck={buildDeck(slideUrls.length, interactions)}
         slideUrls={slideUrls}
         canControl={Boolean(user && deckSession && user.id === deckSession.speaker_id)}
+        pace={pace}
       />
     </SessionIntl>
   );

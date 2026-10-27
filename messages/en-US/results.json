@@ -4,5 +4,55 @@
   "averagePosition": "average position {value}",
   "mean": "average · {count, plural, one {# response} other {# responses}}",
   "received": "{count, plural, one {# response received} other {# responses received}}",
-  "wordCloud": "Word cloud: {words}"
+  "wordCloud": "Word cloud: {words}",
+  "hidden": {
+    "title": "Results coming soon",
+    "responses": "{count, plural, one {response} other {responses}}"
+  },
+  "multiNote": "Each person could pick up to {max, plural, one {# option} other {# options}} · % of people who answered",
+  "points": {
+    "caption": "Average points per person · {count, plural, one {# response} other {# responses}}",
+    "unit": "pts"
+  },
+  "matrix": {
+    "label": "2×2 matrix with {count, plural, one {# item placed} other {# items placed}}",
+    "xAxis": "Horizontal",
+    "yAxis": "Vertical",
+    "people": "{count, plural, one {# person} other {# people}}",
+    "coords": "{xName} {x} · {yName} {y}"
+  },
+  "pin": {
+    "alt": "Image with a heat map of the pins",
+    "count": "{count, plural, one {# pin} other {# pins}}",
+    "hot": "Most pinned: {region}",
+    "less": "fewer",
+    "more": "more",
+    "regions": {
+      "topLeft": "top left",
+      "top": "top",
+      "topRight": "top right",
+      "left": "left side",
+      "center": "center",
+      "right": "right side",
+      "bottomLeft": "bottom left",
+      "bottom": "bottom",
+      "bottomRight": "bottom right"
+    }
+  },
+  "guess": {
+    "mean": "Average",
+    "answer": "Answer",
+    "count": "{count, plural, one {# guess} other {# guesses}}",
+    "chart": "Histogram of guesses from {from} to {to}",
+    "bucket": "{from} to {to}: {count, plural, one {# guess} other {# guesses}}"
+  },
+  "quizText": {
+    "answered": "{count, plural, one {person answered} other {people answered}}",
+    "hint": "Answers appear once the correct answer is revealed.",
+    "accepted": "Correct answer: {answers}",
+    "share": "{rate} got it right"
+  },
+  "content": {
+    "video": "Video: {title}"
+  }
 }

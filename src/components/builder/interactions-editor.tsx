@@ -21,6 +21,9 @@ import type { LibraryItem } from "@/lib/domain/library";
 import { emptyDraft, InteractionForm, type InteractionDraft } from "./interaction-form";
 import { InteractionTypePicker } from "./interaction-type-picker";
 import { AISuggestionsPanel, useAISuggestions } from "./ai-suggestions";
+import { InteractionSummary, NotesBadge } from "./interaction-summary";
+import { ContentPreview } from "./content-preview";
+import { draftFromInput } from "./draft";
 
 /** Alvo de toque de 44px no celular (no computador, o tamanho do botão continua o mesmo). */
 const ICON_MOBILE = "max-md:size-11";
@@ -159,6 +162,7 @@ export function InteractionsEditor({
                       {item.responses > 0 ? (
                         <span className="text-xs text-muted-foreground">{t("responses", { count: item.responses })}</span>
                       ) : null}
+                      <NotesBadge draft={item.draft} />
                       {slideCount > 0 ? (
                         <span className="text-xs text-muted-foreground">
                           {gapText(tDomain, interaction.afterSlide, slideCount)}
@@ -166,11 +170,7 @@ export function InteractionsEditor({
                       ) : null}
                     </div>
                     <p className="mt-1 font-medium">{interaction.title}</p>
-                    {interaction.options.length > 0 ? (
-                      <p className="mt-1 truncate text-sm text-muted-foreground">
-                        {interaction.options.map((o) => o.label).join(" · ")}
-                      </p>
-                    ) : null}
+                    <InteractionSummary draft={item.draft} />
                   </div>
                   {/* Só leitura: sobra apenas o olho, que fica ao lado do texto. */}
                   <div
@@ -218,8 +218,19 @@ export function InteractionsEditor({
                 {previewing === interaction.id ? (
                   <div className="border-t bg-muted/40 p-4">
                     <div className="mx-auto max-w-sm rounded-2xl border bg-background p-5 shadow-sm">
-                      <p className="mb-4 text-lg font-semibold">{interaction.title}</p>
-                      <AnswerForm interaction={interaction} onSubmit={() => undefined} preview />
+                      {interaction.type === "content" ? (
+                        <ContentPreview
+                          title={interaction.title}
+                          body={interaction.settings.body}
+                          imagePath={interaction.settings.imagePath}
+                          videoUrl={interaction.settings.videoUrl}
+                        />
+                      ) : (
+                        <>
+                          <p className="mb-4 text-lg font-semibold">{interaction.title}</p>
+                          <AnswerForm interaction={interaction} onSubmit={() => undefined} preview />
+                        </>
+                      )}
                     </div>
                   </div>
                 ) : null}
@@ -232,7 +243,7 @@ export function InteractionsEditor({
           <div className="flex flex-col gap-2">
             {creating.example ? <p className="text-sm text-muted-foreground">{t("exampleHint")}</p> : null}
             <InteractionForm
-              key={`${creating.draft.type}-${creating.example ? "example" : "new"}`}
+              key={`${creating.draft.type}-${creating.example ? "example" : "new"}-${creating.draft.title}`}
               sessionId={sessionId}
               initial={creating.draft}
               onDone={refresh}
@@ -262,7 +273,12 @@ export function InteractionsEditor({
           </div>
         ) : null}
       </div>
-      {ai.open && !readOnly ? <AISuggestionsPanel sessionId={sessionId} ai={ai} onAdded={() => router.refresh()} /> : null}
+      {ai.open && !readOnly ? <AISuggestionsPanel
+          sessionId={sessionId}
+          ai={ai}
+          onAdded={() => router.refresh()}
+          onEdit={(suggestion) => setCreating({ draft: draftFromInput(suggestion), example: false })}
+        /> : null}
     </div>
   );
 }

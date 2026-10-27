@@ -6,15 +6,20 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { loadSessionAnalytics } from "@/lib/data/analytics";
 import { aiConfigProblem, isAIConfigured } from "@/lib/ai";
-import { toPublicInteraction } from "@/lib/domain/interactions";
+import { normalizeSettings, toPublicInteraction } from "@/lib/domain/interactions";
 import {
   computeOverview,
   computePulse,
   confidenceFromSample,
   quizRanking,
-  quizStats,
+  scoredResponses,
 } from "@/lib/domain/metrics";
-import { ratingStats, snapshotFromResponses } from "@/lib/domain/results";
+import { snapshotFromResponses } from "@/lib/domain/results";
+import { summarizeInteraction } from "@/lib/domain/interaction-summary";
+import { findSegment, segmentGroups } from "@/lib/domain/live-room";
+import { segmentMembers } from "@/lib/domain/segment-results";
+import { teamLeaderboard } from "@/lib/domain/team-leaderboard";
+import { revealedAnswerOf } from "@/lib/domain/answer-reveal";
 import { questionResults, strengthsAndWeaknesses } from "@/lib/domain/survey";
 import { sessionClock } from "@/lib/domain/timing";
 import { durationSummaryText } from "@/i18n/text";
@@ -25,8 +30,9 @@ import { isInteractionType } from "@/lib/domain/interactions";
 import { TalkTimeline, type TimelineInteractionMeta } from "@/components/analytics/talk-timeline";
 import { formatDateTime } from "@/lib/datetime";
 import { getSpeakerProfile } from "@/lib/data/profile";
-import { formatInt, formatPercent, formatScore, formatSeconds } from "@/lib/format";
+import { formatInt, formatPercent } from "@/lib/format";
 import { isUuid } from "@/lib/action-result";
+import { cn } from "@/lib/utils";
 import { TypeTag } from "@/components/interaction-type-tag";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,6 +49,9 @@ import { SurveyQuestionResults, SurveyScorecard } from "@/components/analytics/s
 import { AudienceQuestionsReport, ReactionsReport, type ReactionPeakView } from "@/components/analytics/engagement-report";
 import { listSessionQuestions, loadReactions } from "@/lib/data/engagement";
 import { reactionPeaks, reactionsPerMinute, tallyReactions } from "@/lib/domain/reactions";
+import { InteractionMetrics } from "@/components/analytics/interaction-metrics";
+import { SegmentFilter } from "@/components/analytics/segment-filter";
+import { TeamRankingList } from "@/components/analytics/team-ranking";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("analytics.session");
@@ -51,8 +60,14 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const evidenceSchema = z.array(z.string());
 
-export default async function SessionAnalyticsPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function SessionAnalyticsPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ grupo?: string | string[] }>;
+}) {
+  const [{ id }, { grupo }] = await Promise.all([params, searchParams]);
   if (!isUuid(id)) notFound();
 
   const supabase = await createClient();
@@ -81,13 +96,38 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
   const { strengths, weaknesses } = strengthsAndWeaknesses(survey.dimensions);
   const surveyResults = questionResults(data.survey.questions, data.survey.answers);
   const allOptions = interactionsWithOptions.flatMap((i) => i.options);
-  const quizIds = new Set(interactionsWithOptions.filter((i) => i.type === "quiz").map((i) => i.id));
-  const ranking = quizRanking(
-    responses.filter((r) => quizIds.has(r.interaction_id)),
-    participants,
-    10,
-    tDomain("anonymousParticipant"),
+
+  // Comparar grupos (?grupo=<alternativa da enquete de perfil>): resultados e rankings só dessas pessoas.
+  const groups = segmentGroups(
+    interactionsWithOptions.map((i) => ({
+      id: i.id,
+      type: i.type,
+      title: i.title,
+      settings: { isSegment: i.type === "multiple_choice" && normalizeSettings("multiple_choice", i.settings).isSegment },
+      options: [...i.options].sort((a, b) => a.position - b.position),
+    })),
   );
+  const segment = findSegment(groups, typeof grupo === "string" && isUuid(grupo) ? grupo : null);
+  const members = segment
+    ? segmentMembers(
+        responses.filter((r) => r.interaction_id === segment.group.interactionId),
+        segment.option.id,
+      )
+    : null;
+  const inGroup = (participantId: string) => members === null || members.has(participantId);
+
+  // Ranking: todos os tipos que pontuam (quiz, quiz de digitar, adivinhe o número).
+  const scored = scoredResponses(responses, interactionsWithOptions).filter((r) => inGroup(r.participant_id));
+  const ranking = quizRanking(scored, participants, 10, tDomain("anonymousParticipant"));
+  const teamRanking =
+    session.teams_enabled && data.teams.length > 0
+      ? teamLeaderboard(
+          scored.map((r) => ({ participantId: r.participant_id, interactionId: r.interaction_id, value: r.value })),
+          participants.filter((p) => inGroup(p.id)),
+          data.teams,
+          null,
+        ).filter((e) => e.people > 0)
+      : [];
   const lowSample = confidenceFromSample(survey.count) === "low";
 
   const [timelineData, slideUrls, audienceQuestions, reactionRows] = await Promise.all([
@@ -289,16 +329,26 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
         </CardContent>
       </Card>
 
-      <section className="flex flex-col gap-4">
+      <section id="resultados" className="flex scroll-mt-20 flex-col gap-4">
         <h2 className="text-lg font-semibold">{t("results.title")}</h2>
         {interactionsWithOptions.length === 0 ? <EmptyState title={t("results.empty")} /> : null}
+        {groups.length > 0 ? (
+          <SegmentFilter sessionId={id} groups={groups} selected={segment} memberCount={members?.size ?? 0} />
+        ) : null}
         <div className="grid gap-4 lg:grid-cols-2">
           {interactionsWithOptions.map((row, index) => {
+            // Slide de conteúdo não tem resultado (o número segue o roteiro, como na linha do tempo).
+            if (row.type === "content") return null;
             const pub = toPublicInteraction(row, allOptions);
             if (!pub) return null;
-            const rowResponses = responses.filter((r) => r.interaction_id === row.id);
+            // A pergunta que forma os grupos continua com todos (filtrada, daria 100% numa alternativa).
+            const filtered = segment !== null && segment.group.interactionId !== row.id;
+            const rowResponses = responses.filter(
+              (r) => r.interaction_id === row.id && (!filtered || inGroup(r.participant_id)),
+            );
             const snapshot = snapshotFromResponses(rowResponses);
-            const point = pulse.find((p) => p.interactionId === row.id);
+            const summary = summarizeInteraction(row, row.options, rowResponses);
+            const point = filtered ? undefined : pulse.find((p) => p.interactionId === row.id);
             return (
               <Card key={row.id}>
                 <CardHeader>
@@ -322,28 +372,13 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
                       interaction={pub}
                       snapshot={snapshot}
                       correctOptionId={row.options.find((o) => o.is_correct)?.id ?? null}
+                      answer={revealedAnswerOf({ type: pub.type, options: row.options, answerKey: row.answer_key })}
                     />
                   )}
-                  {pub.type === "rating" ? (
-                    <p className="text-sm text-muted-foreground">
-                      {t("results.median", {
-                        value: formatScore(ratingStats(pub.settings.min, pub.settings.max, snapshot).median, locale),
-                      })}
-                    </p>
+                  {summary ? <InteractionMetrics summary={summary} /> : null}
+                  {segment !== null && !filtered ? (
+                    <p className="text-xs text-muted-foreground">{t("segment.groupQuestion")}</p>
                   ) : null}
-                  {pub.type === "quiz"
-                    ? (() => {
-                        const stats = quizStats(rowResponses);
-                        return (
-                          <p className="text-sm text-muted-foreground">
-                            {t("results.quiz", {
-                              rate: formatPercent(stats.correctRate),
-                              time: formatSeconds(stats.avgResponseMs, locale),
-                            })}
-                          </p>
-                        );
-                      })()
-                    : null}
                 </CardContent>
               </Card>
             );
@@ -351,31 +386,55 @@ export default async function SessionAnalyticsPage({ params }: { params: Promise
         </div>
       </section>
 
-      {ranking.length > 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("ranking.title")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ol className="divide-y">
-              {ranking.map((entry, index) => (
-                <li key={entry.participantId} className="flex items-center gap-3 py-2 text-sm">
-                  <span className="w-6 font-semibold tabular-nums">{t("ranking.position", { n: index + 1 })}</span>
-                  <span className="flex min-w-0 flex-1 items-center gap-2">
-                    {entry.avatar ? (
-                      <span aria-hidden className="text-base leading-none">
-                        {entry.avatar}
+      {ranking.length > 0 || teamRanking.length > 0 ? (
+        <div className={cn("grid gap-4", ranking.length > 0 && teamRanking.length > 0 && "lg:grid-cols-2")}>
+          {ranking.length > 0 ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("ranking.title")}</CardTitle>
+                <CardDescription>{t("ranking.description")}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ol className="divide-y">
+                  {ranking.map((entry, index) => (
+                    // Celular: os acertos descem para baixo do nome (ao lado, apertavam o nome).
+                    <li
+                      key={entry.participantId}
+                      className="flex items-center gap-3 py-2 text-sm max-md:grid max-md:grid-cols-[1.5rem_minmax(0,1fr)_auto] max-md:gap-y-0"
+                    >
+                      <span className="w-6 font-semibold tabular-nums max-md:row-span-2">{t("ranking.position", { n: index + 1 })}</span>
+                      <span className="flex min-w-0 flex-1 items-center gap-2">
+                        {entry.avatar ? (
+                          <span aria-hidden className="text-base leading-none">
+                            {entry.avatar}
+                          </span>
+                        ) : null}
+                        <span className="truncate">{entry.name}</span>
                       </span>
-                    ) : null}
-                    <span className="truncate">{entry.name}</span>
-                  </span>
-                  <span className="text-muted-foreground">{t("ranking.correct", { count: entry.correct })}</span>
-                  <span className="w-20 text-right font-semibold tabular-nums">{t("ranking.points", { points: formatInt(entry.points, locale) })}</span>
-                </li>
-              ))}
-            </ol>
-          </CardContent>
-        </Card>
+                      <span className="text-muted-foreground max-md:col-start-2 max-md:row-start-2 max-md:text-xs">
+                        {t("ranking.correct", { count: entry.correct })}
+                      </span>
+                      <span className="w-20 text-right font-semibold tabular-nums max-md:col-start-3 max-md:row-span-2 max-md:row-start-1 max-md:w-auto">
+                        {t("ranking.points", { points: formatInt(entry.points, locale) })}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </CardContent>
+            </Card>
+          ) : null}
+          {teamRanking.length > 0 ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("teams.title")}</CardTitle>
+                <CardDescription>{t("teams.description")}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <TeamRankingList entries={teamRanking} />
+              </CardContent>
+            </Card>
+          ) : null}
+        </div>
       ) : null}
 
       {audienceQuestions.length > 0 || reactionRows.length > 0 ? (

@@ -9,10 +9,13 @@ import { Field, Input, Label } from "@/components/ui/input";
 import { Alert } from "@/components/ui/misc";
 import { AVATARS } from "@/lib/domain/gamification";
 import { localizedPath } from "@/lib/domain/locale";
+import type { PublicTeam } from "@/lib/domain/participant-answers";
+import { TeamSwatch } from "./team-badge";
 
 const initial: JoinFormState = {};
 
-export function JoinForm({ code }: { code: string }) {
+/** `teams`: equipes da sessão (vazio quando a sessão não usa equipes). */
+export function JoinForm({ code, teams = [] }: { code: string; teams?: PublicTeam[] }) {
   const [state, action, pending] = useActionState(joinSessionAction.bind(null, code), initial);
   const t = useTranslations("participant.joinForm");
   const tDomain = useTranslations("domain");
@@ -51,6 +54,24 @@ export function JoinForm({ code }: { code: string }) {
           ))}
         </div>
       </fieldset>
+
+      {teams.length > 0 ? (
+        <fieldset className="flex min-w-0 flex-col gap-1">
+          <legend className="mb-1 text-sm font-medium">{t("teamLegend")}</legend>
+          <div className="grid grid-cols-2 gap-2">
+            {teams.map((team) => (
+              <label key={team.id} className="relative cursor-pointer">
+                <input type="radio" name="team" value={team.id} className="peer sr-only" />
+                <span className="flex min-h-12 items-center gap-2 rounded-xl border-2 border-border px-3 py-2 text-sm font-medium transition-colors peer-checked:border-primary peer-checked:bg-primary/5 peer-focus-visible:ring-2 peer-focus-visible:ring-ring hover:border-primary/40">
+                  <TeamSwatch color={team.color} />
+                  <span className="min-w-0 break-words">{team.name}</span>
+                </span>
+              </label>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground">{t("teamHint")}</p>
+        </fieldset>
+      ) : null}
 
       <details className="rounded-lg border px-3 py-2 text-sm max-md:py-0">
         <summary className="cursor-pointer font-medium max-md:py-3">{t("materialSummary")}</summary>

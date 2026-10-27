@@ -1,11 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { z } from "zod";
 import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { fetchAllRows } from "@/lib/supabase/fetch-all";
 import { loadSessionAnalytics } from "@/lib/data/analytics";
 import { getSpeakerProfile } from "@/lib/data/profile";
-import { isInteractionType } from "@/lib/domain/interactions";
+import { isInteractionType, isScoredType, normalizeSettings } from "@/lib/domain/interactions";
+import { readableAnswer } from "@/lib/domain/interaction-summary";
 import { parseQuizValue, participantLabel } from "@/lib/domain/metrics";
 import { csvFileName, toCsv, type CsvCell } from "@/lib/domain/csv";
 import { isUuid } from "@/lib/action-result";
@@ -13,13 +13,6 @@ import { isUuid } from "@/lib/action-result";
 // Exportação CSV do analytics (RLS: só o dono da sessão).
 //   ?tipo=interacoes  respostas às perguntas ao vivo, uma linha por resposta
 //   ?tipo=pesquisa    pesquisa pós-evento, uma linha por pesquisa e uma coluna por pergunta
-
-const valueSchema = z.object({
-  optionId: z.string().optional(),
-  value: z.number().optional(),
-  text: z.string().optional(),
-  order: z.array(z.string()).optional(),
-});
 
 function localTime(iso: string, timeZone: string): string {
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -72,15 +65,19 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       .sort((a, b) => (order.get(a.interaction_id) ?? 0) - (order.get(b.interaction_id) ?? 0) || a.created_at.localeCompare(b.created_at))
       .map((r) => {
         const interaction = interactions.get(r.interaction_id);
-        const parsed = valueSchema.safeParse(r.value);
-        const v = parsed.success ? parsed.data : {};
-        const labelOf = (id: string) => interaction?.options.find((o) => o.id === id)?.label ?? "?";
-        const answer = v.optionId
-          ? labelOf(v.optionId)
-          : v.order
-            ? v.order.map(labelOf).join(" > ")
-            : (v.text ?? (v.value !== undefined ? v.value : null));
-        const quiz = interaction?.type === "quiz" ? parseQuizValue(r.value) : null;
+        const type = interaction && isInteractionType(interaction.type) ? interaction.type : null;
+        // Resposta legível por tipo ("A: 70 · B: 30", "Item (x 80, y 20)", "x 42%, y 18%"…).
+        const answer = interaction
+          ? readableAnswer(
+              interaction.type,
+              r.value,
+              [...interaction.options].sort((a, b) => a.position - b.position),
+              type ? normalizeSettings(type, interaction.settings) : undefined,
+              labels.decimal,
+            )
+          : null;
+        // Quiz, quiz de digitar e adivinhe o número: acertou, pontos e tempo (calculados no servidor).
+        const quiz = type && isScoredType(type) ? parseQuizValue(r.value) : null;
         return [
           order.get(r.interaction_id) ?? null,
           interaction && isInteractionType(interaction.type) ? tDomain(`interactionTypes.${interaction.type}.label`) : interaction?.type,

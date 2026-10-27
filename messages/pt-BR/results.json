@@ -4,5 +4,55 @@
   "averagePosition": "posição média {value}",
   "mean": "média · {count, plural, one {# resposta} other {# respostas}}",
   "received": "{count, plural, one {# resposta recebida} other {# respostas recebidas}}",
-  "wordCloud": "Nuvem de palavras: {words}"
+  "wordCloud": "Nuvem de palavras: {words}",
+  "hidden": {
+    "title": "Resultados em breve",
+    "responses": "{count, plural, one {resposta} other {respostas}}"
+  },
+  "multiNote": "Cada pessoa pôde escolher até {max, plural, one {# alternativa} other {# alternativas}} · % sobre quem respondeu",
+  "points": {
+    "caption": "Média de pontos por pessoa · {count, plural, one {# resposta} other {# respostas}}",
+    "unit": "pts"
+  },
+  "matrix": {
+    "label": "Matriz 2×2 com {count, plural, one {# item posicionado} other {# itens posicionados}}",
+    "xAxis": "Horizontal",
+    "yAxis": "Vertical",
+    "people": "{count, plural, one {# pessoa} other {# pessoas}}",
+    "coords": "{xName} {x} · {yName} {y}"
+  },
+  "pin": {
+    "alt": "Imagem com o mapa de calor das marcações",
+    "count": "{count, plural, one {# marcação} other {# marcações}}",
+    "hot": "Mais marcado: {region}",
+    "less": "menos",
+    "more": "mais",
+    "regions": {
+      "topLeft": "canto superior esquerdo",
+      "top": "parte de cima",
+      "topRight": "canto superior direito",
+      "left": "lado esquerdo",
+      "center": "centro",
+      "right": "lado direito",
+      "bottomLeft": "canto inferior esquerdo",
+      "bottom": "parte de baixo",
+      "bottomRight": "canto inferior direito"
+    }
+  },
+  "guess": {
+    "mean": "Média",
+    "answer": "Resposta",
+    "count": "{count, plural, one {# palpite} other {# palpites}}",
+    "chart": "Histograma dos palpites de {from} a {to}",
+    "bucket": "{from} a {to}: {count, plural, one {# palpite} other {# palpites}}"
+  },
+  "quizText": {
+    "answered": "{count, plural, one {pessoa respondeu} other {pessoas responderam}}",
+    "hint": "As respostas aparecem quando a resposta certa for revelada.",
+    "accepted": "Resposta certa: {answers}",
+    "share": "{rate} acertaram"
+  },
+  "content": {
+    "video": "Vídeo: {title}"
+  }
 }

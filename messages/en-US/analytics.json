@@ -71,11 +71,27 @@
       "title": "Quiz leaderboard",
       "position": "{n, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}",
       "correct": "{count, plural, one {# correct} other {# correct}}",
-      "points": "{points} pts"
+      "points": "{points} pts",
+      "description": "Sum of points from quiz, type-answer quiz and guess the number."
     },
     "survey": {
       "title": "Survey results",
       "template": "“{name}” template"
+    },
+    "segment": {
+      "title": "Compare groups",
+      "description": "See the results only from people who chose an option in the profile question.",
+      "all": "Everyone",
+      "showing": "Only people who chose “{option}” in “{question}”: {count, plural, one {# person} other {# people}}.",
+      "clear": "See everyone",
+      "groupQuestion": "Question that forms the groups: shows everyone."
+    },
+    "teams": {
+      "title": "Team leaderboard",
+      "description": "Average points per team member (people who didn't answer count as zero).",
+      "people": "{count, plural, one {# person} other {# people}}",
+      "average": "{points} pts/person",
+      "total": "{points} pts total"
     }
   },
   "report": {
@@ -226,5 +242,25 @@
     "aiFailed": "The AI couldn't generate insights right now. Try again in a moment.",
     "generateFailed": "Couldn't generate insights.",
     "saveFailed": "Couldn't save the insights."
+  },
+  "metrics": {
+    "correctRate": "Correct {rate}",
+    "correctRateTime": "Correct {rate} · average time {time}",
+    "median": "Median {value}",
+    "mean": "Mean {value}",
+    "answers": "{count, plural, one {# answer} other {# answers}}",
+    "position": "{n, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}",
+    "pins": "{count, plural, one {# pin} other {# pins}}",
+    "mostCommon": "most common: “{text}”",
+    "guess": {
+      "median": "Median",
+      "closest": "Closest guess",
+      "hitRate": "Got close (90%+)",
+      "avgPoints": "Average points",
+      "answerShort": "correct: {value}",
+      "meanShort": "average guess {value}",
+      "hitShort": "{rate} got close"
+    },
+    "avgTime": "Average time {time}"
   }
 }

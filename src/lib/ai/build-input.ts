@@ -9,6 +9,7 @@ import {
 import { isInteractionType, normalizeSettings, toPublicInteraction } from "@/lib/domain/interactions";
 import { optionBars, ratingStats, snapshotFromResponses, wordList } from "@/lib/domain/results";
 import type { InteractionOptionRow } from "@/lib/supabase/types";
+import { summarizeInteraction } from "@/lib/domain/interaction-summary";
 import { questionResults } from "@/lib/domain/survey";
 import type { InsightInput } from "./types";
 
@@ -34,6 +35,8 @@ export function buildInsightInput(data: AnalyticsData, options: readonly Interac
 
   const interactions = [...data.interactions]
     .sort((a, b) => a.position - b.position)
+    // Slide de conteúdo não tem resposta.
+    .filter((row) => row.type !== "content")
     .map((row) => {
       const responses = data.responses.filter((r) => r.interaction_id === row.id);
       const snapshot = snapshotFromResponses(responses);
@@ -72,6 +75,35 @@ export function buildInsightInput(data: AnalyticsData, options: readonly Interac
               ranking: rankingResults(pub.options, snapshot).map((r) => ({ option: r.label, averagePosition: r.averagePosition })),
             };
             break;
+          default: {
+            const s = summarizeInteraction(
+              row,
+              options.filter((o) => o.interaction_id === row.id),
+              responses,
+            );
+            if (s?.kind === "points") {
+              summary = { averagePointsOutOf100: s.rows.map((r) => ({ option: r.label, average: round(r.average, 1) })) };
+            } else if (s?.kind === "matrix") {
+              summary = {
+                axes: { x: s.axes.xLabel, y: s.axes.yLabel, scale: "0-100" },
+                averagePositions: s.rows.map((r) => ({ item: r.label, x: round(r.x, 1), y: round(r.y, 1) })),
+              };
+            } else if (s?.kind === "pin") {
+              summary = { pins: s.total };
+            } else if (s?.kind === "guess") {
+              summary = {
+                correctNumber: s.answer,
+                meanGuess: round(s.mean),
+                medianGuess: s.median,
+                gotCloseRate: round(s.hitRate),
+              };
+            } else if (s?.kind === "quizText") {
+              summary = {
+                correctRate: round(s.correctRate),
+                topAnswers: s.answers.slice(0, 5).map((a) => ({ answer: a.text.slice(0, 60), count: a.count, correct: a.correct })),
+              };
+            }
+          }
         }
       }
 

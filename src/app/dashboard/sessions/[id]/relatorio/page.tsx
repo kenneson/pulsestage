@@ -15,6 +15,8 @@ import { formatInt, formatPercent, formatScore } from "@/lib/format";
 import { isUuid } from "@/lib/action-result";
 import { buttonVariants } from "@/components/ui/button";
 import { PrintButton } from "@/components/analytics/print-button";
+import { SummaryLine } from "@/components/analytics/interaction-metrics";
+import { summarizeInteraction } from "@/lib/domain/interaction-summary";
 import { ChevronLeftIcon } from "@/components/icons";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -66,6 +68,17 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
   const summary = data.latestInsights.find((i) => i.type === "summary");
   const recommendations = data.latestInsights.filter((i) => i.type === "recommendation").slice(0, 3);
   const lowSample = confidenceFromSample(survey.count) === "low";
+  // Principal resultado de cada pergunta, numa linha abaixo da barra de participação.
+  const summaries = new Map(
+    data.interactionsWithOptions.map((i) => [
+      i.id,
+      summarizeInteraction(
+        i,
+        i.options,
+        data.responses.filter((r) => r.interaction_id === i.id),
+      ),
+    ]),
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -151,21 +164,25 @@ export default async function SessionReportPage({ params }: { params: Promise<{ 
               {t("perQuestion")}
             </h2>
             <ol className="flex flex-col gap-2">
-              {pulse.map((p, index) => (
-                <li key={p.interactionId} className="grid grid-cols-[1.5rem_minmax(0,1fr)_3rem] items-center gap-3">
-                  <span className="font-display font-bold tabular-nums">{index + 1}</span>
-                  <span className="flex min-w-0 flex-col gap-1">
-                    <span className="truncate max-sm:line-clamp-2 max-sm:whitespace-normal">{p.title}</span>
-                    <span className="h-2 overflow-hidden rounded-full bg-muted print:bg-muted">
-                      <span
-                        className="block h-full origin-left rounded-full bg-primary"
-                        style={{ transform: `scaleX(${p.rate ?? 0})` }}
-                      />
+              {pulse.map((p, index) => {
+                const result = summaries.get(p.interactionId);
+                return (
+                  <li key={p.interactionId} className="grid break-inside-avoid grid-cols-[1.5rem_minmax(0,1fr)_3rem] items-center gap-3">
+                    <span className="font-display font-bold tabular-nums">{index + 1}</span>
+                    <span className="flex min-w-0 flex-col gap-1">
+                      <span className="truncate max-sm:line-clamp-2 max-sm:whitespace-normal">{p.title}</span>
+                      <span className="h-2 overflow-hidden rounded-full bg-muted print:bg-muted">
+                        <span
+                          className="block h-full origin-left rounded-full bg-primary"
+                          style={{ transform: `scaleX(${p.rate ?? 0})` }}
+                        />
+                      </span>
+                      {result ? <SummaryLine summary={result} /> : null}
                     </span>
-                  </span>
-                  <span className="text-right font-display font-bold tabular-nums">{formatPercent(p.rate)}</span>
-                </li>
-              ))}
+                    <span className="text-right font-display font-bold tabular-nums">{formatPercent(p.rate)}</span>
+                  </li>
+                );
+              })}
             </ol>
           </section>
         ) : null}

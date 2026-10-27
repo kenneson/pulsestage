@@ -71,11 +71,27 @@
       "title": "Ranking do quiz",
       "position": "{n}º",
       "correct": "{count, plural, one {# acerto} other {# acertos}}",
-      "points": "{points} pts"
+      "points": "{points} pts",
+      "description": "Soma dos pontos de quiz, quiz de digitar e adivinhe o número."
     },
     "survey": {
       "title": "Resultados da pesquisa",
       "template": "Modelo “{name}”"
+    },
+    "segment": {
+      "title": "Comparar grupos",
+      "description": "Veja os resultados só de quem escolheu uma alternativa da pergunta de perfil.",
+      "all": "Todos",
+      "showing": "Só quem escolheu “{option}” em “{question}”: {count, plural, one {# pessoa} other {# pessoas}}.",
+      "clear": "Ver todos",
+      "groupQuestion": "Pergunta que forma os grupos: mostra todos."
+    },
+    "teams": {
+      "title": "Ranking por equipes",
+      "description": "Média de pontos por pessoa da equipe (quem não respondeu conta zero).",
+      "people": "{count, plural, one {# pessoa} other {# pessoas}}",
+      "average": "{points} pts/pessoa",
+      "total": "{points} pts no total"
     }
   },
   "report": {
@@ -226,5 +242,25 @@
     "aiFailed": "A IA não conseguiu gerar os insights agora. Tente de novo em instantes.",
     "generateFailed": "Falha ao gerar insights.",
     "saveFailed": "Não foi possível salvar os insights."
+  },
+  "metrics": {
+    "correctRate": "Acertos {rate}",
+    "correctRateTime": "Acertos {rate} · tempo médio {time}",
+    "median": "Mediana {value}",
+    "mean": "Média {value}",
+    "answers": "{count, plural, one {# resposta} other {# respostas}}",
+    "position": "{n}º",
+    "pins": "{count, plural, one {# marcação} other {# marcações}}",
+    "mostCommon": "mais comum: “{text}”",
+    "guess": {
+      "median": "Mediana",
+      "closest": "Chute mais perto",
+      "hitRate": "Chegaram perto (90%+)",
+      "avgPoints": "Pontos em média",
+      "answerShort": "certo: {value}",
+      "meanShort": "média dos chutes {value}",
+      "hitShort": "{rate} chegaram perto"
+    },
+    "avgTime": "Tempo médio {time}"
   }
 }

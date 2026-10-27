@@ -1,3 +1,168 @@
 {
-  "title": "Session templates"
+  "title": "Session templates",
+  "page": {
+    "metaTitle": "Session templates",
+    "description": "Ready-made scripts for classes, trainings and meetings. Pick one, PulseStage creates a draft session with the questions, and you adjust whatever you like.",
+    "back": "Sessions",
+    "fromScratch": "Start from scratch",
+    "fromScratchDescription": "An empty session, to build the questions your way.",
+    "listLabel": "Templates",
+    "questions": "{count, plural, one {# question} other {# questions}}",
+    "minutes": "{count} min",
+    "selfPaced": "Self-paced",
+    "teams": "In teams",
+    "previewLabel": "Questions in the {name} template",
+    "use": "Use this template",
+    "creating": "Creating…",
+    "editHint": "The examples are meant to be replaced: everything stays editable in the draft, and nothing reaches the audience until you start.",
+    "audiences": { "school": "School", "university": "University", "company": "Company" }
+  },
+  "errors": {
+    "notFound": "Template not found.",
+    "createFailed": "Couldn't create the session from the template."
+  },
+  "items": {
+    "classOpener": {
+      "name": "Class opener",
+      "summary": "Break the ice, find out what the class already knows and agree on what to expect.",
+      "sessionDescription": "Welcome, prior knowledge and the class's expectations.",
+      "questions": {
+        "welcome": {
+          "title": "Welcome! Today's topic is…",
+          "body": "Replace this text with the topic and goal of the class.\n\n- Join with the QR code or the code on the screen\n- Answer honestly: there are no wrong answers here"
+        },
+        "mood": { "title": "In one word: how are you arriving today?" },
+        "prior": {
+          "title": "How much do you already know about today's topic?",
+          "options": { "none": "Nothing, it's all new", "little": "I've heard of it", "basics": "I know the basics", "lots": "I could help explain it" }
+        },
+        "warmup": { "title": "Quick guess: how many countries are members of the UN?" },
+        "expect": { "title": "What do you want to know by the end of this class?" }
+      }
+    },
+    "quizReview": {
+      "name": "Quiz review",
+      "summary": "Review the content by playing in teams: timed quiz, typed answer and a number guess.",
+      "sessionDescription": "Content review as a game, with a team ranking.",
+      "questions": {
+        "rules": {
+          "title": "How the review works",
+          "body": "- Each question has a time limit\n- Faster correct answers earn more points\n- At the end, the ranking shows the winning team\n\nReplace the sample questions with your own content."
+        },
+        "prime": { "title": "Which of these numbers is prime?", "options": { "a": "9", "b": "15", "c": "17", "d": "21" } },
+        "planet": {
+          "title": "What is the largest planet in the Solar System?",
+          "options": { "a": "Earth", "b": "Jupiter", "c": "Saturn", "d": "Neptune" }
+        },
+        "water": { "title": "What is the chemical formula for water?", "accepted": { "1": "H2O", "2": "H₂O" } },
+        "moon": { "title": "In what year did humans first walk on the Moon?" },
+        "ready": { "title": "How ready do you feel for the exam?", "minLabel": "Not at all", "maxLabel": "Very" }
+      }
+    },
+    "projectRetro": {
+      "name": "Project retrospective",
+      "summary": "Close a cycle with the team: mood, what worked, what to improve and where to put energy next.",
+      "sessionDescription": "Cycle retrospective: what to keep, what to improve and next priorities.",
+      "questions": {
+        "cycle": { "title": "From 1 to 5, how was this cycle for you?", "minLabel": "Tough", "maxLabel": "Excellent" },
+        "word": { "title": "One word that sums up the project" },
+        "keep": { "title": "What worked well and should we keep?" },
+        "improve": { "title": "What got in the way and can we improve?" },
+        "focus": {
+          "title": "Split 100 points: where should we invest next cycle?",
+          "options": {
+            "process": "Processes and rituals",
+            "communication": "Communication",
+            "tools": "Tools",
+            "quality": "Quality and testing",
+            "skills": "Team training"
+          }
+        }
+      }
+    },
+    "corporateTraining": {
+      "name": "Corporate training",
+      "summary": "A diagnosis by department, a learning check and priorities for the next meeting.",
+      "sessionDescription": "Training with an initial diagnosis, a learning check and questions.",
+      "questions": {
+        "area": {
+          "title": "Which department do you work in?",
+          "options": { "sales": "Sales", "operations": "Operations", "tech": "Technology", "people": "People and admin", "other": "Other" }
+        },
+        "before": { "title": "Before we start: how well do you know the topic?", "minLabel": "Beginner", "maxLabel": "Expert" },
+        "phishing": {
+          "title": "A suspicious email asks for your password. What do you do?",
+          "options": {
+            "click": "Click the link to check",
+            "reply": "Reply asking for more details",
+            "report": "Tell the security team and delete it",
+            "forward": "Forward it to coworkers"
+          }
+        },
+        "topics": {
+          "title": "Rank the topics you want to go deeper on",
+          "options": { "cases": "Practical cases", "tools": "Everyday tools", "policies": "Rules and policies", "metrics": "Metrics and goals" }
+        },
+        "doubts": { "title": "What question do you still have?" }
+      }
+    },
+    "planning": {
+      "name": "Planning (2×2 and 100 points)",
+      "summary": "Prioritize initiatives with the effort × impact matrix and a 100-point split.",
+      "sessionDescription": "Prioritizing initiatives by effort, impact and points.",
+      "questions": {
+        "intro": {
+          "title": "Let's prioritize together",
+          "body": "Replace the sample initiatives with yours.\n\n- First, everyone places the initiatives by effort and impact\n- Then, everyone splits 100 points among them\n- Finally, we choose where to start"
+        },
+        "matrix": {
+          "title": "Place each initiative by effort and impact",
+          "options": { "a": "New website", "b": "Team training", "c": "Report automation", "d": "Referral program" },
+          "xLabel": "Effort",
+          "xLow": "Low",
+          "xHigh": "High",
+          "yLabel": "Impact",
+          "yLow": "Low",
+          "yHigh": "High"
+        },
+        "points": {
+          "title": "Split 100 points among the initiatives",
+          "options": { "a": "New website", "b": "Team training", "c": "Report automation", "d": "Referral program" }
+        },
+        "start": {
+          "title": "Which two do we start right away?",
+          "options": { "a": "New website", "b": "Team training", "c": "Report automation", "d": "Referral program" }
+        },
+        "risk": { "title": "What risk can't we ignore?" }
+      }
+    },
+    "selfPacedSurvey": {
+      "name": "Self-paced survey",
+      "summary": "A questionnaire everyone answers at their own pace, with no presenter: great for end of term or a team pulse check.",
+      "sessionDescription": "A survey answered at each person's own pace.",
+      "questions": {
+        "intro": {
+          "title": "Thanks for taking part!",
+          "body": "Answer at your own pace, on your phone. It only takes a few minutes."
+        },
+        "role": {
+          "title": "What is your role?",
+          "options": { "student": "Student", "teacher": "Teacher or instructor", "staff": "Staff", "other": "Other" }
+        },
+        "satisfaction": { "title": "Overall, how satisfied are you?", "minLabel": "Not satisfied", "maxLabel": "Very satisfied" },
+        "values": {
+          "title": "What do you value most? (up to 3)",
+          "options": {
+            "content": "Content",
+            "people": "People",
+            "structure": "Facilities and space",
+            "flexibility": "Flexibility",
+            "communication": "Communication"
+          }
+        },
+        "recommend": { "title": "From 0 to 10, how likely are you to recommend it to a friend?", "minLabel": "Not likely", "maxLabel": "Very likely" },
+        "change": { "title": "If you could change one thing, what would it be?" }
+      }
+    }
+  }
 }

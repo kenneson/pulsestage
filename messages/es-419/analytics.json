@@ -71,11 +71,27 @@
       "title": "Tabla de posiciones del quiz",
       "position": "{n}.º",
       "correct": "{count, plural, one {# acierto} other {# aciertos}}",
-      "points": "{points} pts"
+      "points": "{points} pts",
+      "description": "Suma de los puntos de quiz, quiz de escribir y adivina el número."
     },
     "survey": {
       "title": "Resultados de la encuesta",
       "template": "Plantilla “{name}”"
+    },
+    "segment": {
+      "title": "Comparar grupos",
+      "description": "Mira los resultados solo de quienes eligieron una opción de la pregunta de perfil.",
+      "all": "Todos",
+      "showing": "Solo quienes eligieron “{option}” en “{question}”: {count, plural, one {# persona} other {# personas}}.",
+      "clear": "Ver todos",
+      "groupQuestion": "Pregunta que forma los grupos: muestra a todos."
+    },
+    "teams": {
+      "title": "Tabla por equipos",
+      "description": "Promedio de puntos por persona del equipo (quien no respondió cuenta cero).",
+      "people": "{count, plural, one {# persona} other {# personas}}",
+      "average": "{points} pts/persona",
+      "total": "{points} pts en total"
     }
   },
   "report": {
@@ -226,5 +242,25 @@
     "aiFailed": "La IA no pudo generar los insights en este momento. Inténtalo de nuevo en unos instantes.",
     "generateFailed": "No se pudieron generar los insights.",
     "saveFailed": "No se pudieron guardar los insights."
+  },
+  "metrics": {
+    "correctRate": "Aciertos {rate}",
+    "correctRateTime": "Aciertos {rate} · tiempo promedio {time}",
+    "median": "Mediana {value}",
+    "mean": "Promedio {value}",
+    "answers": "{count, plural, one {# respuesta} other {# respuestas}}",
+    "position": "{n}.º",
+    "pins": "{count, plural, one {# marca} other {# marcas}}",
+    "mostCommon": "más común: “{text}”",
+    "guess": {
+      "median": "Mediana",
+      "closest": "Intento más cercano",
+      "hitRate": "Se acercaron (90%+)",
+      "avgPoints": "Puntos en promedio",
+      "answerShort": "correcto: {value}",
+      "meanShort": "promedio de los intentos {value}",
+      "hitShort": "{rate} se acercaron"
+    },
+    "avgTime": "Tiempo promedio {time}"
   }
 }

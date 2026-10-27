@@ -1,14 +1,11 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { saveInteractionAction } from "@/features/interactions/actions";
 import {
-  buildInteractionInput,
-  DEFAULT_OPTION_COUNT,
   defaultOption,
-  defaultSettings,
   hasOptions,
   hasOptionStyle,
   interactionInputSchema,
@@ -16,134 +13,47 @@ import {
   type InteractionType,
   type NormalizedSettings,
 } from "@/lib/domain/interactions";
+import { OPTION_STYLES, type OptionStyle } from "@/lib/domain/gamification";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Label, Select, Textarea } from "@/components/ui/input";
 import { Alert } from "@/components/ui/misc";
-import { ImageIcon, PlusIcon, TrashIcon, XIcon } from "@/components/icons";
+import { PlusIcon, TrashIcon } from "@/components/icons";
 import { ShapeGlyph, shapeText } from "@/components/option-shape";
-import { optionImageSrc } from "@/lib/option-images/url";
-import { OptionImageError, uploadOptionImage } from "@/lib/option-images/upload";
 import type { ActionResult } from "@/lib/action-result";
-import { translateAnyMessage, translateMessage } from "@/i18n/errors";
+import { translateMessage } from "@/i18n/errors";
+import { draftToInput, type EditableOption, type InteractionDraft } from "./draft";
+import { OptionImagePicker } from "./image-upload";
+import {
+  CommonSettings,
+  ContentSettings,
+  GuessNumberSettings,
+  MatrixSettings,
+  NotesField,
+  PinImageSettings,
+  PollSettings,
+  QuizTextSettings,
+  SpeedBonusField,
+  TimerField,
+  type EditorContext,
+} from "./type-editors";
 
-export type EditableOption = { id?: string; label: string; isCorrect: boolean; points: number; imagePath: string | null };
+export { emptyDraft, type EditableOption, type InteractionDraft } from "./draft";
 
 const newOption = (isCorrect = false): EditableOption => defaultOption(isCorrect);
 
-export type InteractionDraft = {
-  id: string | null;
-  type: InteractionType;
-  title: string;
-  description: string;
-  settings: NormalizedSettings;
-  options: EditableOption[];
-};
+/** Alternativas com imagem opcional (no estilo grade de imagens, obrigatória). */
+const TAKES_OPTION_IMAGES: readonly InteractionType[] = ["multiple_choice", "quiz", "ranking"];
 
-/** Pergunta nova no formulário: mesmos padrões da IA e do MCP (`defaultSettings` no domínio). */
-export function emptyDraft(type: InteractionType): InteractionDraft {
-  return {
-    id: null,
-    type,
-    title: "",
-    description: "",
-    settings: defaultSettings(type),
-    options: hasOptions(type) ? Array.from({ length: DEFAULT_OPTION_COUNT }, (_, i) => newOption(type === "quiz" && i === 0)) : [],
-  };
-}
-
-function toInput(draft: InteractionDraft): InteractionInput {
-  return buildInteractionInput({
-    type: draft.type,
-    title: draft.title,
-    description: draft.description || undefined,
-    settings: draft.settings,
-    options: draft.options.map((o) => ({
-      id: o.id,
-      label: o.label,
-      isCorrect: o.isCorrect,
-      points: o.points,
-      imagePath: o.imagePath,
-    })),
-  });
-}
-
-/** Imagem opcional da alternativa: miniatura com "remover" ou botão para escolher o arquivo. */
-function OptionImagePicker({
-  path,
-  index,
-  onChange,
-  onBusy,
-}: {
-  path: string | null;
-  index: number;
-  onChange: (path: string | null) => void;
-  onBusy: (busy: boolean) => void;
-}) {
-  const t = useTranslations("builder.images");
-  const tRoot = useTranslations();
-  const input = useRef<HTMLInputElement>(null);
-  const [uploading, setUploading] = useState(false);
-
-  async function pick(file: File) {
-    setUploading(true);
-    onBusy(true);
-    try {
-      onChange(await uploadOptionImage(file));
-    } catch (e) {
-      toast.error(e instanceof OptionImageError ? translateAnyMessage(tRoot, e.message) : t("uploadFailed"));
-    } finally {
-      setUploading(false);
-      onBusy(false);
-    }
-  }
-
-  if (path) {
-    return (
-      <span className="relative shrink-0">
-        {/* eslint-disable-next-line @next/next/no-img-element -- imagem pública do Storage */}
-        <img src={optionImageSrc(path)} alt="" className="size-10 rounded-md border object-cover max-md:size-11" />
-        <button
-          type="button"
-          aria-label={t("remove", { number: index + 1 })}
-          onClick={() => onChange(null)}
-          className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full border bg-background text-muted-foreground hover:text-foreground max-md:-right-2 max-md:-top-2 max-md:size-7"
-        >
-          <XIcon width={12} height={12} />
-        </button>
-      </span>
-    );
-  }
-
-  return (
-    <>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="max-md:size-11"
-        aria-label={t("add", { number: index + 1 })}
-        title={t("addTitle")}
-        disabled={uploading}
-        onClick={() => input.current?.click()}
-      >
-        {uploading ? <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" /> : <ImageIcon />}
-      </Button>
-      <input
-        ref={input}
-        type="file"
-        accept="image/png,image/jpeg,image/webp,image/gif"
-        className="sr-only"
-        tabIndex={-1}
-        aria-hidden
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          e.target.value = "";
-          if (file) void pick(file);
-        }}
-      />
-    </>
-  );
-}
+/** Exemplo no campo do título, por tipo (os outros usam o exemplo geral). */
+const TITLE_PLACEHOLDER = {
+  points_100: "titlePlaceholderPoints",
+  matrix_2x2: "titlePlaceholderMatrix",
+  pin_image: "titlePlaceholderPin",
+  guess_number: "titlePlaceholderGuess",
+  quiz_text: "titlePlaceholderQuizText",
+  content: "titlePlaceholderContent",
+} as const satisfies Partial<Record<InteractionType, string>>;
 
 /** Botão de salvar alternativo (ex.: sala ao vivo: "Lançar agora" e "Deixar como próxima"). */
 export type InteractionFormAction = {
@@ -154,10 +64,14 @@ export type InteractionFormAction = {
   submit: (input: InteractionInput) => Promise<ActionResult<{ id: string }>>;
 };
 
+function isOptionStyle(value: string): value is OptionStyle {
+  return (OPTION_STYLES as readonly string[]).includes(value);
+}
+
 export function InteractionForm({
   sessionId,
   initial,
-  locked,
+  locked = false,
   onDone,
   onCancel,
   actions,
@@ -182,8 +96,15 @@ export function InteractionForm({
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const setSettings = (patch: Partial<NormalizedSettings>) =>
+  // Mexeu no formulário: o aviso do último "Salvar" sai (ex.: a imagem que faltava já foi enviada).
+  const update = (patch: Partial<InteractionDraft>) => {
+    setError(null);
+    setDraft((d) => ({ ...d, ...patch }));
+  };
+  const setSettings = (patch: Partial<NormalizedSettings>) => {
+    setError(null);
     setDraft((d) => ({ ...d, settings: { ...d.settings, ...patch } }));
+  };
 
   const setOption = (index: number, patch: Partial<EditableOption>) =>
     setDraft((d) => ({
@@ -192,6 +113,14 @@ export function InteractionForm({
         i === index ? { ...o, ...patch } : patch.isCorrect && d.type === "quiz" ? { ...o, isCorrect: false } : o,
       ),
     }));
+
+  // Sem alternativas suficientes, o limite de escolhas da enquete acompanha.
+  const removeOption = (index: number) =>
+    setDraft((d) => {
+      const options = d.options.filter((_, i) => i !== index);
+      const maxChoices = d.settings.maxChoices > 1 ? Math.max(Math.min(d.settings.maxChoices, options.length), 1) : 1;
+      return { ...d, options, settings: { ...d.settings, maxChoices } };
+    });
 
   const defaultAction: InteractionFormAction = {
     label: tCommon("save"),
@@ -203,9 +132,22 @@ export function InteractionForm({
   // Imagens subindo: salvar agora perderia a imagem.
   const [uploads, setUploads] = useState(0);
   const onBusy = (busy: boolean) => setUploads((n) => n + (busy ? 1 : -1));
+  const ctx: EditorContext = { draft, update, setSettings, locked, onBusy };
+
+  /** Erros que o schema daria com uma mensagem genérica: avisos próprios do formulário. */
+  function localError(): string | null {
+    if (draft.type === "pin_image" && !draft.settings.imagePath) return t("pinImageRequired");
+    if (draft.type === "guess_number" && draft.answerValue === null) return t("guessAnswerRequired");
+    return null;
+  }
 
   function save(action: InteractionFormAction) {
-    const input = toInput(draft);
+    const local = localError();
+    if (local) {
+      setError(local);
+      return;
+    }
+    const input = draftToInput(draft);
     const check = interactionInputSchema.safeParse(input);
     if (!check.success) {
       const issue = check.error.issues[0];
@@ -226,6 +168,16 @@ export function InteractionForm({
     });
   }
 
+  const { type, settings } = draft;
+  const isContent = type === "content";
+  const titlePlaceholder = type in TITLE_PLACEHOLDER ? TITLE_PLACEHOLDER[type as keyof typeof TITLE_PLACEHOLDER] : "questionPlaceholder";
+  const minOptions = type === "matrix_2x2" ? 1 : 2;
+  const maxOptions = type === "quiz" ? 6 : 8;
+  const optionImages = TAKES_OPTION_IMAGES.includes(type);
+  const isMatrix = type === "matrix_2x2";
+  // Grade de imagens só na enquete (um quiz antigo nesse estilo continua com a opção para não perdê-la).
+  const styles = OPTION_STYLES.filter((style) => style !== "images" || type === "multiple_choice" || settings.optionStyle === "images");
+
   return (
     <div
       className={cn(
@@ -233,190 +185,182 @@ export function InteractionForm({
         embedded && "max-md:rounded-none max-md:border-0 max-md:bg-transparent max-md:p-0",
       )}
     >
-      <p className="text-sm font-medium text-primary">{tDomain(`interactionTypes.${draft.type}.label`)}</p>
+      <p className="text-sm font-medium text-primary">{tDomain(`interactionTypes.${type}.label`)}</p>
 
       <Field>
-        <Label htmlFor="interaction-title">{t("question")}</Label>
+        <Label htmlFor="interaction-title">{isContent ? t("contentTitle") : t("question")}</Label>
         <Input
           id="interaction-title"
           value={draft.title}
-          onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+          onChange={(e) => update({ title: e.target.value })}
           maxLength={300}
-          placeholder={t("questionPlaceholder")}
+          placeholder={t(titlePlaceholder)}
           autoFocus
         />
       </Field>
 
-      <Field>
-        <Label htmlFor="interaction-description">{t("description")}</Label>
-        <Textarea
-          id="interaction-description"
-          value={draft.description}
-          onChange={(e) => setDraft({ ...draft, description: e.target.value })}
-          maxLength={1000}
-          className="min-h-14"
-        />
-      </Field>
+      {!isContent ? (
+        <Field>
+          <Label htmlFor="interaction-description">{t("description")}</Label>
+          <Textarea
+            id="interaction-description"
+            value={draft.description}
+            onChange={(e) => update({ description: e.target.value })}
+            maxLength={1000}
+            className="min-h-14"
+          />
+        </Field>
+      ) : null}
 
-      {hasOptionStyle(draft.type) ? (
+      {type === "pin_image" ? <PinImageSettings ctx={ctx} /> : null}
+
+      {hasOptionStyle(type) ? (
         <Field className="max-w-xs">
           <Label htmlFor="option-style">{t("optionStyle")}</Label>
           <Select
             id="option-style"
-            value={draft.settings.optionStyle}
-            onChange={(e) => setSettings({ optionStyle: e.target.value === "shapes" ? "shapes" : "text" })}
+            value={settings.optionStyle}
+            onChange={(e) => isOptionStyle(e.target.value) && setSettings({ optionStyle: e.target.value })}
           >
-            <option value="text">{t("optionStyleText")}</option>
-            <option value="shapes">{t("optionStyleShapes")}</option>
+            {styles.map((style) => (
+              <option key={style} value={style}>
+                {style === "text" ? t("optionStyleText") : style === "shapes" ? t("optionStyleShapes") : t("optionStyleImages")}
+              </option>
+            ))}
           </Select>
         </Field>
       ) : null}
 
-      {hasOptions(draft.type) ? (
+      {hasOptions(type) ? (
         <div className="flex flex-col gap-2">
           <Label>
-            {draft.type === "quiz" ? t("optionsQuiz") : draft.type === "ranking" ? t("optionsRanking") : t("options")}
+            {type === "quiz"
+              ? t("optionsQuiz")
+              : type === "ranking"
+                ? t("optionsRanking")
+                : type === "points_100"
+                  ? t("optionsPoints")
+                  : isMatrix
+                    ? t("optionsMatrix")
+                    : t("options")}
           </Label>
-          {draft.options.map((option, index) => (
-            // No celular, no quiz, imagem, pontos e excluir vão para a linha de baixo (o texto fica com a largura toda).
-            <div key={option.id ?? `new-${index}`} className="flex items-center gap-2 max-md:flex-wrap max-md:gap-y-1">
-              {draft.settings.optionStyle === "shapes" ? <ShapeGlyph index={index} className={shapeText(index)} /> : null}
-              {draft.type === "quiz" ? (
-                // O <label> só existe para dar 44px de toque no celular; no computador é `contents`.
-                <label className="md:contents max-md:-mx-1.5 max-md:grid max-md:size-11 max-md:shrink-0 max-md:cursor-pointer max-md:place-items-center">
-                  <input
-                    type="radio"
-                    name="correct-option"
-                    aria-label={t("isCorrect", { number: index + 1 })}
-                    checked={option.isCorrect}
-                    onChange={() => setOption(index, { isCorrect: true })}
-                    disabled={locked}
-                    className="size-4 accent-[var(--primary)] max-md:size-5"
-                  />
-                </label>
-              ) : null}
-              <Input
-                value={option.label}
-                onChange={(e) => setOption(index, { label: e.target.value })}
-                placeholder={option.imagePath ? t("describeImage") : t("option", { number: index + 1 })}
-                aria-label={t("option", { number: index + 1 })}
-                maxLength={200}
-                className="max-md:h-11 max-md:flex-1 max-md:basis-0"
-              />
-              <div
-                className={cn(
-                  "md:contents max-md:flex max-md:items-center max-md:gap-1",
-                  draft.type === "quiz" && "max-md:w-full max-md:justify-end",
-                )}
-              >
-                <OptionImagePicker
-                  path={option.imagePath}
-                  index={index}
-                  onChange={(imagePath) => setOption(index, { imagePath })}
-                  onBusy={onBusy}
+          {draft.options.map((option, index) => {
+            const name = isMatrix ? t("item", { number: index + 1 }) : t("option", { number: index + 1 });
+            return (
+              // No celular, no quiz, imagem, pontos e excluir vão para a linha de baixo (o texto fica com a largura toda).
+              <div key={option.id ?? `new-${index}`} className="flex items-center gap-2 max-md:flex-wrap max-md:gap-y-1">
+                {settings.optionStyle === "shapes" ? <ShapeGlyph index={index} className={shapeText(index)} /> : null}
+                {type === "quiz" ? (
+                  // O <label> só existe para dar 44px de toque no celular; no computador é `contents`.
+                  <label className="md:contents max-md:-mx-1.5 max-md:grid max-md:size-11 max-md:shrink-0 max-md:cursor-pointer max-md:place-items-center">
+                    <input
+                      type="radio"
+                      name="correct-option"
+                      aria-label={t("isCorrect", { number: index + 1 })}
+                      checked={option.isCorrect}
+                      onChange={() => setOption(index, { isCorrect: true })}
+                      disabled={locked}
+                      className="size-4 accent-[var(--primary)] max-md:size-5"
+                    />
+                  </label>
+                ) : null}
+                <Input
+                  value={option.label}
+                  onChange={(e) => setOption(index, { label: e.target.value })}
+                  placeholder={option.imagePath ? t("describeImage") : name}
+                  aria-label={name}
+                  maxLength={200}
+                  className="max-md:h-11 max-md:flex-1 max-md:basis-0"
                 />
-                {draft.type === "quiz" ? (
-                  <span aria-hidden className="mr-1 text-xs text-muted-foreground md:hidden">
-                    {t("points")}
-                  </span>
-                ) : null}
-                {draft.type === "quiz" ? (
-                  <Input
-                    type="number"
-                    aria-label={t("points")}
-                    title={t("pointsHint")}
-                    value={option.points}
-                    min={0}
-                    max={10000}
-                    onChange={(e) => setOption(index, { points: Number(e.target.value) || 0 })}
-                    className="w-24 max-md:h-11"
-                    disabled={locked}
-                  />
-                ) : null}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="max-md:size-11"
-                  aria-label={t("removeOption")}
-                  disabled={locked || draft.options.length <= 2}
-                  onClick={() => setDraft({ ...draft, options: draft.options.filter((_, i) => i !== index) })}
+                <div
+                  className={cn(
+                    "md:contents max-md:flex max-md:items-center max-md:gap-1",
+                    type === "quiz" && "max-md:w-full max-md:justify-end",
+                  )}
                 >
-                  <TrashIcon />
-                </Button>
+                  {optionImages ? (
+                    <OptionImagePicker
+                      path={option.imagePath}
+                      index={index}
+                      onChange={(imagePath) => setOption(index, { imagePath })}
+                      onBusy={onBusy}
+                    />
+                  ) : null}
+                  {type === "quiz" ? (
+                    <span aria-hidden className="mr-1 text-xs text-muted-foreground md:hidden">
+                      {t("points")}
+                    </span>
+                  ) : null}
+                  {type === "quiz" ? (
+                    <Input
+                      type="number"
+                      aria-label={t("points")}
+                      title={t("pointsHint")}
+                      value={option.points}
+                      min={0}
+                      max={10000}
+                      onChange={(e) => setOption(index, { points: Number(e.target.value) || 0 })}
+                      className="w-24 max-md:h-11"
+                      disabled={locked}
+                    />
+                  ) : null}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="max-md:size-11"
+                    aria-label={isMatrix ? t("removeItem") : t("removeOption")}
+                    disabled={locked || draft.options.length <= minOptions}
+                    onClick={() => removeOption(index)}
+                  >
+                    <TrashIcon />
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           <div>
             <Button
               variant="outline"
               size="sm"
               className="max-md:h-11 max-md:w-full max-md:text-sm"
-              disabled={locked || draft.options.length >= (draft.type === "quiz" ? 6 : 8)}
-              onClick={() =>
-                setDraft({ ...draft, options: [...draft.options, newOption()] })
-              }
+              disabled={locked || draft.options.length >= maxOptions}
+              onClick={() => update({ options: [...draft.options, newOption()] })}
             >
-              <PlusIcon /> {t("addOption")}
+              <PlusIcon /> {isMatrix ? t("addItem") : t("addOption")}
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground">
-            {t("imageHint")}
-          </p>
-          {locked ? (
+          {optionImages ? (
             <p className="text-xs text-muted-foreground">
-              {t("lockedHint")}
+              {settings.optionStyle === "images" ? t("imagesStyleHint") : t("imageHint")}
             </p>
           ) : null}
+          {type === "points_100" ? <p className="text-xs text-muted-foreground">{t("pointsBudgetHint")}</p> : null}
+          {locked ? <p className="text-xs text-muted-foreground">{t("lockedHint")}</p> : null}
         </div>
       ) : null}
 
-      {draft.type === "quiz" ? (
-        <div className="flex flex-wrap items-end gap-4">
-          <Field className="w-full max-w-xs">
-            <Label htmlFor="quiz-timer">{t("timer")}</Label>
-            <Select
-              id="quiz-timer"
-              value={draft.settings.timerSeconds ?? 0}
-              onChange={(e) => setSettings({ timerSeconds: Number(e.target.value) || null })}
-            >
-              <option value={0}>{t("noLimit")}</option>
-              {[10, 15, 20, 30, 45, 60, 90].map((s) => (
-                <option key={s} value={s}>
-                  {t("timerSeconds", { seconds: s })}
-                </option>
-              ))}
-            </Select>
-          </Field>
-          <label className="flex items-center gap-2 pb-2 text-sm max-md:min-h-11 max-md:pb-0">
-            <input
-              type="checkbox"
-              checked={draft.settings.speedBonus && draft.settings.timerSeconds !== null}
-              disabled={draft.settings.timerSeconds === null || locked}
-              onChange={(e) => setSettings({ speedBonus: e.target.checked })}
-              className="size-4"
-            />
-            {t("speedBonus")}
-          </label>
-          <p className="w-full text-xs text-muted-foreground">
-            {draft.settings.timerSeconds === null
-              ? t("speedBonusNeedsTimer")
-              : t("speedBonusHint")}
-          </p>
+      {isMatrix ? <MatrixSettings ctx={ctx} /> : null}
+      {type === "multiple_choice" ? <PollSettings ctx={ctx} /> : null}
+
+      {type === "quiz" ? (
+        <div className="flex flex-col gap-3">
+          <TimerField ctx={ctx} id="quiz-timer" />
+          <SpeedBonusField ctx={ctx} />
         </div>
       ) : null}
 
-      {draft.type === "rating" ? (
+      {type === "rating" ? (
         <div className="grid gap-4 sm:grid-cols-2 max-sm:grid-cols-2 max-sm:items-end max-sm:gap-3">
           <Field>
             <Label htmlFor="rating-min">{t("min")}</Label>
-            <Select id="rating-min" value={draft.settings.min} onChange={(e) => setSettings({ min: Number(e.target.value) })}>
+            <Select id="rating-min" value={settings.min} onChange={(e) => setSettings({ min: Number(e.target.value) })}>
               <option value={0}>0</option>
               <option value={1}>1</option>
             </Select>
           </Field>
           <Field>
             <Label htmlFor="rating-max">{t("max")}</Label>
-            <Select id="rating-max" value={draft.settings.max} onChange={(e) => setSettings({ max: Number(e.target.value) })}>
+            <Select id="rating-max" value={settings.max} onChange={(e) => setSettings({ max: Number(e.target.value) })}>
               {[3, 4, 5, 7, 10].map((v) => (
                 <option key={v} value={v}>
                   {v}
@@ -428,7 +372,7 @@ export function InteractionForm({
             <Label htmlFor="rating-min-label">{t("minLabel")}</Label>
             <Input
               id="rating-min-label"
-              value={draft.settings.minLabel ?? ""}
+              value={settings.minLabel ?? ""}
               onChange={(e) => setSettings({ minLabel: e.target.value || null })}
               placeholder={t("minLabelPlaceholder")}
               maxLength={40}
@@ -438,7 +382,7 @@ export function InteractionForm({
             <Label htmlFor="rating-max-label">{t("maxLabel")}</Label>
             <Input
               id="rating-max-label"
-              value={draft.settings.maxLabel ?? ""}
+              value={settings.maxLabel ?? ""}
               onChange={(e) => setSettings({ maxLabel: e.target.value || null })}
               placeholder={t("maxLabelPlaceholder")}
               maxLength={40}
@@ -447,24 +391,24 @@ export function InteractionForm({
         </div>
       ) : null}
 
-      {draft.type === "word_cloud" || draft.type === "open_text" ? (
+      {type === "word_cloud" || type === "open_text" ? (
         <div className="flex flex-wrap items-end gap-4">
           <Field className="w-40">
             <Label htmlFor="max-length">{t("maxLength")}</Label>
             <Input
               id="max-length"
               type="number"
-              min={draft.type === "word_cloud" ? 5 : 20}
-              max={draft.type === "word_cloud" ? 50 : 500}
-              value={draft.settings.maxLength}
+              min={type === "word_cloud" ? 5 : 20}
+              max={type === "word_cloud" ? 50 : 500}
+              value={settings.maxLength}
               onChange={(e) => setSettings({ maxLength: Number(e.target.value) || 0 })}
             />
           </Field>
-          {draft.type === "open_text" ? (
+          {type === "open_text" ? (
             <label className="flex items-center gap-2 pb-2 text-sm max-md:min-h-11 max-md:pb-0">
               <input
                 type="checkbox"
-                checked={draft.settings.showOnDisplay}
+                checked={settings.showOnDisplay}
                 onChange={(e) => setSettings({ showOnDisplay: e.target.checked })}
                 className="size-4"
               />
@@ -473,6 +417,15 @@ export function InteractionForm({
           ) : null}
         </div>
       ) : null}
+
+      {type === "guess_number" ? <GuessNumberSettings ctx={ctx} /> : null}
+      {type === "quiz_text" ? <QuizTextSettings ctx={ctx} /> : null}
+      {isContent ? <ContentSettings ctx={ctx} /> : null}
+
+      <div className="flex flex-col gap-2">
+        <CommonSettings ctx={ctx} />
+        <NotesField ctx={ctx} />
+      </div>
 
       {error ? <Alert>{error}</Alert> : null}
 

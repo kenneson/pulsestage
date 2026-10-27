@@ -14,6 +14,8 @@ import { getSlideUrls } from "@/lib/data/slides";
 import { buildDeck } from "@/lib/domain/deck";
 import { sessionClock } from "@/lib/domain/timing";
 import { getRaffleState } from "@/lib/data/raffle";
+import { revealedAnswerOf } from "@/lib/domain/answer-reveal";
+import { parseSlideNotes, segmentGroups } from "@/lib/domain/live-room";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("live.page");
@@ -40,7 +42,16 @@ export default async function LivePage({ params }: { params: Promise<{ id: strin
 
   const controlInteractions: ControlRoomInteraction[] = interactions.flatMap((row) => {
     const pub = toPublicInteraction(row, row.options);
-    return pub ? [{ ...pub, correctOptionId: row.options.find((o) => o.is_correct)?.id ?? null }] : [];
+    if (!pub) return [];
+    // Gabarito e notas: só o dono vê (esta página é do painel, lida com RLS).
+    return [
+      {
+        ...pub,
+        correctOptionId: row.options.find((o) => o.is_correct)?.id ?? null,
+        answer: revealedAnswerOf({ type: pub.type, options: row.options, answerKey: row.answer_key }),
+        notes: row.speaker_notes?.trim() || null,
+      },
+    ];
   });
 
   const live = liveStateSchema.safeParse(liveResult.data);
@@ -50,10 +61,19 @@ export default async function LivePage({ params }: { params: Promise<{ id: strin
       {/* Ensaio: nada conta nas estatísticas nem no perfil público. */}
       {session.is_test ? <RehearsalBanner sessionId={id} /> : null}
       <ControlRoom
-        session={{ id, title: session.title, status: session.status, joinCode: session.join_code }}
+        session={{
+          id,
+          title: session.title,
+          status: session.status,
+          joinCode: session.join_code,
+          pace: session.pace === "self" ? "self" : "live",
+          teamsEnabled: session.teams_enabled,
+        }}
         interactions={controlInteractions}
         deck={buildDeck(slideUrls.length, controlInteractions)}
         slideUrls={slideUrls}
+        slideNotes={parseSlideNotes(session.slide_notes)}
+        segments={segmentGroups(controlInteractions)}
         initialLive={live.success ? live.data : null}
         initialResults={toResultsMap(resultsResult.data ?? [])}
         joinUrl={joinUrl(session.join_code)}

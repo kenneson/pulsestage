@@ -34,7 +34,25 @@
     "showOnDisplay": "Show responses on the big screen",
     "reviewFields": "Check the fields.",
     "created": "Interaction created.",
-    "updated": "Interaction updated."
+    "updated": "Interaction updated.",
+    "contentTitle": "Slide title",
+    "titlePlaceholderPoints": "Where should we invest next semester's budget?",
+    "titlePlaceholderMatrix": "Where do these ideas fall on effort and impact?",
+    "titlePlaceholderPin": "Where is your classroom on the campus map?",
+    "titlePlaceholderGuess": "In what year was the first email sent?",
+    "titlePlaceholderQuizText": "What is the capital of Australia?",
+    "titlePlaceholderContent": "Today's agenda",
+    "optionStyleImages": "Image grid",
+    "optionsPoints": "Options (the audience splits 100 points)",
+    "optionsMatrix": "Items (the audience places each one)",
+    "item": "Item {number}",
+    "removeItem": "Remove item",
+    "addItem": "Item",
+    "imagesStyleHint": "In the image grid, every option needs an image. The text shows as a caption and works as the description for screen readers.",
+    "pointsBudgetHint": "Each person splits 100 points across the options; the big screen shows the average for each one.",
+    "answerKeyLockedHint": "This question already has responses: changing the correct answer doesn't recalculate points already given.",
+    "pinImageRequired": "Upload the image the audience will pin on.",
+    "guessAnswerRequired": "Enter the correct answer."
   },
   "images": {
     "add": "Add image to option {number}",
@@ -49,14 +67,20 @@
       "tooLargeResult": "The image ended up too large.",
       "sessionExpired": "Your session expired. Please sign in again.",
       "uploadFailed": "Couldn't upload the image. Try again."
-    }
+    },
+    "preview": "Image preview",
+    "replace": "Replace image",
+    "removeImage": "Remove image",
+    "choose": "Choose image",
+    "chooseHint": "PNG, JPEG or WebP. The image is resized in your browser before uploading.",
+    "uploading": "Uploading…"
   },
   "editor": {
     "deleteTitle": "Delete \"{title}\"?",
     "deleteResponses": "{count, plural, one {Its # response will also be deleted.} other {Its # responses will also be deleted.}}",
     "deleted": "Interaction deleted.",
     "emptyTitle": "No questions yet",
-    "emptyDescription": "Add polls, quizzes, scales, rankings, word clouds or open-ended questions. The audience answers on their phones.",
+    "emptyDescription": "Add polls, quizzes, scales, word clouds, matrices, content slides and more. The audience answers on their phones.",
     "cue": "Question {number}",
     "active": "Active",
     "responses": "{count, plural, one {# response} other {# responses}}",
@@ -86,7 +110,10 @@
     "adding": "Adding...",
     "addToLineup": "Add to lineup",
     "added": "Question added to the lineup.",
-    "regenerate": "Generate more suggestions"
+    "regenerate": "Generate more suggestions",
+    "answer": "Answer: {value}",
+    "needsImage": "Needs an image: open it in the form to upload one.",
+    "editFirst": "Edit first"
   },
   "library": {
     "search": "Search questions",
@@ -149,5 +176,113 @@
     "resumeToLaunch": "Resume the session to launch the question.",
     "createdNotPlaced": "The question was created at the end of the lineup, but it couldn't be moved into place.",
     "createdNotLaunched": "The question was created as the next one, but it couldn't be launched."
+  },
+  "picker": {
+    "opinion": {
+      "title": "Opinion",
+      "hint": "vote, rate and prioritize"
+    },
+    "open": {
+      "title": "Open answers",
+      "hint": "words, sentences and taps"
+    },
+    "competition": {
+      "title": "Competition",
+      "hint": "worth points on the leaderboard"
+    },
+    "content": {
+      "title": "Content",
+      "hint": "no answers"
+    }
+  },
+  "poll": {
+    "multiple": "Allow multiple choices",
+    "multipleHint": "Each person picks more than one option, up to the limit.",
+    "maxChoices": "Up to how many choices",
+    "maxChoicesValue": "Up to {count}",
+    "maxChoicesAll": "All ({count})",
+    "segment": "Use to compare groups",
+    "segmentHint": "E.g. department or class. Later you can filter the results of the other questions by the answer to this one, on the big screen and in the analytics."
+  },
+  "matrix": {
+    "preview": "Grid preview",
+    "xAxis": "Horizontal axis",
+    "yAxis": "Vertical axis",
+    "name": "Axis name",
+    "left": "Left end",
+    "right": "Right end",
+    "bottom": "Bottom end",
+    "top": "Top end",
+    "xNamePlaceholder": "Effort",
+    "yNamePlaceholder": "Impact",
+    "lowPlaceholder": "Low",
+    "highPlaceholder": "High"
+  },
+  "pin": {
+    "image": "Image",
+    "hint": "Map, floor plan, chart or photo. Each person taps a spot; the big screen shows the heat map."
+  },
+  "guess": {
+    "min": "Minimum",
+    "max": "Maximum",
+    "decimals": "Decimal places",
+    "decimals0": "None",
+    "decimals1": "1 place",
+    "decimals2": "2 places",
+    "unit": "Unit (optional)",
+    "unitPlaceholder": "mi, %, years",
+    "answer": "Correct answer",
+    "answerPlaceholder": "E.g. 1971",
+    "maxPoints": "Maximum points",
+    "hint": "A spot-on guess gets the maximum points; the farther off, the fewer points. The answer only shows when you reveal it."
+  },
+  "quizText": {
+    "accepted": "Accepted answers",
+    "answer": "Accepted answer {number}",
+    "remove": "Remove accepted answer {number}",
+    "firstPlaceholder": "Canberra",
+    "otherPlaceholder": "Another way to write it (optional)",
+    "add": "Accepted answer",
+    "hint": "Up to {max}. Capital letters, accents and extra spaces don't count: \"New York\" also accepts \"new york\".",
+    "maxPoints": "Points for a correct answer"
+  },
+  "content": {
+    "body": "Text",
+    "bodyPlaceholder": "Write what will show on the big screen.",
+    "bodyHint": "Leave a blank line to start a new paragraph; start a line with \"- \" to make a list.",
+    "image": "Image (optional)",
+    "video": "YouTube or Vimeo video (optional)",
+    "videoPlaceholder": "https://www.youtube.com/watch?v=…",
+    "videoHint": "Paste the video link. It plays on the big screen.",
+    "videoInvalid": "Use a YouTube or Vimeo link.",
+    "videoTitle": "Video preview"
+  },
+  "common": {
+    "title": "More settings",
+    "hint": "Timer, hidden results and results on phones",
+    "hintScored": "Hide results until you reveal them",
+    "hideResults": "Hide results until I reveal them",
+    "hideResultsHint": "The big screen only shows how many people answered. In the live room you see everything and reveal whenever you want.",
+    "showOnPhone": "Show results on the phone after answering",
+    "showOnPhoneHint": "People who answered follow the live chart on their own phone."
+  },
+  "notes": {
+    "title": "Speaker notes",
+    "hint": "Only you see them, in the live room, while this item is on the big screen",
+    "placeholder": "What to say before opening it, follow-up questions, reminders…"
+  },
+  "summary": {
+    "hasNotes": "Has speaker notes",
+    "notes": "Notes",
+    "range": "From {min} to {max}",
+    "accepted": "{count, plural, =0 {No accepted answers} one {# accepted answer} other {# accepted answers}}",
+    "maxChoices": "Up to {count} choices",
+    "segment": "Compares groups",
+    "imageGrid": "Image grid",
+    "video": "Video",
+    "timer": "{seconds}s",
+    "hidden": "Hidden results",
+    "onPhone": "Results on phones",
+    "points": "{points} pts"
   }
 }

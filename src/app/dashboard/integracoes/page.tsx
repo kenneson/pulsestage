@@ -10,6 +10,9 @@ import { Alert } from "@/components/ui/misc";
 import { Tabs } from "@/components/ui/tabs";
 import { CopyField } from "@/components/copy-field";
 import { ConnectedApps, type ConnectedApp } from "@/components/integrations/connected-apps";
+import { buttonVariants } from "@/components/ui/button";
+import { DownloadIcon, PresentationIcon } from "@/components/icons";
+import { publicEnv } from "@/lib/env";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("integrations");
@@ -189,6 +192,55 @@ export default async function IntegrationsPage() {
               </div>
             );
           })}
+        </CardContent>
+      </Card>
+
+      {/* Suplemento de conteúdo do PowerPoint: o telão dentro do slide (página /office). */}
+      <Card id="powerpoint" className="scroll-mt-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <PresentationIcon className="text-primary" /> {t("office.section.title")}
+          </CardTitle>
+          <CardDescription>{t("office.section.description")}</CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-5">
+          <a
+            href="/office/manifest.xml"
+            download="pulsestage-powerpoint.xml"
+            className={buttonVariants({ variant: "outline", className: "w-fit max-md:h-11 max-md:w-full" })}
+          >
+            <DownloadIcon /> {t("office.section.download")}
+          </a>
+          <Tabs
+            tabs={[
+              {
+                id: "office-web",
+                label: t("office.section.tabWeb"),
+                content: <Steps items={[t.rich("office.section.web1", { b }), t.rich("office.section.web2", { b })]} />,
+              },
+              {
+                id: "office-windows",
+                label: t("office.section.tabWindows"),
+                content: <Steps items={[t.rich("office.section.windows1", { b }), t.rich("office.section.windows2", { b })]} />,
+              },
+            ]}
+          />
+          <p className="-mb-3 text-sm font-medium">{t("office.section.useTitle")}</p>
+          <Steps
+            items={[
+              t.rich("office.section.use1", { b }),
+              t.rich("office.section.use2", { b }),
+              t.rich("office.section.use3", { b }),
+            ]}
+          />
+          <p className="text-sm text-muted-foreground">{t.rich("office.section.store", { b })}</p>
+          <p className="break-words text-xs text-muted-foreground">
+            {t("office.section.requirements", { url: `${publicEnv.appUrl}/office` })}
+          </p>
+          <div className="flex flex-col gap-1 rounded-md border bg-muted/40 p-3">
+            <p className="text-sm font-medium">{t("office.section.googleTitle")}</p>
+            <p className="text-sm text-muted-foreground">{t.rich("office.section.google", { b })}</p>
+          </div>
         </CardContent>
       </Card>
 

@@ -11,7 +11,9 @@
     "preferencesDescription": "Valores que se usan al crear una sesión y para mostrar fechas.",
     "security": "Seguridad",
     "privacy": "Privacidad",
-    "privacyTitle": "Privacidad y datos"
+    "privacyTitle": "Privacidad y datos",
+    "brand": "Marca",
+    "brandDescription": "Tu logo y tu color en el celular del público y en la pantalla de las sesiones."
   },
   "security": {
     "emailPassword": "Correo electrónico y contraseña",
@@ -50,6 +52,61 @@
     "defaultDuration": "Duración predeterminada (min)",
     "themeHint": "Se aplica a este navegador.",
     "save": "Guardar preferencias"
+  },
+  "brand": {
+    "logo": "Logo",
+    "chooseLogo": "Subir logo",
+    "changeLogo": "Cambiar logo",
+    "logoHint": "PNG, JPG o WebP. Lo reducimos a 400 px como máximo (hasta 512 KB); se mantiene el fondo transparente.",
+    "logoAlt": "Logo del presentador",
+    "logoAltPreview": "Tu logo actual",
+    "color": "Color principal",
+    "colorPicker": "Elegir el color principal",
+    "colorSaved": "Color de tu marca",
+    "colorDefault": "Sin color propio: las sesiones usan el azul de PulseStage.",
+    "saveColor": "Guardar color",
+    "resetColor": "Volver al azul predeterminado",
+    "where": "La marca aparece en las sesiones con “Usar mi marca” activado (viene activado en las sesiones nuevas). El panel mantiene los colores de PulseStage.",
+    "check": {
+      "textWhite": "Texto blanco sobre el color: contraste de {ratio}:1.",
+      "textDark": "Texto oscuro sobre el color (el blanco quedaría ilegible): contraste de {ratio}:1.",
+      "lightOk": "Legible sobre fondo claro ({ratio}:1).",
+      "lightAdjusted": "Poco contraste sobre fondo claro ({ratio}:1): ahí usamos un tono más oscuro del mismo color.",
+      "darkOk": "Legible sobre fondo oscuro y en la pantalla ({ratio}:1).",
+      "darkAdjusted": "Poco contraste sobre fondo oscuro ({ratio}:1): en la pantalla usamos un tono más claro del mismo color."
+    },
+    "preview": {
+      "phone": "Celular del público",
+      "screen": "Pantalla",
+      "sessionTitle": "Tu sesión",
+      "question": "¿Qué tema profundizamos?",
+      "optionA": "Estrategia",
+      "optionB": "Herramientas",
+      "optionC": "Casos reales",
+      "send": "Enviar",
+      "joinAt": "Código"
+    },
+    "session": {
+      "label": "Usar mi marca",
+      "description": "Tu logo y tu color en el celular del público y en la pantalla de esta sesión.",
+      "noBrand": "Todavía no tienes logo ni color. <link>Configura la marca en la Cuenta</link>."
+    },
+    "success": {
+      "logoSaved": "Logo guardado.",
+      "logoRemoved": "Logo eliminado.",
+      "colorSaved": "Color guardado.",
+      "colorRemoved": "Las sesiones vuelven al azul predeterminado."
+    },
+    "errors": {
+      "notImage": "Elige una imagen PNG, JPG o WebP.",
+      "tooLarge": "La imagen puede tener hasta {max} MB.",
+      "tooLargeResult": "Aun reducido, el logo superó los {max} KB. Prueba con una imagen más simple.",
+      "cannotOpen": "No se pudo abrir esta imagen.",
+      "sessionExpired": "Tu sesión expiró. Vuelve a entrar.",
+      "uploadFailed": "No se pudo subir el logo.",
+      "logoInvalid": "Logo inválido. Súbelo de nuevo.",
+      "saveFailed": "No se pudo guardar la marca."
+    }
   },
   "password": {
     "new": "Nueva contraseña",
@@ -105,6 +162,8 @@
     "signOutOthersFailed": "No se pudieron cerrar las demás sesiones.",
     "typeToConfirm": "Escribe {word} para confirmar.",
     "deleteFailed": "No se pudo eliminar la cuenta. Inténtalo de nuevo.",
-    "unauthenticated": "No autenticado."
+    "unauthenticated": "No autenticado.",
+    "brandColorInvalid": "Usa un color en formato #RRGGBB.",
+    "brandLogoInvalid": "Logo inválido. Súbelo de nuevo."
   }
 }

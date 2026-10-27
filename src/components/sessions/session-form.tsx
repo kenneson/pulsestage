@@ -1,7 +1,6 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import {
   createSessionAction,
@@ -12,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Field, Input, Label, Select, Textarea } from "@/components/ui/input";
 import { Alert } from "@/components/ui/misc";
 import { ChevronRightIcon } from "@/components/icons";
+import { StepFooter } from "@/components/sessions/session-stepper";
 import { LOCALE_NAME, LOCALES, isLocale, type Locale } from "@/lib/domain/locale";
 
 type Defaults = {
@@ -23,7 +23,12 @@ type Defaults = {
   joinCode: string;
   surveyTemplateId: string;
   locale: Locale;
+  pace: SessionPace;
+  useBrand: boolean;
 };
+
+export type SessionPace = "live" | "self";
+const PACES: readonly SessionPace[] = ["live", "self"];
 
 export type SurveyOption = { id: string; name: string; isPlatform: boolean; locale: string; slug: string | null };
 
@@ -36,6 +41,8 @@ const EMPTY: Defaults = {
   joinCode: "",
   surveyTemplateId: "",
   locale: "pt-BR",
+  pace: "live",
+  useBrand: true,
 };
 const initial: SessionFormState = {};
 
@@ -44,14 +51,17 @@ export function SessionForm({
   defaults = EMPTY,
   canEditCode = true,
   surveyOptions,
-  lockedSurveyName,
+  hasBrand = false,
+  stepSubmitLabel,
 }: {
   sessionId?: string;
   defaults?: Defaults;
   canEditCode?: boolean;
   surveyOptions: SurveyOption[];
-  /** Nome da pesquisa já copiada para a sessão (encerrada): não dá mais para trocar. */
-  lockedSurveyName?: string | null;
+  /** O palestrante já tem logo ou cor: aparece "Usar minha marca". */
+  hasBrand?: boolean;
+  /** Nova sessão em passos: o envio vira "Próximo" na barra de passos (StepFooter), com este rótulo. */
+  stepSubmitLabel?: string;
 }) {
   const t = useTranslations("session.form");
   const tActions = useTranslations("common.actions");
@@ -59,8 +69,7 @@ export function SessionForm({
   const [state, formAction, pending] = useActionState(action, initial);
   const [locale, setLocale] = useState<Locale>(defaults.locale);
   const [templateId, setTemplateId] = useState(defaults.surveyTemplateId);
-  // Modelos prontos no idioma da sessão (o da plateia); os do speaker aparecem sempre.
-  const platform = surveyOptions.filter((o) => o.isPlatform && o.locale === locale);
+  const [pace, setPace] = useState<SessionPace>(defaults.pace);
 
   function changeLocale(next: Locale) {
     setLocale(next);
@@ -86,6 +95,45 @@ export function SessionForm({
           maxLength={2000}
         />
       </Field>
+      <fieldset className="grid gap-2">
+        <legend className="mb-2 text-sm font-medium leading-none">{t("pace")}</legend>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {PACES.map((value) => (
+            <label
+              key={value}
+              className="flex cursor-pointer items-start gap-2.5 rounded-lg border p-3 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring"
+            >
+              <input
+                type="radio"
+                name="pace"
+                value={value}
+                checked={pace === value}
+                onChange={() => setPace(value)}
+                className="mt-0.5 size-4 shrink-0 accent-[var(--primary)] max-md:size-5"
+              />
+              <span className="flex min-w-0 flex-col gap-0.5">
+                <span className="text-sm font-medium">{value === "live" ? t("paceLive") : t("paceSelf")}</span>
+                <span className="text-xs text-muted-foreground">{value === "live" ? t("paceLiveHint") : t("paceSelfHint")}</span>
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      {hasBrand ? (
+        <label className="flex cursor-pointer items-start gap-2.5 text-sm max-md:min-h-11">
+          <input type="hidden" name="useBrandShown" value="1" />
+          <input
+            type="checkbox"
+            name="useBrand"
+            defaultChecked={defaults.useBrand}
+            className="mt-0.5 size-4 shrink-0 accent-[var(--primary)] max-md:size-5"
+          />
+          <span className="flex min-w-0 flex-col gap-0.5">
+            <span className="font-medium">{t("useBrand")}</span>
+            <span className="text-xs text-muted-foreground">{t("useBrandHint")}</span>
+          </span>
+        </label>
+      ) : null}
       <div className="grid items-start gap-5 sm:grid-cols-2">
         <Field>
           <Label htmlFor="duration">{t("duration")}</Label>
@@ -123,55 +171,13 @@ export function SessionForm({
           <p className="text-xs text-muted-foreground">{t("joinCodeLocked")}</p>
         ) : null}
       </Field>
-      <Field>
-        <Label htmlFor="surveyTemplateId">{t("survey")}</Label>
-        {lockedSurveyName ? (
-          <>
-            <Input id="surveyTemplateId" value={lockedSurveyName} disabled readOnly />
-            <input type="hidden" name="surveyTemplateId" value={defaults.surveyTemplateId} />
-            <p className="text-xs text-muted-foreground">{t("surveyLocked")}</p>
-          </>
-        ) : (
-          <>
-            <Select
-              id="surveyTemplateId"
-              name="surveyTemplateId"
-              value={templateId}
-              onChange={(e) => setTemplateId(e.target.value)}
-            >
-              <optgroup label={t("platformTemplates")}>
-                {platform.map((o) => (
-                  <option key={o.id} value={o.id}>
-                    {o.name}
-                  </option>
-                ))}
-              </optgroup>
-              {surveyOptions.some((o) => !o.isPlatform) ? (
-                <optgroup label={t("myTemplates")}>
-                  {surveyOptions
-                    .filter((o) => !o.isPlatform)
-                    .map((o) => (
-                      <option key={o.id} value={o.id}>
-                        {o.name}
-                      </option>
-                    ))}
-                </optgroup>
-              ) : null}
-            </Select>
-            <p className="text-xs text-muted-foreground">
-              {t("surveyHelp")}{" "}
-              <Link href="/dashboard/pesquisas" className="text-primary underline-offset-4 hover:underline">
-                {t("manageTemplates")}
-              </Link>
-            </p>
-          </>
-        )}
-      </Field>
     </div>
   );
 
   return (
-    <form action={formAction} className="grid gap-5">
+    <form id="session-form" action={formAction} className="grid gap-5">
+      {/* Na criação, o modelo padrão segue o idioma escolhido; depois, o passo "Pesquisa pós-evento" troca. */}
+      {!sessionId && templateId ? <input type="hidden" name="surveyTemplateId" value={templateId} /> : null}
       <Field>
         <Label htmlFor="title">
           {t("title")} <span className="font-normal text-muted-foreground">({t("required")})</span>
@@ -217,11 +223,19 @@ export function SessionForm({
       )}
       {state.error ? <Alert>{state.error}</Alert> : null}
       {state.success ? <Alert tone="success">{state.success}</Alert> : null}
-      <div>
-        <Button type="submit" disabled={pending} className="max-md:h-11 max-md:w-full">
-          {pending ? tActions("saving") : sessionId ? t("saveInfo") : t("create")}
-        </Button>
-      </div>
+      {stepSubmitLabel ? (
+        <StepFooter back={null}>
+          <Button type="submit" disabled={pending} className="max-md:min-w-0 max-md:px-3">
+            <span className="truncate">{pending ? tActions("saving") : stepSubmitLabel}</span> <ChevronRightIcon />
+          </Button>
+        </StepFooter>
+      ) : (
+        <div>
+          <Button type="submit" disabled={pending} className="max-md:h-11 max-md:w-full">
+            {pending ? tActions("saving") : sessionId ? t("saveInfo") : t("create")}
+          </Button>
+        </div>
+      )}
     </form>
   );
 }

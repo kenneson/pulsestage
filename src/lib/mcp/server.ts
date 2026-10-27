@@ -176,7 +176,7 @@ export function buildMcpServer(ctx: McpContext): McpServer {
     {
       title: "Ver sessão",
       description:
-        "Mostra a sessão com o roteiro completo: cada interação com tipo, texto, alternativas (no quiz, qual é a certa), depois de qual slide entra e os links (editar, aba Slides, sala ao vivo, entrada da plateia).",
+        "Mostra a sessão com o roteiro completo: cada interação com tipo, texto, alternativas (no quiz, qual é a certa), gabarito (correct_number, accepted_answers), notas do palestrante, depois de qual slide entra e os links (editar, aba Slides, sala ao vivo, entrada da plateia).",
       inputSchema: { session_id: sessionIdSchema },
       annotations: { readOnlyHint: true, openWorldHint: false },
     },
@@ -216,7 +216,7 @@ export function buildMcpServer(ctx: McpContext): McpServer {
     {
       title: "Resultados da sessão",
       description:
-        "Resultados de uma sessão já apresentada: participação, respostas de cada interação (votos, acertos do quiz, médias, palavras, respostas abertas, ordem do ranking), perguntas da plateia com curtidas, reações e a pesquisa pós-evento (nota 0 a 10, dimensões e comentários). Sem dados pessoais.",
+        "Resultados de uma sessão já apresentada: participação, respostas de cada interação (votos, acertos do quiz e do quiz de digitar, médias, palavras, respostas abertas, ordem do ranking, média dos 100 pontos, posição média na matriz, chutes do adivinhe o número, áreas mais marcadas na imagem), ranking por equipes, perguntas da plateia com curtidas, reações e a pesquisa pós-evento (nota 0 a 10, dimensões e comentários). Sem dados pessoais.",
       inputSchema: { session_id: sessionIdSchema },
       annotations: { readOnlyHint: true, openWorldHint: false },
     },
@@ -389,7 +389,7 @@ export function buildMcpServer(ctx: McpContext): McpServer {
     {
       title: "Editar interação",
       description:
-        "Substitui o conteúdo de uma interação (mesmos campos de add_interactions; configurações omitidas, como tempo e formas, continuam como estão). Se já houver respostas, o tipo, as alternativas e a resposta certa não podem mudar; só os textos. after_slide, se informado, também a move.",
+        "Substitui o conteúdo de uma interação (mesmos campos de add_interactions; configurações omitidas, como tempo, formas, eixos, faixa do número, respostas aceitas e notas, continuam como estão). Se já houver respostas, o tipo, as alternativas e a resposta certa não podem mudar; só os textos. after_slide, se informado, também a move.",
       inputSchema: { session_id: sessionIdSchema, interaction_id: interactionIdSchema, ...mcpInteractionShape },
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
@@ -403,7 +403,13 @@ export function buildMcpServer(ctx: McpContext): McpServer {
       const converted = toInteractionInput(
         item,
         prefs.translate,
-        current.type === item.type ? normalizeSettings(current.type, current.settings) : undefined,
+        current.type === item.type && isInteractionType(current.type)
+          ? {
+              settings: normalizeSettings(current.type, current.settings),
+              answerKey: current.answer_key,
+              notes: current.speaker_notes,
+            }
+          : undefined,
       );
       if (!converted.ok) return error(converted.error);
 

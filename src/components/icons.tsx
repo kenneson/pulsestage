@@ -23,6 +23,7 @@ function Icon({ children, ...props }: IconProps & { children: React.ReactNode })
 }
 
 export const PlusIcon = (p: IconProps) => <Icon {...p}><path d="M12 5v14M5 12h14" /></Icon>;
+export const MinusIcon = (p: IconProps) => <Icon {...p}><path d="M5 12h14" /></Icon>;
 export const TrashIcon = (p: IconProps) => <Icon {...p}><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" /></Icon>;
 export const ArrowUpIcon = (p: IconProps) => <Icon {...p}><path d="M12 19V5M5 12l7-7 7 7" /></Icon>;
 export const ArrowDownIcon = (p: IconProps) => <Icon {...p}><path d="M12 5v14M19 12l-7 7-7-7" /></Icon>;

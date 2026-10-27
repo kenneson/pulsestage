@@ -104,5 +104,48 @@
   },
   "errors": {
     "revokeFailed": "Couldn't revoke access."
+  },
+  "office": {
+    "manifest": {
+      "name": "PulseStage",
+      "description": "Shows a PulseStage session's live screen inside the slide: polls, word clouds, quizzes and rankings without leaving your presentation."
+    },
+    "addin": {
+      "metaTitle": "Screen in PowerPoint",
+      "title": "PulseStage screen on your slide",
+      "description": "Type the session code (the same one the audience uses to join). The slide will show its live screen.",
+      "codeLabel": "Session code or screen link",
+      "codePlaceholder": "E.g. KX4P2M",
+      "show": "Show the screen",
+      "checking": "Looking…",
+      "hint": "Your choice is saved on this slide. To change it, hover over the screen and click “Change session”. The controls stay in the PulseStage live room.",
+      "frameTitle": "Session screen",
+      "change": "Change session",
+      "errors": {
+        "empty": "Type the session code.",
+        "notFound": "No draft or live session has this code.",
+        "tooMany": "Too many attempts. Wait a few minutes and try again.",
+        "network": "Can't reach PulseStage. Check your internet and try again."
+      }
+    },
+    "section": {
+      "title": "PowerPoint",
+      "description": "Show a session's live screen inside a PowerPoint slide, without switching windows.",
+      "download": "Download the add-in (manifest.xml)",
+      "tabWeb": "Web and Mac",
+      "tabWindows": "Windows",
+      "web1": "In PowerPoint, open <b>Insert → Add-ins</b> (or <b>Get Add-ins</b>) and go to <b>My Add-ins</b>.",
+      "web2": "Click <b>Upload My Add-in</b> and choose the file you downloaded above.",
+      "windows1": "On Windows, PowerPoint only loads add-ins from a catalog: ask IT to publish the file through Microsoft 365 <b>Centralized Deployment</b> (Integrated apps) or a shared-folder catalog.",
+      "windows2": "Then PulseStage shows up under <b>Insert → Add-ins → My Add-ins</b> (or <b>Admin Managed</b>).",
+      "useTitle": "After installing",
+      "use1": "On the slide you want, insert the <b>PulseStage</b> add-in and resize the frame.",
+      "use2": "Type the <b>session code</b> and click <b>Show the screen</b>. The slide remembers your choice.",
+      "use3": "During the slideshow, the frame shows the live screen. Run the session from the PulseStage live room (on your phone or in another window).",
+      "store": "Once PulseStage is in the Office Add-ins store, just search for “PulseStage” under <b>Insert → Add-ins</b>.",
+      "requirements": "Needs internet during the presentation. The manifest points to {url}.",
+      "googleTitle": "What about Google Slides?",
+      "google": "Google Slides doesn't allow live content inside a slide. Two alternatives: upload the presentation PDF in the session's <b>Slides</b> tab (the slides then show on the PulseStage screen itself, with the questions in between) or switch between the presentation and the screen window."
+    }
   }
 }

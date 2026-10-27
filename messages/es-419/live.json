@@ -157,6 +157,65 @@
     "questionNotOpen": "Esa pregunta no está abierta.",
     "screenFailed": "No se pudo cambiar la pantalla.",
     "responseUpdateFailed": "No se pudo actualizar la respuesta.",
-    "wordUpdateFailed": "No se pudo actualizar la palabra."
+    "wordUpdateFailed": "No se pudo actualizar la palabra.",
+    "revealFailed": "No se pudo cambiar lo que revela la pantalla.",
+    "segmentFailed": "No se pudo filtrar la pantalla."
+  },
+  "reveal": {
+    "results": "Revelar resultados",
+    "hideResults": "Ocultar resultados",
+    "answer": "Revelar respuesta",
+    "hideAnswer": "Ocultar respuesta",
+    "hiddenOnScreen": "Oculto en la pantalla",
+    "hiddenHint": "La pantalla muestra solo el total de respuestas hasta que lo reveles.",
+    "answerOnScreen": "Respuesta en la pantalla",
+    "answerKey": "Respuesta correcta: <strong>{answer}</strong>",
+    "acceptedAnswers": "Respuestas aceptadas: <strong>{answers}</strong>",
+    "onlyYou": "solo tú lo ves"
+  },
+  "countdown": {
+    "label": "Tiempo para responder: {time}",
+    "timeUp": "Se acabó el tiempo"
+  },
+  "segment": {
+    "label": "Ver solo",
+    "all": "Todos",
+    "filtered": "Solo <strong>{group}</strong> · {count, plural, one {# persona} other {# personas}}",
+    "screenToo": "La pantalla también muestra solo ese grupo.",
+    "notOnProfile": "El filtro no aplica a la propia pregunta de perfil.",
+    "loading": "Filtrando…"
+  },
+  "leaderboardMode": {
+    "label": "Ranking por",
+    "people": "Personas",
+    "teams": "Equipos"
+  },
+  "notes": {
+    "title": "Notas",
+    "show": "Mostrar notas",
+    "hide": "Contraer notas",
+    "onlyYou": "Solo tú las ves",
+    "forItem": "Ahora: {item}",
+    "forNext": "A continuación: {item}",
+    "empty": "Sin notas para este elemento."
+  },
+  "content": {
+    "item": "Diapositiva de contenido",
+    "noResponses": "Diapositiva de contenido: no recibe respuestas.",
+    "hasImage": "Con imagen",
+    "hasVideo": "Con video",
+    "removeFromScreen": "Quitar de la pantalla"
+  },
+  "selfPace": {
+    "badge": "A su ritmo",
+    "title": "Seguimiento",
+    "hint": "Cada persona responde a su ritmo desde el celular, en el orden del guion. La pantalla muestra el código QR de entrada.",
+    "joined": "Entraron",
+    "started": "Comenzaron",
+    "finished": "Terminaron todo",
+    "ofJoined": "de {count, number}",
+    "answered": "{count, number} de {participants, number}",
+    "questions": "Preguntas",
+    "noQuestions": "No hay preguntas en el guion."
   }
 }

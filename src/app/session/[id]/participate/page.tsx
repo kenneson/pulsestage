@@ -9,6 +9,8 @@ import { getParticipantIdFromCookie } from "@/lib/participant/token";
 import { liveStateSchema } from "@/lib/realtime/schemas";
 import { isUuid } from "@/lib/action-result";
 import { ParticipateView } from "@/components/participant/participate-view";
+import { getParticipantTeam } from "@/lib/data/participant-teams";
+import { getJourneyForParticipant } from "@/lib/data/participant-journey";
 
 // Uma leitura por requisição, compartilhada entre os metadados e a página.
 const loadSession = cache((id: string) => (isUuid(id) ? getPublicSession(createAdminClient(), id) : Promise.resolve(null)));
@@ -32,12 +34,15 @@ export default async function ParticipatePage({ params }: { params: Promise<{ id
     redirect(session.status === "completed" ? `/feedback/${id}` : `/join/${session.joinCode}`);
   }
 
-  const [live, current, me] = await Promise.all([
+  const [live, current, me, team] = await Promise.all([
     getLiveState(admin, id),
     getCurrentForParticipant(admin, id, participantId),
     getParticipantBadge(admin, participantId),
+    getParticipantTeam(admin, participantId),
   ]);
   const initialLive = liveStateSchema.safeParse(live);
+  // Ritmo próprio: o roteiro vem junto com a página (sem tela de carregamento).
+  const journey = current.pace === "self" ? await getJourneyForParticipant(admin, id, participantId) : null;
 
   return (
     <SessionIntl locale={session.locale}>
@@ -46,7 +51,8 @@ export default async function ParticipatePage({ params }: { params: Promise<{ id
         title={session.title}
         initialLive={initialLive.success ? initialLive.data : null}
         initialCurrent={current}
-        me={me}
+        initialJourney={journey}
+        me={{ ...me, team }}
       />
     </SessionIntl>
   );

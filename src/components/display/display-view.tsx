@@ -6,7 +6,8 @@ import { QRCodeSVG } from "qrcode.react";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 import { useTranslations } from "next-intl";
-import type { PublicInteraction } from "@/lib/domain/interactions";
+import { acceptsResponses, type PublicInteraction } from "@/lib/domain/interactions";
+import { canRevealAnswer } from "@/lib/domain/answer-reveal";
 import { EMPTY_SNAPSHOT, type ResultsMap } from "@/lib/domain/results";
 import { toSessionStatus } from "@/lib/domain/session";
 import type { LiveState } from "@/lib/realtime/schemas";
@@ -21,6 +22,9 @@ import { RaffleStage } from "./raffle-stage";
 import { AudienceQuestionsStage } from "./audience-questions-stage";
 import { ReactionStream } from "./reaction-stream";
 import { JoinLobby } from "./join-lobby";
+import { DisplayTimer } from "./display-timer";
+import { useRevealedAnswer, useSegmentResults } from "./use-display-data";
+import { ContentSlide } from "@/components/results/content-slide";
 import { screenContent } from "@/lib/domain/screen";
 import { useAudioUnlock } from "@/lib/raffle/use-audio-unlock";
 import { lastActivatedOf, useDeckControls } from "@/components/live/use-deck-controls";
@@ -75,6 +79,7 @@ export function DisplayView({
   deck,
   slideUrls,
   canControl,
+  pace = "live",
 }: {
   session: { id: string; title: string; joinCode: string };
   interactions: PublicInteraction[];
@@ -86,6 +91,8 @@ export function DisplayView({
   slideUrls: string[];
   /** o dono da sessão, logado neste navegador, pode avançar pelo teclado ou passador aqui mesmo */
   canControl: boolean;
+  /** 'self' = ritmo próprio: cada pessoa segue no celular, o telão fica no QR Code de entrada */
+  pace?: "live" | "self";
 }) {
   const t = useTranslations("display");
   // Um projetor por sessão: a releitura periódica cobre eventos do realtime que se percam.
@@ -95,9 +102,25 @@ export function DisplayView({
   const soundOn = useAudioUnlock();
   const status = toSessionStatus(state?.status ?? "draft");
   const byId = new Map(interactions.map((i) => [i.id, i]));
-  const screen = screenContent(state, status, { slideCount: slideUrls.length, knowsInteraction: (id) => byId.has(id) });
+  const rawScreen = screenContent(state, status, { slideCount: slideUrls.length, knowsInteraction: (id) => byId.has(id) });
+  // Ritmo próprio: ninguém conduz, então pergunta e slide não vão ao telão (fica o QR para entrar).
+  const screen = pace === "self" && (rawScreen.kind === "interaction" || rawScreen.kind === "slide") ? { kind: "join" as const } : rawScreen;
   const active = screen.kind === "interaction" ? (byId.get(screen.id) ?? null) : null;
-  const snapshot = active ? (results[active.id] ?? EMPTY_SNAPSHOT) : EMPTY_SNAPSHOT;
+  const publicSnapshot = active ? (results[active.id] ?? EMPTY_SNAPSHOT) : EMPTY_SNAPSHOT;
+  // "Comparar grupos": com o filtro ligado, os resultados vêm do servidor só com o grupo escolhido.
+  const segment = useSegmentResults(
+    session.id,
+    active && acceptsResponses(active.type) ? active.id : null,
+    state?.segment_option_id ?? null,
+    publicSnapshot.total,
+  );
+  const snapshot = segment?.snapshot ?? publicSnapshot;
+  const answer = useRevealedAnswer(
+    session.id,
+    active && canRevealAnswer(active.type) ? active.id : null,
+    Boolean(state?.answer_revealed),
+  );
+  const resultsHidden = Boolean(active?.settings.hideResults && !state?.results_revealed);
   const router = useRouter();
   const missingId = state?.active_interaction_id && !byId.has(state.active_interaction_id) ? state.active_interaction_id : null;
 
@@ -151,20 +174,51 @@ export function DisplayView({
       </div>
     );
   } else if (screen.kind === "leaderboard") {
-    body = <QuizLeaderboard sessionId={session.id} version={state?.leaderboard_at ?? null} />;
+    body = (
+      <QuizLeaderboard sessionId={session.id} version={state?.leaderboard_at ?? null} mode={state?.leaderboard_mode ?? "people"} />
+    );
   } else if (screen.kind === "questions") {
     body = <AudienceQuestionsStage sessionId={session.id} version={state?.questions_at ?? null} joinHost={joinHost(joinUrl)} />;
-  } else if (active) {
+  } else if (active && active.type === "content") {
     body = (
-      <div className="flex w-full min-w-0 max-w-6xl flex-col gap-10 max-md:gap-6">
-        <h1 className="text-center text-5xl font-semibold leading-tight max-md:text-3xl md:text-6xl">{active.title}</h1>
-        <ResultsView
-          interaction={active}
-          snapshot={snapshot}
-          variant="display"
-          animated
-          hideOpenText={active.type === "open_text" && !active.settings.showOnDisplay}
-        />
+      <div className="flex w-full min-w-0 max-w-7xl flex-col">
+        <ContentSlide interaction={active} variant="display" showTitle />
+      </div>
+    );
+  } else if (active) {
+    const timer = active.settings.timerSeconds;
+    body = (
+      <div className="flex w-full min-w-0 max-w-6xl flex-col gap-10 max-md:gap-6 [@media(max-height:800px)]:gap-6">
+        <div className="flex items-center justify-center gap-8 max-md:flex-col-reverse max-md:gap-4">
+          <h1 className="min-w-0 text-center text-5xl font-semibold leading-tight text-balance break-words max-md:text-3xl md:text-6xl md:[@media(max-height:800px)]:text-5xl">
+            {active.title}
+          </h1>
+          {timer ? (
+            <DisplayTimer
+              key={active.id}
+              activatedAt={state?.active_interaction_activated_at ?? active.activatedAt}
+              seconds={timer}
+            />
+          ) : null}
+        </div>
+        {segment ? (
+          <p className="-mt-4 self-center rounded-full max-md:-mt-2 [@media(max-height:800px)]:-mt-3 border border-primary/40 bg-primary/15 px-5 py-1.5 text-2xl font-semibold text-primary max-md:text-base">
+            {t("segment", { group: segment.group })}
+          </p>
+        ) : null}
+        {/* Ao revelar, os resultados entram (as barras crescem do zero). */}
+        <m.div key={resultsHidden ? "hidden" : "shown"} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={SPRING.soft}>
+          <ResultsView
+            interaction={active}
+            snapshot={snapshot}
+            variant="display"
+            animated
+            hidden={resultsHidden}
+            revealed={Boolean(state?.answer_revealed)}
+            answer={answer}
+            hideOpenText={active.type === "open_text" && !active.settings.showOnDisplay}
+          />
+        </m.div>
       </div>
     );
   } else if (slideUrl) {
@@ -212,7 +266,7 @@ export function DisplayView({
           {[
             slideUrl
               ? t("footer.joinAt", { host: joinHost(joinUrl) })
-              : active
+              : active && acceptsResponses(active.type)
                 ? t("footer.responses", { count: snapshot.total })
                 : screen.kind === "join"
                   ? null

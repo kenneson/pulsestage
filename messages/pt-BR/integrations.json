@@ -104,5 +104,48 @@
   },
   "errors": {
     "revokeFailed": "Não foi possível revogar o acesso."
+  },
+  "office": {
+    "manifest": {
+      "name": "PulseStage",
+      "description": "Mostra o telão ao vivo de uma sessão do PulseStage dentro do slide: enquetes, nuvens, quiz e ranking sem sair da apresentação."
+    },
+    "addin": {
+      "metaTitle": "Telão no PowerPoint",
+      "title": "Telão do PulseStage no slide",
+      "description": "Digite o código da sessão (o mesmo que a plateia usa para entrar). O slide passa a mostrar o telão ao vivo dela.",
+      "codeLabel": "Código da sessão ou link do telão",
+      "codePlaceholder": "Ex.: KX4P2M",
+      "show": "Mostrar o telão",
+      "checking": "Procurando…",
+      "hint": "A escolha fica salva neste slide. Para trocar, passe o mouse sobre o telão e clique em “Trocar sessão”. Os controles continuam na sala ao vivo do PulseStage.",
+      "frameTitle": "Telão da sessão",
+      "change": "Trocar sessão",
+      "errors": {
+        "empty": "Digite o código da sessão.",
+        "notFound": "Nenhuma sessão em rascunho ou ao vivo com este código.",
+        "tooMany": "Muitas tentativas. Espere alguns minutos e tente de novo.",
+        "network": "Sem conexão com o PulseStage. Confira a internet e tente de novo."
+      }
+    },
+    "section": {
+      "title": "PowerPoint",
+      "description": "Mostre o telão ao vivo de uma sessão dentro de um slide do PowerPoint, sem alternar janelas.",
+      "download": "Baixar o suplemento (manifest.xml)",
+      "tabWeb": "Web e Mac",
+      "tabWindows": "Windows",
+      "web1": "No PowerPoint, abra <b>Inserir → Suplementos</b> (ou <b>Obter suplementos</b>) e vá a <b>Meus suplementos</b>.",
+      "web2": "Clique em <b>Carregar meu suplemento</b> e escolha o arquivo baixado acima.",
+      "windows1": "No Windows, o PowerPoint só carrega suplementos de um catálogo: peça à TI para publicar o arquivo na <b>implantação centralizada</b> do Microsoft 365 (Aplicativos integrados) ou numa pasta compartilhada de catálogo.",
+      "windows2": "Depois, o PulseStage aparece em <b>Inserir → Suplementos → Meus suplementos</b> (ou em <b>Administrador gerenciado</b>).",
+      "useTitle": "Depois de instalar",
+      "use1": "No slide desejado, insira o suplemento <b>PulseStage</b> e ajuste o tamanho do quadro.",
+      "use2": "Digite o <b>código da sessão</b> e clique em <b>Mostrar o telão</b>. O slide guarda a escolha.",
+      "use3": "Na apresentação, o quadro mostra o telão ao vivo. Conduza pela sala ao vivo do PulseStage (no celular ou noutra janela).",
+      "store": "Quando o PulseStage estiver na loja de suplementos do Office, bastará procurar por “PulseStage” em <b>Inserir → Suplementos</b>.",
+      "requirements": "Precisa de internet durante a apresentação. O manifesto aponta para {url}.",
+      "googleTitle": "E o Google Slides?",
+      "google": "O Google Slides não permite conteúdo ao vivo dentro do slide. Duas alternativas: envie o PDF da apresentação na aba <b>Slides</b> da sessão (os slides passam a aparecer no próprio telão do PulseStage, com as perguntas entre eles) ou alterne entre a apresentação e a janela do telão."
+    }
   }
 }

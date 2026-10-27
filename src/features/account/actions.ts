@@ -10,9 +10,11 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { removeAllOptionImages } from "@/lib/data/option-images";
 import { removeSlideFiles } from "@/lib/data/slides";
+import { removeBrandLogos } from "@/lib/brand/server";
+import { brandColorSchema, brandLogoOwner, brandLogoPathSchema } from "@/lib/domain/brand";
 import { isValidTimeZone } from "@/lib/datetime";
 import { LOCALES } from "@/lib/domain/locale";
-import { formValues, fail, ok, type ActionResult } from "@/lib/action-result";
+import { formValues, fail, isUuid, ok, type ActionResult } from "@/lib/action-result";
 
 export type AccountFormState = { error?: string; success?: string };
 
@@ -152,6 +154,54 @@ export async function updatePreferencesAction(_prev: AccountFormState, formData:
 }
 
 // ---------------------------------------------------------------------------
+// Marca (logo e cor no celular e no telão das sessões com "Usar minha marca")
+// ---------------------------------------------------------------------------
+
+// O logo já chega no bucket `brand` (enviado pelo navegador, lib/brand/upload.ts): aqui só o caminho.
+const brandSchema = z.object({
+  logoPath: brandLogoPathSchema.nullable(),
+  color: brandColorSchema.nullable(),
+});
+
+export type BrandInput = z.input<typeof brandSchema>;
+
+/** Salva logo e cor (null remove). Logo trocado ou removido sai do Storage. */
+export async function saveBrandAction(raw: BrandInput): Promise<ActionResult> {
+  const [t, tr] = await Promise.all([getTranslations("account.brand.errors"), getMessageTranslator()]);
+  const parsed = brandSchema.safeParse(raw);
+  if (!parsed.success) return fail(tr.issue(parsed.error));
+  const { supabase, user } = await requireUser();
+  const { logoPath, color } = parsed.data;
+  // Só um arquivo da pasta do próprio speaker (o RLS de profiles não confere o conteúdo do caminho).
+  if (logoPath && brandLogoOwner(logoPath) !== user.id) return fail(t("logoInvalid"));
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ brand_logo_path: logoPath, brand_color: color })
+    .eq("id", user.id);
+  if (error) return fail(t("saveFailed"));
+  await removeBrandLogos(supabase, user.id, logoPath ?? undefined);
+  refresh();
+  return ok(null);
+}
+
+/** "Usar minha marca" numa sessão (logo e cor do perfil no celular e no telão). */
+export async function setSessionBrandAction(sessionId: string, useBrand: boolean): Promise<ActionResult> {
+  const t = await getTranslations("account.brand.errors");
+  if (!isUuid(sessionId) || typeof useBrand !== "boolean") return fail(t("saveFailed"));
+  const { supabase } = await requireUser();
+  const { data, error } = await supabase
+    .from("sessions")
+    .update({ use_brand: useBrand })
+    .eq("id", sessionId)
+    .select("id")
+    .maybeSingle();
+  if (error || !data) return fail(t("saveFailed"));
+  revalidatePath(`/dashboard/sessions/${sessionId}`, "layout");
+  return ok(null);
+}
+
+// ---------------------------------------------------------------------------
 // Segurança
 // ---------------------------------------------------------------------------
 
@@ -208,6 +258,7 @@ export async function deleteAccountAction(_prev: AccountFormState, formData: For
   }
   await removeSlideFiles(admin, user.id);
   await removeAllOptionImages(admin, user.id);
+  await removeBrandLogos(admin, user.id);
   const { error } = await admin.auth.admin.deleteUser(user.id);
   if (error) return { error: t("errors.deleteFailed") };
 

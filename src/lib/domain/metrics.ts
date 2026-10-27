@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { InteractionRow, ParticipantRow, ResponseRow, SessionRow } from "@/lib/supabase/types";
 import { avatarOf } from "./gamification.ts";
+import { acceptsResponses, isInteractionType, isScoredType } from "./interactions.ts";
 import {
   dimensionScores,
   headlineScore,
@@ -95,9 +96,15 @@ export function computePulse(data: AnalyticsData): PulsePoint[] {
     responsesByInteraction.set(r.interaction_id, (responsesByInteraction.get(r.interaction_id) ?? 0) + 1);
   }
 
+  // Slide de conteúdo não recebe resposta: fica fora da participação. No ritmo próprio ninguém "abre" a
+  // pergunta (cada pessoa percorre o roteiro): entram todas, na ordem do roteiro e sem minuto.
+  const selfPaced = data.session.pace === "self";
   return data.interactions
-    .filter((i) => i.activated_at !== null)
-    .sort((a, b) => (ts(a.activated_at) ?? 0) - (ts(b.activated_at) ?? 0))
+    .filter((i) => !isInteractionType(i.type) || acceptsResponses(i.type))
+    .filter((i) => selfPaced || i.activated_at !== null)
+    .sort((a, b) =>
+      selfPaced ? a.position - b.position : (ts(a.activated_at) ?? 0) - (ts(b.activated_at) ?? 0),
+    )
     .map((i) => {
       const activated = ts(i.activated_at);
       const cutoff = ts(i.closed_at) ?? sessionEnd;
@@ -106,7 +113,8 @@ export function computePulse(data: AnalyticsData): PulsePoint[] {
       return {
         interactionId: i.id,
         title: i.title,
-        minute: start !== null && activated !== null ? Math.max(0, Math.round((activated - start) / 60000)) : null,
+        minute:
+          !selfPaced && start !== null && activated !== null ? Math.max(0, Math.round((activated - start) / 60000)) : null,
         responses,
         eligible,
         rate: ratio(responses, eligible),
@@ -219,6 +227,15 @@ export function quizRanking(
     totals.set(r.participant_id, entry);
   }
   return [...totals.values()].sort((a, b) => b.points - a.points || b.correct - a.correct).slice(0, limit);
+}
+
+/** Respostas que pontuam (quiz, quiz de digitar e adivinhe o número): as do ranking do quiz. */
+export function scoredResponses<R extends Pick<ResponseRow, "interaction_id">>(
+  responses: readonly R[],
+  interactions: readonly Pick<InteractionRow, "id" | "type">[],
+): R[] {
+  const ids = new Set(interactions.filter((i) => isInteractionType(i.type) && isScoredType(i.type)).map((i) => i.id));
+  return responses.filter((r) => ids.has(r.interaction_id));
 }
 
 // ---------------------------------------------------------------------------

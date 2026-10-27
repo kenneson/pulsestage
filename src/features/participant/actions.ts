@@ -50,6 +50,7 @@ import { askQuestionSchema, QUESTION_LIMIT, QUESTION_WINDOW_MS } from "@/lib/dom
 import { allowReaction, reactionKindSchema } from "@/lib/domain/reactions";
 import { fail, formValues, isUuid, ok, type ActionResult } from "@/lib/action-result";
 import { getMessageTranslator } from "@/i18n/server";
+import { assignTeam } from "@/lib/data/participant-teams";
 
 // Mensagens para a plateia: sempre no idioma da sessão (o mesmo dos botões no celular). Sem sessão válida,
 // no idioma da requisição.
@@ -88,6 +89,8 @@ const joinSchema = z
       .regex(/^[0-9+()\s-]{8,32}$/, "participant.errors.invalidPhone")
       .optional(),
     consent: z.boolean(),
+    /** equipe escolhida; sem escolha (ou inválida), o servidor põe na equipe com menos gente */
+    team: z.uuid().optional().catch(undefined),
   })
   .refine((v) => (!v.email && !v.phone) || v.consent, {
     error: "participant.errors.consentRequired",
@@ -99,7 +102,7 @@ const CODE_MISS_WINDOW_MS = 10 * 60 * 1000;
 const CODE_MISS_MAX = 30;
 
 export async function joinSessionAction(code: string, _prev: JoinFormState, formData: FormData): Promise<JoinFormState> {
-  const values = formValues(formData, ["name", "avatar", "email", "phone"] as const);
+  const values = formValues(formData, ["name", "avatar", "email", "phone", "team"] as const);
   const parsed = joinSchema.safeParse({ ...values, consent: formData.get("consent") === "on" });
 
   const admin = createAdminClient();
@@ -128,9 +131,16 @@ export async function joinSessionAction(code: string, _prev: JoinFormState, form
   if ((count ?? 0) >= MAX_PARTICIPANTS_PER_SESSION) return { error: t("sessionFull") };
 
   const name = parsed.data.name || null;
+  const teamId = await assignTeam(admin, session.id, parsed.data.team ?? null).catch(() => null);
   const created = await admin
     .from("participants")
-    .insert({ session_id: session.id, display_name: name, anonymous: name === null, avatar: parsed.data.avatar ?? null })
+    .insert({
+      session_id: session.id,
+      display_name: name,
+      anonymous: name === null,
+      avatar: parsed.data.avatar ?? null,
+      team_id: teamId,
+    })
     .select("id")
     .single();
   if (created.error) return { error: t("joinFailed") };

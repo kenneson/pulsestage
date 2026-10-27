@@ -21,7 +21,9 @@ export function useLibraryFilter(items: LibraryItem[]) {
     () => items.filter((i) => (type === null || i.type === type) && matchesLibraryQuery(i, query)),
     [items, query, type],
   );
-  return { query, setQuery, type, setType, filtered };
+  // Só os tipos que a biblioteca tem (com 12 tipos, a lista inteira ocupava duas linhas sem necessidade).
+  const types = useMemo(() => INTERACTION_TYPES.filter((kind) => items.some((i) => i.type === kind)), [items]);
+  return { query, setQuery, type, setType, filtered, types };
 }
 
 export function LibraryFilters({
@@ -29,7 +31,10 @@ export function LibraryFilters({
   setQuery,
   type,
   setType,
-}: Pick<ReturnType<typeof useLibraryFilter>, "query" | "setQuery" | "type" | "setType">) {
+  types = INTERACTION_TYPES,
+}: Pick<ReturnType<typeof useLibraryFilter>, "query" | "setQuery" | "type" | "setType"> & {
+  types?: readonly (typeof INTERACTION_TYPES)[number][];
+}) {
   const t = useTranslations("builder.library");
   const tDomain = useTranslations("domain");
   return (
@@ -62,7 +67,7 @@ export function LibraryFilters({
         >
           {t("all")}
         </button>
-        {INTERACTION_TYPES.map((kind) => (
+        {types.map((kind) => (
           <button
             key={kind}
             type="button"

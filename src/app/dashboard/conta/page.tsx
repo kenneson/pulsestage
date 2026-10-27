@@ -7,13 +7,14 @@ import { localeOrDefault } from "@/lib/domain/locale";
 import { buttonVariants } from "@/components/ui/button";
 import {
   AvatarForm,
+  BrandForm,
   DeleteAccountForm,
   PasswordForm,
   PreferencesForm,
   ProfileForm,
   SignOutOthersButton,
 } from "@/components/account/account-forms";
-import { CheckIcon, DownloadIcon, LockIcon, MailIcon, SettingsIcon, ShieldIcon, UserIcon } from "@/components/icons";
+import { CheckIcon, DownloadIcon, ImageIcon, LockIcon, MailIcon, SettingsIcon, ShieldIcon, UserIcon } from "@/components/icons";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("account.page");
@@ -54,6 +55,7 @@ function Section({
 const SECTIONS = [
   { id: "perfil", label: "profile", icon: UserIcon },
   { id: "preferencias", label: "preferences", icon: SettingsIcon },
+  { id: "marca", label: "brand", icon: ImageIcon },
   { id: "seguranca", label: "security", icon: LockIcon },
   { id: "privacidade", label: "privacy", icon: ShieldIcon },
 ] as const;
@@ -61,8 +63,9 @@ const SECTIONS = [
 export default async function AccountPage() {
   const profile = await getSpeakerProfile();
   const supabase = await createClient();
-  const [{ data: auth }, templates, t, tSections] = await Promise.all([
+  const [{ data: auth }, brand, templates, t, tSections] = await Promise.all([
     supabase.auth.getUser(),
+    supabase.from("profiles").select("brand_logo_path, brand_color").eq("id", profile.id).maybeSingle(),
     listSurveyTemplates(supabase),
     getTranslations("account"),
     getTranslations("account.sections"),
@@ -111,6 +114,10 @@ export default async function AccountPage() {
             locale: x.isPlatform ? localeOrDefault(x.locale) : null,
           }))}
         />
+      </Section>
+
+      <Section id="marca" title={tSections("brand")} description={tSections("brandDescription")}>
+        <BrandForm logoPath={brand.data?.brand_logo_path ?? null} color={brand.data?.brand_color ?? null} />
       </Section>
 
       <Section id="seguranca" title={tSections("security")}>

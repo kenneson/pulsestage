@@ -12,7 +12,7 @@ import type { SessionRow } from "@/lib/supabase/types";
 // Erros saem como chaves completas (builder.library.errors.*, core.*): quem chama traduz.
 
 /**
- * Copia interações (com alternativas, acerto e pontos do quiz) para o fim do roteiro de outra sessão.
+ * Copia interações (com alternativas, acerto e pontos do quiz, gabarito e notas) para o fim do roteiro de outra sessão.
  * O RLS garante que origem e destino são do speaker logado.
  * `keepDeckPosition`: ao duplicar a sessão, cada pergunta continua no mesmo ponto dos slides.
  */
@@ -24,7 +24,9 @@ export async function copyInteractions(
 ): Promise<number> {
   const { data: sources, error } = await supabase
     .from("interactions")
-    .select("type, title, description, settings, position, after_slide, id, interaction_options(label, position, is_correct, points, image_path)")
+    .select(
+      "type, title, description, settings, answer_key, speaker_notes, position, after_slide, id, interaction_options(label, position, is_correct, points, image_path)",
+    )
     .in("id", sourceIds);
   if (error) throw new Error(error.message);
   if (sources.length === 0) return 0;
@@ -48,6 +50,9 @@ export async function copyInteractions(
     title: s.title,
     description: s.description,
     settings: s.settings,
+    // Gabarito (adivinhe o número, quiz de digitar) e notas do palestrante vão junto.
+    answer_key: s.answer_key,
+    speaker_notes: s.speaker_notes,
     position: start + index,
     after_slide: keepDeckPosition ? s.after_slide : null,
   }));

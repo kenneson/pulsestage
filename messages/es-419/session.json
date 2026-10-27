@@ -55,7 +55,15 @@
     "required": "obligatorio",
     "requiredHint": "Solo el título es obligatorio. Lo demás puedes ajustarlo después.",
     "moreOptions": "Más opciones",
-    "moreOptionsHint": "Descripción, duración, idioma, código de acceso y encuesta"
+    "moreOptionsHint": "Descripción, modo, duración, idioma y código de acceso",
+    "pace": "Modo de la sesión",
+    "paceLive": "En vivo, tú conduces",
+    "paceLiveHint": "Tú abres cada pregunta y el público responde al mismo tiempo, a tu ritmo.",
+    "paceSelf": "Al ritmo de cada quien",
+    "paceSelfHint": "Con la sesión al aire, cada persona recorre todo el guion en el celular, sin esperarte. El temporizador y el bono por velocidad no aplican.",
+    "useBrand": "Usar mi marca",
+    "useBrandHint": "Tu logo y tu color aparecen en el celular del público y en la pantalla.",
+    "createNext": "Crear e ir a Diapositivas"
   },
   "controls": {
     "startConfirmTitle": "¿Iniciar sin interacciones?",
@@ -97,7 +105,7 @@
     "exportHelp": "PowerPoint: Archivo → Exportar → PDF · Google Slides: Archivo → Descargar → PDF · Keynote: Archivo → Exportar a → PDF · Canva: Compartir → Descargar → PDF. El PDF se convierte en tu navegador; solo se suben las imágenes de las diapositivas. No se conservan animaciones ni videos.",
     "summary": "<num>{slides}</num> {slides, plural, one {diapositiva} other {diapositivas}} · {questions, plural, one {# pregunta} other {# preguntas}}.",
     "readOnlyHint": "Cada pregunta entra en el punto marcado.",
-    "editHint": "Arrastra las preguntas al punto de la presentación en el que deben entrar, o usa el selector de cada una.",
+    "editHint": "Arrastra las preguntas al punto de la presentación en el que deben entrar, o usa el selector de cada una. En cada diapositiva, \"Nota\" guarda lo que quieres recordar en el momento.",
     "replacePdf": "Cambiar PDF",
     "removeSlides": "Quitar diapositivas",
     "slideAlt": "Diapositiva {number}",
@@ -121,7 +129,20 @@
       "removeFailed": "No se pudieron quitar las diapositivas.",
       "notLive": "Inicia o reanuda la sesión para mostrar diapositivas.",
       "slideNotFound": "Diapositiva no encontrada.",
-      "changeFailed": "No se pudo cambiar la diapositiva."
+      "changeFailed": "No se pudo cambiar la diapositiva.",
+      "noteSaveFailed": "No se pudo guardar la nota."
+    },
+    "notes": {
+      "add": "Nota",
+      "edit": "Nota",
+      "addAria": "Agregar una nota a la diapositiva {number}",
+      "editAria": "Editar la nota de la diapositiva {number}",
+      "label": "Nota",
+      "title": "Nota de la diapositiva {number}",
+      "description": "Solo tú la ves, en la sala en vivo, mientras esta diapositiva esté en pantalla.",
+      "placeholder": "Qué decir en esta diapositiva, cifras para citar, recordatorios…",
+      "saved": "Nota guardada.",
+      "removed": "Nota eliminada."
     }
   },
   "raffle": {
@@ -198,6 +219,52 @@
       "description": "Cada respuesta abierta espera tu aprobación para aparecer en la pantalla."
     }
   },
+  "teams": {
+    "title": "Equipos",
+    "description": "Para quiz y competencias: cada persona juega por un equipo y la pantalla puede mostrar el ranking de los equipos.",
+    "enable": "Jugar en equipos",
+    "enableDescription": "Al entrar, cada persona elige un equipo (si no elige, entra en el que tiene menos gente). El ranking de equipos usa el promedio de puntos por persona.",
+    "liveHint": "Quien entró antes de activar los equipos sigue sin equipo; quien entre ahora elige uno.",
+    "listLabel": "Equipos de la sesión",
+    "nameLabel": "Nombre del equipo {number}",
+    "colorLabel": "Color del equipo {name}: {color}. Cambiar el color",
+    "colorPicker": "Color del equipo {name}",
+    "members": "{count, plural, =0 {nadie todavía} one {# persona} other {# personas}}",
+    "moveUp": "Subir el equipo {name}",
+    "moveDown": "Bajar el equipo {name}",
+    "deleteLabel": "Eliminar el equipo {name}",
+    "delete": "Eliminar equipo",
+    "deleteTitle": "¿Eliminar el equipo “{name}”?",
+    "deleteDescription": "{count, plural, one {# persona ya está en él y quedará} other {# personas ya están en él y quedarán}} sin equipo. Los puntos de cada persona se mantienen.",
+    "minHint": "Con equipos activados, quedan al menos dos.",
+    "add": "Agregar equipo",
+    "limits": "De 2 a 8 equipos. El orden es el de la pantalla de entrada.",
+    "newName": "Equipo {number}",
+    "defaults": {
+      "red": "Equipo Rojo",
+      "blue": "Equipo Azul",
+      "yellow": "Equipo Amarillo",
+      "green": "Equipo Verde"
+    },
+    "colors": {
+      "1": "rojo (triángulo)",
+      "2": "azul (rombo)",
+      "3": "amarillo (círculo)",
+      "4": "verde (cuadrado)",
+      "5": "morado (estrella)",
+      "6": "turquesa (hexágono)",
+      "7": "naranja (pentágono)",
+      "8": "rosa (corazón)"
+    },
+    "errors": {
+      "nameRequired": "Ponle un nombre al equipo.",
+      "nameTooLong": "El nombre del equipo puede tener hasta 40 caracteres.",
+      "saveFailed": "No se pudieron guardar los equipos.",
+      "notFound": "Equipo no encontrado.",
+      "tooMany": "La sesión puede tener hasta 8 equipos.",
+      "tooFew": "Con equipos activados, la sesión necesita al menos dos."
+    }
+  },
   "errors": {
     "titleRequired": "Escribe el título.",
     "titleTooLong": "El título es demasiado largo.",
@@ -213,7 +280,8 @@
     "joinCodeTaken": "Ese código ya está en uso.",
     "deleteFailed": "No se pudo eliminar la sesión.",
     "statusNotAllowed": "Ese cambio de estado no está permitido.",
-    "updateFailed": "No se pudo actualizar la sesión."
+    "updateFailed": "No se pudo actualizar la sesión.",
+    "surveyLocked": "La sesión ya terminó con esta encuesta."
   },
   "rehearsal": {
     "title": "Ensayo: {title}",
@@ -224,5 +292,72 @@
       "startFailed": "No se pudo iniciar el ensayo.",
       "endFailed": "No se pudo terminar el ensayo."
     }
+  },
+  "steps": {
+    "aria": "Etapas de la sesión",
+    "progress": "Etapa {number} de {total} · {label}",
+    "readyHeading": "Listo para presentar",
+    "doneCount": "{count} de {total} etapas listas",
+    "configuracoes": {
+      "label": "Configuración",
+      "description": "Nombre, fecha, modo de la sesión y cómo participa el público.",
+      "short": "Sesión"
+    },
+    "slides": {
+      "label": "Diapositivas",
+      "description": "Opcional. Presenta desde PulseStage: diapositivas y preguntas en la misma secuencia, con notas por diapositiva.",
+      "short": "Diapos"
+    },
+    "enquetes": {
+      "label": "Votaciones",
+      "description": "Las preguntas de la sesión, en el orden en que se presentarán. Usa el ojo para ver cómo las ve el público.",
+      "short": "Votaciones"
+    },
+    "pesquisa": {
+      "label": "Encuesta posterior",
+      "description": "Lo que el público responde al terminar la sesión. Las respuestas forman el informe de la sesión.",
+      "short": "Encuesta"
+    },
+    "sorteio": {
+      "label": "Sorteo",
+      "description": "Opcional. Sortea premios entre quienes respondieron la encuesta o entre todos los que entraron.",
+      "short": "Sorteo"
+    },
+    "state": {
+      "done": "Listo",
+      "optional": "Opcional",
+      "pending": "Pendiente"
+    },
+    "needsSession": "disponible después de crear la sesión",
+    "back": "Volver",
+    "backTo": "Volver a {label}",
+    "next": "Siguiente: {label}",
+    "skip": "Omitir",
+    "finish": "Terminar"
+  },
+  "ready": {
+    "title": "Listo para presentar",
+    "description": "Revisa lo que armaste. Puedes volver a cualquier etapa desde la línea de tiempo.",
+    "slides": "{count, plural, =0 {Sin diapositivas} one {# diapositiva} other {# diapositivas}}",
+    "interactions": "{count, plural, =0 {Todavía no hay preguntas} one {# pregunta} other {# preguntas}}",
+    "survey": "Encuesta: {name}",
+    "noSurvey": "Ninguna encuesta elegida",
+    "raffle": "{count, plural, =0 {Sorteo activado, todavía sin premios} one {Sorteo con # premio} other {Sorteo con # premios}}",
+    "noRaffle": "Sin sorteo",
+    "missing": "Antes de presentar, revisa: {steps}.",
+    "edit": "Editar",
+    "startHint": "\"Iniciar sesión\" abre la sesión al público. \"Probar sesión\" crea un ensayo solo para ti, que no cuenta en las estadísticas.",
+    "completed": "Esta sesión ya se presentó."
+  },
+  "survey": {
+    "previewTitle": "Preguntas de “{name}”",
+    "locked": "La sesión terminó con la encuesta “{name}”; ya no cambia.",
+    "platform": "Plantillas listas",
+    "mine": "Mis plantillas",
+    "questions": "{count, plural, one {# pregunta} other {# preguntas}}",
+    "help": "El público responde al terminar la sesión.",
+    "manage": "Ver o crear plantillas",
+    "saved": "Encuesta elegida.",
+    "none": "Elige una plantilla para ver las preguntas."
   }
 }

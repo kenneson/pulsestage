@@ -157,6 +157,65 @@
     "questionNotOpen": "Essa pergunta não está aberta.",
     "screenFailed": "Não foi possível mudar o telão.",
     "responseUpdateFailed": "Não foi possível atualizar a resposta.",
-    "wordUpdateFailed": "Não foi possível atualizar a palavra."
+    "wordUpdateFailed": "Não foi possível atualizar a palavra.",
+    "revealFailed": "Não foi possível mudar o que o telão revela.",
+    "segmentFailed": "Não foi possível filtrar o telão."
+  },
+  "reveal": {
+    "results": "Revelar resultados",
+    "hideResults": "Esconder resultados",
+    "answer": "Revelar resposta",
+    "hideAnswer": "Esconder resposta",
+    "hiddenOnScreen": "Oculto no telão",
+    "hiddenHint": "O telão mostra só o total de respostas até você revelar.",
+    "answerOnScreen": "Resposta no telão",
+    "answerKey": "Resposta certa: <strong>{answer}</strong>",
+    "acceptedAnswers": "Respostas aceitas: <strong>{answers}</strong>",
+    "onlyYou": "só você vê"
+  },
+  "countdown": {
+    "label": "Tempo para responder: {time}",
+    "timeUp": "Tempo esgotado"
+  },
+  "segment": {
+    "label": "Ver só",
+    "all": "Todos",
+    "filtered": "Só <strong>{group}</strong> · {count, plural, one {# pessoa} other {# pessoas}}",
+    "screenToo": "O telão também mostra só esse grupo.",
+    "notOnProfile": "O filtro não vale para a própria pergunta de perfil.",
+    "loading": "Filtrando…"
+  },
+  "leaderboardMode": {
+    "label": "Ranking por",
+    "people": "Pessoas",
+    "teams": "Equipes"
+  },
+  "notes": {
+    "title": "Notas",
+    "show": "Mostrar notas",
+    "hide": "Recolher notas",
+    "onlyYou": "Só você vê",
+    "forItem": "Agora: {item}",
+    "forNext": "A seguir: {item}",
+    "empty": "Sem notas para este item."
+  },
+  "content": {
+    "item": "Slide de conteúdo",
+    "noResponses": "Slide de conteúdo: não recebe respostas.",
+    "hasImage": "Com imagem",
+    "hasVideo": "Com vídeo",
+    "removeFromScreen": "Tirar do telão"
+  },
+  "selfPace": {
+    "badge": "Ritmo próprio",
+    "title": "Acompanhamento",
+    "hint": "Cada pessoa responde no seu ritmo pelo celular, na ordem do roteiro. O telão mostra o QR Code de entrada.",
+    "joined": "Entraram",
+    "started": "Começaram",
+    "finished": "Terminaram tudo",
+    "ofJoined": "de {count, number}",
+    "answered": "{count, number} de {participants, number}",
+    "questions": "Perguntas",
+    "noQuestions": "Nenhuma pergunta no roteiro."
   }
 }

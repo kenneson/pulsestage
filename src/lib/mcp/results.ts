@@ -1,6 +1,8 @@
 import "server-only";
 import type { SessionAnalyticsBundle } from "@/lib/data/analytics";
-import { computeOverview, quizStats } from "@/lib/domain/metrics";
+import { computeOverview, quizStats, scoredResponses } from "@/lib/domain/metrics";
+import { summarizeInteraction } from "@/lib/domain/interaction-summary";
+import { teamLeaderboard } from "@/lib/domain/team-leaderboard";
 import { isInteractionType, normalizeSettings, INTERACTION_TYPE_META } from "@/lib/domain/interactions";
 import { ratingStats, snapshotFromResponses, wordList } from "@/lib/domain/results";
 import { sessionClock, talkSeconds } from "@/lib/domain/timing";
@@ -23,17 +25,20 @@ export function summarizeForAssistant(
   const seconds = talkSeconds(sessionClock(session), Date.now());
 
   const interactions = bundle.interactionsWithOptions
-    .filter((i) => isInteractionType(i.type))
+    // Slide de conteúdo não tem resposta.
+    .filter((i) => isInteractionType(i.type) && i.type !== "content")
     .map((i) => {
       const type = isInteractionType(i.type) ? i.type : "open_text";
       const responses = bundle.responses.filter((r) => r.interaction_id === i.id);
       const snapshot = snapshotFromResponses(responses);
       const options = [...i.options].sort((a, b) => a.position - b.position);
       const base = { question: i.title, type, type_label: INTERACTION_TYPE_META[type].label, responses: responses.length };
+      const summary = summarizeInteraction(i, i.options, responses);
       switch (type) {
         case "multiple_choice":
           return {
             ...base,
+            ...(summary?.kind === "choice" && summary.multi ? { note: "Várias escolhas por pessoa: os votos somam mais que as respostas." } : {}),
             results: options.map((o) => ({ option: o.label, votes: snapshot.counts[o.id] ?? 0 })),
           };
         case "quiz": {
@@ -74,8 +79,71 @@ export function summarizeForAssistant(
               average_position: r.averagePosition,
             })),
           };
+        case "points_100":
+          return {
+            ...base,
+            average_points_out_of_100:
+              summary?.kind === "points" ? summary.rows.map((r) => ({ option: r.label, average: round(r.average, 1) })) : [],
+          };
+        case "matrix_2x2": {
+          if (summary?.kind !== "matrix") return base;
+          const a = summary.axes;
+          return {
+            ...base,
+            axes: {
+              x: { name: a.xLabel, low: a.xLow, high: a.xHigh },
+              y: { name: a.yLabel, low: a.yLow, high: a.yHigh },
+              scale: "0 a 100",
+            },
+            average_positions: summary.rows.map((r) => ({ item: r.label, x: round(r.x, 1), y: round(r.y, 1), people: r.count })),
+          };
+        }
+        case "pin_image":
+          return {
+            ...base,
+            // Centro das áreas mais marcadas, de 0 a 1 (0,0 = canto de cima à esquerda).
+            hotspots: summary?.kind === "pin" ? summary.hotspots.map((h) => ({ x: round(h.x), y: round(h.y), pins: h.count })) : [],
+          };
+        case "guess_number":
+          return summary?.kind === "guess"
+            ? {
+                ...base,
+                correct_number: summary.answer,
+                unit: summary.unit,
+                mean_guess: round(summary.mean, 2),
+                median_guess: summary.median,
+                closest_guess: summary.closest,
+                got_close_rate: round(summary.hitRate),
+                average_points: round(summary.avgPoints, 1),
+              }
+            : base;
+        case "quiz_text":
+          return summary?.kind === "quizText"
+            ? {
+                ...base,
+                accepted_answers: summary.accepted,
+                correct_rate: round(summary.correctRate),
+                avg_response_seconds: round(summary.avgResponseMs === null ? null : summary.avgResponseMs / 1000, 1),
+                top_answers: summary.answers.map((a) => ({ answer: a.text, count: a.count, correct: a.correct })),
+              }
+            : base;
       }
     });
+
+  // Equipes (nome da equipe, não de pessoas): média de pontos por pessoa.
+  const teams =
+    session.teams_enabled && bundle.teams.length > 0
+      ? teamLeaderboard(
+          scoredResponses(bundle.responses, bundle.interactionsWithOptions).map((r) => ({
+            participantId: r.participant_id,
+            interactionId: r.interaction_id,
+            value: r.value,
+          })),
+          bundle.participants,
+          bundle.teams,
+          null,
+        ).map((t) => ({ position: t.rank, team: t.name, people: t.people, average_points: round(t.average, 1), total_points: t.total }))
+      : null;
 
   const survey = overview.survey;
   const comments = bundle.survey.answers
@@ -106,6 +174,7 @@ export function summarizeForAssistant(
       comments,
     },
     interactions,
+    ...(teams ? { team_ranking: teams } : {}),
     // Perguntas da plateia sem nome de quem perguntou (só o texto, curtidas e se foi respondida).
     audience_questions: extras.questions
       .filter((q) => q.status !== "hidden")

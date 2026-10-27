@@ -42,7 +42,8 @@ export async function loadLibrary(supabase: ServerSupabase): Promise<LibraryItem
         title: i.title,
         createdAt: i.created_at,
         optionLabels: [...i.interaction_options].sort((a, b) => a.position - b.position).map((o) => o.label),
-        participation: people > 0 ? (totals.get(i.id) ?? 0) / people : null,
+        // Slide de conteúdo não recebe resposta: sem taxa de participação.
+        participation: people > 0 && i.type !== "content" ? (totals.get(i.id) ?? 0) / people : null,
       };
     }),
   );

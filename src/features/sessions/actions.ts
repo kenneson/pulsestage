@@ -11,10 +11,11 @@ import { getOwnedSession } from "@/lib/data/sessions";
 import { getSpeakerProfile } from "@/lib/data/profile";
 import { hasDbErrorCode, isUniqueViolation } from "@/lib/supabase/errors";
 import { zonedToUtcIso } from "@/lib/datetime";
-import { insertSession, isVisibleTemplate } from "./core";
+import { insertSession, isVisibleTemplate, SESSION_PACES, type SessionPace } from "./core";
 import { cloneSession } from "@/features/library/core";
 import { LOCALES, type Locale } from "@/lib/domain/locale";
 import { getMessageTranslator } from "@/i18n/server";
+import { isSessionStep, stepHref } from "@/lib/domain/session-steps";
 import {
   canTransition,
   isEditable,
@@ -28,7 +29,19 @@ import { fail, firstIssue, formValues, isUuid, ok, type ActionResult } from "@/l
 
 export type SessionFormState = { error?: string; success?: string };
 
-const FIELDS = ["title", "description", "date", "time", "duration", "joinCode", "surveyTemplateId", "locale"] as const;
+const FIELDS = [
+  "title",
+  "description",
+  "date",
+  "time",
+  "duration",
+  "joinCode",
+  "surveyTemplateId",
+  "locale",
+  "pace",
+  "useBrand",
+  "useBrandShown",
+] as const;
 
 // Mensagens são chaves de tradução completas; quem devolve o erro traduz com getMessageTranslator().
 const sessionFormSchema = z.object({
@@ -49,6 +62,10 @@ const sessionFormSchema = z.object({
   joinCode: z.string().optional(),
   surveyTemplateId: z.uuid({ error: "session.errors.invalidSurveyTemplate" }).optional(),
   locale: z.enum(LOCALES).optional(),
+  pace: z.enum(SESSION_PACES).optional(),
+  // Caixa de marcar: só vem marcada; `useBrandShown` diz que a opção estava na tela (desmarcada = false).
+  useBrand: z.literal("on").optional(),
+  useBrandShown: z.literal("1").optional(),
 });
 
 type SessionValues = {
@@ -59,6 +76,9 @@ type SessionValues = {
   joinCode: string | null;
   surveyTemplateId: string | null;
   locale: Locale | null;
+  pace: SessionPace | null;
+  /** null = a opção não estava no formulário (não muda) */
+  useBrand: boolean | null;
 };
 
 /** Erros saem como chave de tradução (traduzidos por quem chama). */
@@ -68,7 +88,8 @@ function parseSessionForm(
 ): { ok: true; values: SessionValues } | { ok: false; error: string } {
   const parsed = sessionFormSchema.safeParse(formValues(formData, FIELDS));
   if (!parsed.success) return { ok: false, error: firstIssue(parsed.error) };
-  const { title, description, date, time, duration, joinCode, surveyTemplateId, locale } = parsed.data;
+  const { title, description, date, time, duration, joinCode, surveyTemplateId, locale, pace, useBrand, useBrandShown } =
+    parsed.data;
 
   let scheduledAt: string | null = null;
   if (date) {
@@ -94,8 +115,24 @@ function parseSessionForm(
       joinCode: code,
       surveyTemplateId: surveyTemplateId ?? null,
       locale: locale ?? null,
+      pace: pace ?? null,
+      useBrand: useBrandShown ? useBrand === "on" : null,
     },
   };
+}
+
+/** Modelo pronto equivalente (mesmo slug) em outro idioma; null se o modelo for do palestrante ou não houver. */
+async function sameTemplateIn(supabase: Awaited<ReturnType<typeof createClient>>, templateId: string, locale: Locale) {
+  const { data: current } = await supabase.from("survey_templates").select("owner_id, slug").eq("id", templateId).maybeSingle();
+  if (!current || current.owner_id !== null || !current.slug) return null;
+  const { data: same } = await supabase
+    .from("survey_templates")
+    .select("id")
+    .is("owner_id", null)
+    .eq("slug", current.slug)
+    .eq("locale", locale)
+    .maybeSingle();
+  return same?.id ?? null;
 }
 
 export async function createSessionAction(_prev: SessionFormState, formData: FormData): Promise<SessionFormState> {
@@ -114,12 +151,19 @@ export async function createSessionAction(_prev: SessionFormState, formData: For
     return { error: tr.message("session.errors.invalidSurveyTemplate") };
   }
 
-  const created = await insertSession(supabase, { speakerId: user.id, ...values, locale: values.locale ?? profile.locale });
+  const created = await insertSession(supabase, {
+    speakerId: user.id,
+    ...values,
+    locale: values.locale ?? profile.locale,
+    pace: values.pace ?? undefined,
+    useBrand: values.useBrand ?? undefined,
+  });
   if (!created.ok) return { error: tr.message(created.error) };
   const createdId = created.data.id;
 
   revalidatePath("/dashboard");
-  redirect(`/dashboard/sessions/${createdId}`);
+  // Configurações feitas: a montagem segue no passo 2 (Slides).
+  redirect(stepHref(createdId, "slides"));
 }
 
 export async function updateSessionAction(
@@ -146,6 +190,12 @@ export async function updateSessionAction(
     return { error: t("joinCodeLocked") };
   }
 
+  // Idioma trocado com um modelo pronto: passa para o mesmo modelo no novo idioma (como na criação).
+  let surveyTemplateId = values.surveyTemplateId;
+  if (!surveyTemplateId && surveyEditable && values.locale && values.locale !== session.locale && session.survey_template_id) {
+    surveyTemplateId = await sameTemplateIn(supabase, session.survey_template_id, values.locale);
+  }
+
   const { error } = await supabase
     .from("sessions")
     .update({
@@ -154,8 +204,10 @@ export async function updateSessionAction(
       scheduled_at: values.scheduledAt,
       estimated_duration_minutes: values.duration,
       ...(values.locale ? { locale: values.locale } : {}),
+      ...(values.pace ? { pace: values.pace } : {}),
+      ...(values.useBrand !== null ? { use_brand: values.useBrand } : {}),
       ...(codeChanged && values.joinCode ? { join_code: values.joinCode } : {}),
-      ...(surveyEditable ? { survey_template_id: values.surveyTemplateId } : {}),
+      ...(surveyEditable && surveyTemplateId ? { survey_template_id: surveyTemplateId } : {}),
     })
     .eq("id", sessionId);
 
@@ -165,7 +217,26 @@ export async function updateSessionAction(
 
   revalidatePath(`/dashboard/sessions/${sessionId}`);
   revalidatePath("/dashboard/sessions");
+  // "Próximo: …" no passo de configurações salva e segue para o passo pedido.
+  const continueTo = formData.get("continueTo");
+  if (isSessionStep(continueTo)) redirect(stepHref(sessionId, continueTo));
   return { success: (await getTranslations("session.form"))("saved") };
+}
+
+/** Passo "Pesquisa pós-evento": troca o modelo da sessão (antes de encerrar; depois, a cópia já foi feita). */
+export async function setSurveyTemplateAction(sessionId: string, templateId: unknown): Promise<ActionResult> {
+  const t = await getTranslations("session.errors");
+  const parsed = z.uuid().safeParse(templateId);
+  if (!isUuid(sessionId) || !parsed.success) return fail(t("invalidSurveyTemplate"));
+  const supabase = await createClient();
+  const session = await getOwnedSession(supabase, sessionId);
+  if (!session) return fail(t("sessionNotFound"));
+  if (!isEditable(session.status)) return fail((await getMessageTranslator()).message("session.errors.surveyLocked"));
+  if (!(await isVisibleTemplate(supabase, parsed.data))) return fail(t("invalidSurveyTemplate"));
+  const { error } = await supabase.from("sessions").update({ survey_template_id: parsed.data }).eq("id", sessionId);
+  if (error) return fail((await getTranslations("errors"))("saveFailed"));
+  revalidatePath(`/dashboard/sessions/${sessionId}`);
+  return ok(null);
 }
 
 export async function deleteSessionAction(sessionId: string): Promise<ActionResult> {

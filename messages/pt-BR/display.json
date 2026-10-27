@@ -35,7 +35,11 @@
     "points": "{points, number} pts",
     "loading": "Carregando o ranking…",
     "loadFailed": "Não foi possível carregar o ranking.",
-    "empty": "Ninguém respondeu ao quiz ainda."
+    "empty": "Ninguém respondeu ao quiz ainda.",
+    "teamsTitle": "Ranking das equipes",
+    "teamsEmpty": "Nenhuma equipe com pessoas ainda.",
+    "teamMeta": "{people, plural, one {# pessoa} other {# pessoas}} · {total, number} pts no total",
+    "teamPoints": "{points, number} pts/pessoa"
   },
   "raffle": {
     "title": "Sorteio",
@@ -57,5 +61,10 @@
     "count": "{count, plural, one {# pessoa na sala} other {# pessoas na sala}}",
     "more": "+{count, number}",
     "anonymous": "Participante sem nome"
-  }
+  },
+  "timer": {
+    "label": "{seconds, plural, one {# segundo restante} other {# segundos restantes}}",
+    "ended": "Tempo esgotado"
+  },
+  "segment": "Só: {group}"
 }

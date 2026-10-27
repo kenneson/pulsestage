@@ -104,5 +104,48 @@
   },
   "errors": {
     "revokeFailed": "No se pudo revocar el acceso."
+  },
+  "office": {
+    "manifest": {
+      "name": "PulseStage",
+      "description": "Muestra la pantalla en vivo de una sesión de PulseStage dentro de la diapositiva: encuestas, nubes, quiz y ranking sin salir de la presentación."
+    },
+    "addin": {
+      "metaTitle": "Pantalla en PowerPoint",
+      "title": "Pantalla de PulseStage en la diapositiva",
+      "description": "Escribe el código de la sesión (el mismo que usa el público para entrar). La diapositiva mostrará su pantalla en vivo.",
+      "codeLabel": "Código de la sesión o enlace de la pantalla",
+      "codePlaceholder": "Ej.: KX4P2M",
+      "show": "Mostrar la pantalla",
+      "checking": "Buscando…",
+      "hint": "La elección queda guardada en esta diapositiva. Para cambiarla, pasa el mouse sobre la pantalla y haz clic en “Cambiar sesión”. Los controles siguen en la sala en vivo de PulseStage.",
+      "frameTitle": "Pantalla de la sesión",
+      "change": "Cambiar sesión",
+      "errors": {
+        "empty": "Escribe el código de la sesión.",
+        "notFound": "No hay ninguna sesión en borrador o en vivo con este código.",
+        "tooMany": "Demasiados intentos. Espera unos minutos e inténtalo de nuevo.",
+        "network": "Sin conexión con PulseStage. Revisa internet e inténtalo de nuevo."
+      }
+    },
+    "section": {
+      "title": "PowerPoint",
+      "description": "Muestra la pantalla en vivo de una sesión dentro de una diapositiva de PowerPoint, sin cambiar de ventana.",
+      "download": "Descargar el complemento (manifest.xml)",
+      "tabWeb": "Web y Mac",
+      "tabWindows": "Windows",
+      "web1": "En PowerPoint, abre <b>Insertar → Complementos</b> (u <b>Obtener complementos</b>) y ve a <b>Mis complementos</b>.",
+      "web2": "Haz clic en <b>Cargar mi complemento</b> y elige el archivo que descargaste arriba.",
+      "windows1": "En Windows, PowerPoint solo carga complementos desde un catálogo: pide a TI que publique el archivo en la <b>implementación centralizada</b> de Microsoft 365 (Aplicaciones integradas) o en una carpeta compartida de catálogo.",
+      "windows2": "Después, PulseStage aparece en <b>Insertar → Complementos → Mis complementos</b> (o en <b>Administrado por el administrador</b>).",
+      "useTitle": "Después de instalar",
+      "use1": "En la diapositiva que quieras, inserta el complemento <b>PulseStage</b> y ajusta el tamaño del cuadro.",
+      "use2": "Escribe el <b>código de la sesión</b> y haz clic en <b>Mostrar la pantalla</b>. La diapositiva guarda la elección.",
+      "use3": "Durante la presentación, el cuadro muestra la pantalla en vivo. Conduce desde la sala en vivo de PulseStage (en el celular o en otra ventana).",
+      "store": "Cuando PulseStage esté en la tienda de complementos de Office, bastará con buscar “PulseStage” en <b>Insertar → Complementos</b>.",
+      "requirements": "Necesita internet durante la presentación. El manifiesto apunta a {url}.",
+      "googleTitle": "¿Y Google Slides?",
+      "google": "Google Slides no permite contenido en vivo dentro de la diapositiva. Dos alternativas: sube el PDF de la presentación en la pestaña <b>Diapositivas</b> de la sesión (las diapositivas aparecen en la propia pantalla de PulseStage, con las preguntas entre ellas) o alterna entre la presentación y la ventana de la pantalla."
+    }
   }
 }

@@ -8,9 +8,11 @@ import { z } from "zod";
 import { cn } from "@/lib/utils";
 import { AnimatedNumber } from "@/components/motion/animated";
 import { SPRING } from "@/components/motion/presets";
+import { shapeBg } from "@/components/option-shape";
 
 // Ranking do quiz animado. As linhas aparecem na posição de antes do último quiz e deslizam até a
 // posição atual enquanto os pontos sobem; quem entrou agora sobe do fim da lista.
+// Por equipes (`mode="teams"`), a mesma animação com a média de pontos por pessoa de cada equipe.
 
 const entrySchema = z.object({
   key: z.string(),
@@ -23,18 +25,83 @@ const entrySchema = z.object({
   previousPoints: z.number(),
 });
 const responseSchema = z.object({ entries: z.array(entrySchema) });
-type Entry = z.infer<typeof entrySchema>;
+
+const teamSchema = z.object({
+  key: z.string(),
+  name: z.string(),
+  color: z.number().int().min(1).max(8).catch(1),
+  people: z.number(),
+  average: z.number(),
+  total: z.number(),
+  rank: z.number(),
+  previousRank: z.number().nullable(),
+  previousAverage: z.number(),
+});
+const teamsResponseSchema = z.object({ teams: z.array(teamSchema) });
+
+export type LeaderboardMode = "people" | "teams";
+
+/** Linha do ranking (pessoa ou equipe), no formato que a animação usa. */
+type Entry = {
+  key: string;
+  name: string;
+  rank: number;
+  previousRank: number | null;
+  points: number;
+  previousPoints: number;
+  /** pessoa: emoji do avatar; equipe: cor 1–8 */
+  avatar: string | null;
+  color: number | null;
+  /** equipe: pessoas e total */
+  people: number | null;
+  total: number | null;
+};
 
 type Variant = "display" | "compact";
 
 const ROW: Record<Variant, number> = { display: 76, compact: 44 };
+const TEAM_ROW: Record<Variant, number> = { display: 96, compact: 56 };
+
+async function loadEntries(sessionId: string, mode: LeaderboardMode): Promise<Entry[] | null> {
+  const res = await fetch(`/api/session/${sessionId}/leaderboard${mode === "teams" ? "?mode=teams" : ""}`, { cache: "no-store" });
+  if (!res.ok) return null;
+  const json: unknown = await res.json();
+  if (mode === "teams") {
+    return teamsResponseSchema.parse(json).teams.map((team) => ({
+      key: team.key,
+      name: team.name,
+      rank: team.rank,
+      previousRank: team.previousRank,
+      points: Math.round(team.average),
+      previousPoints: Math.round(team.previousAverage),
+      avatar: null,
+      color: team.color,
+      people: team.people,
+      total: team.total,
+    }));
+  }
+  return responseSchema.parse(json).entries.map((entry) => ({ ...entry, color: null, people: null, total: null }));
+}
 /** Quanto tempo o ranking fica na posição de antes do último quiz antes de deslizar. */
 const SETTLE_MS = 700;
 
-function Row({ entry, settled, total, variant }: { entry: Entry; settled: boolean; total: number; variant: Variant }) {
+function Row({
+  entry,
+  settled,
+  total,
+  variant,
+  height,
+}: {
+  entry: Entry;
+  settled: boolean;
+  total: number;
+  variant: Variant;
+  height: number;
+}) {
   const t = useTranslations("display.leaderboard");
   const locale = useLocale();
   const big = variant === "display";
+  const team = entry.color !== null;
   const startRank = entry.previousRank !== null && entry.previousRank <= total ? entry.previousRank : total + 1;
   const position = (settled ? entry.rank : startRank) - 1;
   const moved = entry.previousRank === null ? null : entry.previousRank - entry.rank;
@@ -47,25 +114,46 @@ function Row({ entry, settled, total, variant }: { entry: Entry; settled: boolea
         big ? "text-3xl" : "gap-3 px-3 text-sm",
         leader && settled ? "bg-primary/15" : "bg-muted/60",
       )}
-      style={{ height: ROW[variant] - (big ? 10 : 6) }}
+      style={{ height: height - (big ? 10 : 6) }}
       initial={false}
       // Desliza com mola até a posição; quem entrou agora sobe do fim da lista aparecendo.
-      animate={{ y: position * ROW[variant], opacity: settled || entry.previousRank !== null ? 1 : 0 }}
+      animate={{ y: position * height, opacity: settled || entry.previousRank !== null ? 1 : 0 }}
       transition={{ ...SPRING.soft, delay: settled ? Math.min(entry.rank, 10) * 0.04 : 0 }}
     >
       <span className={cn("w-12 shrink-0 font-display font-bold tabular-nums", !big && "w-6", leader && "text-primary")}>
         {t("rank", { rank: entry.rank })}
       </span>
-      <span
-        aria-hidden
-        className={cn(
-          "grid shrink-0 place-items-center rounded-full bg-background leading-none",
-          big ? "size-14 text-4xl" : "size-8 text-lg",
-        )}
-      >
-        {entry.avatar ?? <span className="font-display text-muted-foreground">{entry.name.charAt(0).toUpperCase()}</span>}
+      {team ? (
+        // Cor da equipe com a inicial: a cor nunca vem sozinha (o nome vem ao lado).
+        <span
+          aria-hidden
+          className={cn(
+            "grid shrink-0 place-items-center rounded-full font-display font-bold text-white",
+            shapeBg((entry.color ?? 1) - 1),
+            big ? "size-14 text-3xl" : "size-8 text-base",
+          )}
+        >
+          {entry.name.charAt(0).toUpperCase()}
+        </span>
+      ) : (
+        <span
+          aria-hidden
+          className={cn(
+            "grid shrink-0 place-items-center rounded-full bg-background leading-none",
+            big ? "size-14 text-4xl" : "size-8 text-lg",
+          )}
+        >
+          {entry.avatar ?? <span className="font-display text-muted-foreground">{entry.name.charAt(0).toUpperCase()}</span>}
+        </span>
+      )}
+      <span className="grid min-w-0 flex-1">
+        <span className={cn("truncate font-semibold", leader && "text-primary")}>{entry.name}</span>
+        {team ? (
+          <span className={cn("truncate font-normal text-muted-foreground", big ? "text-lg" : "text-[11px]")}>
+            {t("teamMeta", { people: entry.people ?? 0, total: entry.total ?? 0 })}
+          </span>
+        ) : null}
       </span>
-      <span className={cn("min-w-0 flex-1 truncate font-semibold", leader && "text-primary")}>{entry.name}</span>
       <AnimatePresence>
         {settled && moved !== null && moved !== 0 ? (
           <m.span
@@ -82,7 +170,7 @@ function Row({ entry, settled, total, variant }: { entry: Entry; settled: boolea
             {moved > 0 ? `↑${moved}` : `↓${-moved}`}
           </m.span>
         ) : null}
-        {settled && entry.previousRank === null ? (
+        {settled && entry.previousRank === null && !team ? (
           <m.span
             key="new"
             className={cn("shrink-0 text-muted-foreground", big ? "text-xl" : "text-xs")}
@@ -100,7 +188,7 @@ function Row({ entry, settled, total, variant }: { entry: Entry; settled: boolea
         from={entry.previousPoints}
         locale={locale}
         duration={1.2}
-        render={(points) => t("points", { points })}
+        render={(points) => (team ? t("teamPoints", { points }) : t("points", { points }))}
         className="shrink-0 font-display font-bold"
       />
     </m.li>
@@ -111,11 +199,14 @@ export function QuizLeaderboard({
   sessionId,
   version,
   variant = "display",
+  mode = "people",
 }: {
   sessionId: string;
-  /** muda a cada "Mostrar ranking": busca de novo e repete a animação */
+  /** muda a cada "Mostrar ranking" (e a cada troca de modo): busca de novo e repete a animação */
   version: string | null;
   variant?: Variant;
+  /** session_live_state.leaderboard_mode */
+  mode?: LeaderboardMode;
 }) {
   const t = useTranslations("display.leaderboard");
   const [state, setState] = useState<{ version: string | null; entries: Entry[] | null; failed: boolean }>({
@@ -128,8 +219,7 @@ export function QuizLeaderboard({
 
   useEffect(() => {
     let cancelled = false;
-    void fetch(`/api/session/${sessionId}/leaderboard`, { cache: "no-store" })
-      .then(async (res) => (res.ok ? responseSchema.parse(await res.json()).entries : null))
+    void loadEntries(sessionId, mode)
       .catch(() => null)
       .then((entries) => {
         if (cancelled) return;
@@ -139,7 +229,7 @@ export function QuizLeaderboard({
     return () => {
       cancelled = true;
     };
-  }, [sessionId, version]);
+  }, [sessionId, version, mode]);
 
   // Mostra a posição anterior por um instante e então anima até a atual.
   useEffect(() => {
@@ -150,22 +240,29 @@ export function QuizLeaderboard({
 
   const big = variant === "display";
   const entries = state.entries;
+  const row = mode === "teams" ? TEAM_ROW[variant] : ROW[variant];
 
   return (
     <div className={cn("flex w-full flex-col", big ? "max-w-4xl gap-8" : "gap-3")}>
-      {big ? <h1 className="text-center text-6xl font-semibold">{t("title")}</h1> : null}
+      {big ? (
+        <h1 className="text-center text-6xl font-semibold max-md:text-4xl">{mode === "teams" ? t("teamsTitle") : t("title")}</h1>
+      ) : null}
       {entries === null ? (
         <p className={cn("text-center text-muted-foreground", big ? "text-3xl" : "text-sm")}>
           {state.failed ? t("loadFailed") : t("loading")}
         </p>
       ) : entries.length === 0 ? (
         <p className={cn("text-center text-muted-foreground", big ? "text-3xl" : "text-sm")}>
-          {t("empty")}
+          {mode === "teams" ? t("teamsEmpty") : t("empty")}
         </p>
       ) : (
-        <ol className="relative" style={{ height: entries.length * ROW[variant] }} aria-label={t("title")}>
+        <ol
+          className="relative"
+          style={{ height: entries.length * row }}
+          aria-label={mode === "teams" ? t("teamsTitle") : t("title")}
+        >
           {entries.map((entry) => (
-            <Row key={entry.key} entry={entry} settled={settled} total={entries.length} variant={variant} />
+            <Row key={entry.key} entry={entry} settled={settled} total={entries.length} variant={variant} height={row} />
           ))}
         </ol>
       )}

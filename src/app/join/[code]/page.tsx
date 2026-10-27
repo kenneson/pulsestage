@@ -12,6 +12,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { JoinCodeForm } from "@/components/join-code-form";
 import { JoinForm } from "@/components/participant/join-form";
+import { getJoinTeams } from "@/lib/data/participant-teams";
 
 // Uma leitura por requisição, compartilhada entre os metadados e a página.
 const loadSession = cache(async (rawCode: string) => {
@@ -69,6 +70,8 @@ export default async function JoinCodePage({ params }: { params: Promise<{ code:
   }
 
   if (await getParticipantIdFromCookie(session.id)) redirect(`/session/${session.id}/participate`);
+  // Equipes: a pessoa escolhe a sua (sem escolha, o servidor põe na menor).
+  const teams = await getJoinTeams(createAdminClient(), session.id);
 
   return (
     <SessionIntl locale={session.locale}>
@@ -79,7 +82,7 @@ export default async function JoinCodePage({ params }: { params: Promise<{ code:
           {/* Rascunho: já dá para entrar; a tela do celular espera o início sozinha. */}
           {session.status === "draft" ? <p className="mt-2 text-sm text-muted-foreground">{t("notStarted")}</p> : null}
         </div>
-        <JoinForm code={session.joinCode} />
+        <JoinForm code={session.joinCode} teams={teams} />
       </Shell>
     </SessionIntl>
   );

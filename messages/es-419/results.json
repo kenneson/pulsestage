@@ -4,5 +4,55 @@
   "averagePosition": "posición promedio {value}",
   "mean": "promedio · {count, plural, one {# respuesta} other {# respuestas}}",
   "received": "{count, plural, one {# respuesta recibida} other {# respuestas recibidas}}",
-  "wordCloud": "Nube de palabras: {words}"
+  "wordCloud": "Nube de palabras: {words}",
+  "hidden": {
+    "title": "Resultados en breve",
+    "responses": "{count, plural, one {respuesta} other {respuestas}}"
+  },
+  "multiNote": "Cada persona pudo elegir hasta {max, plural, one {# opción} other {# opciones}} · % sobre quienes respondieron",
+  "points": {
+    "caption": "Promedio de puntos por persona · {count, plural, one {# respuesta} other {# respuestas}}",
+    "unit": "pts"
+  },
+  "matrix": {
+    "label": "Matriz 2×2 con {count, plural, one {# elemento ubicado} other {# elementos ubicados}}",
+    "xAxis": "Horizontal",
+    "yAxis": "Vertical",
+    "people": "{count, plural, one {# persona} other {# personas}}",
+    "coords": "{xName} {x} · {yName} {y}"
+  },
+  "pin": {
+    "alt": "Imagen con el mapa de calor de las marcas",
+    "count": "{count, plural, one {# marca} other {# marcas}}",
+    "hot": "Más marcado: {region}",
+    "less": "menos",
+    "more": "más",
+    "regions": {
+      "topLeft": "esquina superior izquierda",
+      "top": "parte de arriba",
+      "topRight": "esquina superior derecha",
+      "left": "lado izquierdo",
+      "center": "centro",
+      "right": "lado derecho",
+      "bottomLeft": "esquina inferior izquierda",
+      "bottom": "parte de abajo",
+      "bottomRight": "esquina inferior derecha"
+    }
+  },
+  "guess": {
+    "mean": "Promedio",
+    "answer": "Respuesta",
+    "count": "{count, plural, one {# intento} other {# intentos}}",
+    "chart": "Histograma de los intentos de {from} a {to}",
+    "bucket": "{from} a {to}: {count, plural, one {# intento} other {# intentos}}"
+  },
+  "quizText": {
+    "answered": "{count, plural, one {persona respondió} other {personas respondieron}}",
+    "hint": "Las respuestas aparecen cuando se revele la respuesta correcta.",
+    "accepted": "Respuesta correcta: {answers}",
+    "share": "{rate} acertaron"
+  },
+  "content": {
+    "video": "Video: {title}"
+  }
 }

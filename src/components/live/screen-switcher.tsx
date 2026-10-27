@@ -45,6 +45,7 @@ export function ScreenSwitcher({
   onResume,
   onChanged,
   busy,
+  withLineup = true,
 }: {
   sessionId: string;
   status: SessionStatus;
@@ -56,12 +57,14 @@ export function ScreenSwitcher({
   onResume: (item: DeckItem) => void;
   onChanged?: () => void;
   busy?: boolean;
+  /** false no ritmo próprio: não há roteiro conduzido para pôr no telão */
+  withLineup?: boolean;
 }) {
   const t = useTranslations("live.screen");
   const [pending, startTransition] = useTransition();
   const current = screenModeOf(content);
   const pillId = useId();
-  const modes = screenModes(status, features, current);
+  const modes = screenModes(status, features, current).filter((mode) => withLineup || mode !== "lineup" || mode === current);
 
   const run = (task: () => Promise<ActionResult>) =>
     startTransition(async () => {

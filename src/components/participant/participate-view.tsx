@@ -27,6 +27,12 @@ import { RaffleTicketCard } from "./raffle-ticket";
 import { ReactionBar } from "./reaction-bar";
 import { QuestionsPanel } from "./questions-panel";
 import { QuizResultScreen, useQuizResult } from "./quiz-result";
+import { ContentFollowScreen } from "./answers/content-slide";
+import { PhoneResults } from "./phone-results";
+import { JourneyView } from "./journey-view";
+import { TeamBadge } from "./team-badge";
+import { showsResultsOnPhone, type PublicTeam } from "@/lib/domain/participant-answers";
+import type { JourneyResponse } from "@/lib/domain/participant-journey";
 
 /** Sem realtime: consulta a cada 5 s. Em rascunho, com realtime, uma conferência lenta caso o início se perca. */
 const OFFLINE_POLL_MS = 5000;
@@ -61,14 +67,17 @@ export function ParticipateView({
   title,
   initialLive,
   initialCurrent,
+  initialJourney = null,
   me,
 }: {
   sessionId: string;
   title: string;
   initialLive: LiveState | null;
   initialCurrent: CurrentInteractionResponse;
-  /** nome e avatar escolhidos ao entrar */
-  me: { name: string | null; avatar: string | null };
+  /** ritmo próprio: o roteiro lido junto com a página */
+  initialJourney?: JourneyResponse | null;
+  /** nome, avatar e equipe escolhidos ao entrar */
+  me: { name: string | null; avatar: string | null; team?: PublicTeam | null };
 }) {
   const t = useTranslations("participant.view");
   const [current, setCurrent] = useState<CurrentInteractionResponse>(initialCurrent);
@@ -170,6 +179,11 @@ export function ParticipateView({
   } else if (status === "paused") {
     screenKey = "paused";
     body = <Screen title={t("pausedTitle")} text={t("pausedText")} />;
+  } else if (current.pace === "self" && status === "live") {
+    // Ritmo próprio: o roteiro inteiro no celular, sem condução do palestrante.
+    screenKey = "journey";
+    showTicket = false;
+    body = <JourneyView sessionId={sessionId} initial={initialJourney} resultsRevealed={live?.results_revealed ?? false} />;
   } else if (quizResult) {
     screenKey = "quiz-result";
     body = <QuizResultScreen result={quizResult} />;
@@ -191,6 +205,13 @@ export function ParticipateView({
         <span className="mt-4 size-3 animate-ping rounded-full bg-primary" aria-hidden />
       </Screen>
     );
+  } else if (current.interaction.type === "content") {
+    // Slide de conteúdo ao vivo: o conteúdo está no telão.
+    screenKey = `content:${current.interaction.id}`;
+    body = <ContentFollowScreen interaction={current.interaction} />;
+  } else if (current.answered && showsResultsOnPhone(current.interaction, live?.results_revealed ?? false)) {
+    screenKey = `results:${current.interaction.id}`;
+    body = <PhoneResults sessionId={sessionId} interaction={current.interaction} />;
   } else if (current.answered) {
     screenKey = `answered:${current.interaction.id}`;
     body = (
@@ -233,6 +254,7 @@ export function ParticipateView({
         <Logo href={null} className="text-sm" />
         <span className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
           <span className="truncate">{title}</span>
+          {me.team ? <TeamBadge team={me.team} label={t("team", { name: me.team.name })} /> : null}
           {me.avatar ? (
             <span className="shrink-0 text-lg leading-none" title={me.name ?? undefined} aria-hidden>
               {me.avatar}

@@ -1,3 +1,168 @@
 {
-  "title": "Modelos de sessão"
+  "title": "Modelos de sessão",
+  "page": {
+    "metaTitle": "Modelos de sessão",
+    "description": "Roteiros prontos para aula, treinamento e reunião. Escolha um, o PulseStage cria a sessão em rascunho com as perguntas e você ajusta o que quiser.",
+    "back": "Sessões",
+    "fromScratch": "Começar do zero",
+    "fromScratchDescription": "Sessão vazia, para montar as perguntas do seu jeito.",
+    "listLabel": "Modelos",
+    "questions": "{count, plural, one {# pergunta} other {# perguntas}}",
+    "minutes": "{count} min",
+    "selfPaced": "No ritmo de cada um",
+    "teams": "Em equipes",
+    "previewLabel": "Perguntas do modelo {name}",
+    "use": "Usar este modelo",
+    "creating": "Criando…",
+    "editHint": "Os exemplos são para trocar: tudo fica editável no rascunho, e nada vai para a plateia até você iniciar.",
+    "audiences": { "school": "Escola", "university": "Universidade", "company": "Empresa" }
+  },
+  "errors": {
+    "notFound": "Modelo não encontrado.",
+    "createFailed": "Não foi possível criar a sessão a partir do modelo."
+  },
+  "items": {
+    "classOpener": {
+      "name": "Abertura de aula",
+      "summary": "Quebre o gelo, descubra o que a turma já sabe e combine o que esperar da aula.",
+      "sessionDescription": "Acolhida, conhecimento prévio e expectativas da turma.",
+      "questions": {
+        "welcome": {
+          "title": "Boas-vindas! O tema de hoje é…",
+          "body": "Troque este texto pelo tema e pelo objetivo da aula.\n\n- Entre pelo QR Code ou pelo código na tela\n- Responda com sinceridade: não existe resposta errada aqui"
+        },
+        "mood": { "title": "Em uma palavra: como você está chegando hoje?" },
+        "prior": {
+          "title": "Quanto você já sabe sobre o tema de hoje?",
+          "options": { "none": "Nada, é tudo novo", "little": "Já ouvi falar", "basics": "Sei o básico", "lots": "Poderia ajudar a explicar" }
+        },
+        "warmup": { "title": "Chute rápido: quantos países fazem parte da ONU?" },
+        "expect": { "title": "O que você quer sair sabendo depois desta aula?" }
+      }
+    },
+    "quizReview": {
+      "name": "Revisão com quiz",
+      "summary": "Revise o conteúdo jogando em equipes: quiz com tempo, resposta digitada e chute de número.",
+      "sessionDescription": "Revisão do conteúdo em formato de jogo, com ranking por equipes.",
+      "questions": {
+        "rules": {
+          "title": "Como funciona a revisão",
+          "body": "- Cada pergunta tem tempo para responder\n- Quem acerta mais rápido ganha mais pontos\n- No fim, o ranking mostra a equipe campeã\n\nTroque as perguntas de exemplo pelas do seu conteúdo."
+        },
+        "prime": { "title": "Qual destes números é primo?", "options": { "a": "9", "b": "15", "c": "17", "d": "21" } },
+        "planet": {
+          "title": "Qual é o maior planeta do Sistema Solar?",
+          "options": { "a": "Terra", "b": "Júpiter", "c": "Saturno", "d": "Netuno" }
+        },
+        "water": { "title": "Qual é a fórmula química da água?", "accepted": { "1": "H2O", "2": "H₂O" } },
+        "moon": { "title": "Em que ano o ser humano pisou na Lua pela primeira vez?" },
+        "ready": { "title": "Quão preparado você se sente para a prova?", "minLabel": "Nada", "maxLabel": "Muito" }
+      }
+    },
+    "projectRetro": {
+      "name": "Retrospectiva de projeto",
+      "summary": "Feche um ciclo com o time: clima, o que funcionou, o que melhorar e onde pôr energia no próximo.",
+      "sessionDescription": "Retrospectiva do ciclo: o que manter, o que melhorar e as prioridades do próximo.",
+      "questions": {
+        "cycle": { "title": "De 1 a 5, como foi este ciclo para você?", "minLabel": "Difícil", "maxLabel": "Excelente" },
+        "word": { "title": "Uma palavra que resume o projeto" },
+        "keep": { "title": "O que funcionou bem e devemos manter?" },
+        "improve": { "title": "O que atrapalhou e podemos melhorar?" },
+        "focus": {
+          "title": "Distribua 100 pontos: onde investir no próximo ciclo?",
+          "options": {
+            "process": "Processos e rituais",
+            "communication": "Comunicação",
+            "tools": "Ferramentas",
+            "quality": "Qualidade e testes",
+            "skills": "Capacitação do time"
+          }
+        }
+      }
+    },
+    "corporateTraining": {
+      "name": "Treinamento corporativo",
+      "summary": "Diagnóstico por área, checagem do aprendizado e prioridades para o próximo encontro.",
+      "sessionDescription": "Treinamento com diagnóstico inicial, checagem de aprendizado e dúvidas.",
+      "questions": {
+        "area": {
+          "title": "Em qual área você trabalha?",
+          "options": { "sales": "Comercial", "operations": "Operações", "tech": "Tecnologia", "people": "Pessoas e administrativo", "other": "Outra" }
+        },
+        "before": { "title": "Antes de começar: quanto você domina o tema?", "minLabel": "Iniciante", "maxLabel": "Especialista" },
+        "phishing": {
+          "title": "Chegou um e-mail suspeito pedindo a sua senha. O que fazer?",
+          "options": {
+            "click": "Clicar no link para conferir",
+            "reply": "Responder pedindo mais informações",
+            "report": "Avisar a equipe de segurança e apagar",
+            "forward": "Encaminhar aos colegas"
+          }
+        },
+        "topics": {
+          "title": "Ordene os temas que você quer aprofundar",
+          "options": { "cases": "Casos práticos", "tools": "Ferramentas do dia a dia", "policies": "Normas e políticas", "metrics": "Indicadores e metas" }
+        },
+        "doubts": { "title": "Que dúvida ficou?" }
+      }
+    },
+    "planning": {
+      "name": "Planejamento (2×2 e 100 pontos)",
+      "summary": "Priorize iniciativas com a matriz esforço × impacto e a distribuição de 100 pontos.",
+      "sessionDescription": "Priorização das iniciativas por esforço, impacto e pontos.",
+      "questions": {
+        "intro": {
+          "title": "Vamos priorizar juntos",
+          "body": "Troque as iniciativas de exemplo pelas suas.\n\n- Primeiro, cada pessoa posiciona as iniciativas por esforço e impacto\n- Depois, distribui 100 pontos entre elas\n- No fim, escolhemos por onde começar"
+        },
+        "matrix": {
+          "title": "Posicione cada iniciativa por esforço e impacto",
+          "options": { "a": "Novo site", "b": "Treinamento do time", "c": "Automação de relatórios", "d": "Programa de indicação" },
+          "xLabel": "Esforço",
+          "xLow": "Baixo",
+          "xHigh": "Alto",
+          "yLabel": "Impacto",
+          "yLow": "Baixo",
+          "yHigh": "Alto"
+        },
+        "points": {
+          "title": "Distribua 100 pontos entre as iniciativas",
+          "options": { "a": "Novo site", "b": "Treinamento do time", "c": "Automação de relatórios", "d": "Programa de indicação" }
+        },
+        "start": {
+          "title": "Quais duas começamos já?",
+          "options": { "a": "Novo site", "b": "Treinamento do time", "c": "Automação de relatórios", "d": "Programa de indicação" }
+        },
+        "risk": { "title": "Que risco não podemos ignorar?" }
+      }
+    },
+    "selfPacedSurvey": {
+      "name": "Pesquisa no ritmo de cada um",
+      "summary": "Questionário que cada pessoa responde no próprio ritmo, sem condução: bom para fim de semestre ou pesquisa de clima.",
+      "sessionDescription": "Pesquisa respondida no ritmo de cada pessoa.",
+      "questions": {
+        "intro": {
+          "title": "Obrigado por participar!",
+          "body": "Responda no seu ritmo, pelo celular. Leva poucos minutos."
+        },
+        "role": {
+          "title": "Qual é o seu vínculo?",
+          "options": { "student": "Estudante", "teacher": "Professor(a) ou instrutor(a)", "staff": "Funcionário(a)", "other": "Outro" }
+        },
+        "satisfaction": { "title": "No geral, quão satisfeito você está?", "minLabel": "Nada satisfeito", "maxLabel": "Muito satisfeito" },
+        "values": {
+          "title": "O que você mais valoriza? (até 3)",
+          "options": {
+            "content": "Conteúdo",
+            "people": "Pessoas",
+            "structure": "Estrutura e espaço",
+            "flexibility": "Flexibilidade",
+            "communication": "Comunicação"
+          }
+        },
+        "recommend": { "title": "De 0 a 10, quanto você recomendaria a um amigo?", "minLabel": "Nada provável", "maxLabel": "Muito provável" },
+        "change": { "title": "Se pudesse mudar uma coisa, o que seria?" }
+      }
+    }
+  }
 }

@@ -55,7 +55,15 @@
     "required": "obrigatório",
     "requiredHint": "Só o título é obrigatório. O resto dá para ajustar depois.",
     "moreOptions": "Mais opções",
-    "moreOptionsHint": "Descrição, duração, idioma, código de entrada e pesquisa"
+    "moreOptionsHint": "Descrição, modo, duração, idioma e código de entrada",
+    "pace": "Modo da sessão",
+    "paceLive": "Ao vivo, você conduz",
+    "paceLiveHint": "Você abre cada pergunta e a plateia responde junto, no seu tempo.",
+    "paceSelf": "No ritmo de cada um",
+    "paceSelfHint": "Com a sessão no ar, cada pessoa percorre o roteiro inteiro no celular, sem esperar por você. Cronômetro e bônus de velocidade não valem.",
+    "useBrand": "Usar minha marca",
+    "useBrandHint": "Seu logo e sua cor aparecem no celular da plateia e no telão.",
+    "createNext": "Criar e ir para Slides"
   },
   "controls": {
     "startConfirmTitle": "Iniciar sem interações?",
@@ -97,7 +105,7 @@
     "exportHelp": "PowerPoint: Arquivo → Exportar → PDF · Google Slides: Arquivo → Fazer download → PDF · Keynote: Arquivo → Exportar para → PDF · Canva: Compartilhar → Baixar → PDF. O PDF é convertido no seu navegador; só as imagens dos slides são enviadas. Animações e vídeos não são mantidos.",
     "summary": "<num>{slides}</num> {slides, plural, one {slide} other {slides}} · {questions, plural, one {# pergunta} other {# perguntas}}.",
     "readOnlyHint": "Cada pergunta entra no ponto marcado.",
-    "editHint": "Arraste as perguntas para o ponto da apresentação em que devem entrar, ou use o seletor de cada uma.",
+    "editHint": "Arraste as perguntas para o ponto da apresentação em que devem entrar, ou use o seletor de cada uma. Em cada slide, \"Nota\" guarda o que você quer lembrar na hora.",
     "replacePdf": "Trocar PDF",
     "removeSlides": "Remover slides",
     "slideAlt": "Slide {number}",
@@ -121,7 +129,20 @@
       "removeFailed": "Não foi possível remover os slides.",
       "notLive": "Inicie ou retome a sessão para mostrar slides.",
       "slideNotFound": "Slide não encontrado.",
-      "changeFailed": "Não foi possível mudar o slide."
+      "changeFailed": "Não foi possível mudar o slide.",
+      "noteSaveFailed": "Não foi possível salvar a nota."
+    },
+    "notes": {
+      "add": "Nota",
+      "edit": "Nota",
+      "addAria": "Adicionar nota ao slide {number}",
+      "editAria": "Editar a nota do slide {number}",
+      "label": "Nota",
+      "title": "Nota do slide {number}",
+      "description": "Só você vê, na sala ao vivo, enquanto este slide estiver no telão.",
+      "placeholder": "O que dizer neste slide, números para citar, lembretes…",
+      "saved": "Nota salva.",
+      "removed": "Nota removida."
     }
   },
   "raffle": {
@@ -198,6 +219,52 @@
       "description": "Cada resposta aberta espera a sua aprovação para aparecer no telão."
     }
   },
+  "teams": {
+    "title": "Equipes",
+    "description": "Para quiz e competições: cada pessoa joga por uma equipe e o telão pode mostrar o ranking das equipes.",
+    "enable": "Jogar em equipes",
+    "enableDescription": "Na entrada, cada pessoa escolhe uma equipe (sem escolha, entra na que tem menos gente). O ranking das equipes usa a média de pontos por pessoa.",
+    "liveHint": "Quem entrou antes de ligar as equipes continua sem equipe; quem entrar agora escolhe uma.",
+    "listLabel": "Equipes da sessão",
+    "nameLabel": "Nome da equipe {number}",
+    "colorLabel": "Cor da equipe {name}: {color}. Trocar a cor",
+    "colorPicker": "Cor da equipe {name}",
+    "members": "{count, plural, =0 {ninguém ainda} one {# pessoa} other {# pessoas}}",
+    "moveUp": "Subir a equipe {name}",
+    "moveDown": "Descer a equipe {name}",
+    "deleteLabel": "Excluir a equipe {name}",
+    "delete": "Excluir equipe",
+    "deleteTitle": "Excluir a equipe “{name}”?",
+    "deleteDescription": "{count, plural, one {# pessoa já está nela e vai ficar} other {# pessoas já estão nela e vão ficar}} sem equipe. Os pontos de cada pessoa continuam.",
+    "minHint": "Com equipes ligadas, ficam pelo menos duas.",
+    "add": "Adicionar equipe",
+    "limits": "De 2 a 8 equipes. A ordem é a da tela de entrada.",
+    "newName": "Equipe {number}",
+    "defaults": {
+      "red": "Equipe Vermelha",
+      "blue": "Equipe Azul",
+      "yellow": "Equipe Amarela",
+      "green": "Equipe Verde"
+    },
+    "colors": {
+      "1": "vermelho (triângulo)",
+      "2": "azul (losango)",
+      "3": "amarelo (círculo)",
+      "4": "verde (quadrado)",
+      "5": "roxo (estrela)",
+      "6": "turquesa (hexágono)",
+      "7": "laranja (pentágono)",
+      "8": "rosa (coração)"
+    },
+    "errors": {
+      "nameRequired": "Dê um nome à equipe.",
+      "nameTooLong": "O nome da equipe pode ter até 40 caracteres.",
+      "saveFailed": "Não foi possível salvar as equipes.",
+      "notFound": "Equipe não encontrada.",
+      "tooMany": "A sessão pode ter até 8 equipes.",
+      "tooFew": "Com equipes ligadas, a sessão precisa de pelo menos duas."
+    }
+  },
   "errors": {
     "titleRequired": "Informe o título.",
     "titleTooLong": "Título muito longo.",
@@ -213,7 +280,8 @@
     "joinCodeTaken": "Esse código já está em uso.",
     "deleteFailed": "Não foi possível excluir a sessão.",
     "statusNotAllowed": "Essa mudança de status não é permitida.",
-    "updateFailed": "Não foi possível atualizar a sessão."
+    "updateFailed": "Não foi possível atualizar a sessão.",
+    "surveyLocked": "A sessão já foi encerrada com esta pesquisa."
   },
   "rehearsal": {
     "title": "Ensaio: {title}",
@@ -224,5 +292,72 @@
       "startFailed": "Não foi possível iniciar o ensaio.",
       "endFailed": "Não foi possível encerrar o ensaio."
     }
+  },
+  "steps": {
+    "aria": "Etapas da sessão",
+    "progress": "Etapa {number} de {total} · {label}",
+    "readyHeading": "Pronto para apresentar",
+    "doneCount": "{count} de {total} etapas feitas",
+    "configuracoes": {
+      "label": "Configurações",
+      "description": "Nome, data, modo da sessão e como a plateia participa.",
+      "short": "Sessão"
+    },
+    "slides": {
+      "label": "Slides",
+      "description": "Opcional. Apresente pelo PulseStage: slides e perguntas na mesma sequência, com notas por slide.",
+      "short": "Slides"
+    },
+    "enquetes": {
+      "label": "Enquetes",
+      "description": "As perguntas da sessão, na ordem em que serão apresentadas. Use o olho para ver como a plateia enxerga.",
+      "short": "Enquetes"
+    },
+    "pesquisa": {
+      "label": "Pesquisa pós-evento",
+      "description": "O que a plateia responde ao encerrar a sessão. As respostas viram o relatório da sessão.",
+      "short": "Pesquisa"
+    },
+    "sorteio": {
+      "label": "Sorteio",
+      "description": "Opcional. Sorteie prêmios entre quem respondeu a pesquisa ou entre todos que entraram.",
+      "short": "Sorteio"
+    },
+    "state": {
+      "done": "Feito",
+      "optional": "Opcional",
+      "pending": "Pendente"
+    },
+    "needsSession": "disponível depois de criar a sessão",
+    "back": "Voltar",
+    "backTo": "Voltar para {label}",
+    "next": "Próximo: {label}",
+    "skip": "Pular",
+    "finish": "Concluir"
+  },
+  "ready": {
+    "title": "Pronto para apresentar",
+    "description": "Confira o que foi montado. Dá para voltar a qualquer etapa pela linha do tempo.",
+    "slides": "{count, plural, =0 {Sem slides} one {# slide} other {# slides}}",
+    "interactions": "{count, plural, =0 {Nenhuma pergunta ainda} one {# pergunta} other {# perguntas}}",
+    "survey": "Pesquisa: {name}",
+    "noSurvey": "Nenhuma pesquisa escolhida",
+    "raffle": "{count, plural, =0 {Sorteio ligado, ainda sem prêmios} one {Sorteio com # prêmio} other {Sorteio com # prêmios}}",
+    "noRaffle": "Sem sorteio",
+    "missing": "Antes de apresentar, confira: {steps}.",
+    "edit": "Editar",
+    "startHint": "\"Iniciar sessão\" abre a sessão para a plateia. \"Testar sessão\" cria um ensaio só seu, sem contar nas estatísticas.",
+    "completed": "Esta sessão já foi apresentada."
+  },
+  "survey": {
+    "previewTitle": "Perguntas de “{name}”",
+    "locked": "A sessão foi encerrada com a pesquisa “{name}”; ela não muda mais.",
+    "platform": "Modelos prontos",
+    "mine": "Meus modelos",
+    "questions": "{count, plural, one {# pergunta} other {# perguntas}}",
+    "help": "A plateia responde ao encerrar a sessão.",
+    "manage": "Ver ou criar modelos",
+    "saved": "Pesquisa escolhida.",
+    "none": "Escolha um modelo para ver as perguntas."
   }
 }

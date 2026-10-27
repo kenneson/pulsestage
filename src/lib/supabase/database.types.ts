@@ -364,6 +364,7 @@ export type Database = {
         Row: {
           activated_at: string | null
           after_slide: number | null
+          answer_key: Json | null
           closed_at: string | null
           created_at: string
           description: string | null
@@ -372,15 +373,15 @@ export type Database = {
           position: number
           session_id: string
           settings: Json
+          speaker_notes: string | null
           title: string
           type: string
           updated_at: string
-          answer_key: Json | null
-          speaker_notes: string | null
         }
         Insert: {
           activated_at?: string | null
           after_slide?: number | null
+          answer_key?: Json | null
           closed_at?: string | null
           created_at?: string
           description?: string | null
@@ -389,15 +390,15 @@ export type Database = {
           position: number
           session_id: string
           settings?: Json
+          speaker_notes?: string | null
           title: string
           type: string
           updated_at?: string
-          answer_key?: Json | null
-          speaker_notes?: string | null
         }
         Update: {
           activated_at?: string | null
           after_slide?: number | null
+          answer_key?: Json | null
           closed_at?: string | null
           created_at?: string
           description?: string | null
@@ -406,11 +407,10 @@ export type Database = {
           position?: number
           session_id?: string
           settings?: Json
+          speaker_notes?: string | null
           title?: string
           type?: string
           updated_at?: string
-          answer_key?: Json | null
-          speaker_notes?: string | null
         }
         Relationships: [
           {
@@ -493,6 +493,13 @@ export type Database = {
             referencedRelation: "sessions"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "participants_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "session_teams"
+            referencedColumns: ["id"]
+          },
         ]
       }
       profiles: {
@@ -500,6 +507,8 @@ export type Database = {
           audiences: string[]
           avatar_url: string | null
           bio: string | null
+          brand_color: string | null
+          brand_logo_path: string | null
           city: string | null
           contact_enabled: boolean
           created_at: string
@@ -521,13 +530,13 @@ export type Database = {
           topics: string[]
           updated_at: string
           website_url: string | null
-          brand_logo_path: string | null
-          brand_color: string | null
         }
         Insert: {
           audiences?: string[]
           avatar_url?: string | null
           bio?: string | null
+          brand_color?: string | null
+          brand_logo_path?: string | null
           city?: string | null
           contact_enabled?: boolean
           created_at?: string
@@ -549,13 +558,13 @@ export type Database = {
           topics?: string[]
           updated_at?: string
           website_url?: string | null
-          brand_logo_path?: string | null
-          brand_color?: string | null
         }
         Update: {
           audiences?: string[]
           avatar_url?: string | null
           bio?: string | null
+          brand_color?: string | null
+          brand_logo_path?: string | null
           city?: string | null
           contact_enabled?: boolean
           created_at?: string
@@ -577,8 +586,6 @@ export type Database = {
           topics?: string[]
           updated_at?: string
           website_url?: string | null
-          brand_logo_path?: string | null
-          brand_color?: string | null
         }
         Relationships: [
           {
@@ -735,14 +742,14 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          id?: number
+          id?: never
           kind: string
           participant_id?: string | null
           session_id: string
         }
         Update: {
           created_at?: string
-          id?: number
+          id?: never
           kind?: string
           participant_id?: string | null
           session_id?: string
@@ -871,9 +878,11 @@ export type Database = {
         Row: {
           active_interaction_activated_at: string | null
           active_interaction_id: string | null
+          answer_revealed: boolean
           current_slide: number | null
           current_slide_changed_at: string | null
           leaderboard_at: string | null
+          leaderboard_mode: string
           participant_count: number
           question_id: string | null
           questions_at: string | null
@@ -881,23 +890,23 @@ export type Database = {
           raffle_drawn_at: string | null
           raffle_prize_id: string | null
           raffle_winner_id: string | null
+          results_revealed: boolean
+          segment_option_id: string | null
           session_id: string
           show_leaderboard: boolean
           show_questions: boolean
           show_raffle: boolean
           status: string
           updated_at: string
-          results_revealed: boolean
-          answer_revealed: boolean
-          leaderboard_mode: string
-          segment_option_id: string | null
         }
         Insert: {
           active_interaction_activated_at?: string | null
           active_interaction_id?: string | null
+          answer_revealed?: boolean
           current_slide?: number | null
           current_slide_changed_at?: string | null
           leaderboard_at?: string | null
+          leaderboard_mode?: string
           participant_count?: number
           question_id?: string | null
           questions_at?: string | null
@@ -905,23 +914,23 @@ export type Database = {
           raffle_drawn_at?: string | null
           raffle_prize_id?: string | null
           raffle_winner_id?: string | null
+          results_revealed?: boolean
+          segment_option_id?: string | null
           session_id: string
           show_leaderboard?: boolean
           show_questions?: boolean
           show_raffle?: boolean
           status: string
           updated_at?: string
-          results_revealed?: boolean
-          answer_revealed?: boolean
-          leaderboard_mode?: string
-          segment_option_id?: string | null
         }
         Update: {
           active_interaction_activated_at?: string | null
           active_interaction_id?: string | null
+          answer_revealed?: boolean
           current_slide?: number | null
           current_slide_changed_at?: string | null
           leaderboard_at?: string | null
+          leaderboard_mode?: string
           participant_count?: number
           question_id?: string | null
           questions_at?: string | null
@@ -929,16 +938,14 @@ export type Database = {
           raffle_drawn_at?: string | null
           raffle_prize_id?: string | null
           raffle_winner_id?: string | null
+          results_revealed?: boolean
+          segment_option_id?: string | null
           session_id?: string
           show_leaderboard?: boolean
           show_questions?: boolean
           show_raffle?: boolean
           status?: string
           updated_at?: string
-          results_revealed?: boolean
-          answer_revealed?: boolean
-          leaderboard_mode?: string
-          segment_option_id?: string | null
         }
         Relationships: [
           {
@@ -946,6 +953,20 @@ export type Database = {
             columns: ["active_interaction_id"]
             isOneToOne: false
             referencedRelation: "interactions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_live_state_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "audience_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_live_state_segment_option_id_fkey"
+            columns: ["segment_option_id"]
+            isOneToOne: false
+            referencedRelation: "interaction_options"
             referencedColumns: ["id"]
           },
           {
@@ -1080,6 +1101,7 @@ export type Database = {
           join_code: string
           locale: string
           moderate_open_text: boolean
+          pace: string
           paused_at: string | null
           paused_seconds: number
           profanity_filter: boolean
@@ -1091,17 +1113,16 @@ export type Database = {
           rehearsal_of: string | null
           scheduled_at: string | null
           slide_count: number
+          slide_notes: Json
           slides_batch: string | null
           slides_format: string | null
           speaker_id: string
           started_at: string | null
           status: string
           survey_template_id: string | null
+          teams_enabled: boolean
           title: string
           updated_at: string
-          slide_notes: Json
-          pace: string
-          teams_enabled: boolean
           use_brand: boolean
         }
         Insert: {
@@ -1114,6 +1135,7 @@ export type Database = {
           join_code?: string
           locale?: string
           moderate_open_text?: boolean
+          pace?: string
           paused_at?: string | null
           paused_seconds?: number
           profanity_filter?: boolean
@@ -1125,17 +1147,16 @@ export type Database = {
           rehearsal_of?: string | null
           scheduled_at?: string | null
           slide_count?: number
+          slide_notes?: Json
           slides_batch?: string | null
           slides_format?: string | null
           speaker_id: string
           started_at?: string | null
           status?: string
           survey_template_id?: string | null
+          teams_enabled?: boolean
           title: string
           updated_at?: string
-          slide_notes?: Json
-          pace?: string
-          teams_enabled?: boolean
           use_brand?: boolean
         }
         Update: {
@@ -1148,6 +1169,7 @@ export type Database = {
           join_code?: string
           locale?: string
           moderate_open_text?: boolean
+          pace?: string
           paused_at?: string | null
           paused_seconds?: number
           profanity_filter?: boolean
@@ -1159,20 +1181,26 @@ export type Database = {
           rehearsal_of?: string | null
           scheduled_at?: string | null
           slide_count?: number
+          slide_notes?: Json
           slides_batch?: string | null
           slides_format?: string | null
           speaker_id?: string
           started_at?: string | null
           status?: string
           survey_template_id?: string | null
+          teams_enabled?: boolean
           title?: string
           updated_at?: string
-          slide_notes?: Json
-          pace?: string
-          teams_enabled?: boolean
           use_brand?: boolean
         }
         Relationships: [
+          {
+            foreignKeyName: "sessions_rehearsal_of_fkey"
+            columns: ["rehearsal_of"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "sessions_speaker_id_fkey"
             columns: ["speaker_id"]
@@ -1351,24 +1379,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      reveal_answer: {
-        Args: { p_reveal: boolean; p_session_id: string }
-        Returns: undefined
-      }
-      reveal_results: {
-        Args: { p_reveal: boolean; p_session_id: string }
-        Returns: undefined
-      }
-      set_leaderboard_mode: {
-        Args: { p_mode: string; p_session_id: string }
-        Returns: undefined
-      }
-      set_segment_filter: {
-        Args: { p_option_id?: string; p_session_id: string }
-        Returns: undefined
-      }
       arrange_interactions: {
-        Args: { p_after_slides: number[]; p_ids: string[]; p_session_id: string }
+        Args: {
+          p_after_slides: number[]
+          p_ids: string[]
+          p_session_id: string
+        }
         Returns: undefined
       }
       convert_legacy_feedback: { Args: never; Returns: undefined }
@@ -1376,7 +1392,10 @@ export type Database = {
         Args: { p_prize_id: string; p_session_id: string }
         Returns: string
       }
-      forfeit_raffle_winner: { Args: { p_winner_id: string }; Returns: undefined }
+      forfeit_raffle_winner: {
+        Args: { p_winner_id: string }
+        Returns: undefined
+      }
       generate_join_code: { Args: { len?: number }; Returns: string }
       is_session_owner: { Args: { p_session_id: string }; Returns: boolean }
       moderate_question: {
@@ -1399,12 +1418,36 @@ export type Database = {
           total: number
         }[]
       }
+      recompute_interaction_results: {
+        Args: { p_interaction_id: string }
+        Returns: undefined
+      }
       reorder_interactions: {
         Args: { p_ids: string[]; p_session_id: string }
         Returns: undefined
       }
+      response_tally: {
+        Args: { p_key: string; p_type: string; p_value: Json }
+        Returns: Json
+      }
+      reveal_answer: {
+        Args: { p_reveal: boolean; p_session_id: string }
+        Returns: undefined
+      }
+      reveal_results: {
+        Args: { p_reveal: boolean; p_session_id: string }
+        Returns: undefined
+      }
       set_active_interaction: {
         Args: { p_interaction_id?: string; p_session_id: string }
+        Returns: undefined
+      }
+      set_leaderboard_mode: {
+        Args: { p_mode: string; p_session_id: string }
+        Returns: undefined
+      }
+      set_segment_filter: {
+        Args: { p_option_id?: string; p_session_id: string }
         Returns: undefined
       }
       set_term_visibility: {
@@ -1457,3 +1500,126 @@ export type Database = {
     }
   }
 }
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never) = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never) = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const

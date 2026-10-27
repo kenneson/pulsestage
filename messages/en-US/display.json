@@ -35,7 +35,11 @@
     "points": "{points, number} pts",
     "loading": "Loading the leaderboard…",
     "loadFailed": "Couldn't load the leaderboard.",
-    "empty": "No one has answered the quiz yet."
+    "empty": "No one has answered the quiz yet.",
+    "teamsTitle": "Team leaderboard",
+    "teamsEmpty": "No teams with people yet.",
+    "teamMeta": "{people, plural, one {# person} other {# people}} · {total, number} pts in total",
+    "teamPoints": "{points, number} pts/person"
   },
   "raffle": {
     "title": "Giveaway",
@@ -57,5 +61,10 @@
     "count": "{count, plural, one {# person in the room} other {# people in the room}}",
     "more": "+{count, number}",
     "anonymous": "Participant without a name"
-  }
+  },
+  "timer": {
+    "label": "{seconds, plural, one {# second left} other {# seconds left}}",
+    "ended": "Time's up"
+  },
+  "segment": "Only: {group}"
 }
