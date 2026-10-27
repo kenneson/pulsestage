@@ -38,6 +38,13 @@ export async function GET(request: NextRequest) {
       }
       return response;
     }
+    // Aparece nos logs da Vercel (sem dados da conta): ajuda a ver código expirado ou cookie do PKCE ausente.
+    console.error("auth/callback: troca do código falhou", error.code ?? error.name, error.message);
+    // Já havia uma sessão válida neste navegador: segue para onde ia em vez de mostrar erro.
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) return NextResponse.redirect(`${origin}${next}`);
   }
 
   // OAuth cancelado ou recusado volta com ?error=...; sem code e sem erro é link de e-mail inválido.

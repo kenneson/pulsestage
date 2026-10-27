@@ -25,7 +25,10 @@ Supabase (Auth, Postgres, RLS, Realtime, Storage) · Zod · next-intl · Rechart
 5. **Realtime:** confirme em *Realtime → Settings* que o acesso público a canais está permitido
    (Presence dos participantes usa a publishable key).
 6. **Auth:** em *Authentication → URL Configuration*, adicione `http://localhost:3000/**`
-   e `https://SEU-APP.vercel.app/**` às Redirect URLs. Sem isso, o retorno do login cai no Site URL e falha.
+   e `https://SEU-APP.vercel.app/**` às Redirect URLs (todo domínio por onde se entra: o de produção, o
+   `*-SEU-TIME.vercel.app` e o personalizado). Sem isso, o retorno do login cai no Site URL: o `proxy` leva o
+   `?code=` da página inicial para `/auth/callback` (`lib/domain/oauth-return.ts`), mas isso só funciona quando o
+   login começou no mesmo domínio do Site URL.
    - **Login com Google (opcional):** no Google Cloud, crie um ID do cliente OAuth (Aplicativo da Web) com a URI
      de redirecionamento `https://<projeto>.supabase.co/auth/v1/callback`. Cole o Client ID e o Client Secret em
      *Authentication → Sign In / Providers → Google* no Supabase. Nenhuma variável de ambiente é necessária.
